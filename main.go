@@ -99,7 +99,7 @@ func mainWithError() (err error) {
 		commandConfig.ServerFactory = newServerFactory
 
 		commandConfig.Description = description
-		commandConfig.GitCommit = notApplicable
+		commandConfig.GitCommit = notAvailable
 		commandConfig.Name = name
 		commandConfig.Source = source
 
