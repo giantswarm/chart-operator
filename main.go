@@ -15,12 +15,16 @@ import (
 	"github.com/giantswarm/chart-operator/service"
 )
 
+const (
+	notAvailable = "n/a"
+)
+
 var (
-	description   = "The chart-operator deploys Helm charts by reconciling against a CNR repository."
-	f             = flag.New()
-	name          = "chart-operator"
-	notApplicable = "n/a"
-	source        = "https://github.com/giantswarm/chart-operator"
+	description = "The chart-operator deploys Helm charts by reconciling against a CNR repository."
+	f           = flag.New()
+	name        = "chart-operator"
+	gitCommit   = notAvailable
+	source      = "https://github.com/giantswarm/chart-operator"
 )
 
 func main() {
