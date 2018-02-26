@@ -58,7 +58,7 @@ func mainWithError() (err error) {
 				Viper:  v,
 
 				Description: description,
-				GitCommit:   notApplicable,
+				GitCommit:   notAvailable,
 				Name:        name,
 				Source:      source,
 			}
