@@ -1,0 +1,8 @@
+# ignore vim swap files
+*.swp
+
+# build result
+chart-operator
+
+# don't apply earlier restrictions under vendor
+!vendor/**
