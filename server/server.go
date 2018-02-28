@@ -10,6 +10,8 @@ import (
 	"github.com/giantswarm/micrologger"
 	kithttp "github.com/go-kit/kit/transport/http"
 
+	"github.com/giantswarm/chart-operator/server/endpoint"
+	"github.com/giantswarm/chart-operator/server/middleware"
 	"github.com/giantswarm/chart-operator/service"
 )
 
@@ -24,11 +26,40 @@ type Config struct {
 
 // New creates a new server object with given configuration.
 func New(config Config) (microserver.Server, error) {
+	var err error
+
 	if config.Service == nil {
 		return nil, microerror.Maskf(invalidConfigError, "config.Service must not be empty")
 	}
 	if config.MicroServerConfig.ServiceName == "" {
 		return nil, microerror.Maskf(invalidConfigError, "config.MicroServerConfig.ServiceName must not be empty")
+	}
+
+	var middlewareCollection *middleware.Middleware
+	{
+		c := middleware.Config{
+			Logger:  config.MicroServerConfig.Logger,
+			Service: config.Service,
+		}
+
+		middlewareCollection, err = middleware.New(c)
+		if err != nil {
+			return nil, microerror.Mask(err)
+		}
+	}
+
+	var endpointCollection *endpoint.Endpoint
+	{
+		c := endpoint.Config{
+			Logger:     config.MicroServerConfig.Logger,
+			Middleware: middlewareCollection,
+			Service:    config.Service,
+		}
+
+		endpointCollection, err = endpoint.New(c)
+		if err != nil {
+			return nil, microerror.Mask(err)
+		}
 	}
 
 	newServer := &server{
@@ -43,7 +74,10 @@ func New(config Config) (microserver.Server, error) {
 	}
 
 	// Apply internals to the micro server config.
-	newServer.config.Endpoints = []microserver.Endpoint{}
+	newServer.config.Endpoints = []microserver.Endpoint{
+		endpointCollection.Healthz,
+	}
+
 	newServer.config.ErrorEncoder = newServer.newErrorEncoder()
 
 	return newServer, nil

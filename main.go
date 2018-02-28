@@ -7,7 +7,10 @@ import (
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/microkit/command"
 	microserver "github.com/giantswarm/microkit/server"
+	"github.com/giantswarm/microkit/transaction"
 	"github.com/giantswarm/micrologger"
+	"github.com/giantswarm/microstorage"
+	"github.com/giantswarm/microstorage/memory"
 	"github.com/spf13/viper"
 
 	"github.com/giantswarm/chart-operator/flag"
@@ -59,7 +62,7 @@ func mainWithError() (err error) {
 
 				Description: description,
 				GitCommit:   notAvailable,
-				Name:        name,
+				ProjectName: name,
 				Source:      source,
 			}
 			newService, err = service.New(c)
@@ -70,17 +73,39 @@ func mainWithError() (err error) {
 			go newService.Boot()
 		}
 
+		var storage microstorage.Storage
+		{
+			storage, err = memory.New(memory.DefaultConfig())
+			if err != nil {
+				panic(fmt.Sprintf("%#v\n", microerror.Maskf(err, "memory.New")))
+			}
+		}
+
+		var transactionResponder transaction.Responder
+		{
+			c := transaction.DefaultResponderConfig()
+			c.Logger = newLogger
+			c.Storage = storage
+
+			transactionResponder, err = transaction.NewResponder(c)
+			if err != nil {
+				panic(fmt.Sprintf("%#v\n", microerror.Maskf(err, "transaction.NewResponder")))
+			}
+		}
+
 		// New custom server that bundles microkit endpoints.
 		var newServer microserver.Server
 		{
 			c := server.Config{
-				MicroServerConfig: microserver.Config{
-					Logger:      newLogger,
-					ServiceName: name,
-					Viper:       v,
-				},
-				Service: newService,
+				MicroServerConfig: microserver.DefaultConfig(),
+				Service:           newService,
 			}
+
+			c.MicroServerConfig.Logger = newLogger
+			c.MicroServerConfig.ServiceName = name
+			c.MicroServerConfig.TransactionResponder = transactionResponder
+			c.MicroServerConfig.Viper = v
+
 			newServer, err = server.New(c)
 			if err != nil {
 				panic(fmt.Sprintf("%#v\n", microerror.Maskf(err, "server.New")))
