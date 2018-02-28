@@ -113,7 +113,10 @@
 [[projects]]
   branch = "master"
   name = "github.com/giantswarm/microstorage"
-  packages = ["."]
+  packages = [
+    ".",
+    "memory"
+  ]
   revision = "4411a6307c6b844b7f9e68aaba37407b41b1c4d7"
 
 [[projects]]
@@ -620,6 +623,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "d7d1358a2d6b1ed91a2217eec9000e60e091af29c5a1232e21ca2f469f3ed225"
+  inputs-digest = "5f3ab3405c7511f7af72b10eda2fa886cfbc92e58ab616c6c50fe0a1cb5c8402"
   solver-name = "gps-cdcl"
   solver-version = 1
