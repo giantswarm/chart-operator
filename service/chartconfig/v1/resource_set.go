@@ -24,9 +24,11 @@ const (
 // ResourceSetConfig contains necessary dependencies and settings for
 // ChartConfig framework ResourceSet configuration.
 type ResourceSetConfig struct {
+	// Dependencies.
 	K8sClient kubernetes.Interface
 	Logger    micrologger.Logger
 
+	// Settings.
 	HandledVersionBundles []string
 	ProjectName           string
 }
@@ -35,12 +37,15 @@ type ResourceSetConfig struct {
 func NewResourceSet(config ResourceSetConfig) (*framework.ResourceSet, error) {
 	var err error
 
+	// Dependencies.
 	if config.K8sClient == nil {
 		return nil, microerror.Maskf(invalidConfigError, "config.K8sClient must not be empty")
 	}
 	if config.Logger == nil {
 		return nil, microerror.Maskf(invalidConfigError, "config.Logger must not be empty")
 	}
+
+	// Settings.
 	if config.ProjectName == "" {
 		return nil, microerror.Maskf(invalidConfigError, "config.ProjectName must not be empty")
 	}
@@ -62,23 +67,24 @@ func NewResourceSet(config ResourceSetConfig) (*framework.ResourceSet, error) {
 		chartResource,
 	}
 
-	// Wrap resources with retry and metrics.
 	{
-		retryWrapConfig := retryresource.WrapConfig{}
+		c := retryresource.WrapConfig{
+			BackOffFactory: func() backoff.BackOff { return backoff.WithMaxTries(backoff.NewExponentialBackOff(), ResourceRetries) },
+			Logger:         config.Logger,
+		}
 
-		retryWrapConfig.BackOffFactory = func() backoff.BackOff { return backoff.WithMaxTries(backoff.NewExponentialBackOff(), ResourceRetries) }
-		retryWrapConfig.Logger = config.Logger
-
-		resources, err = retryresource.Wrap(resources, retryWrapConfig)
+		resources, err = retryresource.Wrap(resources, c)
 		if err != nil {
 			return nil, microerror.Mask(err)
 		}
+	}
 
-		metricsWrapConfig := metricsresource.WrapConfig{}
+	{
+		c := metricsresource.WrapConfig{
+			Name: config.ProjectName,
+		}
 
-		metricsWrapConfig.Name = config.ProjectName
-
-		resources, err = metricsresource.Wrap(resources, metricsWrapConfig)
+		resources, err = metricsresource.Wrap(resources, c)
 		if err != nil {
 			return nil, microerror.Mask(err)
 		}

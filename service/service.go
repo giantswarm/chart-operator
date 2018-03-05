@@ -20,8 +20,10 @@ import (
 
 // Config represents the configuration used to create a new service.
 type Config struct {
+	// Dependencies.
 	Logger micrologger.Logger
 
+	// Settings.
 	Flag  *flag.Flag
 	Viper *viper.Viper
 
@@ -33,11 +35,14 @@ type Config struct {
 
 // New creates a new service with given configuration.
 func New(config Config) (*Service, error) {
-	if config.Flag == nil {
-		return nil, microerror.Maskf(invalidConfigError, "config.Flag must not be empty")
-	}
+	// Dependencies.
 	if config.Logger == nil {
 		return nil, microerror.Maskf(invalidConfigError, "config.Logger must not be empty")
+	}
+
+	// Settings.
+	if config.Flag == nil {
+		return nil, microerror.Maskf(invalidConfigError, "config.Flag must not be empty")
 	}
 	if config.Viper == nil {
 		return nil, microerror.Maskf(invalidConfigError, "config.Viper must not be empty")
