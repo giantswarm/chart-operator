@@ -30,6 +30,10 @@ required = [
 ]
 
 [[constraint]]
+  branch = "add-chartconfig"
+  name = "github.com/giantswarm/apiextensions"
+
+[[constraint]]
   branch = "master"
   name = "github.com/giantswarm/k8shealthz"
 
