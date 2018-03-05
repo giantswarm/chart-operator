@@ -11,15 +11,15 @@ import (
 //     apiVersion: apiextensions.k8s.io/v1beta1
 //     kind: CustomResourceDefinition
 //     metadata:
-//       name: certconfigs.core.giantswarm.io
+//       name: chartconfigs.core.giantswarm.io
 //     spec:
 //       group: core.giantswarm.io
 //       scope: Namespaced
 //       version: v1alpha1
 //       names:
-//         kind: CertConfig
-//         plural: certconfigs
-//         singular: certconfig
+//         kind: ChartConfig
+//         plural: chartconfigs
+//         singular: chartconfig
 //
 func NewChartConfigCRD() *apiextensionsv1beta1.CustomResourceDefinition {
 	return &apiextensionsv1beta1.CustomResourceDefinition{
@@ -59,8 +59,12 @@ type ChartConfigSpec struct {
 }
 
 type ChartConfigSpecChart struct {
+	// Channel is the name of the Appr channel to reconcile against.
+	// e.g. 1.0-stable
 	Channel string `json:"channel" yaml:"channel"`
-	Name    string `json:"name" yaml:"name"`
+	// Name is the fully qualified name of the Helm chart to deploy.
+	// e.g. quay.io/giantswarm/chart-operator-chart
+	Name string `json:"name" yaml:"name"`
 }
 
 type ChartConfigSpecVersionBundle struct {

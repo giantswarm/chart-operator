@@ -30,7 +30,7 @@ required = [
 ]
 
 [[constraint]]
-  branch = "add-chartconfig"
+  branch = "master"
   name = "github.com/giantswarm/apiextensions"
 
 [[constraint]]
