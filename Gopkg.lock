@@ -20,6 +20,12 @@
   revision = "4c0e84591b9aa9e6dcfdf3e020114cd81f89d5f9"
 
 [[projects]]
+  name = "github.com/cenkalti/backoff"
+  packages = ["."]
+  revision = "61153c768f31ee5f130071d08fc82b85208528de"
+  version = "v1.1.0"
+
+[[projects]]
   name = "github.com/coreos/go-semver"
   packages = ["semver"]
   revision = "8ab6407b697782a06568d4b7f1db25550ec2e4c6"
@@ -57,6 +63,19 @@
   packages = ["."]
   revision = "0ca9ea5df5451ffdf184b4428c902747c2c11cd7"
   version = "v1.0.0"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/giantswarm/apiextensions"
+  packages = [
+    "pkg/apis/core/v1alpha1",
+    "pkg/apis/provider/v1alpha1",
+    "pkg/clientset/versioned",
+    "pkg/clientset/versioned/scheme",
+    "pkg/clientset/versioned/typed/core/v1alpha1",
+    "pkg/clientset/versioned/typed/provider/v1alpha1"
+  ]
+  revision = "a39b01f775eb52297c43472514948b55223f50d1"
 
 [[projects]]
   branch = "master"
@@ -106,7 +125,8 @@
   name = "github.com/giantswarm/micrologger"
   packages = [
     ".",
-    "loggermeta"
+    "loggermeta",
+    "microloggertest"
   ]
   revision = "379c14c9508f2a9e69c7458e7e4d5444103c3abe"
 
@@ -122,7 +142,19 @@
 [[projects]]
   branch = "master"
   name = "github.com/giantswarm/operatorkit"
-  packages = ["client/k8srestconfig"]
+  packages = [
+    "client/k8scrdclient",
+    "client/k8srestconfig",
+    "framework",
+    "framework/context/reconciliationcanceledcontext",
+    "framework/context/resourcecanceledcontext",
+    "framework/context/updateallowedcontext",
+    "framework/context/updatenecessarycontext",
+    "framework/resource/internal",
+    "framework/resource/metricsresource",
+    "framework/resource/retryresource",
+    "informer"
+  ]
   revision = "03c0259e79397b26fc5078030323ccf81a3630e3"
 
 [[projects]]
@@ -252,6 +284,15 @@
     "diskcache"
   ]
   revision = "2bcd89a1743fd4b373f7370ce8ddc14dfbd18229"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/hashicorp/golang-lru"
+  packages = [
+    ".",
+    "simplelru"
+  ]
+  revision = "0fb14efe8c47ae851c0034ed7a448854d3d34cf3"
 
 [[projects]]
   branch = "master"
@@ -526,12 +567,25 @@
   version = "kubernetes-1.8.5"
 
 [[projects]]
+  name = "k8s.io/apiextensions-apiserver"
+  packages = [
+    "pkg/apis/apiextensions",
+    "pkg/apis/apiextensions/v1beta1",
+    "pkg/client/clientset/clientset",
+    "pkg/client/clientset/clientset/scheme",
+    "pkg/client/clientset/clientset/typed/apiextensions/v1beta1"
+  ]
+  revision = "996a70a27a0dcf53642ca52601b9107cb2ad810a"
+  version = "kubernetes-1.8.4"
+
+[[projects]]
   name = "k8s.io/apimachinery"
   packages = [
     "pkg/api/equality",
     "pkg/api/errors",
     "pkg/api/meta",
     "pkg/api/resource",
+    "pkg/apis/meta/internalversion",
     "pkg/apis/meta/v1",
     "pkg/apis/meta/v1/unstructured",
     "pkg/apis/meta/v1alpha1",
@@ -550,6 +604,7 @@
     "pkg/runtime/serializer/versioning",
     "pkg/selection",
     "pkg/types",
+    "pkg/util/cache",
     "pkg/util/clock",
     "pkg/util/diff",
     "pkg/util/errors",
@@ -603,8 +658,10 @@
     "pkg/version",
     "rest",
     "rest/watch",
+    "tools/cache",
     "tools/clientcmd/api",
     "tools/metrics",
+    "tools/pager",
     "tools/reference",
     "transport",
     "util/cert",
@@ -623,6 +680,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "5f3ab3405c7511f7af72b10eda2fa886cfbc92e58ab616c6c50fe0a1cb5c8402"
+  inputs-digest = "81938146a506a23757a61df1e4571646af8b3a6f9b1481ad191956848ea1ad0d"
   solver-name = "gps-cdcl"
   solver-version = 1
