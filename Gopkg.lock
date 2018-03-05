@@ -125,7 +125,8 @@
   name = "github.com/giantswarm/micrologger"
   packages = [
     ".",
-    "loggermeta"
+    "loggermeta",
+    "microloggertest"
   ]
   revision = "379c14c9508f2a9e69c7458e7e4d5444103c3abe"
 
@@ -679,6 +680,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "af06c8863ac8157ef935406f56615568193ad5574cd7fa4ef7479b4e2e3f298c"
+  inputs-digest = "d5288024175b238a745b25edaeffab8a1469db902cf924d5e18f3618d674b0a2"
   solver-name = "gps-cdcl"
   solver-version = 1
