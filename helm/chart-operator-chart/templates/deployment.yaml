@@ -16,9 +16,9 @@ spec:
         app: {{ .Values.name }}
     spec:
       volumes:
-      - name: {{ .Values.name }}-configmap
+      - name: {{ .Values.name }}
         configMap:
-          name: {{ .Values.name }}-configmap
+          name: {{ .Values.name }}
           items:
           - key: config.yaml
             path: config.yaml
@@ -27,7 +27,7 @@ spec:
       - name: {{ .Values.name }}
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         volumeMounts:
-        - name: {{ .Values.name }}-configmap
+        - name: {{ .Values.name }}
           mountPath: /var/run/{{ .Values.name }}/configmap/
         ports:
         - name: http
