@@ -6,3 +6,11 @@ name: chart-operator
 namespace: kube-system
 
 port: 8000
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 150Mi
+  limits:
+    cpu: 250m
+    memory: 250Mi
