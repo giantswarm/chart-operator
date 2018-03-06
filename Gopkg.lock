@@ -75,7 +75,7 @@
     "pkg/clientset/versioned/typed/core/v1alpha1",
     "pkg/clientset/versioned/typed/provider/v1alpha1"
   ]
-  revision = "a39b01f775eb52297c43472514948b55223f50d1"
+  revision = "bbe06b5cdec6b31d518359218492dab771eb8793"
 
 [[projects]]
   branch = "master"
