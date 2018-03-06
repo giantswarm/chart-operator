@@ -11,6 +11,7 @@ import (
 	"github.com/giantswarm/operatorkit/framework/resource/retryresource"
 	"k8s.io/client-go/kubernetes"
 
+	"github.com/giantswarm/chart-operator/service/chartconfig/v1/appr"
 	"github.com/giantswarm/chart-operator/service/chartconfig/v1/key"
 	"github.com/giantswarm/chart-operator/service/chartconfig/v1/resource/chart"
 )
@@ -25,8 +26,9 @@ const (
 // ChartConfig framework ResourceSet configuration.
 type ResourceSetConfig struct {
 	// Dependencies.
-	K8sClient kubernetes.Interface
-	Logger    micrologger.Logger
+	K8sClient  kubernetes.Interface
+	ApprClient *appr.Client
+	Logger     micrologger.Logger
 
 	// Settings.
 	HandledVersionBundles []string
@@ -41,6 +43,10 @@ func NewResourceSet(config ResourceSetConfig) (*framework.ResourceSet, error) {
 	if config.K8sClient == nil {
 		return nil, microerror.Maskf(invalidConfigError, "config.K8sClient must not be empty")
 	}
+	if config.ApprClient == nil {
+		return nil, microerror.Maskf(invalidConfigError, "config.ApprClient must not be empty")
+	}
+
 	if config.Logger == nil {
 		return nil, microerror.Maskf(invalidConfigError, "config.Logger must not be empty")
 	}
@@ -53,8 +59,9 @@ func NewResourceSet(config ResourceSetConfig) (*framework.ResourceSet, error) {
 	var chartResource framework.Resource
 	{
 		c := chart.Config{
-			K8sClient: config.K8sClient,
-			Logger:    config.Logger,
+			K8sClient:  config.K8sClient,
+			ApprClient: config.ApprClient,
+			Logger:     config.Logger,
 		}
 
 		ops, err := chart.New(c)
