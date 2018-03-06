@@ -108,6 +108,7 @@ func newChartResourceRouter(config ChartFrameworkConfig) (*framework.ResourceRou
 	var resourceRouter *framework.ResourceRouter
 	{
 		c := framework.ResourceRouterConfig{
+			Logger: config.Logger,
 			ResourceSets: []*framework.ResourceSet{
 				resourceSetV1,
 			},
