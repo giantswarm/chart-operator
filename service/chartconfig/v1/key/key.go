@@ -5,6 +5,14 @@ import (
 	"github.com/giantswarm/microerror"
 )
 
+func ChartName(customObject v1alpha1.ChartConfig) string {
+	return customObject.Spec.Chart.Name
+}
+
+func ChannelName(customObject v1alpha1.ChartConfig) string {
+	return customObject.Spec.Chart.Channel
+}
+
 // ToCustomObject converts value to v1alpha1.ChartConfig and returns it or error
 // if type does not match.
 func ToCustomObject(v interface{}) (v1alpha1.ChartConfig, error) {
