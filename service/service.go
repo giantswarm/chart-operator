@@ -15,6 +15,7 @@ import (
 
 	"github.com/giantswarm/chart-operator/flag"
 	"github.com/giantswarm/chart-operator/service/chartconfig"
+	"github.com/giantswarm/chart-operator/service/chartconfig/v1/appr"
 	"github.com/giantswarm/chart-operator/service/healthz"
 )
 
@@ -83,6 +84,18 @@ func New(config Config) (*Service, error) {
 		return nil, microerror.Mask(err)
 	}
 
+	var apprClient *appr.Client
+	{
+		c := appr.Config{
+			Logger:  config.Logger,
+			Address: config.Viper.GetString(config.Flag.Service.CNR.Address),
+		}
+		apprClient, err = appr.New(c)
+		if err != nil {
+			return nil, microerror.Mask(err)
+		}
+	}
+
 	var healthzService *healthz.Service
 	{
 		c := healthz.Config{
@@ -102,6 +115,7 @@ func New(config Config) (*Service, error) {
 			G8sClient:    g8sClient,
 			K8sClient:    k8sClient,
 			K8sExtClient: k8sExtClient,
+			ApprClient:   apprClient,
 			Logger:       config.Logger,
 
 			ProjectName: config.ProjectName,
