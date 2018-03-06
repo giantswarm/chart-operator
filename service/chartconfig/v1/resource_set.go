@@ -57,7 +57,12 @@ func NewResourceSet(config ResourceSetConfig) (*framework.ResourceSet, error) {
 			Logger:    config.Logger,
 		}
 
-		chartResource, err = chart.New(c)
+		ops, err := chart.New(c)
+		if err != nil {
+			return nil, microerror.Mask(err)
+		}
+
+		chartResource, err = toCRUDResource(config.Logger, ops)
 		if err != nil {
 			return nil, microerror.Mask(err)
 		}
@@ -122,4 +127,18 @@ func NewResourceSet(config ResourceSetConfig) (*framework.ResourceSet, error) {
 	}
 
 	return resourceSet, nil
+}
+
+func toCRUDResource(logger micrologger.Logger, ops framework.CRUDResourceOps) (*framework.CRUDResource, error) {
+	c := framework.CRUDResourceConfig{
+		Logger: logger,
+		Ops:    ops,
+	}
+
+	r, err := framework.NewCRUDResource(c)
+	if err != nil {
+		return nil, microerror.Mask(err)
+	}
+
+	return r, nil
 }
