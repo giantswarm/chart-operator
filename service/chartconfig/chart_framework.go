@@ -12,12 +12,14 @@ import (
 	"k8s.io/client-go/kubernetes"
 
 	"github.com/giantswarm/chart-operator/service/chartconfig/v1"
+	"github.com/giantswarm/chart-operator/service/chartconfig/v1/appr"
 )
 
 type ChartFrameworkConfig struct {
 	G8sClient    versioned.Interface
 	K8sClient    kubernetes.Interface
 	K8sExtClient apiextensionsclient.Interface
+	ApprClient   *appr.Client
 	Logger       micrologger.Logger
 
 	ProjectName string
@@ -34,6 +36,9 @@ func NewChartFramework(config ChartFrameworkConfig) (*framework.Framework, error
 	}
 	if config.K8sExtClient == nil {
 		return nil, microerror.Maskf(invalidConfigError, "config.K8sExtClient must not be empty")
+	}
+	if config.ApprClient == nil {
+		return nil, microerror.Maskf(invalidConfigError, "config.ApprClient must not be empty")
 	}
 	if config.Logger == nil {
 		return nil, microerror.Maskf(invalidConfigError, "config.Logger must not be empty")
@@ -95,6 +100,7 @@ func newChartResourceRouter(config ChartFrameworkConfig) (*framework.ResourceRou
 	{
 		c := v1.ResourceSetConfig{
 			K8sClient:   config.K8sClient,
+			ApprClient:  config.ApprClient,
 			Logger:      config.Logger,
 			ProjectName: config.ProjectName,
 		}
