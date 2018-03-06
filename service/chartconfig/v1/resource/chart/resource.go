@@ -42,14 +42,14 @@ func New(config Config) (*Resource, error) {
 		return nil, microerror.Maskf(invalidConfigError, "config.Logger must not be empty")
 	}
 
-	newResource := &Resource{
+	r := &Resource{
 		// Dependencies.
 		k8sClient:  config.K8sClient,
 		apprClient: config.ApprClient,
 		logger:     config.Logger,
 	}
 
-	return newResource, nil
+	return r, nil
 }
 
 func (r *Resource) Name() string {
