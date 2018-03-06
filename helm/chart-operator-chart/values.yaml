@@ -4,3 +4,5 @@
 
 name: chart-operator
 namespace: kube-system
+
+port: 8000
