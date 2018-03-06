@@ -6,6 +6,8 @@ name: chart-operator
 namespace: kube-system
 port: 8000
 
+replicas: 1
+
 image:
   repository: quay.io/giantswarm/chart-operator
   tag: [[ .SHA ]]
