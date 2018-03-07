@@ -68,8 +68,13 @@ func Test_DesiredState(t *testing.T) {
 				t.Fatalf("error == %#v, want matching", err)
 			}
 
-			if result != tc.expectedState {
-				t.Fatalf("ChartState == %q, want %q", result, tc.expectedState)
+			chartState, err := toChartState(result)
+			if err != nil {
+				t.Fatalf("error == %#v, want nil", err)
+			}
+
+			if chartState != tc.expectedState {
+				t.Fatalf("ChartState == %q, want %q", chartState, tc.expectedState)
 			}
 		})
 	}
