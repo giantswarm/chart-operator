@@ -26,8 +26,8 @@ const (
 // ChartConfig framework ResourceSet configuration.
 type ResourceSetConfig struct {
 	// Dependencies.
-	K8sClient  kubernetes.Interface
 	ApprClient *appr.Client
+	K8sClient  kubernetes.Interface
 	Logger     micrologger.Logger
 
 	// Settings.
@@ -42,9 +42,6 @@ func NewResourceSet(config ResourceSetConfig) (*framework.ResourceSet, error) {
 	// Dependencies.
 	if config.K8sClient == nil {
 		return nil, microerror.Maskf(invalidConfigError, "config.K8sClient must not be empty")
-	}
-	if config.ApprClient == nil {
-		return nil, microerror.Maskf(invalidConfigError, "config.ApprClient must not be empty")
 	}
 
 	if config.Logger == nil {

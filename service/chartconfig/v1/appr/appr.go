@@ -8,13 +8,15 @@ import (
 
 // Config represents the configuration used to create a appr client.
 type Config struct {
-	Logger  micrologger.Logger
+	Logger micrologger.Logger
+
 	Address string
 }
 
 // Client knows how to talk with a CNR server.
 type Client struct {
-	logger  micrologger.Logger
+	logger micrologger.Logger
+
 	address string
 }
 
