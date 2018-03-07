@@ -55,3 +55,16 @@ func New(config Config) (*Resource, error) {
 func (r *Resource) Name() string {
 	return Name
 }
+
+func toChartState(v interface{}) (ChartState, error) {
+	if v == nil {
+		return ChartState{}, nil
+	}
+
+	chartState, ok := v.(*ChartState)
+	if !ok {
+		return ChartState{}, microerror.Maskf(wrongTypeError, "expected '%T', got '%T'", chartState, v)
+	}
+
+	return *chartState, nil
+}
