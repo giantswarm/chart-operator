@@ -16,10 +16,10 @@ import (
 )
 
 type ChartFrameworkConfig struct {
+	ApprClient   *appr.Client
 	G8sClient    versioned.Interface
 	K8sClient    kubernetes.Interface
 	K8sExtClient apiextensionsclient.Interface
-	ApprClient   *appr.Client
 	Logger       micrologger.Logger
 
 	ProjectName string
@@ -36,9 +36,6 @@ func NewChartFramework(config ChartFrameworkConfig) (*framework.Framework, error
 	}
 	if config.K8sExtClient == nil {
 		return nil, microerror.Maskf(invalidConfigError, "config.K8sExtClient must not be empty")
-	}
-	if config.ApprClient == nil {
-		return nil, microerror.Maskf(invalidConfigError, "config.ApprClient must not be empty")
 	}
 	if config.Logger == nil {
 		return nil, microerror.Maskf(invalidConfigError, "config.Logger must not be empty")
