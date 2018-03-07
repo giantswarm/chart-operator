@@ -42,16 +42,29 @@ func New(config Config) (*Resource, error) {
 		return nil, microerror.Maskf(invalidConfigError, "config.Logger must not be empty")
 	}
 
-	newResource := &Resource{
+	r := &Resource{
 		// Dependencies.
 		apprClient: config.ApprClient,
 		k8sClient:  config.K8sClient,
 		logger:     config.Logger,
 	}
 
-	return newResource, nil
+	return r, nil
 }
 
 func (r *Resource) Name() string {
 	return Name
+}
+
+func toChartState(v interface{}) (ChartState, error) {
+	if v == nil {
+		return ChartState{}, nil
+	}
+
+	chartState, ok := v.(*ChartState)
+	if !ok {
+		return ChartState{}, microerror.Maskf(wrongTypeError, "expected '%T', got '%T'", chartState, v)
+	}
+
+	return *chartState, nil
 }
