@@ -14,13 +14,7 @@ rules:
   resources:
   - chartconfigs
   verbs:
-  - get
-  - list
-  - watch
-  - create
-  - update
-  - patch
-  - delete
+  - "*"
 - nonResourceURLs:
   - "/"
   - "/healthz"
