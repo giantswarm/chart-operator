@@ -44,8 +44,8 @@ func New(config Config) (*Resource, error) {
 
 	newResource := &Resource{
 		// Dependencies.
-		k8sClient:  config.K8sClient,
 		apprClient: config.ApprClient,
+		k8sClient:  config.K8sClient,
 		logger:     config.Logger,
 	}
 

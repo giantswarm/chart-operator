@@ -31,7 +31,8 @@ func New(config Config) (*Client, error) {
 	}
 
 	newAppr := &Client{
-		logger:  config.Logger,
+		logger: config.Logger,
+
 		address: config.Address,
 	}
 
