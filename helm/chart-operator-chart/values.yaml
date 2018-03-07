@@ -1,0 +1,21 @@
+# Default values for chart-operator-chart.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+name: chart-operator
+namespace: kube-system
+port: 8000
+
+replicas: 1
+
+image:
+  repository: quay.io/giantswarm/chart-operator
+  tag: [[ .SHA ]]
+
+resources:
+  requests:
+    cpu: 250m
+    memory: 250Mi
+  limits:
+    cpu: 250m
+    memory: 250Mi
