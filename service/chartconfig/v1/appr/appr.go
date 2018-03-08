@@ -6,6 +6,7 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"path"
 	"time"
 
 	"github.com/giantswarm/apiextensions/pkg/apis/core/v1alpha1"
@@ -63,23 +64,26 @@ func New(config Config) (*Client, error) {
 }
 
 // GetRelease queries CNR for the release name of the chart represented by the
-// given custom object
+// given custom object (including channel info).
 func (c *Client) GetRelease(customObject v1alpha1.ChartConfig) (string, error) {
 	chartName := key.ChartName(customObject)
+	channelName := key.ChannelName(customObject)
 
-	req, err := c.newRequest("GET", chartName)
+	p := path.Join(chartName, "channels", channelName)
+
+	req, err := c.newRequest("GET", p)
 	if err != nil {
 		return "", microerror.Mask(err)
 	}
 
-	var pkg Package
-	_, err = c.do(req, &pkg)
+	var ch Channel
+	_, err = c.do(req, &ch)
 
 	if err != nil {
 		return "", microerror.Mask(err)
 	}
 
-	return pkg.Release, nil
+	return ch.Current, nil
 }
 
 func (c *Client) newRequest(method, path string) (*http.Request, error) {

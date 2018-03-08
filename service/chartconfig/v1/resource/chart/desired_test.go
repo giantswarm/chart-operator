@@ -7,8 +7,6 @@ import (
 	"github.com/giantswarm/apiextensions/pkg/apis/core/v1alpha1"
 	"github.com/giantswarm/micrologger/microloggertest"
 	"k8s.io/client-go/kubernetes/fake"
-
-	"github.com/giantswarm/chart-operator/service/chartconfig/v1/appr"
 )
 
 func Test_DesiredState(t *testing.T) {
@@ -31,19 +29,13 @@ func Test_DesiredState(t *testing.T) {
 			expectedState: ChartState{
 				ChartName:   "quay.io/giantswarm/chart-operator-chart",
 				ChannelName: "0.1-beta",
-				ReleaseName: "TODO",
+				ReleaseName: "0.1.2",
 			},
 		},
 	}
 
-	c := appr.Config{
-		Address:      "http://127.0.0.1:5555",
-		Logger:       microloggertest.New(),
-		Organization: "giantswarm",
-	}
-	apprClient, err := appr.New(c)
-	if err != nil {
-		t.Fatalf("error == %#v, want nil", err)
+	apprClient := &apprMock{
+		defaultRelease: "0.1.2",
 	}
 
 	for _, tc := range testCases {

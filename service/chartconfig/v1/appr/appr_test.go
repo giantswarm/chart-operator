@@ -18,7 +18,8 @@ func TestGetRelease(t *testing.T) {
 	customObject := v1alpha1.ChartConfig{
 		Spec: v1alpha1.ChartConfigSpec{
 			Chart: v1alpha1.ChartConfigSpecChart{
-				Name: "chartname",
+				Name:    "chartname",
+				Channel: "3-2-beta",
 			},
 		},
 	}
@@ -31,16 +32,16 @@ func TestGetRelease(t *testing.T) {
 		{
 			description: "basic case",
 			h: func(w http.ResponseWriter, r *http.Request) {
-				if !strings.HasPrefix(r.URL.Path, "/giantswarm/chartname") {
+				if !strings.HasPrefix(r.URL.Path, "/giantswarm/chartname/channels/3-2-beta") {
 					http.Error(w, "wrong path", http.StatusInternalServerError)
 					fmt.Println(r.URL.Path)
 					return
 				}
 
-				pkg := appr.Package{
-					Release: "3.2.1",
+				c := appr.Channel{
+					Current: "3.2.1",
 				}
-				js, err := json.Marshal(pkg)
+				js, err := json.Marshal(c)
 				if err != nil {
 					http.Error(w, err.Error(), http.StatusInternalServerError)
 					return

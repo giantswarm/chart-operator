@@ -26,7 +26,7 @@ const (
 // ChartConfig framework ResourceSet configuration.
 type ResourceSetConfig struct {
 	// Dependencies.
-	ApprClient *appr.Client
+	ApprClient appr.Interface
 	K8sClient  kubernetes.Interface
 	Logger     micrologger.Logger
 
