@@ -84,10 +84,10 @@ func TestGetRelease(t *testing.T) {
 			}
 
 			r, err := a.GetRelease(customObject)
-			if err != nil && !tc.expectedError {
+			switch {
+			case err != nil && !tc.expectedError:
 				t.Errorf("failed to get release %v", err)
-			}
-			if err == nil && tc.expectedError {
+			case err == nil && tc.expectedError:
 				t.Errorf("expected error didn't happen")
 			}
 

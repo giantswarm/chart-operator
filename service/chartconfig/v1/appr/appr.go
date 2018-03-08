@@ -44,7 +44,7 @@ func New(config Config) (*Client, error) {
 
 	// set client timeout to prevent leakages.
 	hc := &http.Client{
-		Timeout: time.Second * 5,
+		Timeout: time.Second * httpClientTimeout,
 	}
 
 	u, err := url.Parse(config.Address + "/" + config.Organization + "/")
