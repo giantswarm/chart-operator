@@ -87,8 +87,10 @@ func New(config Config) (*Service, error) {
 	var apprClient *appr.Client
 	{
 		c := appr.Config{
-			Logger:  config.Logger,
-			Address: config.Viper.GetString(config.Flag.Service.CNR.Address),
+			Logger: config.Logger,
+
+			Address:      config.Viper.GetString(config.Flag.Service.CNR.Address),
+			Organization: config.Viper.GetString(config.Flag.Service.CNR.Organization),
 		}
 		apprClient, err = appr.New(c)
 		if err != nil {

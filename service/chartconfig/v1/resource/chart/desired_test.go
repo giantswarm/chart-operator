@@ -37,8 +37,9 @@ func Test_DesiredState(t *testing.T) {
 	}
 
 	c := appr.Config{
-		Address: "http://127.0.0.1:5555",
-		Logger:  microloggertest.New(),
+		Address:      "http://127.0.0.1:5555",
+		Logger:       microloggertest.New(),
+		Organization: "giantswarm",
 	}
 	apprClient, err := appr.New(c)
 	if err != nil {
