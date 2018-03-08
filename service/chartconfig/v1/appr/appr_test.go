@@ -38,10 +38,10 @@ func TestGetRelease(t *testing.T) {
 					return
 				}
 
-				pkg := appr.Package{
-					Release: "3.2.1",
+				c := appr.Channel{
+					Current: "3.2.1",
 				}
-				js, err := json.Marshal(pkg)
+				js, err := json.Marshal(c)
 				if err != nil {
 					http.Error(w, err.Error(), http.StatusInternalServerError)
 					return

@@ -11,7 +11,7 @@ type Interface interface {
 	GetRelease(v1alpha1.ChartConfig) (string, error)
 }
 
-// Package represents a CNR application.
-type Package struct {
-	Release string `json:"release"`
+// Channel represents a CNR channel.
+type Channel struct {
+	Current string `json:"current"`
 }

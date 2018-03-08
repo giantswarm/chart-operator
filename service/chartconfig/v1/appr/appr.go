@@ -76,14 +76,14 @@ func (c *Client) GetRelease(customObject v1alpha1.ChartConfig) (string, error) {
 		return "", microerror.Mask(err)
 	}
 
-	var pkg Package
-	_, err = c.do(req, &pkg)
+	var ch Channel
+	_, err = c.do(req, &ch)
 
 	if err != nil {
 		return "", microerror.Mask(err)
 	}
 
-	return pkg.Release, nil
+	return ch.Current, nil
 }
 
 func (c *Client) newRequest(method, path string) (*http.Request, error) {
