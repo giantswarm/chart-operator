@@ -62,9 +62,9 @@ func New(config Config) (*Client, error) {
 	return newAppr, nil
 }
 
-// GetRelease queries CNR for the release name of the chart represented by the
-// given custom object
-func (c *Client) GetRelease(customObject v1alpha1.ChartConfig) (string, error) {
+// DefaultRelease queries CNR for the default release name of the chart
+// represented by the given custom object.
+func (c *Client) DefaultRelease(customObject v1alpha1.ChartConfig) (string, error) {
 	chartName := key.ChartName(customObject)
 
 	req, err := c.newRequest("GET", chartName)

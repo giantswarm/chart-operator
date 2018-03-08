@@ -83,7 +83,7 @@ func TestGetRelease(t *testing.T) {
 				t.Errorf("could not create appr %v", err)
 			}
 
-			r, err := a.GetRelease(customObject)
+			r, err := a.DefaultRelease(customObject)
 			switch {
 			case err != nil && !tc.expectedError:
 				t.Errorf("failed to get release %v", err)

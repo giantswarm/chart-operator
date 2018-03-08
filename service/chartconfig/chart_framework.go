@@ -16,7 +16,7 @@ import (
 )
 
 type ChartFrameworkConfig struct {
-	ApprClient   *appr.Client
+	ApprClient   appr.Interface
 	G8sClient    versioned.Interface
 	K8sClient    kubernetes.Interface
 	K8sExtClient apiextensionsclient.Interface

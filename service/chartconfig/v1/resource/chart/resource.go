@@ -16,7 +16,7 @@ const (
 // Config represents the configuration used to create a new chart resource.
 type Config struct {
 	// Dependencies.
-	ApprClient *appr.Client
+	ApprClient appr.Interface
 	K8sClient  kubernetes.Interface
 	Logger     micrologger.Logger
 }
@@ -24,7 +24,7 @@ type Config struct {
 // Resource implements the chart resource.
 type Resource struct {
 	// Dependencies.
-	apprClient *appr.Client
+	apprClient appr.Interface
 	k8sClient  kubernetes.Interface
 	logger     micrologger.Logger
 }
