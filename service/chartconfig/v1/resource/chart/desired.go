@@ -14,7 +14,7 @@ func (r *Resource) GetDesiredState(ctx context.Context, obj interface{}) (interf
 		return nil, microerror.Mask(err)
 	}
 
-	releaseName, err := r.apprClient.DefaultRelease(customObject)
+	releaseName, err := r.apprClient.GetRelease(customObject)
 	if err != nil {
 		return nil, microerror.Mask(err)
 	}

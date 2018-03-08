@@ -18,7 +18,8 @@ func TestGetRelease(t *testing.T) {
 	customObject := v1alpha1.ChartConfig{
 		Spec: v1alpha1.ChartConfigSpec{
 			Chart: v1alpha1.ChartConfigSpecChart{
-				Name: "chartname",
+				Name:    "chartname",
+				Channel: "3-2-beta",
 			},
 		},
 	}
@@ -31,7 +32,7 @@ func TestGetRelease(t *testing.T) {
 		{
 			description: "basic case",
 			h: func(w http.ResponseWriter, r *http.Request) {
-				if !strings.HasPrefix(r.URL.Path, "/giantswarm/chartname") {
+				if !strings.HasPrefix(r.URL.Path, "/giantswarm/chartname/channels/3-2-beta") {
 					http.Error(w, "wrong path", http.StatusInternalServerError)
 					fmt.Println(r.URL.Path)
 					return
@@ -83,7 +84,7 @@ func TestGetRelease(t *testing.T) {
 				t.Errorf("could not create appr %v", err)
 			}
 
-			r, err := a.DefaultRelease(customObject)
+			r, err := a.GetRelease(customObject)
 			switch {
 			case err != nil && !tc.expectedError:
 				t.Errorf("failed to get release %v", err)

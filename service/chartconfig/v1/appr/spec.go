@@ -8,7 +8,7 @@ const (
 
 // Interface describes the methods provided by the appr client.
 type Interface interface {
-	DefaultRelease(v1alpha1.ChartConfig) (string, error)
+	GetRelease(v1alpha1.ChartConfig) (string, error)
 }
 
 // Package represents a CNR application.

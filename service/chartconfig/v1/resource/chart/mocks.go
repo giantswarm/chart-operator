@@ -11,7 +11,7 @@ type apprMock struct {
 	expectedError  bool
 }
 
-func (a *apprMock) DefaultRelease(customObject v1alpha1.ChartConfig) (string, error) {
+func (a *apprMock) GetRelease(customObject v1alpha1.ChartConfig) (string, error) {
 	if a.expectedError {
 		return "", fmt.Errorf("error getting default release")
 	}
