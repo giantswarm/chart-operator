@@ -41,16 +41,15 @@ func NewResourceSet(config ResourceSetConfig) (*framework.ResourceSet, error) {
 
 	// Dependencies.
 	if config.K8sClient == nil {
-		return nil, microerror.Maskf(invalidConfigError, "config.K8sClient must not be empty")
+		return nil, microerror.Maskf(invalidConfigError, "%T.K8sClient must not be empty", config)
 	}
-
 	if config.Logger == nil {
-		return nil, microerror.Maskf(invalidConfigError, "config.Logger must not be empty")
+		return nil, microerror.Maskf(invalidConfigError, "%T.Logger must not be empty", config)
 	}
 
 	// Settings.
 	if config.ProjectName == "" {
-		return nil, microerror.Maskf(invalidConfigError, "config.ProjectName must not be empty")
+		return nil, microerror.Maskf(invalidConfigError, "%T.ProjectName must not be empty", config)
 	}
 
 	var chartResource framework.Resource
