@@ -52,5 +52,4 @@ func Test_toChartState(t *testing.T) {
 			}
 		})
 	}
-
 }
