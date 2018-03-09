@@ -12,6 +12,7 @@ import (
 	"k8s.io/client-go/kubernetes"
 
 	"github.com/giantswarm/chart-operator/service/chartconfig/v1/appr"
+	"github.com/giantswarm/chart-operator/service/chartconfig/v1/helm"
 	"github.com/giantswarm/chart-operator/service/chartconfig/v1/key"
 	"github.com/giantswarm/chart-operator/service/chartconfig/v1/resource/chart"
 )
@@ -27,6 +28,7 @@ const (
 type ResourceSetConfig struct {
 	// Dependencies.
 	ApprClient appr.Interface
+	HelmClient helm.Interface
 	K8sClient  kubernetes.Interface
 	Logger     micrologger.Logger
 
@@ -57,6 +59,7 @@ func NewResourceSet(config ResourceSetConfig) (*framework.ResourceSet, error) {
 		c := chart.Config{
 			K8sClient:  config.K8sClient,
 			ApprClient: config.ApprClient,
+			HelmClient: config.HelmClient,
 			Logger:     config.Logger,
 		}
 

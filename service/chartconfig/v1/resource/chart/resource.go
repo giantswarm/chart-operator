@@ -6,6 +6,7 @@ import (
 	"k8s.io/client-go/kubernetes"
 
 	"github.com/giantswarm/chart-operator/service/chartconfig/v1/appr"
+	"github.com/giantswarm/chart-operator/service/chartconfig/v1/helm"
 )
 
 const (
@@ -17,6 +18,7 @@ const (
 type Config struct {
 	// Dependencies.
 	ApprClient appr.Interface
+	HelmClient helm.Interface
 	K8sClient  kubernetes.Interface
 	Logger     micrologger.Logger
 }
@@ -25,6 +27,7 @@ type Config struct {
 type Resource struct {
 	// Dependencies.
 	apprClient appr.Interface
+	helmClient helm.Interface
 	k8sClient  kubernetes.Interface
 	logger     micrologger.Logger
 }
@@ -48,6 +51,7 @@ func New(config Config) (*Resource, error) {
 	r := &Resource{
 		// Dependencies.
 		apprClient: config.ApprClient,
+		helmClient: config.HelmClient,
 		k8sClient:  config.K8sClient,
 		logger:     config.Logger,
 	}
