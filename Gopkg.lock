@@ -155,7 +155,7 @@
     "framework/resource/retryresource",
     "informer"
   ]
-  revision = "5aefb16e363c2ddba36dec5d3c331e3b5e54a6ae"
+  revision = "75ba7e3afe272731ffb693bad7920c9bf2baa8d7"
 
 [[projects]]
   branch = "master"
