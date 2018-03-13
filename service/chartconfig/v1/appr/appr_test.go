@@ -32,7 +32,7 @@ func TestGetRelease(t *testing.T) {
 		{
 			description: "basic case",
 			h: func(w http.ResponseWriter, r *http.Request) {
-				if !strings.HasPrefix(r.URL.Path, "/giantswarm/chartname/channels/3-2-beta") {
+				if !strings.HasPrefix(r.URL.Path, "/cnr/api/v1/packages/giantswarm/chartname/channels/3-2-beta") {
 					http.Error(w, "wrong path", http.StatusInternalServerError)
 					fmt.Println(r.URL.Path)
 					return

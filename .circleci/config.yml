@@ -1,3 +1,51 @@
+e2eTest: &e2eTest
+    machine: true
+    working_directory: /home/circleci/.go_workspace/src/github.com/giantswarm/chart-operator
+    steps:
+    - checkout
+
+    - attach_workspace:
+        at: .
+
+    - run: |
+        wget -q $(curl -sS https://api.github.com/repos/giantswarm/e2e-harness/releases/latest | grep browser_download_url | head -n 1 | cut -d '"' -f 4)
+        chmod +x ./e2e-harness
+
+    - run:
+        name: setup localkube in circleCI machine
+        environment:
+          MINIKUBE_VERSION: v0.25.0
+        command: ./e2e-harness localkube
+
+    - run: ./e2e-harness setup --remote=false
+
+    - run:
+        name: start CNR server
+        command: |
+          docker run \
+                 --name cnr-server \
+                 --network host \
+                 -d -t quay.io/giantswarm/docker-cnr-server
+
+    - run:
+        name: create package release
+        command: |
+          docker run \
+                 --network host \
+                 -v $(pwd)/integration/test-chart:/test-chart \
+                 --entrypoint /usr/bin/appr \
+                 --workdir /test-chart \
+                 -t quay.io/giantswarm/docker-cnr-server \
+                 push localhost:5000/giantswarm/test-chart \
+                 --channel 3-2-beta
+
+    - run: ./e2e-harness test
+
+    - run:
+        name: Finish with cleanup, no matter if the test succeeded or not
+        command: ./e2e-harness teardown
+        when: always
+
 version: 2
 jobs:
   build:
@@ -10,8 +58,50 @@ jobs:
         chmod +x ./architect
         ./architect version
     - run: ./architect build
-    - deploy:
-        command: |
-          if [ "${CIRCLE_BRANCH}" == "master" ]; then
-            ./architect deploy
-          fi
+    - persist_to_workspace:
+        root: .
+        paths:
+        - ./chart-operator
+
+  e2eTestPR:
+    <<: *e2eTest
+
+  e2eTestMaster:
+    <<: *e2eTest
+
+  deploy:
+    machine: true
+    steps:
+    - run: ./architect deploy
+
+workflows:
+  version: 2
+  build_e2e:
+    jobs:
+      - build
+
+      - hold:
+          type: approval
+          filters:
+            branches:
+              ignore: master
+          requires:
+          - build
+
+      - e2eTestPR:
+          requires:
+          - hold
+
+      - e2eTestMaster:
+          filters:
+            branches:
+              only: master
+          requires:
+          - build
+
+      - deploy:
+          filters:
+            branches:
+              only: master
+          requires:
+          - e2eTestMaster
