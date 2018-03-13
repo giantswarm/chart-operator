@@ -25,7 +25,7 @@ e2eTest: &e2eTest
           docker run \
                  --name cnr-server \
                  --network host \
-                 -d -t quay.io/giantswarm/docker-cnr-server
+                 -d -t quay.io/giantswarm/docker-cnr-server:v0.1.0
 
     - run:
         name: create package release
@@ -35,7 +35,7 @@ e2eTest: &e2eTest
                  -v $(pwd)/integration/test-chart:/test-chart \
                  --entrypoint /usr/bin/appr \
                  --workdir /test-chart \
-                 -t quay.io/giantswarm/docker-cnr-server \
+                 -t quay.io/giantswarm/docker-cnr-server:v0.1.0 \
                  push localhost:5000/giantswarm/test-chart \
                  --channel 3-2-beta
 
