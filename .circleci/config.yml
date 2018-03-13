@@ -39,7 +39,7 @@ e2eTest: &e2eTest
                  push localhost:5000/giantswarm/test-chart \
                  --channel 3-2-beta
 
-    - run: ./e2e-harness test
+    - run: ./e2e-harness test --test-dir=integration
 
     - run:
         name: Finish with cleanup, no matter if the test succeeded or not
