@@ -46,7 +46,7 @@ func TestMain(m *testing.M) {
 }
 
 func TestGetRelease(t *testing.T) {
-	l, err := micrologger.New(micrologger.DefaultConfig())
+	l, err := micrologger.New(micrologger.Config{})
 	if err != nil {
 		t.Errorf("could not create logger %v", err)
 	}

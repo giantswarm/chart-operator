@@ -41,9 +41,10 @@ func mainWithError() (err error) {
 	// Create a new logger that is used by all packages.
 	var newLogger micrologger.Logger
 	{
-		loggerConfig := micrologger.DefaultConfig()
-		loggerConfig.IOWriter = os.Stdout
-		newLogger, err = micrologger.New(loggerConfig)
+		c := micrologger.Config{
+			IOWriter: os.Stdout,
+		}
+		newLogger, err = micrologger.New(c)
 		if err != nil {
 			return microerror.Maskf(err, "micrologger.New")
 		}
