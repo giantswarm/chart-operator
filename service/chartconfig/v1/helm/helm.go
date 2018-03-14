@@ -5,6 +5,7 @@ import (
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/micrologger"
 	helmclient "k8s.io/helm/pkg/helm"
+)
 
 const (
 	connectionTimeoutSecs = 5
