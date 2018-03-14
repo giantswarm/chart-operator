@@ -1,27 +1,32 @@
 package helm
 
 import (
+	"strings"
+
 	"github.com/giantswarm/apiextensions/pkg/apis/core/v1alpha1"
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/micrologger"
 	helmclient "k8s.io/helm/pkg/helm"
+
+	"github.com/giantswarm/chart-operator/service/chartconfig/v1/key"
 )
 
 const (
 	connectionTimeoutSecs = 5
+
+	notFoundErrorPrefix = "No such release:"
 )
 
 // Config represents the configuration used to create a helm client.
 type Config struct {
-	HelmClient Interface
-	Logger     micrologger.Logger
+	Logger micrologger.Logger
 
 	Host string
 }
 
 // Client knows how to talk with a Helm Tiller server.
 type Client struct {
-	helmClient *helmclient.Client
+	helmClient helmclient.Interface
 	logger     micrologger.Logger
 }
 
@@ -47,5 +52,20 @@ func New(config Config) (*Client, error) {
 
 // GetReleaseContent gets the current status of the Helm Release.
 func (c *Client) GetReleaseContent(customObject v1alpha1.ChartConfig) (*Release, error) {
-	return nil, nil
+	releaseName := key.ReleaseName(customObject)
+
+	resp, err := c.helmClient.ReleaseContent(releaseName)
+	if strings.HasPrefix(err.Error(), notFoundErrorPrefix) {
+		return nil, microerror.Maskf(notFoundError, "Release: %s not found", releaseName)
+	}
+	if err != nil {
+		return nil, microerror.Mask(err)
+	}
+
+	release := &Release{
+		Name:   resp.Release.Name,
+		Status: resp.Release.Info.Status.Code.String(),
+	}
+
+	return release, nil
 }
