@@ -37,11 +37,15 @@ func Test_DesiredState(t *testing.T) {
 	apprClient := &apprMock{
 		defaultRelease: "0.1.2",
 	}
+	helmClient := &helmMock{
+		expectedError: false,
+	}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			c := Config{
 				ApprClient: apprClient,
+				HelmClient: helmClient,
 				K8sClient:  fake.NewSimpleClientset(),
 				Logger:     microloggertest.New(),
 			}

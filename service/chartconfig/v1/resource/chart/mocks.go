@@ -4,6 +4,8 @@ import (
 	"fmt"
 
 	"github.com/giantswarm/apiextensions/pkg/apis/core/v1alpha1"
+
+	"github.com/giantswarm/chart-operator/service/chartconfig/v1/helm"
 )
 
 type apprMock struct {
@@ -17,4 +19,16 @@ func (a *apprMock) GetRelease(customObject v1alpha1.ChartConfig) (string, error)
 	}
 
 	return a.defaultRelease, nil
+}
+
+type helmMock struct {
+	expectedError bool
+}
+
+func (a *helmMock) GetReleaseContent(customObject v1alpha1.ChartConfig) (*helm.Release, error) {
+	if a.expectedError {
+		return nil, fmt.Errorf("error getting release content")
+	}
+
+	return &helm.Release{}, nil
 }
