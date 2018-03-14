@@ -8,6 +8,9 @@ type ChartState struct {
 	// ChannelName is the CNR channel to reconcile against.
 	// e.g. 0.1-beta
 	ChannelName string
+	// ReleaseName is the name of the Helm release when the chart is deployed.
+	// e.g. chart-operator
+	ReleaseName string
 	// ReleaseVersion is the version of the Helm Chart to be deployed.
 	// e.g. 0.1.2
 	ReleaseVersion string

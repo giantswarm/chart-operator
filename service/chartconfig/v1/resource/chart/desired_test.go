@@ -23,12 +23,14 @@ func Test_DesiredState(t *testing.T) {
 					Chart: v1alpha1.ChartConfigSpecChart{
 						Name:    "quay.io/giantswarm/chart-operator-chart",
 						Channel: "0.1-beta",
+						Release: "chart-operator",
 					},
 				},
 			},
 			expectedState: ChartState{
 				ChartName:      "quay.io/giantswarm/chart-operator-chart",
 				ChannelName:    "0.1-beta",
+				ReleaseName:    "chart-operator",
 				ReleaseVersion: "0.1.2",
 			},
 		},
