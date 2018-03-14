@@ -15,6 +15,7 @@ func Test_ChartName(t *testing.T) {
 			Chart: v1alpha1.ChartConfigSpecChart{
 				Name:    "chart-operator-chart",
 				Channel: "0.1-beta",
+				Release: "chart-operator",
 			},
 		},
 	}
@@ -32,12 +33,31 @@ func Test_ChannelName(t *testing.T) {
 			Chart: v1alpha1.ChartConfigSpecChart{
 				Name:    "chart-operator-chart",
 				Channel: "0.1-beta",
+				Release: "chart-operator",
 			},
 		},
 	}
 
 	if ChannelName(obj) != expectedChannel {
-		t.Fatalf("chart name %s, want %s", ChannelName(obj), expectedChannel)
+		t.Fatalf("channel name %s, want %s", ChannelName(obj), expectedChannel)
+	}
+}
+
+func Test_ReleaseName(t *testing.T) {
+	expectedRelease := "chart-operator"
+
+	obj := v1alpha1.ChartConfig{
+		Spec: v1alpha1.ChartConfigSpec{
+			Chart: v1alpha1.ChartConfigSpecChart{
+				Name:    "chart-operator-chart",
+				Channel: "0.1-beta",
+				Release: "chart-operator",
+			},
+		},
+	}
+
+	if ReleaseName(obj) != expectedRelease {
+		t.Fatalf("release name %s, want %s", ReleaseName(obj), expectedRelease)
 	}
 }
 
@@ -55,6 +75,7 @@ func Test_ToCustomObject(t *testing.T) {
 					Chart: v1alpha1.ChartConfigSpecChart{
 						Name:    "chart-operator-chart",
 						Channel: "0.1-beta",
+						Release: "chart-operator",
 					},
 				},
 			},
@@ -63,6 +84,7 @@ func Test_ToCustomObject(t *testing.T) {
 					Chart: v1alpha1.ChartConfigSpecChart{
 						Name:    "chart-operator-chart",
 						Channel: "0.1-beta",
+						Release: "chart-operator",
 					},
 				},
 			},
