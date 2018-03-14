@@ -16,6 +16,7 @@ import (
 	"github.com/giantswarm/chart-operator/flag"
 	"github.com/giantswarm/chart-operator/service/chartconfig"
 	"github.com/giantswarm/chart-operator/service/chartconfig/v1/appr"
+	"github.com/giantswarm/chart-operator/service/chartconfig/v1/helm"
 	"github.com/giantswarm/chart-operator/service/healthz"
 )
 
@@ -100,6 +101,19 @@ func New(config Config) (*Service, error) {
 		}
 	}
 
+	var helmClient *helm.Client
+	{
+		c := helm.Config{
+			Logger: config.Logger,
+
+			Host: config.Viper.GetString(config.Flag.Service.Helm.Host),
+		}
+		helmClient, err = helm.New(c)
+		if err != nil {
+			return nil, microerror.Mask(err)
+		}
+	}
+
 	var healthzService *healthz.Service
 	{
 		c := healthz.Config{
@@ -116,11 +130,12 @@ func New(config Config) (*Service, error) {
 	var chartFramework *framework.Framework
 	{
 		c := chartconfig.ChartFrameworkConfig{
+			ApprClient:   apprClient,
+			HelmClient:   helmClient,
 			G8sClient:    g8sClient,
+			Logger:       config.Logger,
 			K8sClient:    k8sClient,
 			K8sExtClient: k8sExtClient,
-			ApprClient:   apprClient,
-			Logger:       config.Logger,
 
 			ProjectName: config.ProjectName,
 		}

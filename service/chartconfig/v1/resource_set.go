@@ -57,9 +57,9 @@ func NewResourceSet(config ResourceSetConfig) (*framework.ResourceSet, error) {
 	var chartResource framework.Resource
 	{
 		c := chart.Config{
-			K8sClient:  config.K8sClient,
 			ApprClient: config.ApprClient,
 			HelmClient: config.HelmClient,
+			K8sClient:  config.K8sClient,
 			Logger:     config.Logger,
 		}
 

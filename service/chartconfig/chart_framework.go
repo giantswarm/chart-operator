@@ -13,11 +13,13 @@ import (
 
 	"github.com/giantswarm/chart-operator/service/chartconfig/v1"
 	"github.com/giantswarm/chart-operator/service/chartconfig/v1/appr"
+	"github.com/giantswarm/chart-operator/service/chartconfig/v1/helm"
 )
 
 type ChartFrameworkConfig struct {
 	ApprClient   appr.Interface
 	G8sClient    versioned.Interface
+	HelmClient   helm.Interface
 	K8sClient    kubernetes.Interface
 	K8sExtClient apiextensionsclient.Interface
 	Logger       micrologger.Logger
@@ -99,8 +101,9 @@ func newChartResourceRouter(config ChartFrameworkConfig) (*framework.ResourceRou
 	var resourceSetV1 *framework.ResourceSet
 	{
 		c := v1.ResourceSetConfig{
-			K8sClient:   config.K8sClient,
 			ApprClient:  config.ApprClient,
+			HelmClient:  config.HelmClient,
+			K8sClient:   config.K8sClient,
 			Logger:      config.Logger,
 			ProjectName: config.ProjectName,
 		}
