@@ -79,6 +79,15 @@
 
 [[projects]]
   branch = "master"
+  name = "github.com/giantswarm/e2e-harness"
+  packages = [
+    "pkg/framework",
+    "pkg/harness"
+  ]
+  revision = "efcc34252457b0cf34d0684a716fdf44839810f4"
+
+[[projects]]
+  branch = "master"
   name = "github.com/giantswarm/k8shealthz"
   packages = ["."]
   revision = "9abe467ab9085610b261319dfe875c6d13537b06"
@@ -311,6 +320,18 @@
   revision = "23c074d0eceb2b8a5bfdbb271ab780cde70f05a8"
 
 [[projects]]
+  branch = "master"
+  name = "github.com/howeyc/gopass"
+  packages = ["."]
+  revision = "bf9dde6d0d2c004a008c27aaee91170c786f6db8"
+
+[[projects]]
+  name = "github.com/imdario/mergo"
+  packages = ["."]
+  revision = "163f41321a19dd09362d4c63cc2489db2015f1f4"
+  version = "0.3.2"
+
+[[projects]]
   name = "github.com/inconshreveable/mousetrap"
   packages = ["."]
   revision = "76626ae9c91c4f2a10f34cad8ce83ea42c93bb75"
@@ -423,13 +444,13 @@
   revision = "282c8707aa210456a825798969cc27edda34992a"
 
 [[projects]]
+  branch = "master"
   name = "github.com/spf13/afero"
   packages = [
     ".",
     "mem"
   ]
-  revision = "bb8f1927f2a9d3ab41c9340aa034f6b803f4359c"
-  version = "v1.0.2"
+  revision = "bbf41cb36dffe15dff5bf7e18c447801e7ffe163"
 
 [[projects]]
   name = "github.com/spf13/cast"
@@ -478,6 +499,12 @@
 
 [[projects]]
   branch = "master"
+  name = "golang.org/x/crypto"
+  packages = ["ssh/terminal"]
+  revision = "85f98707c97e11569271e4d9b3d397e079c4f4d0"
+
+[[projects]]
+  branch = "master"
   name = "golang.org/x/net"
   packages = [
     "context",
@@ -498,7 +525,10 @@
 [[projects]]
   branch = "master"
   name = "golang.org/x/sys"
-  packages = ["unix"]
+  packages = [
+    "unix",
+    "windows"
+  ]
   revision = "f6cff0780e542efa0c8e864dc8fa522808f6a598"
 
 [[projects]]
@@ -685,14 +715,19 @@
     "rest",
     "rest/watch",
     "testing",
+    "tools/auth",
     "tools/cache",
+    "tools/clientcmd",
     "tools/clientcmd/api",
+    "tools/clientcmd/api/latest",
+    "tools/clientcmd/api/v1",
     "tools/metrics",
     "tools/pager",
     "tools/reference",
     "transport",
     "util/cert",
     "util/flowcontrol",
+    "util/homedir",
     "util/integer"
   ]
   revision = "1b75876d45719a84085528ee621939b0c68a4b85"
@@ -707,6 +742,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "cacff3b7392498efb505d954db81c9b3660bc85846b6b4f1b7c6d03050e60a3c"
+  inputs-digest = "b50ac844ad3cd0daac714022aa05e4abb099c4f046d981e4208bc10a5c250b9e"
   solver-name = "gps-cdcl"
   solver-version = 1
