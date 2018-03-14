@@ -65,9 +65,9 @@ func New(config Config) (*Client, error) {
 	return newAppr, nil
 }
 
-// GetRelease queries CNR for the release name of the chart represented by the
-// given custom object (including channel info).
-func (c *Client) GetRelease(customObject v1alpha1.ChartConfig) (string, error) {
+// GetReleaseVersion queries CNR for the release version of the chart
+// represented by the given custom object (including channel info).
+func (c *Client) GetReleaseVersion(customObject v1alpha1.ChartConfig) (string, error) {
 	chartName := key.ChartName(customObject)
 	channelName := key.ChannelName(customObject)
 
