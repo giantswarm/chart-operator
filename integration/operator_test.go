@@ -45,7 +45,7 @@ func TestMain(m *testing.M) {
 	os.Exit(v)
 }
 
-func TestGetRelease(t *testing.T) {
+func TestGetReleaseVersion(t *testing.T) {
 	l, err := micrologger.New(micrologger.Config{})
 	if err != nil {
 		t.Errorf("could not create logger %v", err)
@@ -73,7 +73,7 @@ func TestGetRelease(t *testing.T) {
 	}
 
 	expected := "3.2.1"
-	actual, err := a.GetRelease(customObject)
+	actual, err := a.GetReleaseVersion(customObject)
 	if err != nil {
 		t.Errorf("could not get release %v", err)
 	}
