@@ -6,3 +6,6 @@ chart-operator
 
 # don't apply earlier restrictions under vendor
 !vendor/**
+
+.e2e-harness/
+integration/chart-operator-e2e

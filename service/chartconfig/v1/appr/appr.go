@@ -28,7 +28,8 @@ type Client struct {
 	httpClient *http.Client
 	logger     micrologger.Logger
 
-	base *url.URL
+	base         *url.URL
+	organization string
 }
 
 // New creates a new configured appr client.
@@ -48,7 +49,7 @@ func New(config Config) (*Client, error) {
 		Timeout: time.Second * httpClientTimeout,
 	}
 
-	u, err := url.Parse(config.Address + "/" + config.Organization + "/")
+	u, err := url.Parse(config.Address + "/cnr/api/v1/")
 	if err != nil {
 		return nil, microerror.Mask(err)
 	}
@@ -56,8 +57,9 @@ func New(config Config) (*Client, error) {
 	newAppr := &Client{
 		logger: config.Logger,
 
-		base:       u,
-		httpClient: hc,
+		base:         u,
+		httpClient:   hc,
+		organization: config.Organization,
 	}
 
 	return newAppr, nil
@@ -69,7 +71,7 @@ func (c *Client) GetRelease(customObject v1alpha1.ChartConfig) (string, error) {
 	chartName := key.ChartName(customObject)
 	channelName := key.ChannelName(customObject)
 
-	p := path.Join(chartName, "channels", channelName)
+	p := path.Join("packages", c.organization, chartName, "channels", channelName)
 
 	req, err := c.newRequest("GET", p)
 	if err != nil {
