@@ -14,22 +14,22 @@ func Test_toChartState(t *testing.T) {
 		{
 			name: "case 0: basic match",
 			input: &ChartState{
-				ChartName:   "test-chart",
-				ChannelName: "test-channel",
-				ReleaseName: "test-release",
+				ChartName:      "test-chart",
+				ChannelName:    "test-channel",
+				ReleaseVersion: "test-release",
 			},
 			expectedState: ChartState{
-				ChartName:   "test-chart",
-				ChannelName: "test-channel",
-				ReleaseName: "test-release",
+				ChartName:      "test-chart",
+				ChannelName:    "test-channel",
+				ReleaseVersion: "test-release",
 			},
 		},
 		{
 			name: "case 1: wrong type",
 			input: ChartState{
-				ChartName:   "test-chart",
-				ChannelName: "test-channel",
-				ReleaseName: "test-release",
+				ChartName:      "test-chart",
+				ChannelName:    "test-channel",
+				ReleaseVersion: "test-release",
 			},
 			errorMatcher: IsWrongType,
 		},

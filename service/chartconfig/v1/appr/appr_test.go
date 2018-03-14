@@ -14,7 +14,7 @@ import (
 	"github.com/giantswarm/chart-operator/service/chartconfig/v1/appr"
 )
 
-func TestGetRelease(t *testing.T) {
+func Test_GetReleaseVersion(t *testing.T) {
 	customObject := v1alpha1.ChartConfig{
 		Spec: v1alpha1.ChartConfigSpec{
 			Chart: v1alpha1.ChartConfigSpecChart{
@@ -84,7 +84,7 @@ func TestGetRelease(t *testing.T) {
 				t.Errorf("could not create appr %v", err)
 			}
 
-			r, err := a.GetRelease(customObject)
+			r, err := a.GetReleaseVersion(customObject)
 			switch {
 			case err != nil && !tc.expectedError:
 				t.Errorf("failed to get release %v", err)

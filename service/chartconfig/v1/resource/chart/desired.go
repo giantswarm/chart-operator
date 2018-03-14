@@ -14,15 +14,15 @@ func (r *Resource) GetDesiredState(ctx context.Context, obj interface{}) (interf
 		return nil, microerror.Mask(err)
 	}
 
-	releaseName, err := r.apprClient.GetRelease(customObject)
+	releaseVersion, err := r.apprClient.GetReleaseVersion(customObject)
 	if err != nil {
 		return nil, microerror.Mask(err)
 	}
 
 	chartState := &ChartState{
-		ChartName:   key.ChartName(customObject),
-		ChannelName: key.ChannelName(customObject),
-		ReleaseName: releaseName,
+		ChartName:      key.ChartName(customObject),
+		ChannelName:    key.ChannelName(customObject),
+		ReleaseVersion: releaseVersion,
 	}
 
 	return chartState, nil
