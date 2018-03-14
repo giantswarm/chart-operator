@@ -27,15 +27,15 @@ func Test_DesiredState(t *testing.T) {
 				},
 			},
 			expectedState: ChartState{
-				ChartName:   "quay.io/giantswarm/chart-operator-chart",
-				ChannelName: "0.1-beta",
-				ReleaseName: "0.1.2",
+				ChartName:      "quay.io/giantswarm/chart-operator-chart",
+				ChannelName:    "0.1-beta",
+				ReleaseVersion: "0.1.2",
 			},
 		},
 	}
 
 	apprClient := &apprMock{
-		defaultRelease: "0.1.2",
+		defaultReleaseVersion: "0.1.2",
 	}
 	helmClient := &helmMock{
 		expectedError: false,

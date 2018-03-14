@@ -9,16 +9,16 @@ import (
 )
 
 type apprMock struct {
-	defaultRelease string
-	expectedError  bool
+	defaultReleaseVersion string
+	expectedError         bool
 }
 
-func (a *apprMock) GetRelease(customObject v1alpha1.ChartConfig) (string, error) {
+func (a *apprMock) GetReleaseVersion(customObject v1alpha1.ChartConfig) (string, error) {
 	if a.expectedError {
 		return "", fmt.Errorf("error getting default release")
 	}
 
-	return a.defaultRelease, nil
+	return a.defaultReleaseVersion, nil
 }
 
 type helmMock struct {
