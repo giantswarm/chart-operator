@@ -22,6 +22,7 @@ func (r *Resource) GetDesiredState(ctx context.Context, obj interface{}) (interf
 	chartState := &ChartState{
 		ChartName:      key.ChartName(customObject),
 		ChannelName:    key.ChannelName(customObject),
+		ReleaseName:    key.ReleaseName(customObject),
 		ReleaseVersion: releaseVersion,
 	}
 
