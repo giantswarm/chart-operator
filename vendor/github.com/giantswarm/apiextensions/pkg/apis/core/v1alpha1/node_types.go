@@ -81,7 +81,7 @@ type NodeConfigSpecGuestNode struct {
 	// in an abstracted way because of provider specific differences.
 	//
 	//     AWS: EC2 instance DNS.
-	//     Azure: ???.
+	//     Azure: VM name.
 	//     KVM: host cluster pod name.
 	//
 	Name string `json:"name" yaml:"name"`
