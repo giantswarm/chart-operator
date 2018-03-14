@@ -2,6 +2,18 @@
 
 
 [[projects]]
+  name = "github.com/BurntSushi/toml"
+  packages = ["."]
+  revision = "b26d9c308763d68093482582cea63d69be07a0f0"
+  version = "v0.3.0"
+
+[[projects]]
+  name = "github.com/Masterminds/semver"
+  packages = ["."]
+  revision = "15d8430ab86497c5c0da827b748823945e1cf1e1"
+  version = "v1.4.0"
+
+[[projects]]
   name = "github.com/PuerkitoBio/purell"
   packages = ["."]
   revision = "0bcb03f4b4d0a9428594752bd2a3b9aa0a9d4bd4"
@@ -223,6 +235,21 @@
   packages = ["."]
   revision = "259ab82a6cad3992b4e21ff5cac294ccb06474bc"
   version = "v1.7.0"
+
+[[projects]]
+  name = "github.com/gobwas/glob"
+  packages = [
+    ".",
+    "compiler",
+    "match",
+    "syntax",
+    "syntax/ast",
+    "syntax/lexer",
+    "util/runes",
+    "util/strings"
+  ]
+  revision = "5ccd90ef52e1e632236f7326478d4faa74f99438"
+  version = "v0.2.3"
 
 [[projects]]
   name = "github.com/gogo/protobuf"
@@ -514,8 +541,10 @@
     "http2",
     "http2/hpack",
     "idna",
+    "internal/timeseries",
     "lex/httplex",
-    "publicsuffix"
+    "publicsuffix",
+    "trace"
   ]
   revision = "892bf7b0c6e2f93b51166bf3882e50277fa5afc6"
 
@@ -555,6 +584,43 @@
   ]
   revision = "f21a4dfb5e38f5895301dc265a8def02365cc3d0"
   version = "v0.3.0"
+
+[[projects]]
+  branch = "master"
+  name = "google.golang.org/genproto"
+  packages = ["googleapis/rpc/status"]
+  revision = "df60624c1e9b9d2973e889c7a1cff73155da81c4"
+
+[[projects]]
+  name = "google.golang.org/grpc"
+  packages = [
+    ".",
+    "balancer",
+    "balancer/base",
+    "balancer/roundrobin",
+    "codes",
+    "connectivity",
+    "credentials",
+    "encoding",
+    "encoding/proto",
+    "grpclb/grpc_lb_v1/messages",
+    "grpclog",
+    "health/grpc_health_v1",
+    "internal",
+    "keepalive",
+    "metadata",
+    "naming",
+    "peer",
+    "resolver",
+    "resolver/dns",
+    "resolver/passthrough",
+    "stats",
+    "status",
+    "tap",
+    "transport"
+  ]
+  revision = "8e4536a86ab602859c20df5ebfd0bd4228d08655"
+  version = "v1.10.0"
 
 [[projects]]
   name = "gopkg.in/inf.v0"
@@ -737,6 +803,22 @@
   version = "kubernetes-1.8.5"
 
 [[projects]]
+  name = "k8s.io/helm"
+  packages = [
+    "pkg/chartutil",
+    "pkg/helm",
+    "pkg/ignore",
+    "pkg/proto/hapi/chart",
+    "pkg/proto/hapi/release",
+    "pkg/proto/hapi/services",
+    "pkg/proto/hapi/version",
+    "pkg/sympath",
+    "pkg/version"
+  ]
+  revision = "a80231648a1473929271764b920a8e346f6de844"
+  version = "v2.8.2"
+
+[[projects]]
   branch = "master"
   name = "k8s.io/kube-openapi"
   packages = ["pkg/common"]
@@ -745,6 +827,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "b50ac844ad3cd0daac714022aa05e4abb099c4f046d981e4208bc10a5c250b9e"
+  inputs-digest = "dc60a0c47ef508905bfb88011067074ee96b8b479cd2b52d5f343cdea1cfe8f7"
   solver-name = "gps-cdcl"
   solver-version = 1
