@@ -28,17 +28,17 @@ func Test_GetReleaseContent(t *testing.T) {
 				},
 			},
 			expectedRelease: nil,
-			errorMatcher:    IsNotFound,
+			errorMatcher:    IsReleaseNotFound,
 		},
+	}
+
+	helm := Client{
+		helmClient: &helmclient.FakeClient{},
+		logger:     microloggertest.New(),
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.description, func(t *testing.T) {
-			helm := Client{
-				helmClient: &helmclient.FakeClient{},
-				logger:     microloggertest.New(),
-			}
-
 			result, err := helm.GetReleaseContent(tc.obj)
 
 			switch {

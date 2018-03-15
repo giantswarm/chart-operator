@@ -1,8 +1,6 @@
 package helm
 
 import (
-	"strings"
-
 	"github.com/giantswarm/apiextensions/pkg/apis/core/v1alpha1"
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/micrologger"
@@ -13,8 +11,6 @@ import (
 
 const (
 	connectionTimeoutSecs = 5
-
-	notFoundErrorPrefix = "No such release:"
 )
 
 // Config represents the configuration used to create a helm client.
@@ -55,8 +51,8 @@ func (c *Client) GetReleaseContent(customObject v1alpha1.ChartConfig) (*Release,
 	releaseName := key.ReleaseName(customObject)
 
 	resp, err := c.helmClient.ReleaseContent(releaseName)
-	if strings.HasPrefix(err.Error(), notFoundErrorPrefix) {
-		return nil, microerror.Maskf(notFoundError, "Release: %s not found", releaseName)
+	if IsReleaseNotFound(err) {
+		return nil, microerror.Maskf(releaseNotFoundError, "%s", releaseName)
 	}
 	if err != nil {
 		return nil, microerror.Mask(err)

@@ -1,6 +1,14 @@
 package helm
 
-import "github.com/giantswarm/microerror"
+import (
+	"strings"
+
+	"github.com/giantswarm/microerror"
+)
+
+const (
+	releaseNotFoundErrorPrefix = "No such release:"
+)
 
 var invalidConfigError = microerror.New("invalid config")
 
@@ -9,9 +17,16 @@ func IsInvalidConfig(err error) bool {
 	return microerror.Cause(err) == invalidConfigError
 }
 
-var notFoundError = microerror.New("not found")
+var releaseNotFoundError = microerror.New("release not found")
 
-// IsNotFound asserts notFoundError.
-func IsNotFound(err error) bool {
-	return microerror.Cause(err) == notFoundError
+// IsReleaseNotFound asserts releaseNotFoundError.
+func IsReleaseNotFound(err error) bool {
+	if strings.HasPrefix(err.Error(), releaseNotFoundErrorPrefix) {
+		return true
+	}
+	if microerror.Cause(err) == releaseNotFoundError {
+		return true
+	}
+
+	return false
 }
