@@ -11,7 +11,6 @@ import (
 	kithttp "github.com/go-kit/kit/transport/http"
 
 	"github.com/giantswarm/chart-operator/server/endpoint"
-	"github.com/giantswarm/chart-operator/server/middleware"
 	"github.com/giantswarm/chart-operator/service"
 )
 
@@ -35,25 +34,11 @@ func New(config Config) (microserver.Server, error) {
 		return nil, microerror.Maskf(invalidConfigError, "config.MicroServerConfig.ServiceName must not be empty")
 	}
 
-	var middlewareCollection *middleware.Middleware
-	{
-		c := middleware.Config{
-			Logger:  config.MicroServerConfig.Logger,
-			Service: config.Service,
-		}
-
-		middlewareCollection, err = middleware.New(c)
-		if err != nil {
-			return nil, microerror.Mask(err)
-		}
-	}
-
 	var endpointCollection *endpoint.Endpoint
 	{
 		c := endpoint.Config{
-			Logger:     config.MicroServerConfig.Logger,
-			Middleware: middlewareCollection,
-			Service:    config.Service,
+			Logger:  config.MicroServerConfig.Logger,
+			Service: config.Service,
 		}
 
 		endpointCollection, err = endpoint.New(c)
@@ -96,7 +81,7 @@ type server struct {
 
 func (s *server) Boot() {
 	s.bootOnce.Do(func() {
-		// Insert here custom boot logic for server/endpoint/middleware if needed.
+		// Insert here custom boot logic for server/endpoint if needed.
 	})
 }
 
@@ -106,7 +91,7 @@ func (s *server) Config() microserver.Config {
 
 func (s *server) Shutdown() {
 	s.shutdownOnce.Do(func() {
-		// Insert here custom shutdown logic for server/endpoint/middleware if needed.
+		// Insert here custom shutdown logic for server/endpoint if needed.
 	})
 }
 
