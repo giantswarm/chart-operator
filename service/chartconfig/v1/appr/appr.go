@@ -88,6 +88,29 @@ func (c *Client) GetReleaseVersion(customObject v1alpha1.ChartConfig) (string, e
 	return ch.Current, nil
 }
 
+// DeleteRelease removes a release from the channel described by the provided
+// custom object
+func (c *Client) DeleteRelease(customObject v1alpha1.ChartConfig) error {
+	chartName := key.ChartName(customObject)
+	channelName := key.ChannelName(customObject)
+
+	p := path.Join("packages", c.organization, chartName, "channels", channelName)
+
+	req, err := c.newRequest("DELETE", p)
+	if err != nil {
+		return microerror.Mask(err)
+	}
+
+	var ch Channel
+	_, err = c.do(req, &ch)
+
+	if err != nil {
+		return microerror.Mask(err)
+	}
+
+	return nil
+}
+
 func (c *Client) newRequest(method, path string) (*http.Request, error) {
 	u := &url.URL{Path: path}
 	dest := c.base.ResolveReference(u)

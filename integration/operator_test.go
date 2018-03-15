@@ -82,3 +82,46 @@ func TestGetReleaseVersion(t *testing.T) {
 		t.Errorf("release didn't match expected, want %q, got %q", expected, actual)
 	}
 }
+
+func TestDeleteRelease(t *testing.T) {
+	l, err := micrologger.New(micrologger.Config{})
+	if err != nil {
+		t.Errorf("could not create logger %v", err)
+	}
+
+	c := appr.Config{
+		Logger: l,
+
+		Address:      "http://localhost:5000",
+		Organization: "giantswarm",
+	}
+
+	a, err := appr.New(c)
+	if err != nil {
+		t.Errorf("could not create appr %v", err)
+	}
+
+	customObject := v1alpha1.ChartConfig{
+		Spec: v1alpha1.ChartConfigSpec{
+			Chart: v1alpha1.ChartConfigSpecChart{
+				Name:    "test-chart",
+				Channel: "3-2-beta",
+			},
+		},
+	}
+
+	err = a.DeleteRelease(customObject)
+	if err != nil {
+		t.Errorf("could not delete release %v", err)
+	}
+
+	expected := ""
+	actual, err := a.GetReleaseVersion(customObject)
+	if err != nil {
+		t.Errorf("could not get release %v", err)
+	}
+
+	if expected != actual {
+		t.Errorf("release didn't match expected, want %q, got %q", expected, actual)
+	}
+}
