@@ -6,16 +6,13 @@ import (
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/micrologger"
 
-	"github.com/giantswarm/chart-operator/server/middleware"
 	"github.com/giantswarm/chart-operator/service"
 )
 
 // Config represents the configuration used to construct an endpoint.
 type Config struct {
-	// Dependencies
-	Logger     micrologger.Logger
-	Middleware *middleware.Middleware
-	Service    *service.Service
+	Logger  micrologger.Logger
+	Service *service.Service
 }
 
 // New creates a new endpoint with given configuration.
@@ -23,11 +20,10 @@ func New(config Config) (*Endpoint, error) {
 	var err error
 
 	if config.Logger == nil {
-		return nil, microerror.Maskf(invalidConfigError, "config.Logger must not be empty")
+		return nil, microerror.Maskf(invalidConfigError, "%T.Logger must not be empty", config)
 	}
-
 	if config.Service == nil {
-		return nil, microerror.Maskf(invalidConfigError, "config.Service or it's Healthz descendents must not be empty")
+		return nil, microerror.Maskf(invalidConfigError, "%T.Service or it's Healthz descendents must not be empty", config)
 	}
 
 	var healthzEndpoint *healthz.Endpoint
