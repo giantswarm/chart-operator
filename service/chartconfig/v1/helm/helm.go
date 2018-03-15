@@ -4,6 +4,7 @@ import (
 	"github.com/giantswarm/apiextensions/pkg/apis/core/v1alpha1"
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/micrologger"
+	"k8s.io/helm/pkg/chartutil"
 	helmclient "k8s.io/helm/pkg/helm"
 
 	"github.com/giantswarm/chart-operator/service/chartconfig/v1/key"
@@ -46,14 +47,22 @@ func New(config Config) (*Client, error) {
 	return newHelm, nil
 }
 
-// GetReleaseContent gets the current status of the Helm Release.
+// GetReleaseContent gets the current status of the Helm Release including any
+// values provided when the chart was installed.
 func (c *Client) GetReleaseContent(customObject v1alpha1.ChartConfig) (*Release, error) {
 	releaseName := key.ReleaseName(customObject)
 
 	resp, err := c.helmClient.ReleaseContent(releaseName)
-	if IsReleaseNotFound(err) {
+	if err != nil && IsReleaseNotFound(err) {
 		return nil, microerror.Maskf(releaseNotFoundError, releaseName)
 	}
+	if err != nil {
+		return nil, microerror.Mask(err)
+	}
+
+	// Raw values are returned by the Tiller API and we convert these to a map.
+	raw := []byte(resp.Release.Config.Raw)
+	values, err := chartutil.ReadValues(raw)
 	if err != nil {
 		return nil, microerror.Mask(err)
 	}
@@ -61,6 +70,7 @@ func (c *Client) GetReleaseContent(customObject v1alpha1.ChartConfig) (*Release,
 	release := &Release{
 		Name:   resp.Release.Name,
 		Status: resp.Release.Info.Status.Code.String(),
+		Values: values.AsMap(),
 	}
 
 	return release, nil
