@@ -21,10 +21,12 @@ var releaseNotFoundError = microerror.New("release not found")
 
 // IsReleaseNotFound asserts releaseNotFoundError.
 func IsReleaseNotFound(err error) bool {
-	if strings.HasPrefix(err.Error(), releaseNotFoundErrorPrefix) {
+	c := microerror.Cause(err)
+
+	if strings.HasPrefix(c.Error(), releaseNotFoundErrorPrefix) {
 		return true
 	}
-	if microerror.Cause(err) == releaseNotFoundError {
+	if c == releaseNotFoundError {
 		return true
 	}
 
