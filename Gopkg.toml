@@ -80,3 +80,7 @@ required = [
 [prune]
   go-tests = true
   unused-packages = true
+
+[[constraint]]
+  name = "k8s.io/helm"
+  version = "2.8.2"

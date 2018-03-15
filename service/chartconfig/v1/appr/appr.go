@@ -35,13 +35,13 @@ type Client struct {
 // New creates a new configured appr client.
 func New(config Config) (*Client, error) {
 	if config.Logger == nil {
-		return nil, microerror.Maskf(invalidConfigError, "logger must not be empty")
+		return nil, microerror.Maskf(invalidConfigError, "%T.logger must not be empty", config)
 	}
 	if config.Address == "" {
-		return nil, microerror.Maskf(invalidConfigError, "address must not be empty")
+		return nil, microerror.Maskf(invalidConfigError, "%T.address must not be empty", config)
 	}
 	if config.Organization == "" {
-		return nil, microerror.Maskf(invalidConfigError, "organization must not be empty")
+		return nil, microerror.Maskf(invalidConfigError, "%T.organization must not be empty", config)
 	}
 
 	// set client timeout to prevent leakages.

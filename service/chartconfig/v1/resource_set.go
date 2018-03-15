@@ -12,6 +12,7 @@ import (
 	"k8s.io/client-go/kubernetes"
 
 	"github.com/giantswarm/chart-operator/service/chartconfig/v1/appr"
+	"github.com/giantswarm/chart-operator/service/chartconfig/v1/helm"
 	"github.com/giantswarm/chart-operator/service/chartconfig/v1/key"
 	"github.com/giantswarm/chart-operator/service/chartconfig/v1/resource/chart"
 )
@@ -27,6 +28,7 @@ const (
 type ResourceSetConfig struct {
 	// Dependencies.
 	ApprClient appr.Interface
+	HelmClient helm.Interface
 	K8sClient  kubernetes.Interface
 	Logger     micrologger.Logger
 
@@ -41,23 +43,23 @@ func NewResourceSet(config ResourceSetConfig) (*framework.ResourceSet, error) {
 
 	// Dependencies.
 	if config.K8sClient == nil {
-		return nil, microerror.Maskf(invalidConfigError, "config.K8sClient must not be empty")
+		return nil, microerror.Maskf(invalidConfigError, "%T.K8sClient must not be empty", config)
 	}
-
 	if config.Logger == nil {
-		return nil, microerror.Maskf(invalidConfigError, "config.Logger must not be empty")
+		return nil, microerror.Maskf(invalidConfigError, "%T.Logger must not be empty", config)
 	}
 
 	// Settings.
 	if config.ProjectName == "" {
-		return nil, microerror.Maskf(invalidConfigError, "config.ProjectName must not be empty")
+		return nil, microerror.Maskf(invalidConfigError, "%T.ProjectName must not be empty", config)
 	}
 
 	var chartResource framework.Resource
 	{
 		c := chart.Config{
-			K8sClient:  config.K8sClient,
 			ApprClient: config.ApprClient,
+			HelmClient: config.HelmClient,
+			K8sClient:  config.K8sClient,
 			Logger:     config.Logger,
 		}
 

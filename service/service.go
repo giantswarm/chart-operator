@@ -16,6 +16,7 @@ import (
 	"github.com/giantswarm/chart-operator/flag"
 	"github.com/giantswarm/chart-operator/service/chartconfig"
 	"github.com/giantswarm/chart-operator/service/chartconfig/v1/appr"
+	"github.com/giantswarm/chart-operator/service/chartconfig/v1/helm"
 	"github.com/giantswarm/chart-operator/service/healthz"
 )
 
@@ -38,15 +39,15 @@ type Config struct {
 func New(config Config) (*Service, error) {
 	// Dependencies.
 	if config.Logger == nil {
-		return nil, microerror.Maskf(invalidConfigError, "config.Logger must not be empty")
+		return nil, microerror.Maskf(invalidConfigError, "%T.Logger must not be empty", config)
 	}
 
 	// Settings.
 	if config.Flag == nil {
-		return nil, microerror.Maskf(invalidConfigError, "config.Flag must not be empty")
+		return nil, microerror.Maskf(invalidConfigError, "%T.Flag must not be empty", config)
 	}
 	if config.Viper == nil {
-		return nil, microerror.Maskf(invalidConfigError, "config.Viper must not be empty")
+		return nil, microerror.Maskf(invalidConfigError, "%T.Viper must not be empty", config)
 	}
 
 	var err error
@@ -100,6 +101,19 @@ func New(config Config) (*Service, error) {
 		}
 	}
 
+	var helmClient *helm.Client
+	{
+		c := helm.Config{
+			Logger: config.Logger,
+
+			Host: config.Viper.GetString(config.Flag.Service.Helm.Host),
+		}
+		helmClient, err = helm.New(c)
+		if err != nil {
+			return nil, microerror.Mask(err)
+		}
+	}
+
 	var healthzService *healthz.Service
 	{
 		c := healthz.Config{
@@ -116,11 +130,12 @@ func New(config Config) (*Service, error) {
 	var chartFramework *framework.Framework
 	{
 		c := chartconfig.ChartFrameworkConfig{
+			ApprClient:   apprClient,
+			HelmClient:   helmClient,
 			G8sClient:    g8sClient,
+			Logger:       config.Logger,
 			K8sClient:    k8sClient,
 			K8sExtClient: k8sExtClient,
-			ApprClient:   apprClient,
-			Logger:       config.Logger,
 
 			ProjectName: config.ProjectName,
 		}

@@ -6,6 +6,7 @@ import (
 	"k8s.io/client-go/kubernetes"
 
 	"github.com/giantswarm/chart-operator/service/chartconfig/v1/appr"
+	"github.com/giantswarm/chart-operator/service/chartconfig/v1/helm"
 )
 
 const (
@@ -17,6 +18,7 @@ const (
 type Config struct {
 	// Dependencies.
 	ApprClient appr.Interface
+	HelmClient helm.Interface
 	K8sClient  kubernetes.Interface
 	Logger     micrologger.Logger
 }
@@ -25,6 +27,7 @@ type Config struct {
 type Resource struct {
 	// Dependencies.
 	apprClient appr.Interface
+	helmClient helm.Interface
 	k8sClient  kubernetes.Interface
 	logger     micrologger.Logger
 }
@@ -32,19 +35,23 @@ type Resource struct {
 // New creates a new configured chart resource.
 func New(config Config) (*Resource, error) {
 	// Dependencies.
-	if config.K8sClient == nil {
-		return nil, microerror.Maskf(invalidConfigError, "config.K8sClient must not be empty")
-	}
 	if config.ApprClient == nil {
-		return nil, microerror.Maskf(invalidConfigError, "config.ApprClient must not be empty")
+		return nil, microerror.Maskf(invalidConfigError, "%T.ApprClient must not be empty", config)
+	}
+	if config.HelmClient == nil {
+		return nil, microerror.Maskf(invalidConfigError, "%T.HelmClient must not be empty", config)
+	}
+	if config.K8sClient == nil {
+		return nil, microerror.Maskf(invalidConfigError, "%T.K8sClient must not be empty", config)
 	}
 	if config.Logger == nil {
-		return nil, microerror.Maskf(invalidConfigError, "config.Logger must not be empty")
+		return nil, microerror.Maskf(invalidConfigError, "%T.Logger must not be empty", config)
 	}
 
 	r := &Resource{
 		// Dependencies.
 		apprClient: config.ApprClient,
+		helmClient: config.HelmClient,
 		k8sClient:  config.K8sClient,
 		logger:     config.Logger,
 	}
