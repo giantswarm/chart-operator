@@ -52,7 +52,7 @@ func (c *Client) GetReleaseContent(customObject v1alpha1.ChartConfig) (*Release,
 
 	resp, err := c.helmClient.ReleaseContent(releaseName)
 	if IsReleaseNotFound(err) {
-		return nil, microerror.Maskf(releaseNotFoundError, "%s", releaseName)
+		return nil, microerror.Maskf(releaseNotFoundError, releaseName)
 	}
 	if err != nil {
 		return nil, microerror.Mask(err)
