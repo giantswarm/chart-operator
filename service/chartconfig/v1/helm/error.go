@@ -8,6 +8,7 @@ import (
 
 const (
 	releaseNotFoundErrorPrefix = "No such release:"
+	releaseNotFoundErrorSuffix = "not found"
 )
 
 var invalidConfigError = microerror.New("invalid config")
@@ -26,9 +27,16 @@ func IsReleaseNotFound(err error) bool {
 	if strings.HasPrefix(c.Error(), releaseNotFoundErrorPrefix) {
 		return true
 	}
-	if c == releaseNotFoundError {
+	if strings.HasSuffix(c.Error(), releaseNotFoundErrorSuffix) {
 		return true
 	}
 
 	return false
+}
+
+var tooManyResultsError = microerror.New("too many results")
+
+// IsTooManyResults asserts tooManyResultsError.
+func IsTooManyResults(err error) bool {
+	return microerror.Cause(err) == tooManyResultsError
 }

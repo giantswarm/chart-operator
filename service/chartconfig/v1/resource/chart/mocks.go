@@ -32,3 +32,11 @@ func (a *helmMock) GetReleaseContent(customObject v1alpha1.ChartConfig) (*helm.R
 
 	return &helm.ReleaseContent{}, nil
 }
+
+func (a *helmMock) GetReleaseHistory(customObject v1alpha1.ChartConfig) (*helm.ReleaseHistory, error) {
+	if a.expectedError {
+		return nil, fmt.Errorf("error getting release history")
+	}
+
+	return &helm.ReleaseHistory{}, nil
+}

@@ -75,3 +75,33 @@ func (c *Client) GetReleaseContent(customObject v1alpha1.ChartConfig) (*ReleaseC
 
 	return content, nil
 }
+
+// GetReleaseHistory gets the current installed version of the Helm Release.
+func (c *Client) GetReleaseHistory(customObject v1alpha1.ChartConfig) (*ReleaseHistory, error) {
+	var releaseVersion string
+
+	releaseName := key.ReleaseName(customObject)
+
+	resp, err := c.helmClient.ReleaseHistory(releaseName, helmclient.WithMaxHistory(1))
+	if err != nil && IsReleaseNotFound(err) {
+		return nil, microerror.Maskf(releaseNotFoundError, releaseName)
+	}
+	if err != nil {
+		return nil, microerror.Mask(err)
+	}
+	if len(resp.Releases) > 1 {
+		return nil, microerror.Maskf(tooManyResultsError, "%d releases found, expected 1", len(resp.Releases))
+	}
+
+	release := resp.Releases[0]
+	if release.Chart != nil && release.Chart.Metadata != nil {
+		releaseVersion = release.Chart.Metadata.Version
+	}
+
+	history := &ReleaseHistory{
+		Name:           release.Name,
+		ReleaseVersion: releaseVersion,
+	}
+
+	return history, nil
+}
