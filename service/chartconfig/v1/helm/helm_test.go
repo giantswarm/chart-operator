@@ -15,7 +15,7 @@ func Test_GetReleaseContent(t *testing.T) {
 		description     string
 		obj             v1alpha1.ChartConfig
 		releases        []*helmrelease.Release
-		expectedRelease *ReleaseContent
+		expectedContent *ReleaseContent
 		errorMatcher    func(error) bool
 	}{
 		{
@@ -35,7 +35,7 @@ func Test_GetReleaseContent(t *testing.T) {
 					Namespace: "default",
 				}),
 			},
-			expectedRelease: &ReleaseContent{
+			expectedContent: &ReleaseContent{
 				Name:   "chart-operator",
 				Status: "DEPLOYED",
 				Values: map[string]interface{}{
@@ -63,7 +63,7 @@ func Test_GetReleaseContent(t *testing.T) {
 					StatusCode: helmrelease.Status_FAILED,
 				}),
 			},
-			expectedRelease: &ReleaseContent{
+			expectedContent: &ReleaseContent{
 				Name:   "chart-operator",
 				Status: "FAILED",
 				Values: map[string]interface{}{
@@ -88,7 +88,7 @@ func Test_GetReleaseContent(t *testing.T) {
 					Name: "chart-operator",
 				}),
 			},
-			expectedRelease: nil,
+			expectedContent: nil,
 			errorMatcher:    IsReleaseNotFound,
 		},
 	}
@@ -114,8 +114,8 @@ func Test_GetReleaseContent(t *testing.T) {
 				t.Fatalf("error == %#v, want matching", err)
 			}
 
-			if !reflect.DeepEqual(result, tc.expectedRelease) {
-				t.Fatalf("Release == %q, want %q", result, tc.expectedRelease)
+			if !reflect.DeepEqual(result, tc.expectedContent) {
+				t.Fatalf("Release == %q, want %q", result, tc.expectedContent)
 			}
 		})
 	}

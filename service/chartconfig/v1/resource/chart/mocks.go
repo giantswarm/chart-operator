@@ -25,10 +25,10 @@ type helmMock struct {
 	expectedError bool
 }
 
-func (a *helmMock) GetReleaseContent(customObject v1alpha1.ChartConfig) (*helm.Release, error) {
+func (a *helmMock) GetReleaseContent(customObject v1alpha1.ChartConfig) (*helm.ReleaseContent, error) {
 	if a.expectedError {
 		return nil, fmt.Errorf("error getting release content")
 	}
 
-	return &helm.Release{}, nil
+	return &helm.ReleaseContent{}, nil
 }

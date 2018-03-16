@@ -67,11 +67,11 @@ func (c *Client) GetReleaseContent(customObject v1alpha1.ChartConfig) (*ReleaseC
 		return nil, microerror.Mask(err)
 	}
 
-	release := &ReleaseContent{
+	content := &ReleaseContent{
 		Name:   resp.Release.Name,
 		Status: resp.Release.Info.Status.Code.String(),
 		Values: values.AsMap(),
 	}
 
-	return release, nil
+	return content, nil
 }
