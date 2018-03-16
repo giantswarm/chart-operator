@@ -73,6 +73,8 @@ jobs:
   deploy:
     machine: true
     steps:
+    - checkout
+
     - attach_workspace:
         at: .
 
