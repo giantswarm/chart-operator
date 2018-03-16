@@ -15,7 +15,7 @@ func Test_GetReleaseContent(t *testing.T) {
 		description     string
 		obj             v1alpha1.ChartConfig
 		releases        []*helmrelease.Release
-		expectedRelease *Release
+		expectedRelease *ReleaseContent
 		errorMatcher    func(error) bool
 	}{
 		{
@@ -35,7 +35,7 @@ func Test_GetReleaseContent(t *testing.T) {
 					Namespace: "default",
 				}),
 			},
-			expectedRelease: &Release{
+			expectedRelease: &ReleaseContent{
 				Name:   "chart-operator",
 				Status: "DEPLOYED",
 				Values: map[string]interface{}{
@@ -63,7 +63,7 @@ func Test_GetReleaseContent(t *testing.T) {
 					StatusCode: helmrelease.Status_FAILED,
 				}),
 			},
-			expectedRelease: &Release{
+			expectedRelease: &ReleaseContent{
 				Name:   "chart-operator",
 				Status: "FAILED",
 				Values: map[string]interface{}{

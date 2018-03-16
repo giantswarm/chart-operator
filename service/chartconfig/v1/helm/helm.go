@@ -49,7 +49,7 @@ func New(config Config) (*Client, error) {
 
 // GetReleaseContent gets the current status of the Helm Release including any
 // values provided when the chart was installed.
-func (c *Client) GetReleaseContent(customObject v1alpha1.ChartConfig) (*Release, error) {
+func (c *Client) GetReleaseContent(customObject v1alpha1.ChartConfig) (*ReleaseContent, error) {
 	releaseName := key.ReleaseName(customObject)
 
 	resp, err := c.helmClient.ReleaseContent(releaseName)
@@ -67,7 +67,7 @@ func (c *Client) GetReleaseContent(customObject v1alpha1.ChartConfig) (*Release,
 		return nil, microerror.Mask(err)
 	}
 
-	release := &Release{
+	release := &ReleaseContent{
 		Name:   resp.Release.Name,
 		Status: resp.Release.Info.Status.Code.String(),
 		Values: values.AsMap(),
