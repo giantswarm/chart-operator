@@ -49,14 +49,13 @@ func New(config Config) (*Client, error) {
 
 // GetReleaseContent gets the current status of the Helm Release including any
 // values provided when the chart was installed.
-func (c *Client) GetReleaseContent(customObject v1alpha1.ChartConfig) (*Release, error) {
+func (c *Client) GetReleaseContent(customObject v1alpha1.ChartConfig) (*ReleaseContent, error) {
 	releaseName := key.ReleaseName(customObject)
 
 	resp, err := c.helmClient.ReleaseContent(releaseName)
-	if err != nil && IsReleaseNotFound(err) {
+	if IsReleaseNotFound(err) {
 		return nil, microerror.Maskf(releaseNotFoundError, releaseName)
-	}
-	if err != nil {
+	} else if err != nil {
 		return nil, microerror.Mask(err)
 	}
 
@@ -67,11 +66,40 @@ func (c *Client) GetReleaseContent(customObject v1alpha1.ChartConfig) (*Release,
 		return nil, microerror.Mask(err)
 	}
 
-	release := &Release{
+	content := &ReleaseContent{
 		Name:   resp.Release.Name,
 		Status: resp.Release.Info.Status.Code.String(),
 		Values: values.AsMap(),
 	}
 
-	return release, nil
+	return content, nil
+}
+
+// GetReleaseHistory gets the current installed version of the Helm Release.
+func (c *Client) GetReleaseHistory(customObject v1alpha1.ChartConfig) (*ReleaseHistory, error) {
+	var releaseVersion string
+
+	releaseName := key.ReleaseName(customObject)
+
+	resp, err := c.helmClient.ReleaseHistory(releaseName, helmclient.WithMaxHistory(1))
+	if IsReleaseNotFound(err) {
+		return nil, microerror.Maskf(releaseNotFoundError, releaseName)
+	} else if err != nil {
+		return nil, microerror.Mask(err)
+	}
+	if len(resp.Releases) > 1 {
+		return nil, microerror.Maskf(tooManyResultsError, "%d releases found, expected 1", len(resp.Releases))
+	}
+
+	release := resp.Releases[0]
+	if release.Chart != nil && release.Chart.Metadata != nil {
+		releaseVersion = release.Chart.Metadata.Version
+	}
+
+	history := &ReleaseHistory{
+		Name:           release.Name,
+		ReleaseVersion: releaseVersion,
+	}
+
+	return history, nil
 }

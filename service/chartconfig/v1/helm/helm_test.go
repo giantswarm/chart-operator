@@ -7,6 +7,7 @@ import (
 	"github.com/giantswarm/apiextensions/pkg/apis/core/v1alpha1"
 	"github.com/giantswarm/micrologger/microloggertest"
 	helmclient "k8s.io/helm/pkg/helm"
+	helmchart "k8s.io/helm/pkg/proto/hapi/chart"
 	helmrelease "k8s.io/helm/pkg/proto/hapi/release"
 )
 
@@ -15,7 +16,7 @@ func Test_GetReleaseContent(t *testing.T) {
 		description     string
 		obj             v1alpha1.ChartConfig
 		releases        []*helmrelease.Release
-		expectedRelease *Release
+		expectedContent *ReleaseContent
 		errorMatcher    func(error) bool
 	}{
 		{
@@ -35,7 +36,7 @@ func Test_GetReleaseContent(t *testing.T) {
 					Namespace: "default",
 				}),
 			},
-			expectedRelease: &Release{
+			expectedContent: &ReleaseContent{
 				Name:   "chart-operator",
 				Status: "DEPLOYED",
 				Values: map[string]interface{}{
@@ -63,7 +64,7 @@ func Test_GetReleaseContent(t *testing.T) {
 					StatusCode: helmrelease.Status_FAILED,
 				}),
 			},
-			expectedRelease: &Release{
+			expectedContent: &ReleaseContent{
 				Name:   "chart-operator",
 				Status: "FAILED",
 				Values: map[string]interface{}{
@@ -88,7 +89,7 @@ func Test_GetReleaseContent(t *testing.T) {
 					Name: "chart-operator",
 				}),
 			},
-			expectedRelease: nil,
+			expectedContent: nil,
 			errorMatcher:    IsReleaseNotFound,
 		},
 	}
@@ -114,8 +115,136 @@ func Test_GetReleaseContent(t *testing.T) {
 				t.Fatalf("error == %#v, want matching", err)
 			}
 
-			if !reflect.DeepEqual(result, tc.expectedRelease) {
-				t.Fatalf("Release == %q, want %q", result, tc.expectedRelease)
+			if !reflect.DeepEqual(result, tc.expectedContent) {
+				t.Fatalf("Release == %q, want %q", result, tc.expectedContent)
+			}
+		})
+	}
+}
+
+func Test_GetReleaseHistory(t *testing.T) {
+	testCases := []struct {
+		description     string
+		obj             v1alpha1.ChartConfig
+		releases        []*helmrelease.Release
+		expectedHistory *ReleaseHistory
+		errorMatcher    func(error) bool
+	}{
+		{
+			description: "case 0: basic match with version",
+			obj: v1alpha1.ChartConfig{
+				Spec: v1alpha1.ChartConfigSpec{
+					Chart: v1alpha1.ChartConfigSpecChart{
+						Name:    "quay.io/giantswarm/chart-operator-chart",
+						Channel: "0.1-beta",
+						Release: "chart-operator",
+					},
+				},
+			},
+			releases: []*helmrelease.Release{
+				helmclient.ReleaseMock(&helmclient.MockReleaseOptions{
+					Name:      "chart-operator",
+					Namespace: "default",
+					Chart: &helmchart.Chart{
+						Metadata: &helmchart.Metadata{
+							Version: "0.1.0",
+						},
+					},
+				}),
+			},
+			expectedHistory: &ReleaseHistory{
+				Name:           "chart-operator",
+				ReleaseVersion: "0.1.0",
+			},
+			errorMatcher: nil,
+		},
+		{
+			description: "case 1: different version",
+			obj: v1alpha1.ChartConfig{
+				Spec: v1alpha1.ChartConfigSpec{
+					Chart: v1alpha1.ChartConfigSpecChart{
+						Name:    "quay.io/giantswarm/chart-operator-chart",
+						Channel: "0.1-beta",
+						Release: "chart-operator",
+					},
+				},
+			},
+			releases: []*helmrelease.Release{
+				helmclient.ReleaseMock(&helmclient.MockReleaseOptions{
+					Name:      "chart-operator",
+					Namespace: "default",
+					Chart: &helmchart.Chart{
+						Metadata: &helmchart.Metadata{
+							Version: "1.0.0-rc1",
+						},
+					},
+				}),
+			},
+			expectedHistory: &ReleaseHistory{
+				Name:           "chart-operator",
+				ReleaseVersion: "1.0.0-rc1",
+			},
+			errorMatcher: nil,
+		},
+		{
+			description: "case 2: too many results",
+			obj: v1alpha1.ChartConfig{
+				Spec: v1alpha1.ChartConfigSpec{
+					Chart: v1alpha1.ChartConfigSpecChart{
+						Name:    "quay.io/giantswarm/chart-operator-chart",
+						Channel: "0.1-beta",
+						Release: "missing",
+					},
+				},
+			},
+			releases: []*helmrelease.Release{
+				helmclient.ReleaseMock(&helmclient.MockReleaseOptions{
+					Name:      "chart-operator",
+					Namespace: "default",
+					Chart: &helmchart.Chart{
+						Metadata: &helmchart.Metadata{
+							Version: "1.0.0-rc1",
+						},
+					},
+				}),
+				helmclient.ReleaseMock(&helmclient.MockReleaseOptions{
+					Name:      "chart-operator",
+					Namespace: "default",
+					Chart: &helmchart.Chart{
+						Metadata: &helmchart.Metadata{
+							Version: "1.0.0-rc1",
+						},
+					},
+				}),
+			},
+			expectedHistory: nil,
+			errorMatcher:    IsTooManyResults,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.description, func(t *testing.T) {
+			helm := Client{
+				helmClient: &helmclient.FakeClient{
+					Rels: tc.releases,
+				},
+				logger: microloggertest.New(),
+			}
+			result, err := helm.GetReleaseHistory(tc.obj)
+
+			switch {
+			case err == nil && tc.errorMatcher == nil:
+				// correct; carry on
+			case err != nil && tc.errorMatcher == nil:
+				t.Fatalf("error == %#v, want nil", err)
+			case err == nil && tc.errorMatcher != nil:
+				t.Fatalf("error == nil, want non-nil")
+			case !tc.errorMatcher(err):
+				t.Fatalf("error == %#v, want matching", err)
+			}
+
+			if !reflect.DeepEqual(result, tc.expectedHistory) {
+				t.Fatalf("Release == %q, want %q", result, tc.expectedHistory)
 			}
 		})
 	}
