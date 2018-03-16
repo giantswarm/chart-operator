@@ -22,6 +22,6 @@ type ReleaseContent struct {
 type ReleaseHistory struct {
 	// Name is the name of the Helm Release.
 	Name string
-	// ReleaseVersion is the version of the Helm Chart to be deployed.
-	ReleaseVersion string
+	// Version is the version of the Helm Chart that has been deployed.
+	Version string
 }
