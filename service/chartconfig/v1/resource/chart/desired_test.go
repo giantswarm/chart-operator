@@ -2,6 +2,7 @@ package chart
 
 import (
 	"context"
+	"reflect"
 	"testing"
 
 	"github.com/giantswarm/apiextensions/pkg/apis/core/v1alpha1"
@@ -72,7 +73,7 @@ func Test_DesiredState(t *testing.T) {
 				t.Fatalf("error == %#v, want nil", err)
 			}
 
-			if chartState != tc.expectedState {
+			if !reflect.DeepEqual(chartState, tc.expectedState) {
 				t.Fatalf("ChartState == %q, want %q", chartState, tc.expectedState)
 			}
 		})
