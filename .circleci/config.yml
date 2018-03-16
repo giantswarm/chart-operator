@@ -62,6 +62,7 @@ jobs:
         root: .
         paths:
         - ./chart-operator
+        - ./architect
 
   e2eTestPR:
     <<: *e2eTest
@@ -72,6 +73,9 @@ jobs:
   deploy:
     machine: true
     steps:
+    - attach_workspace:
+        at: .
+
     - run: ./architect deploy
 
 workflows:
