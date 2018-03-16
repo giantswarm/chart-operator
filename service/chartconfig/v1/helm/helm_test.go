@@ -7,17 +7,73 @@ import (
 	"github.com/giantswarm/apiextensions/pkg/apis/core/v1alpha1"
 	"github.com/giantswarm/micrologger/microloggertest"
 	helmclient "k8s.io/helm/pkg/helm"
+	helmrelease "k8s.io/helm/pkg/proto/hapi/release"
 )
 
 func Test_GetReleaseContent(t *testing.T) {
 	testCases := []struct {
 		description     string
 		obj             v1alpha1.ChartConfig
+		releases        []*helmrelease.Release
 		expectedRelease *Release
 		errorMatcher    func(error) bool
 	}{
 		{
-			description: "case 0: chart not found",
+			description: "case 0: basic match with deployed status",
+			obj: v1alpha1.ChartConfig{
+				Spec: v1alpha1.ChartConfigSpec{
+					Chart: v1alpha1.ChartConfigSpecChart{
+						Name:    "quay.io/giantswarm/chart-operator-chart",
+						Channel: "0.1-beta",
+						Release: "chart-operator",
+					},
+				},
+			},
+			releases: []*helmrelease.Release{
+				helmclient.ReleaseMock(&helmclient.MockReleaseOptions{
+					Name:      "chart-operator",
+					Namespace: "default",
+				}),
+			},
+			expectedRelease: &Release{
+				Name:   "chart-operator",
+				Status: "DEPLOYED",
+				Values: map[string]interface{}{
+					// Note: Values cannot be configured via the Helm mock client.
+					"name": "value",
+				},
+			},
+			errorMatcher: nil,
+		},
+		{
+			description: "case 1: basic match with failed status",
+			obj: v1alpha1.ChartConfig{
+				Spec: v1alpha1.ChartConfigSpec{
+					Chart: v1alpha1.ChartConfigSpecChart{
+						Name:    "quay.io/giantswarm/chart-operator-chart",
+						Channel: "0.1-beta",
+						Release: "chart-operator",
+					},
+				},
+			},
+			releases: []*helmrelease.Release{
+				helmclient.ReleaseMock(&helmclient.MockReleaseOptions{
+					Name:       "chart-operator",
+					Namespace:  "default",
+					StatusCode: helmrelease.Status_FAILED,
+				}),
+			},
+			expectedRelease: &Release{
+				Name:   "chart-operator",
+				Status: "FAILED",
+				Values: map[string]interface{}{
+					"name": "value",
+				},
+			},
+			errorMatcher: nil,
+		},
+		{
+			description: "case 2: chart not found",
 			obj: v1alpha1.ChartConfig{
 				Spec: v1alpha1.ChartConfigSpec{
 					Chart: v1alpha1.ChartConfigSpecChart{
@@ -27,18 +83,24 @@ func Test_GetReleaseContent(t *testing.T) {
 					},
 				},
 			},
+			releases: []*helmrelease.Release{
+				helmclient.ReleaseMock(&helmclient.MockReleaseOptions{
+					Name: "chart-operator",
+				}),
+			},
 			expectedRelease: nil,
 			errorMatcher:    IsReleaseNotFound,
 		},
 	}
 
-	helm := Client{
-		helmClient: &helmclient.FakeClient{},
-		logger:     microloggertest.New(),
-	}
-
 	for _, tc := range testCases {
 		t.Run(tc.description, func(t *testing.T) {
+			helm := Client{
+				helmClient: &helmclient.FakeClient{
+					Rels: tc.releases,
+				},
+				logger: microloggertest.New(),
+			}
 			result, err := helm.GetReleaseContent(tc.obj)
 
 			switch {

@@ -16,12 +16,14 @@ func Test_toChartState(t *testing.T) {
 			input: &ChartState{
 				ChartName:      "test-chart",
 				ChannelName:    "test-channel",
-				ReleaseVersion: "test-release",
+				ReleaseName:    "test-release",
+				ReleaseVersion: "0.1.0",
 			},
 			expectedState: ChartState{
 				ChartName:      "test-chart",
 				ChannelName:    "test-channel",
-				ReleaseVersion: "test-release",
+				ReleaseName:    "test-release",
+				ReleaseVersion: "0.1.0",
 			},
 		},
 		{
@@ -29,7 +31,8 @@ func Test_toChartState(t *testing.T) {
 			input: ChartState{
 				ChartName:      "test-chart",
 				ChannelName:    "test-channel",
-				ReleaseVersion: "test-release",
+				ReleaseName:    "test-release",
+				ReleaseVersion: "0.1.0",
 			},
 			errorMatcher: IsWrongType,
 		},
