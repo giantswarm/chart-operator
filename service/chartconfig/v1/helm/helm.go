@@ -53,10 +53,9 @@ func (c *Client) GetReleaseContent(customObject v1alpha1.ChartConfig) (*ReleaseC
 	releaseName := key.ReleaseName(customObject)
 
 	resp, err := c.helmClient.ReleaseContent(releaseName)
-	if err != nil && IsReleaseNotFound(err) {
+	if IsReleaseNotFound(err) {
 		return nil, microerror.Maskf(releaseNotFoundError, releaseName)
-	}
-	if err != nil {
+	} else if err != nil {
 		return nil, microerror.Mask(err)
 	}
 
@@ -83,10 +82,9 @@ func (c *Client) GetReleaseHistory(customObject v1alpha1.ChartConfig) (*ReleaseH
 	releaseName := key.ReleaseName(customObject)
 
 	resp, err := c.helmClient.ReleaseHistory(releaseName, helmclient.WithMaxHistory(1))
-	if err != nil && IsReleaseNotFound(err) {
+	if IsReleaseNotFound(err) {
 		return nil, microerror.Maskf(releaseNotFoundError, releaseName)
-	}
-	if err != nil {
+	} else if err != nil {
 		return nil, microerror.Mask(err)
 	}
 	if len(resp.Releases) > 1 {
