@@ -19,7 +19,7 @@ func Test_CurrentState(t *testing.T) {
 		releaseContent *helm.ReleaseContent
 		releaseHistory *helm.ReleaseHistory
 		expectedState  ChartState
-		errorMatcher   func(error) bool
+		expectedError  bool
 	}{
 		{
 			name: "case 0: basic match",
@@ -54,12 +54,60 @@ func Test_CurrentState(t *testing.T) {
 				ReleaseVersion: "0.1.2",
 			},
 		},
+		{
+			name: "case 1: different values",
+			obj: &v1alpha1.ChartConfig{
+				Spec: v1alpha1.ChartConfigSpec{
+					Chart: v1alpha1.ChartConfigSpecChart{
+						Name:    "quay.io/giantswarm/chart-operator-chart",
+						Channel: "0.1-beta",
+						Release: "chart-operator",
+					},
+				},
+			},
+			releaseContent: &helm.ReleaseContent{
+				Name:   "chart-operator",
+				Status: "FAILED",
+				Values: map[string]interface{}{
+					"foo": "bar",
+				},
+			},
+			releaseHistory: &helm.ReleaseHistory{
+				Name:    "chart-operator",
+				Version: "0.1.3",
+			},
+			expectedState: ChartState{
+				ChartName: "quay.io/giantswarm/chart-operator-chart",
+				ChartValues: map[string]interface{}{
+					"foo": "bar",
+				},
+				ChannelName:    "0.1-beta",
+				ReleaseName:    "chart-operator",
+				ReleaseStatus:  "FAILED",
+				ReleaseVersion: "0.1.3",
+			},
+		},
+		{
+			name: "case 2: error expected",
+			obj: &v1alpha1.ChartConfig{
+				Spec: v1alpha1.ChartConfigSpec{
+					Chart: v1alpha1.ChartConfigSpecChart{
+						Name:    "quay.io/giantswarm/chart-operator-chart",
+						Channel: "0.1-beta",
+						Release: "missing-operator",
+					},
+				},
+			},
+			releaseContent: &helm.ReleaseContent{},
+			releaseHistory: &helm.ReleaseHistory{},
+			expectedError:  true,
+		},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			helmClient := &helmMock{
-				expectedError:         false,
+				expectedError:         tc.expectedError,
 				defaultReleaseContent: tc.releaseContent,
 				defaultReleaseHistory: tc.releaseHistory,
 			}
@@ -78,12 +126,10 @@ func Test_CurrentState(t *testing.T) {
 
 			result, err := r.GetCurrentState(context.TODO(), tc.obj)
 			switch {
-			case err != nil && tc.errorMatcher == nil:
+			case err != nil && tc.expectedError == false:
 				t.Fatalf("error == %#v, want nil", err)
-			case err == nil && tc.errorMatcher != nil:
+			case err == nil && tc.expectedError:
 				t.Fatalf("error == nil, want non-nil")
-			case err != nil && !tc.errorMatcher(err):
-				t.Fatalf("error == %#v, want matching", err)
 			}
 
 			chartState, err := toChartState(result)
