@@ -45,7 +45,7 @@ func TestMain(m *testing.M) {
 	os.Exit(v)
 }
 
-func TestGetReleaseVersion(t *testing.T) {
+func TestApprGetReleaseVersion(t *testing.T) {
 	l, err := micrologger.New(micrologger.Config{})
 	if err != nil {
 		t.Errorf("could not create logger %v", err)
