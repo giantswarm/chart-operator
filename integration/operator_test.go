@@ -93,7 +93,7 @@ func TestHelmGetReleaseContent(t *testing.T) {
 	c := helm.Config{
 		Logger: l,
 
-		Address: "http://localhost:44134",
+		Host: "http://localhost:44134",
 	}
 
 	a, err := helm.New(c)
