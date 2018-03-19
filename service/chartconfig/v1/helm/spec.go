@@ -6,6 +6,7 @@ import "github.com/giantswarm/apiextensions/pkg/apis/core/v1alpha1"
 type Interface interface {
 	GetReleaseContent(v1alpha1.ChartConfig) (*ReleaseContent, error)
 	GetReleaseHistory(v1alpha1.ChartConfig) (*ReleaseHistory, error)
+	InstallFromTarball(path string) error
 }
 
 // ReleaseContent returns status information about a Helm Release.

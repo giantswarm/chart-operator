@@ -88,6 +88,13 @@ func (c *Client) GetReleaseVersion(customObject v1alpha1.ChartConfig) (string, e
 	return ch.Current, nil
 }
 
+// PullChartTarball downloads a tarball with the chart described by the given
+// custom object, returning the file path.
+// TODO
+func PullChartTarball(customObject v1alpha1.ChartConfig) (string, error) {
+	return "", nil
+}
+
 func (c *Client) newRequest(method, path string) (*http.Request, error) {
 	u := &url.URL{Path: path}
 	dest := c.base.ResolveReference(u)

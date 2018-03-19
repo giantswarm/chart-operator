@@ -21,24 +21,32 @@ func (a *apprMock) GetReleaseVersion(customObject v1alpha1.ChartConfig) (string,
 	return a.defaultReleaseVersion, nil
 }
 
+func (a *apprMock) PullChartTarball(v1alpha1.ChartConfig) (string, error) {
+	return "", nil
+}
+
 type helmMock struct {
 	defaultReleaseContent *helm.ReleaseContent
 	defaultReleaseHistory *helm.ReleaseHistory
 	defaultError          error
 }
 
-func (a *helmMock) GetReleaseContent(customObject v1alpha1.ChartConfig) (*helm.ReleaseContent, error) {
-	if a.defaultError != nil {
-		return nil, a.defaultError
+func (h *helmMock) GetReleaseContent(customObject v1alpha1.ChartConfig) (*helm.ReleaseContent, error) {
+	if h.defaultError != nil {
+		return nil, h.defaultError
 	}
 
-	return a.defaultReleaseContent, nil
+	return h.defaultReleaseContent, nil
 }
 
-func (a *helmMock) GetReleaseHistory(customObject v1alpha1.ChartConfig) (*helm.ReleaseHistory, error) {
-	if a.defaultError != nil {
-		return nil, a.defaultError
+func (h *helmMock) GetReleaseHistory(customObject v1alpha1.ChartConfig) (*helm.ReleaseHistory, error) {
+	if h.defaultError != nil {
+		return nil, h.defaultError
 	}
 
-	return a.defaultReleaseHistory, nil
+	return h.defaultReleaseHistory, nil
+}
+
+func (h *helmMock) InstallFromTarball(path string) error {
+	return nil
 }
