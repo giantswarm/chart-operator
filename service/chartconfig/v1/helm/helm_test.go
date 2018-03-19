@@ -153,8 +153,8 @@ func Test_GetReleaseHistory(t *testing.T) {
 				}),
 			},
 			expectedHistory: &ReleaseHistory{
-				Name:           "chart-operator",
-				ReleaseVersion: "0.1.0",
+				Name:    "chart-operator",
+				Version: "0.1.0",
 			},
 			errorMatcher: nil,
 		},
@@ -181,8 +181,8 @@ func Test_GetReleaseHistory(t *testing.T) {
 				}),
 			},
 			expectedHistory: &ReleaseHistory{
-				Name:           "chart-operator",
-				ReleaseVersion: "1.0.0-rc1",
+				Name:    "chart-operator",
+				Version: "1.0.0-rc1",
 			},
 			errorMatcher: nil,
 		},

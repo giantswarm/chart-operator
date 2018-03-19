@@ -1,6 +1,7 @@
 package chart
 
 import (
+	"reflect"
 	"testing"
 )
 
@@ -50,7 +51,7 @@ func Test_toChartState(t *testing.T) {
 				t.Fatalf("error == %#v, want matching", err)
 			}
 
-			if result != tc.expectedState {
+			if !reflect.DeepEqual(result, tc.expectedState) {
 				t.Fatalf("ChartState == %q, want %q", result, tc.expectedState)
 			}
 		})
