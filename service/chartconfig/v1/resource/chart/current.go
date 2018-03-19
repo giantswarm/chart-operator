@@ -5,6 +5,7 @@ import (
 
 	"github.com/giantswarm/microerror"
 
+	"github.com/giantswarm/chart-operator/service/chartconfig/v1/helm"
 	"github.com/giantswarm/chart-operator/service/chartconfig/v1/key"
 )
 
@@ -15,11 +16,19 @@ func (r *Resource) GetCurrentState(ctx context.Context, obj interface{}) (interf
 	}
 
 	releaseContent, err := r.helmClient.GetReleaseContent(customObject)
+	if helm.IsReleaseNotFound(err) {
+		// Fall through.
+		return &ChartState{}, nil
+	}
 	if err != nil {
 		return nil, microerror.Mask(err)
 	}
 
 	releaseHistory, err := r.helmClient.GetReleaseHistory(customObject)
+	if helm.IsReleaseNotFound(err) {
+		// Fall through.
+		return &ChartState{}, nil
+	}
 	if err != nil {
 		return nil, microerror.Mask(err)
 	}
