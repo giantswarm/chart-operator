@@ -117,6 +117,6 @@ func TestHelmGetReleaseContent(t *testing.T) {
 	}
 
 	if actual != nil {
-		t.Errorf("release content didn't match expected, want %q, got %q", expected, actual)
+		t.Errorf("release content didn't match expected, want %q, got %q", nil, actual)
 	}
 }
