@@ -12,6 +12,7 @@ import (
 	"github.com/giantswarm/micrologger"
 
 	"github.com/giantswarm/chart-operator/service/chartconfig/v1/appr"
+	"github.com/giantswarm/chart-operator/service/chartconfig/v1/helm"
 )
 
 var (
@@ -80,5 +81,43 @@ func TestApprGetReleaseVersion(t *testing.T) {
 
 	if expected != actual {
 		t.Errorf("release didn't match expected, want %q, got %q", expected, actual)
+	}
+}
+
+func TestHelmGetReleaseContent(t *testing.T) {
+	l, err := micrologger.New(micrologger.Config{})
+	if err != nil {
+		t.Errorf("could not create logger %v", err)
+	}
+
+	c := helm.Config{
+		Logger: l,
+
+		Address: "http://localhost:44134",
+	}
+
+	a, err := helm.New(c)
+	if err != nil {
+		t.Errorf("could not create hlm %v", err)
+	}
+
+	customObject := v1alpha1.ChartConfig{
+		Spec: v1alpha1.ChartConfigSpec{
+			Chart: v1alpha1.ChartConfigSpecChart{
+				Name:    "test-chart",
+				Channel: "3-2-beta",
+			},
+		},
+	}
+
+	// Chart not installed so expect nil content and a ReleaseNotFound error.
+	expected := nil
+	actual, err := a.GetReleaseContent(customObject)
+	if !helm.IsReleaseNotFound(err) {
+		t.Errorf("could not get release %v", err)
+	}
+
+	if expected != actual {
+		t.Errorf("release content didn't match expected, want %q, got %q", expected, actual)
 	}
 }
