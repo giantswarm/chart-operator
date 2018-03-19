@@ -111,13 +111,12 @@ func TestHelmGetReleaseContent(t *testing.T) {
 	}
 
 	// Chart not installed so expect nil content and a ReleaseNotFound error.
-	expected := nil
 	actual, err := a.GetReleaseContent(customObject)
 	if !helm.IsReleaseNotFound(err) {
 		t.Errorf("could not get release %v", err)
 	}
 
-	if expected != actual {
+	if actual != nil {
 		t.Errorf("release content didn't match expected, want %q, got %q", expected, actual)
 	}
 }
