@@ -17,17 +17,14 @@ func (r *Resource) GetCurrentState(ctx context.Context, obj interface{}) (interf
 
 	releaseContent, err := r.helmClient.GetReleaseContent(customObject)
 	if helm.IsReleaseNotFound(err) {
-		// Fall through.
-		return &ChartState{}, nil
+		// Return early as release is not installed.
+		return nil, nil
 	} else if err != nil {
 		return nil, microerror.Mask(err)
 	}
 
 	releaseHistory, err := r.helmClient.GetReleaseHistory(customObject)
-	if helm.IsReleaseNotFound(err) {
-		// Fall through.
-		return &ChartState{}, nil
-	} else if err != nil {
+	if err != nil {
 		return nil, microerror.Mask(err)
 	}
 
