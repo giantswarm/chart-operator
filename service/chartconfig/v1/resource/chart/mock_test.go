@@ -10,11 +10,11 @@ import (
 
 type apprMock struct {
 	defaultReleaseVersion string
-	expectedError         bool
+	defaultError          bool
 }
 
 func (a *apprMock) GetReleaseVersion(customObject v1alpha1.ChartConfig) (string, error) {
-	if a.expectedError {
+	if a.defaultError {
 		return "", fmt.Errorf("error getting default release")
 	}
 
@@ -24,20 +24,20 @@ func (a *apprMock) GetReleaseVersion(customObject v1alpha1.ChartConfig) (string,
 type helmMock struct {
 	defaultReleaseContent *helm.ReleaseContent
 	defaultReleaseHistory *helm.ReleaseHistory
-	expectedError         bool
+	defaultError          error
 }
 
 func (a *helmMock) GetReleaseContent(customObject v1alpha1.ChartConfig) (*helm.ReleaseContent, error) {
-	if a.expectedError {
-		return nil, fmt.Errorf("error getting release content")
+	if a.defaultError != nil {
+		return nil, a.defaultError
 	}
 
 	return a.defaultReleaseContent, nil
 }
 
 func (a *helmMock) GetReleaseHistory(customObject v1alpha1.ChartConfig) (*helm.ReleaseHistory, error) {
-	if a.expectedError {
-		return nil, fmt.Errorf("error getting release history")
+	if a.defaultError != nil {
+		return nil, a.defaultError
 	}
 
 	return a.defaultReleaseHistory, nil

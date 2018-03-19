@@ -2,6 +2,7 @@ package chart
 
 import (
 	"context"
+	"fmt"
 	"reflect"
 	"testing"
 
@@ -18,6 +19,7 @@ func Test_CurrentState(t *testing.T) {
 		obj            *v1alpha1.ChartConfig
 		releaseContent *helm.ReleaseContent
 		releaseHistory *helm.ReleaseHistory
+		returnedError  error
 		expectedState  ChartState
 		expectedError  bool
 	}{
@@ -88,7 +90,7 @@ func Test_CurrentState(t *testing.T) {
 			},
 		},
 		{
-			name: "case 2: error expected",
+			name: "case 2: empty state when error for no release present",
 			obj: &v1alpha1.ChartConfig{
 				Spec: v1alpha1.ChartConfigSpec{
 					Chart: v1alpha1.ChartConfigSpecChart{
@@ -100,6 +102,22 @@ func Test_CurrentState(t *testing.T) {
 			},
 			releaseContent: &helm.ReleaseContent{},
 			releaseHistory: &helm.ReleaseHistory{},
+			returnedError:  fmt.Errorf("No such release: missing-operator"),
+		},
+		{
+			name: "case 3: unexpected error",
+			obj: &v1alpha1.ChartConfig{
+				Spec: v1alpha1.ChartConfigSpec{
+					Chart: v1alpha1.ChartConfigSpecChart{
+						Name:    "quay.io/giantswarm/chart-operator-chart",
+						Channel: "0.1-beta",
+						Release: "missing-operator",
+					},
+				},
+			},
+			releaseContent: &helm.ReleaseContent{},
+			releaseHistory: &helm.ReleaseHistory{},
+			returnedError:  fmt.Errorf("Unexpected error"),
 			expectedError:  true,
 		},
 	}
@@ -107,9 +125,9 @@ func Test_CurrentState(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			helmClient := &helmMock{
-				expectedError:         tc.expectedError,
 				defaultReleaseContent: tc.releaseContent,
 				defaultReleaseHistory: tc.releaseHistory,
+				defaultError:          tc.returnedError,
 			}
 
 			c := Config{
@@ -126,7 +144,7 @@ func Test_CurrentState(t *testing.T) {
 
 			result, err := r.GetCurrentState(context.TODO(), tc.obj)
 			switch {
-			case err != nil && tc.expectedError == false:
+			case err != nil && !tc.expectedError:
 				t.Fatalf("error == %#v, want nil", err)
 			case err == nil && tc.expectedError:
 				t.Fatalf("error == nil, want non-nil")

@@ -41,7 +41,7 @@ func Test_DesiredState(t *testing.T) {
 		defaultReleaseVersion: "0.1.2",
 	}
 	helmClient := &helmMock{
-		expectedError: false,
+		defaultError: nil,
 	}
 
 	for _, tc := range testCases {
