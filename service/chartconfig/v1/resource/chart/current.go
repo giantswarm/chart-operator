@@ -19,8 +19,7 @@ func (r *Resource) GetCurrentState(ctx context.Context, obj interface{}) (interf
 	if helm.IsReleaseNotFound(err) {
 		// Fall through.
 		return &ChartState{}, nil
-	}
-	if err != nil {
+	} else if err != nil {
 		return nil, microerror.Mask(err)
 	}
 
@@ -28,8 +27,7 @@ func (r *Resource) GetCurrentState(ctx context.Context, obj interface{}) (interf
 	if helm.IsReleaseNotFound(err) {
 		// Fall through.
 		return &ChartState{}, nil
-	}
-	if err != nil {
+	} else if err != nil {
 		return nil, microerror.Mask(err)
 	}
 
