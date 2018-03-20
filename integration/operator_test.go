@@ -7,7 +7,6 @@ import (
 	"os"
 	"testing"
 
-	"github.com/giantswarm/apiextensions/pkg/apis/core/v1alpha1"
 	"github.com/giantswarm/e2e-harness/pkg/framework"
 	"github.com/giantswarm/micrologger"
 
@@ -63,17 +62,8 @@ func TestGetReleaseVersion(t *testing.T) {
 		t.Errorf("could not create appr %v", err)
 	}
 
-	customObject := v1alpha1.ChartConfig{
-		Spec: v1alpha1.ChartConfigSpec{
-			Chart: v1alpha1.ChartConfigSpecChart{
-				Name:    "test-chart",
-				Channel: "3-2-beta",
-			},
-		},
-	}
-
 	expected := "3.2.1"
-	actual, err := a.GetReleaseVersion(customObject)
+	actual, err := a.GetReleaseVersion("test-chart", "3-2-beta")
 	if err != nil {
 		t.Errorf("could not get release %v", err)
 	}

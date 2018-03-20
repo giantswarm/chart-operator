@@ -8,21 +8,17 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/giantswarm/apiextensions/pkg/apis/core/v1alpha1"
 	"github.com/giantswarm/micrologger/microloggertest"
 
 	"github.com/giantswarm/chart-operator/service/chartconfig/v1/appr"
 )
 
 func Test_GetReleaseVersion(t *testing.T) {
-	customObject := v1alpha1.ChartConfig{
-		Spec: v1alpha1.ChartConfigSpec{
-			Chart: v1alpha1.ChartConfigSpecChart{
-				Name:    "chartname",
-				Channel: "3-2-beta",
-			},
-		},
-	}
+	const (
+		name    = "chartname"
+		channel = "3-2-beta"
+	)
+
 	tcs := []struct {
 		description     string
 		h               func(w http.ResponseWriter, r *http.Request)
@@ -84,7 +80,7 @@ func Test_GetReleaseVersion(t *testing.T) {
 				t.Errorf("could not create appr %v", err)
 			}
 
-			r, err := a.GetReleaseVersion(customObject)
+			r, err := a.GetReleaseVersion(name, channel)
 			switch {
 			case err != nil && !tc.expectedError:
 				t.Errorf("failed to get release %v", err)

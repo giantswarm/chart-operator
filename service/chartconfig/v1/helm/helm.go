@@ -103,3 +103,9 @@ func (c *Client) GetReleaseHistory(customObject v1alpha1.ChartConfig) (*ReleaseH
 
 	return history, nil
 }
+
+// InstallFromTarball installs a chart packaged in the given tarball.
+// TODO
+func (c *Client) InstallFromTarball(path string) error {
+	return nil
+}
