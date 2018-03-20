@@ -4,8 +4,9 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/giantswarm/chart-operator/service/chartconfig/v1/key"
 	"github.com/giantswarm/microerror"
+
+	"github.com/giantswarm/chart-operator/service/chartconfig/v1/key"
 )
 
 func (r *Resource) ApplyCreateChange(ctx context.Context, obj, createChange interface{}) error {
@@ -43,21 +44,21 @@ func (r *Resource) ApplyCreateChange(ctx context.Context, obj, createChange inte
 func (r *Resource) newCreateChange(ctx context.Context, obj, currentState, desiredState interface{}) (interface{}, error) {
 	currentChartState, err := toChartState(currentState)
 	if err != nil {
-		return ChartState{}, microerror.Mask(err)
+		return nil, microerror.Mask(err)
 	}
 	desiredChartState, err := toChartState(desiredState)
 	if err != nil {
-		return ChartState{}, microerror.Mask(err)
+		return nil, microerror.Mask(err)
 	}
 
 	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("finding out if the %s chart has to be created", desiredChartState.ChartName))
 
-	createState := ChartState{}
+	createState := &ChartState{}
 
 	if currentChartState.ChartName == "" || desiredChartState.ChartName != currentChartState.ChartName {
 		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("the %s chart needs to be created", desiredChartState.ChartName))
 
-		createState = desiredChartState
+		createState = &desiredChartState
 	} else {
 		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("the %s chart does not need to be created", desiredChartState.ChartName))
 	}

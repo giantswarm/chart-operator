@@ -83,7 +83,7 @@ func Test_Resource_Chart_newCreate(t *testing.T) {
 			if err != nil {
 				t.Fatal("expected", nil, "got", err)
 			}
-			createChange, ok := result.(ChartState)
+			createChange, ok := result.(*ChartState)
 			if !ok {
 				t.Fatalf("expected '%T', got '%T'", createChange, result)
 			}
