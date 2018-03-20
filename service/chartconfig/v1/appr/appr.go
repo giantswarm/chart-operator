@@ -9,8 +9,6 @@ import (
 	"path"
 	"time"
 
-	"github.com/giantswarm/apiextensions/pkg/apis/core/v1alpha1"
-	"github.com/giantswarm/chart-operator/service/chartconfig/v1/key"
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/micrologger"
 )
@@ -67,11 +65,8 @@ func New(config Config) (*Client, error) {
 
 // GetReleaseVersion queries CNR for the release version of the chart
 // represented by the given custom object (including channel info).
-func (c *Client) GetReleaseVersion(customObject v1alpha1.ChartConfig) (string, error) {
-	chartName := key.ChartName(customObject)
-	channelName := key.ChannelName(customObject)
-
-	p := path.Join("packages", c.organization, chartName, "channels", channelName)
+func (c *Client) GetReleaseVersion(name, channel string) (string, error) {
+	p := path.Join("packages", c.organization, name, "channels", channel)
 
 	req, err := c.newRequest("GET", p)
 	if err != nil {
@@ -91,7 +86,7 @@ func (c *Client) GetReleaseVersion(customObject v1alpha1.ChartConfig) (string, e
 // PullChartTarball downloads a tarball with the chart described by the given
 // custom object, returning the file path.
 // TODO
-func (c *Client) PullChartTarball(customObject v1alpha1.ChartConfig) (string, error) {
+func (c *Client) PullChartTarball(name, channel string) (string, error) {
 	return "", nil
 }
 

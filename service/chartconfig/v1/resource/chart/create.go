@@ -20,8 +20,10 @@ func (r *Resource) ApplyCreateChange(ctx context.Context, obj, createChange inte
 
 	if chartState.ChartName != "" {
 		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("creating chart %s", chartState.ChartName))
+		name := key.ChartName(customObject)
+		channel := key.ChannelName(customObject)
 
-		tarballPath, err := r.apprClient.PullChartTarball(customObject)
+		tarballPath, err := r.apprClient.PullChartTarball(name, channel)
 		if err != nil {
 			return microerror.Mask(err)
 		}
