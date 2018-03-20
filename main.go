@@ -93,17 +93,17 @@ func mainWithError() (err error) {
 	// Create a new microkit command that manages operator daemon.
 	var newCommand command.Command
 	{
-		commandConfig := command.DefaultConfig()
+		c := command.Config{
+			Logger:        newLogger,
+			ServerFactory: newServerFactory,
 
-		commandConfig.Logger = newLogger
-		commandConfig.ServerFactory = newServerFactory
+			Description: description,
+			GitCommit:   notAvailable,
+			Name:        name,
+			Source:      source,
+		}
 
-		commandConfig.Description = description
-		commandConfig.GitCommit = notAvailable
-		commandConfig.Name = name
-		commandConfig.Source = source
-
-		newCommand, err = command.New(commandConfig)
+		newCommand, err = command.New(c)
 		if err != nil {
 			return microerror.Maskf(err, "command.New")
 		}
