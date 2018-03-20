@@ -54,7 +54,7 @@ func New(config Config) (microserver.Server, error) {
 		}
 	}
 
-	newServer := &server{
+	newServer := &Server{
 		// Dependencies
 		logger: config.Logger,
 
@@ -75,7 +75,7 @@ func New(config Config) (microserver.Server, error) {
 	return newServer, nil
 }
 
-type server struct {
+type Server struct {
 	// Dependencies
 	logger micrologger.Logger
 
@@ -86,17 +86,17 @@ type server struct {
 	shutdownOnce sync.Once
 }
 
-func (s *server) Boot() {
+func (s *Server) Boot() {
 	s.bootOnce.Do(func() {
 		// Insert here custom boot logic for server/endpoint if needed.
 	})
 }
 
-func (s *server) Config() microserver.Config {
+func (s *Server) Config() microserver.Config {
 	return s.config
 }
 
-func (s *server) Shutdown() {
+func (s *Server) Shutdown() {
 	s.shutdownOnce.Do(func() {
 		// Insert here custom shutdown logic for server/endpoint if needed.
 	})
