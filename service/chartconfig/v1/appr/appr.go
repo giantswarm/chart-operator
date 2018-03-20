@@ -91,7 +91,7 @@ func (c *Client) GetReleaseVersion(customObject v1alpha1.ChartConfig) (string, e
 // PullChartTarball downloads a tarball with the chart described by the given
 // custom object, returning the file path.
 // TODO
-func PullChartTarball(customObject v1alpha1.ChartConfig) (string, error) {
+func (c *Client) PullChartTarball(customObject v1alpha1.ChartConfig) (string, error) {
 	return "", nil
 }
 
