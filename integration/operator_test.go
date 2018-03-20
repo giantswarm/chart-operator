@@ -63,7 +63,7 @@ func TestGetReleaseVersion(t *testing.T) {
 	}
 
 	expected := "3.2.1"
-	actual, err := a.GetReleaseVersion("test-chart", "3.2.1")
+	actual, err := a.GetReleaseVersion("test-chart", "3-2-beta")
 	if err != nil {
 		t.Errorf("could not get release %v", err)
 	}
