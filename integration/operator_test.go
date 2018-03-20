@@ -14,7 +14,7 @@ import (
 )
 
 var (
-	f *framework.Framework
+	f *framework.Guest
 )
 
 // TestMain allows us to have common setup and teardown steps that are run
