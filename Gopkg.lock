@@ -87,16 +87,16 @@
     "pkg/clientset/versioned/typed/core/v1alpha1",
     "pkg/clientset/versioned/typed/provider/v1alpha1"
   ]
-  revision = "c1a92d48aaa556a7b411615129e56f0b3338c199"
+  revision = "6379f6848b80a4cdf0b5071a6bba51bed1d53c91"
 
 [[projects]]
+  branch = "master"
   name = "github.com/giantswarm/e2e-harness"
   packages = [
     "pkg/framework",
     "pkg/harness"
   ]
-  revision = "87355014765dfa800271c36c042ab0cf00b0a2cb"
-  version = "8735501"
+  revision = "b6f3fbcebf6ed04a4b6ef62b1fd4d14920cab704"
 
 [[projects]]
   branch = "master"
@@ -134,12 +134,9 @@
     "command/version",
     "flag",
     "server",
-    "tls",
-    "transaction",
-    "transaction/context/id",
-    "transaction/context/tracked"
+    "tls"
   ]
-  revision = "b700edbe027ced8bab334c54e3c07aba17098472"
+  revision = "72abbaa63827895b5e4964983814e7cdc5353474"
 
 [[projects]]
   branch = "master"
@@ -150,15 +147,6 @@
     "microloggertest"
   ]
   revision = "2aaea11da0707ebb7f9fbabb07028a37b00efc16"
-
-[[projects]]
-  branch = "master"
-  name = "github.com/giantswarm/microstorage"
-  packages = [
-    ".",
-    "memory"
-  ]
-  revision = "4411a6307c6b844b7f9e68aaba37407b41b1c4d7"
 
 [[projects]]
   branch = "master"
@@ -176,13 +164,13 @@
     "framework/resource/retryresource",
     "informer"
   ]
-  revision = "75ba7e3afe272731ffb693bad7920c9bf2baa8d7"
+  revision = "d2b591431f19bc9035bafce284b903eafe85ae80"
 
 [[projects]]
   branch = "master"
   name = "github.com/giantswarm/versionbundle"
   packages = ["."]
-  revision = "9172db5125f7c75ba988e26ed6571151d43c3565"
+  revision = "011ad2d98cb7db5c98e204713aac338d6a90f3b4"
 
 [[projects]]
   name = "github.com/go-kit/kit"
@@ -337,6 +325,7 @@
     ".",
     "hcl/ast",
     "hcl/parser",
+    "hcl/printer",
     "hcl/scanner",
     "hcl/strconv",
     "hcl/token",
@@ -367,8 +356,8 @@
 [[projects]]
   name = "github.com/json-iterator/go"
   packages = ["."]
-  revision = "3353055b2a1a5ae1b6a8dfde887a524e7088f3a2"
-  version = "1.1.2"
+  revision = "ca39e5af3ece67bbcda3d0f4f56a8e24d9f2dad4"
+  version = "1.1.3"
 
 [[projects]]
   branch = "master"
@@ -402,7 +391,7 @@
     "jlexer",
     "jwriter"
   ]
-  revision = "f594efddfa171111dc4349cd6e78e8f61dc7936f"
+  revision = "517203d186eb343d3df4068565cc0446b450d2c4"
 
 [[projects]]
   name = "github.com/matttproud/golang_protobuf_extensions"
@@ -453,7 +442,7 @@
     "prometheus",
     "prometheus/promhttp"
   ]
-  revision = "c3324c1198cf3374996e9d3098edd46a6b55afc9"
+  revision = "d49167c4b9f3c4451707560c5c71471ff5291aaa"
 
 [[projects]]
   branch = "master"
@@ -518,8 +507,8 @@
 [[projects]]
   name = "github.com/spf13/viper"
   packages = ["."]
-  revision = "25b30aa063fc18e48662b86996252eabdcf2f0c7"
-  version = "v1.0.0"
+  revision = "b5e8006cbee93ec955a89ab31e0e3ce3204f3736"
+  version = "v1.0.2"
 
 [[projects]]
   name = "github.com/tylerb/graceful"
@@ -531,7 +520,7 @@
   branch = "master"
   name = "golang.org/x/crypto"
   packages = ["ssh/terminal"]
-  revision = "c4a91bd4f524f10d064139674cf55852e055ad01"
+  revision = "c3a3ad6d03f7a915c0f7e194b7152974bb73d287"
 
 [[projects]]
   branch = "master"
@@ -546,13 +535,13 @@
     "publicsuffix",
     "trace"
   ]
-  revision = "892bf7b0c6e2f93b51166bf3882e50277fa5afc6"
+  revision = "6078986fec03a1dcc236c34816c71b0e05018fda"
 
 [[projects]]
   branch = "master"
   name = "golang.org/x/sync"
   packages = ["errgroup"]
-  revision = "fd80eb99c8f653c847d294a001bdf2a3a6f768f5"
+  revision = "1d60e4601c6fd243af51cc01ddf169918a5407ca"
 
 [[projects]]
   branch = "master"
@@ -561,7 +550,7 @@
     "unix",
     "windows"
   ]
-  revision = "8c0ece68c28377f4c326d85b94f8df0dace46f80"
+  revision = "7ceb54c8418b8f9cdf0177b511d5cbb06e9fae39"
 
 [[projects]]
   name = "golang.org/x/text"
@@ -589,7 +578,7 @@
   branch = "master"
   name = "google.golang.org/genproto"
   packages = ["googleapis/rpc/status"]
-  revision = "df60624c1e9b9d2973e889c7a1cff73155da81c4"
+  revision = "f8c8703595236ae70fdf8789ecb656ea0bcdcf46"
 
 [[projects]]
   name = "google.golang.org/grpc"
@@ -827,6 +816,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "dc60a0c47ef508905bfb88011067074ee96b8b479cd2b52d5f343cdea1cfe8f7"
+  inputs-digest = "8f1d2029d701d6692c1f08bfda113af49aadef8c16d57fc9e122650cc504e7bb"
   solver-name = "gps-cdcl"
   solver-version = 1

@@ -58,10 +58,6 @@ required = [
   name = "github.com/giantswarm/operatorkit"
 
 [[constraint]]
-  name = "github.com/go-kit/kit"
-  version = "0.6.0"
-
-[[constraint]]
   name = "github.com/spf13/viper"
   version = "1.0.0"
 
@@ -77,10 +73,10 @@ required = [
   name = "k8s.io/client-go"
   version = "kubernetes-1.8.5"
 
-[prune]
-  go-tests = true
-  unused-packages = true
-
 [[constraint]]
   name = "k8s.io/helm"
   version = "2.8.2"
+
+[prune]
+  go-tests = true
+  unused-packages = true
