@@ -8,6 +8,7 @@ import (
 	"github.com/giantswarm/micrologger"
 	"github.com/giantswarm/operatorkit/client/k8srestconfig"
 	"github.com/giantswarm/operatorkit/framework"
+	"github.com/spf13/afero"
 	"github.com/spf13/viper"
 	apiextensionsclient "k8s.io/apiextensions-apiserver/pkg/client/clientset/clientset"
 	"k8s.io/client-go/kubernetes"
@@ -87,9 +88,11 @@ func New(config Config) (*Service, error) {
 		return nil, microerror.Mask(err)
 	}
 
+	fs := afero.NewOsFs()
 	var apprClient *appr.Client
 	{
 		c := appr.Config{
+			Fs:     fs,
 			Logger: config.Logger,
 
 			Address:      config.Viper.GetString(config.Flag.Service.CNR.Address),

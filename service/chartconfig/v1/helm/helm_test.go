@@ -200,3 +200,63 @@ func Test_GetReleaseHistory(t *testing.T) {
 		})
 	}
 }
+
+func Test_InstallRelease(t *testing.T) {
+	testCases := []struct {
+		description   string
+		namespace     string
+		releases      []*helmrelease.Release
+		expectedError bool
+	}{
+		{
+			description: "basic install, empty releases",
+			namespace:   "default",
+			releases:    []*helmrelease.Release{},
+		},
+		{
+			description: "other release in same namespace",
+			namespace:   "default",
+			releases: []*helmrelease.Release{
+				helmclient.ReleaseMock(&helmclient.MockReleaseOptions{
+					Name:      "my-chart",
+					Namespace: "default",
+				}),
+			},
+		},
+		{
+			description: "same release in same namespace",
+			namespace:   "default",
+			releases: []*helmrelease.Release{
+				helmclient.ReleaseMock(&helmclient.MockReleaseOptions{
+					Name:      "test-chart",
+					Namespace: "default",
+				}),
+			},
+			expectedError: true,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.description, func(t *testing.T) {
+			helm := Client{
+				helmClient: &helmclient.FakeClient{
+					Rels: tc.releases,
+				},
+				logger: microloggertest.New(),
+			}
+			// helm fake client does not actually use the tarball
+			err := helm.InstallFromTarball("/path", tc.namespace, helmclient.ReleaseName("test-chart"))
+
+			switch {
+			case err == nil && !tc.expectedError:
+				// correct; carry on
+			case err != nil && !tc.expectedError:
+				t.Fatalf("error == %#v, want nil", err)
+			case err == nil && tc.expectedError:
+				t.Fatalf("error == nil, want non-nil")
+			case !tc.expectedError:
+				t.Fatalf("error == %#v, want matching", err)
+			}
+		})
+	}
+}

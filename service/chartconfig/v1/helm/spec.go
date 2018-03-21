@@ -1,5 +1,7 @@
 package helm
 
+import "k8s.io/helm/pkg/helm"
+
 // Interface describes the methods provided by the helm client.
 type Interface interface {
 	// GetReleaseContent gets the current status of the Helm Release. The
@@ -11,7 +13,7 @@ type Interface interface {
 	// Chart is installed.
 	GetReleaseHistory(releaseName string) (*ReleaseHistory, error)
 	// InstallFromTarball installs a Helm Chart packaged in the given tarball.
-	InstallFromTarball(path string) error
+	InstallFromTarball(path, ns string, options ...helm.InstallOption) error
 }
 
 // ReleaseContent returns status information about a Helm Release.

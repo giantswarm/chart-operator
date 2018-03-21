@@ -3,6 +3,8 @@ package chart
 import (
 	"fmt"
 
+	helmclient "k8s.io/helm/pkg/helm"
+
 	"github.com/giantswarm/chart-operator/service/chartconfig/v1/helm"
 )
 
@@ -45,6 +47,6 @@ func (h *helmMock) GetReleaseHistory(releaseName string) (*helm.ReleaseHistory, 
 	return h.defaultReleaseHistory, nil
 }
 
-func (h *helmMock) InstallFromTarball(path string) error {
+func (h *helmMock) InstallFromTarball(path, ns string, options ...helmclient.InstallOption) error {
 	return nil
 }

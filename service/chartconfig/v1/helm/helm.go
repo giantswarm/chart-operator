@@ -101,7 +101,11 @@ func (c *Client) GetReleaseHistory(releaseName string) (*ReleaseHistory, error) 
 }
 
 // InstallFromTarball installs a chart packaged in the given tarball.
-// TODO
-func (c *Client) InstallFromTarball(path string) error {
+func (c *Client) InstallFromTarball(path, ns string, options ...helmclient.InstallOption) error {
+	_, err := c.helmClient.InstallRelease(path, ns, options...)
+	if err != nil {
+		return microerror.Mask(err)
+	}
+
 	return nil
 }
