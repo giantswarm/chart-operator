@@ -1,11 +1,16 @@
 package helm
 
-import "github.com/giantswarm/apiextensions/pkg/apis/core/v1alpha1"
-
 // Interface describes the methods provided by the helm client.
 type Interface interface {
-	GetReleaseContent(v1alpha1.ChartConfig) (*ReleaseContent, error)
-	GetReleaseHistory(v1alpha1.ChartConfig) (*ReleaseHistory, error)
+	// GetReleaseContent gets the current status of the Helm Release. The
+	// releaseName is the name of the Helm Release that is set when the Chart
+	// is installed.
+	GetReleaseContent(releaseName string) (*ReleaseContent, error)
+	// GetReleaseHistory gets the current installed version of the Helm Release.
+	// The releaseName is the name of the Helm Release that is set when the Helm
+	// Chart is installed.
+	GetReleaseHistory(releaseName string) (*ReleaseHistory, error)
+	// InstallFromTarball installs a Helm Chart packaged in the given tarball.
 	InstallFromTarball(path string) error
 }
 

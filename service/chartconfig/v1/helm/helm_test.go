@@ -4,7 +4,6 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/giantswarm/apiextensions/pkg/apis/core/v1alpha1"
 	"github.com/giantswarm/micrologger/microloggertest"
 	helmclient "k8s.io/helm/pkg/helm"
 	helmchart "k8s.io/helm/pkg/proto/hapi/chart"
@@ -14,22 +13,14 @@ import (
 func Test_GetReleaseContent(t *testing.T) {
 	testCases := []struct {
 		description     string
-		obj             v1alpha1.ChartConfig
+		releaseName     string
 		releases        []*helmrelease.Release
 		expectedContent *ReleaseContent
 		errorMatcher    func(error) bool
 	}{
 		{
 			description: "case 0: basic match with deployed status",
-			obj: v1alpha1.ChartConfig{
-				Spec: v1alpha1.ChartConfigSpec{
-					Chart: v1alpha1.ChartConfigSpecChart{
-						Name:    "quay.io/giantswarm/chart-operator-chart",
-						Channel: "0.1-beta",
-						Release: "chart-operator",
-					},
-				},
-			},
+			releaseName: "chart-operator",
 			releases: []*helmrelease.Release{
 				helmclient.ReleaseMock(&helmclient.MockReleaseOptions{
 					Name:      "chart-operator",
@@ -48,15 +39,7 @@ func Test_GetReleaseContent(t *testing.T) {
 		},
 		{
 			description: "case 1: basic match with failed status",
-			obj: v1alpha1.ChartConfig{
-				Spec: v1alpha1.ChartConfigSpec{
-					Chart: v1alpha1.ChartConfigSpecChart{
-						Name:    "quay.io/giantswarm/chart-operator-chart",
-						Channel: "0.1-beta",
-						Release: "chart-operator",
-					},
-				},
-			},
+			releaseName: "chart-operator",
 			releases: []*helmrelease.Release{
 				helmclient.ReleaseMock(&helmclient.MockReleaseOptions{
 					Name:       "chart-operator",
@@ -75,15 +58,7 @@ func Test_GetReleaseContent(t *testing.T) {
 		},
 		{
 			description: "case 2: chart not found",
-			obj: v1alpha1.ChartConfig{
-				Spec: v1alpha1.ChartConfigSpec{
-					Chart: v1alpha1.ChartConfigSpecChart{
-						Name:    "missing-chart",
-						Channel: "stable",
-						Release: "missing",
-					},
-				},
-			},
+			releaseName: "missing",
 			releases: []*helmrelease.Release{
 				helmclient.ReleaseMock(&helmclient.MockReleaseOptions{
 					Name: "chart-operator",
@@ -102,7 +77,7 @@ func Test_GetReleaseContent(t *testing.T) {
 				},
 				logger: microloggertest.New(),
 			}
-			result, err := helm.GetReleaseContent(tc.obj)
+			result, err := helm.GetReleaseContent(tc.releaseName)
 
 			switch {
 			case err == nil && tc.errorMatcher == nil:
@@ -125,22 +100,14 @@ func Test_GetReleaseContent(t *testing.T) {
 func Test_GetReleaseHistory(t *testing.T) {
 	testCases := []struct {
 		description     string
-		obj             v1alpha1.ChartConfig
+		releaseName     string
 		releases        []*helmrelease.Release
 		expectedHistory *ReleaseHistory
 		errorMatcher    func(error) bool
 	}{
 		{
 			description: "case 0: basic match with version",
-			obj: v1alpha1.ChartConfig{
-				Spec: v1alpha1.ChartConfigSpec{
-					Chart: v1alpha1.ChartConfigSpecChart{
-						Name:    "quay.io/giantswarm/chart-operator-chart",
-						Channel: "0.1-beta",
-						Release: "chart-operator",
-					},
-				},
-			},
+			releaseName: "chart-operator",
 			releases: []*helmrelease.Release{
 				helmclient.ReleaseMock(&helmclient.MockReleaseOptions{
 					Name:      "chart-operator",
@@ -160,15 +127,7 @@ func Test_GetReleaseHistory(t *testing.T) {
 		},
 		{
 			description: "case 1: different version",
-			obj: v1alpha1.ChartConfig{
-				Spec: v1alpha1.ChartConfigSpec{
-					Chart: v1alpha1.ChartConfigSpecChart{
-						Name:    "quay.io/giantswarm/chart-operator-chart",
-						Channel: "0.1-beta",
-						Release: "chart-operator",
-					},
-				},
-			},
+			releaseName: "chart-operator",
 			releases: []*helmrelease.Release{
 				helmclient.ReleaseMock(&helmclient.MockReleaseOptions{
 					Name:      "chart-operator",
@@ -188,15 +147,7 @@ func Test_GetReleaseHistory(t *testing.T) {
 		},
 		{
 			description: "case 2: too many results",
-			obj: v1alpha1.ChartConfig{
-				Spec: v1alpha1.ChartConfigSpec{
-					Chart: v1alpha1.ChartConfigSpecChart{
-						Name:    "quay.io/giantswarm/chart-operator-chart",
-						Channel: "0.1-beta",
-						Release: "missing",
-					},
-				},
-			},
+			releaseName: "missing",
 			releases: []*helmrelease.Release{
 				helmclient.ReleaseMock(&helmclient.MockReleaseOptions{
 					Name:      "chart-operator",
@@ -230,7 +181,7 @@ func Test_GetReleaseHistory(t *testing.T) {
 				},
 				logger: microloggertest.New(),
 			}
-			result, err := helm.GetReleaseHistory(tc.obj)
+			result, err := helm.GetReleaseHistory(tc.releaseName)
 
 			switch {
 			case err == nil && tc.errorMatcher == nil:

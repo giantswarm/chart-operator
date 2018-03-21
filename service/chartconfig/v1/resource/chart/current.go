@@ -15,7 +15,8 @@ func (r *Resource) GetCurrentState(ctx context.Context, obj interface{}) (interf
 		return nil, microerror.Mask(err)
 	}
 
-	releaseContent, err := r.helmClient.GetReleaseContent(customObject)
+	releaseName := key.ReleaseName(customObject)
+	releaseContent, err := r.helmClient.GetReleaseContent(releaseName)
 	if helm.IsReleaseNotFound(err) {
 		// Return early as release is not installed.
 		return nil, nil
@@ -23,7 +24,7 @@ func (r *Resource) GetCurrentState(ctx context.Context, obj interface{}) (interf
 		return nil, microerror.Mask(err)
 	}
 
-	releaseHistory, err := r.helmClient.GetReleaseHistory(customObject)
+	releaseHistory, err := r.helmClient.GetReleaseHistory(releaseName)
 	if err != nil {
 		return nil, microerror.Mask(err)
 	}
@@ -31,7 +32,7 @@ func (r *Resource) GetCurrentState(ctx context.Context, obj interface{}) (interf
 	chartState := &ChartState{
 		ChartName:      key.ChartName(customObject),
 		ChannelName:    key.ChannelName(customObject),
-		ReleaseName:    key.ReleaseName(customObject),
+		ReleaseName:    releaseName,
 		ChartValues:    releaseContent.Values,
 		ReleaseStatus:  releaseContent.Status,
 		ReleaseVersion: releaseHistory.Version,

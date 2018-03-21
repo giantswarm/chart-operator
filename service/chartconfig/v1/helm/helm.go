@@ -1,13 +1,10 @@
 package helm
 
 import (
-	"github.com/giantswarm/apiextensions/pkg/apis/core/v1alpha1"
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/micrologger"
 	"k8s.io/helm/pkg/chartutil"
 	helmclient "k8s.io/helm/pkg/helm"
-
-	"github.com/giantswarm/chart-operator/service/chartconfig/v1/key"
 )
 
 const (
@@ -48,10 +45,9 @@ func New(config Config) (*Client, error) {
 }
 
 // GetReleaseContent gets the current status of the Helm Release including any
-// values provided when the chart was installed.
-func (c *Client) GetReleaseContent(customObject v1alpha1.ChartConfig) (*ReleaseContent, error) {
-	releaseName := key.ReleaseName(customObject)
-
+// values provided when the chart was installed. The releaseName is the name
+// of the Helm Release that is set when the Helm Chart is installed.
+func (c *Client) GetReleaseContent(releaseName string) (*ReleaseContent, error) {
 	resp, err := c.helmClient.ReleaseContent(releaseName)
 	if IsReleaseNotFound(err) {
 		return nil, microerror.Maskf(releaseNotFoundError, releaseName)
@@ -76,10 +72,10 @@ func (c *Client) GetReleaseContent(customObject v1alpha1.ChartConfig) (*ReleaseC
 }
 
 // GetReleaseHistory gets the current installed version of the Helm Release.
-func (c *Client) GetReleaseHistory(customObject v1alpha1.ChartConfig) (*ReleaseHistory, error) {
+// The releaseName is the name of the Helm Release that is set when the Helm
+// Chart is installed.
+func (c *Client) GetReleaseHistory(releaseName string) (*ReleaseHistory, error) {
 	var version string
-
-	releaseName := key.ReleaseName(customObject)
 
 	resp, err := c.helmClient.ReleaseHistory(releaseName, helmclient.WithMaxHistory(1))
 	if IsReleaseNotFound(err) {
