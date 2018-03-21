@@ -45,7 +45,8 @@ func New(config Config) (*Client, error) {
 }
 
 // GetReleaseContent gets the current status of the Helm Release including any
-// values provided when the chart was installed.
+// values provided when the chart was installed. The releaseName is the name
+// of the Helm Release that is set when the Helm Chart is installed.
 func (c *Client) GetReleaseContent(releaseName string) (*ReleaseContent, error) {
 	resp, err := c.helmClient.ReleaseContent(releaseName)
 	if IsReleaseNotFound(err) {
@@ -71,6 +72,8 @@ func (c *Client) GetReleaseContent(releaseName string) (*ReleaseContent, error) 
 }
 
 // GetReleaseHistory gets the current installed version of the Helm Release.
+// The releaseName is the name of the Helm Release that is set when the Helm
+// Chart is installed
 func (c *Client) GetReleaseHistory(releaseName string) (*ReleaseHistory, error) {
 	var version string
 
