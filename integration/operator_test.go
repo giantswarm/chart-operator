@@ -14,7 +14,7 @@ import (
 )
 
 var (
-	f *framework.Guest
+	f *framework.Host
 )
 
 // TestMain allows us to have common setup and teardown steps that are run
@@ -22,13 +22,13 @@ var (
 func TestMain(m *testing.M) {
 	var v int
 	var err error
-	f, err = framework.NewGuest()
+	f, err = framework.NewHost()
 	if err != nil {
 		log.Printf("unexpected error: %v\n", err)
 		os.Exit(1)
 	}
 
-	if err := f.SetUp(); err != nil {
+	if err := f.Setup(); err != nil {
 		log.Printf("unexpected error: %v\n", err)
 		v = 1
 	}
@@ -38,7 +38,7 @@ func TestMain(m *testing.M) {
 	}
 
 	if os.Getenv("KEEP_RESOURCES") != "true" {
-		f.TearDown()
+		f.Teardown()
 	}
 
 	os.Exit(v)
