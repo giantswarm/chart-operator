@@ -73,7 +73,7 @@ func (c *Client) GetReleaseContent(releaseName string) (*ReleaseContent, error) 
 
 // GetReleaseHistory gets the current installed version of the Helm Release.
 // The releaseName is the name of the Helm Release that is set when the Helm
-// Chart is installed
+// Chart is installed.
 func (c *Client) GetReleaseHistory(releaseName string) (*ReleaseHistory, error) {
 	var version string
 
