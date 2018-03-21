@@ -2,8 +2,15 @@ package helm
 
 // Interface describes the methods provided by the helm client.
 type Interface interface {
+	// GetReleaseContent gets the current status of the Helm Release. The
+	// releaseName is the name of the Helm Release that is set when the Chart
+	// is installed.
 	GetReleaseContent(releaseName string) (*ReleaseContent, error)
+	// GetReleaseHistory gets the current installed version of the Helm Release.
+	// The releaseName is the name of the Helm Release that is set when the Helm
+	// Chart is installed
 	GetReleaseHistory(releaseName string) (*ReleaseHistory, error)
+	// InstallFromTarball installs a Helm Chart packaged in the given tarball.
 	InstallFromTarball(path string) error
 }
 
