@@ -1,11 +1,9 @@
 package helm
 
-import "github.com/giantswarm/apiextensions/pkg/apis/core/v1alpha1"
-
 // Interface describes the methods provided by the helm client.
 type Interface interface {
-	GetReleaseContent(v1alpha1.ChartConfig) (*ReleaseContent, error)
-	GetReleaseHistory(v1alpha1.ChartConfig) (*ReleaseHistory, error)
+	GetReleaseContent(releaseName string) (*ReleaseContent, error)
+	GetReleaseHistory(releaseName string) (*ReleaseHistory, error)
 	InstallFromTarball(path string) error
 }
 

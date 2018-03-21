@@ -3,8 +3,6 @@ package chart
 import (
 	"fmt"
 
-	"github.com/giantswarm/apiextensions/pkg/apis/core/v1alpha1"
-
 	"github.com/giantswarm/chart-operator/service/chartconfig/v1/helm"
 )
 
@@ -31,7 +29,7 @@ type helmMock struct {
 	defaultError          error
 }
 
-func (h *helmMock) GetReleaseContent(customObject v1alpha1.ChartConfig) (*helm.ReleaseContent, error) {
+func (h *helmMock) GetReleaseContent(releaseName string) (*helm.ReleaseContent, error) {
 	if h.defaultError != nil {
 		return nil, h.defaultError
 	}
@@ -39,7 +37,7 @@ func (h *helmMock) GetReleaseContent(customObject v1alpha1.ChartConfig) (*helm.R
 	return h.defaultReleaseContent, nil
 }
 
-func (h *helmMock) GetReleaseHistory(customObject v1alpha1.ChartConfig) (*helm.ReleaseHistory, error) {
+func (h *helmMock) GetReleaseHistory(releaseName string) (*helm.ReleaseHistory, error) {
 	if h.defaultError != nil {
 		return nil, h.defaultError
 	}
