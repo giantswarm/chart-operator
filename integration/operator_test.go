@@ -9,6 +9,7 @@ import (
 
 	"github.com/giantswarm/e2e-harness/pkg/framework"
 	"github.com/giantswarm/micrologger"
+	"github.com/spf13/afero"
 
 	"github.com/giantswarm/chart-operator/service/chartconfig/v1/appr"
 )
@@ -51,6 +52,7 @@ func TestGetReleaseVersion(t *testing.T) {
 	}
 
 	c := appr.Config{
+		Fs:     afero.NewOsFs(),
 		Logger: l,
 
 		Address:      "http://localhost:5000",
