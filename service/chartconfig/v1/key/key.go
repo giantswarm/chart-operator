@@ -13,6 +13,10 @@ func ChannelName(customObject v1alpha1.ChartConfig) string {
 	return customObject.Spec.Chart.Channel
 }
 
+func Namespace(customObject v1alpha1.ChartConfig) string {
+	return customObject.Spec.Chart.Namespace
+}
+
 func ReleaseName(customObject v1alpha1.ChartConfig) string {
 	return customObject.Spec.Chart.Release
 }

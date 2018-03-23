@@ -11,10 +11,12 @@ import (
 
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/micrologger"
+	"github.com/spf13/afero"
 )
 
 // Config represents the configuration used to create a appr client.
 type Config struct {
+	Fs     afero.Fs
 	Logger micrologger.Logger
 
 	Address      string
@@ -23,6 +25,7 @@ type Config struct {
 
 // Client knows how to talk with a CNR server.
 type Client struct {
+	fs         afero.Fs
 	httpClient *http.Client
 	logger     micrologger.Logger
 
@@ -32,6 +35,9 @@ type Client struct {
 
 // New creates a new configured appr client.
 func New(config Config) (*Client, error) {
+	if config.Fs == nil {
+		return nil, microerror.Maskf(invalidConfigError, "%T.Fs must not be empty", config)
+	}
 	if config.Logger == nil {
 		return nil, microerror.Maskf(invalidConfigError, "%T.logger must not be empty", config)
 	}
@@ -53,6 +59,7 @@ func New(config Config) (*Client, error) {
 	}
 
 	newAppr := &Client{
+		fs:     config.Fs,
 		logger: config.Logger,
 
 		base:         u,
@@ -84,10 +91,26 @@ func (c *Client) GetReleaseVersion(name, channel string) (string, error) {
 }
 
 // PullChartTarball downloads a tarball with the chart described by the given
-// custom object, returning the file path.
-// TODO
+// chart name and channel, returning the file path.
 func (c *Client) PullChartTarball(name, channel string) (string, error) {
-	return "", nil
+	release, err := c.GetReleaseVersion(name, channel)
+	if err != nil {
+		return "", microerror.Mask(err)
+	}
+
+	p := path.Join("packages", c.organization, name, release, "helm", "pull")
+
+	req, err := c.newRequest("GET", p)
+	if err != nil {
+		return "", microerror.Mask(err)
+	}
+
+	chartTarballPath, err := c.doFile(req)
+	if err != nil {
+		return "", microerror.Mask(err)
+	}
+
+	return chartTarballPath, nil
 }
 
 func (c *Client) newRequest(method, path string) (*http.Request, error) {
@@ -119,4 +142,25 @@ func (c *Client) do(req *http.Request, v interface{}) (*http.Response, error) {
 	}
 
 	return resp, nil
+}
+
+func (c *Client) doFile(req *http.Request) (string, error) {
+	resp, err := c.httpClient.Do(req)
+	if err != nil {
+		return "", microerror.Mask(err)
+	}
+	defer resp.Body.Close()
+
+	tmpfile, err := afero.TempFile(c.fs, "", "chart-tarball")
+	if err != nil {
+		return "", microerror.Mask(err)
+	}
+	defer tmpfile.Close()
+
+	_, err = io.Copy(tmpfile, resp.Body)
+	if err != nil {
+		return "", microerror.Mask(err)
+	}
+
+	return tmpfile.Name(), nil
 }

@@ -43,6 +43,23 @@ func Test_ChannelName(t *testing.T) {
 	}
 }
 
+func Test_Namespace(t *testing.T) {
+	expected := "giantswarm"
+
+	obj := v1alpha1.ChartConfig{
+		Spec: v1alpha1.ChartConfigSpec{
+			Chart: v1alpha1.ChartConfigSpecChart{
+				Namespace: "giantswarm",
+			},
+		},
+	}
+
+	actual := Namespace(obj)
+	if actual != expected {
+		t.Fatalf("namespace %s, want %s", actual, expected)
+	}
+}
+
 func Test_ReleaseName(t *testing.T) {
 	expectedRelease := "chart-operator"
 
