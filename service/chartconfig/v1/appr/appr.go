@@ -105,12 +105,12 @@ func (c *Client) PullChartTarball(name, channel string) (string, error) {
 		return "", microerror.Mask(err)
 	}
 
-	chartTarball, err := c.doFile(req)
+	chartTarballPath, err := c.doFile(req)
 	if err != nil {
 		return "", microerror.Mask(err)
 	}
 
-	return chartTarball, nil
+	return chartTarballPath, nil
 }
 
 func (c *Client) newRequest(method, path string) (*http.Request, error) {
