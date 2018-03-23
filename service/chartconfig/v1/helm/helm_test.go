@@ -244,7 +244,7 @@ func Test_InstallRelease(t *testing.T) {
 				},
 				logger: microloggertest.New(),
 			}
-			// helm fake client does not actually use the tarball
+			// helm fake client does not actually use the tarball.
 			err := helm.InstallFromTarball("/path", tc.namespace, helmclient.ReleaseName("test-chart"))
 
 			switch {
