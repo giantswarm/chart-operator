@@ -107,9 +107,9 @@ func New(config Config) (*Service, error) {
 	var helmClient *helm.Client
 	{
 		c := helm.Config{
-			Logger: config.Logger,
-
-			Host: config.Viper.GetString(config.Flag.Service.Helm.Host),
+			K8sClient:  k8sClient,
+			Logger:     config.Logger,
+			RestConfig: restConfig,
 		}
 		helmClient, err = helm.New(c)
 		if err != nil {

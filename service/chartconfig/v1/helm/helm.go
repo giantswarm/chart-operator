@@ -1,10 +1,15 @@
 package helm
 
 import (
+	"fmt"
+
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/micrologger"
+	"k8s.io/client-go/kubernetes"
+	"k8s.io/client-go/rest"
 	"k8s.io/helm/pkg/chartutil"
 	helmclient "k8s.io/helm/pkg/helm"
+	"k8s.io/helm/pkg/helm/portforwarder"
 )
 
 const (
@@ -13,9 +18,9 @@ const (
 
 // Config represents the configuration used to create a helm client.
 type Config struct {
-	Logger micrologger.Logger
-
-	Host string
+	K8sClient  kubernetes.Interface
+	Logger     micrologger.Logger
+	RestConfig *rest.Config
 }
 
 // Client knows how to talk with a Helm Tiller server.
@@ -29,11 +34,19 @@ func New(config Config) (*Client, error) {
 	if config.Logger == nil {
 		return nil, microerror.Maskf(invalidConfigError, "%T.Logger must not be empty", config)
 	}
-	if config.Host == "" {
-		return nil, microerror.Maskf(invalidConfigError, "%T.Host must not be empty", config)
+	if config.K8sClient == nil {
+		return nil, microerror.Maskf(invalidConfigError, "%T.K8sClient must not be empty", config)
+	}
+	if config.RestConfig == nil {
+		return nil, microerror.Maskf(invalidConfigError, "%T.RestConfig must not be empty", config)
 	}
 
-	hc := helmclient.NewClient(helmclient.Host(config.Host),
+	host, err := setupConnection(config.K8sClient, config.RestConfig)
+	if err != nil {
+		return nil, microerror.Mask(err)
+	}
+
+	hc := helmclient.NewClient(helmclient.Host(host),
 		helmclient.ConnectTimeout(connectionTimeoutSecs))
 
 	newHelm := &Client{
@@ -118,4 +131,14 @@ func (c *Client) InstallFromTarball(path, ns string, options ...helmclient.Insta
 	}
 
 	return nil
+}
+
+func setupConnection(client kubernetes.Interface, config *rest.Config) (string, error) {
+	tunnel, err := portforwarder.New(tillerDefaultNamespace, client, config)
+	if err != nil {
+		return "", microerror.Mask(err)
+	}
+
+	host := fmt.Sprintf("127.0.0.1:%d", tunnel.Local)
+	return host, nil
 }

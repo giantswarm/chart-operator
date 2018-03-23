@@ -3,8 +3,10 @@
 package integration
 
 import (
+	"fmt"
 	"log"
 	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/giantswarm/e2e-harness/pkg/framework"
@@ -12,6 +14,7 @@ import (
 	"github.com/spf13/afero"
 
 	"github.com/giantswarm/chart-operator/service/chartconfig/v1/appr"
+	"github.com/giantswarm/chart-operator/service/chartconfig/v1/helm"
 )
 
 var (
@@ -73,4 +76,44 @@ func TestGetReleaseVersion(t *testing.T) {
 	if expected != actual {
 		t.Errorf("release didn't match expected, want %q, got %q", expected, actual)
 	}
+}
+
+func TestInstallChart(t *testing.T) {
+	l, err := micrologger.New(micrologger.Config{})
+	if err != nil {
+		t.Errorf("could not create logger %v", err)
+	}
+
+	hc := helm.Config{
+		Logger: l,
+		Host:   "http://localhost:44134",
+	}
+
+	h, err := helm.New(hc)
+	if err != nil {
+		t.Errorf("could not create helm client %v", err)
+	}
+
+	// integration dir is mounted in /e2e in the test container.
+	tarballPath := filepath.Join("/e2e", "tb-chart.tar.gz")
+	err = h.InstallFromTarball(tarballPath, "default")
+	if err != nil {
+		t.Errorf("could not install chart %v", err)
+	}
+
+	releaseContent, err := h.GetReleaseContent("tb-chart")
+	if err != nil {
+		t.Errorf("could not get release content %v", err)
+	}
+	fmt.Printf("release content: %+v\n", releaseContent)
+	/*
+		expected := "5.5.5"
+		actual, err := a.GetReleaseVersion("tb-chart", "5-5-beta")
+		if err != nil {
+			t.Errorf("could not get release %v", err)
+		}
+
+		if expected != actual {
+			t.Errorf("release didn't match expected, want %q, got %q", expected, actual)
+		}*/
 }
