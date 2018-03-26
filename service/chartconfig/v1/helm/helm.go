@@ -5,11 +5,11 @@ import (
 
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/micrologger"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
 	"k8s.io/helm/pkg/chartutil"
 	helmclient "k8s.io/helm/pkg/helm"
-	"k8s.io/helm/pkg/helm/portforwarder"
 )
 
 const (
@@ -134,11 +134,37 @@ func (c *Client) InstallFromTarball(path, ns string, options ...helmclient.Insta
 }
 
 func setupConnection(client kubernetes.Interface, config *rest.Config) (string, error) {
-	tunnel, err := portforwarder.New(tillerDefaultNamespace, client, config)
+	podName, err := getPodName(client, tillerLabelSelector, tillerDefaultNamespace)
+	if err != nil {
+		return "", err
+	}
+
+	t := newTunnel(client.CoreV1().RESTClient(), config, tillerDefaultNamespace, podName, tillerPort)
+	err = t.forwardPort()
 	if err != nil {
 		return "", microerror.Mask(err)
 	}
 
-	host := fmt.Sprintf("127.0.0.1:%d", tunnel.Local)
+	host := fmt.Sprintf("127.0.0.1:%d", t.Local)
+
 	return host, nil
+}
+
+func getPodName(client kubernetes.Interface, labelSelector, namespace string) (string, error) {
+	pods, err := client.CoreV1().
+		Pods(namespace).
+		List(metav1.ListOptions{
+			LabelSelector: labelSelector,
+		})
+	if err != nil {
+		return "", microerror.Mask(err)
+	}
+	if len(pods.Items) > 1 {
+		return "", microerror.Mask(tooManyResultsError)
+	}
+	if len(pods.Items) == 0 {
+		return "", microerror.Mask(notFoundError)
+	}
+	pod := pods.Items[0]
+	return pod.Name, nil
 }
