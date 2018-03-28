@@ -10,6 +10,67 @@ import (
 	helmrelease "k8s.io/helm/pkg/proto/hapi/release"
 )
 
+func Test_DeleteRelease(t *testing.T) {
+	testCases := []struct {
+		description  string
+		namespace    string
+		releaseName  string
+		releases     []*helmrelease.Release
+		errorMatcher func(error) bool
+	}{
+		{
+			description:  "case 0: try to delete non-existent release",
+			releaseName:  "chart-operator",
+			releases:     []*helmrelease.Release{},
+			errorMatcher: IsReleaseNotFound,
+		},
+		{
+			description: "case 1: delete basic release",
+			releaseName: "chart-operator",
+			releases: []*helmrelease.Release{
+				helmclient.ReleaseMock(&helmclient.MockReleaseOptions{
+					Name:      "chart-operator",
+					Namespace: "default",
+				}),
+			},
+		},
+		{
+			description: "case 2: try to delete release with wrong name",
+			releaseName: "chart-operator",
+			releases: []*helmrelease.Release{
+				helmclient.ReleaseMock(&helmclient.MockReleaseOptions{
+					Name:      "node-exporter",
+					Namespace: "default",
+				}),
+			},
+			errorMatcher: IsReleaseNotFound,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.description, func(t *testing.T) {
+			helm := Client{
+				helmClient: &helmclient.FakeClient{
+					Rels: tc.releases,
+				},
+				logger: microloggertest.New(),
+			}
+			err := helm.DeleteRelease(tc.releaseName)
+
+			switch {
+			case err == nil && tc.errorMatcher == nil:
+				// correct; carry on
+			case err != nil && tc.errorMatcher == nil:
+				t.Fatalf("error == %#v, want nil", err)
+			case err == nil && tc.errorMatcher != nil:
+				t.Fatalf("error == nil, want non-nil")
+			case !tc.errorMatcher(err):
+				t.Fatalf("error == %#v, want matching", err)
+			}
+		})
+	}
+}
+
 func Test_GetReleaseContent(t *testing.T) {
 	testCases := []struct {
 		description     string
