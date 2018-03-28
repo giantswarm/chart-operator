@@ -44,6 +44,16 @@ func New(config Config) (*Client, error) {
 	return newHelm, nil
 }
 
+// DeleteRelease uninstalls a chart given its release name
+func (c *Client) DeleteRelease(releaseName string, options ...helmclient.DeleteOption) error {
+	_, err := c.helmClient.DeleteRelease(releaseName, options...)
+	if err != nil {
+		return microerror.Mask(err)
+	}
+
+	return nil
+}
+
 // GetReleaseContent gets the current status of the Helm Release including any
 // values provided when the chart was installed. The releaseName is the name
 // of the Helm Release that is set when the Helm Chart is installed.
