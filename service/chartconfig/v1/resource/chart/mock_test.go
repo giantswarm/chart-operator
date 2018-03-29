@@ -31,6 +31,14 @@ type helmMock struct {
 	defaultError          error
 }
 
+func (h *helmMock) DeleteRelease(releaseName string, options ...helmclient.DeleteOption) error {
+	if h.defaultError != nil {
+		return h.defaultError
+	}
+
+	return nil
+}
+
 func (h *helmMock) GetReleaseContent(releaseName string) (*helm.ReleaseContent, error) {
 	if h.defaultError != nil {
 		return nil, h.defaultError
