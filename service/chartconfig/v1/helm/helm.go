@@ -44,7 +44,7 @@ func New(config Config) (*Client, error) {
 	return newHelm, nil
 }
 
-// DeleteRelease uninstalls a chart given its release name
+// DeleteRelease uninstalls a chart given its release name.
 func (c *Client) DeleteRelease(releaseName string, options ...helmclient.DeleteOption) error {
 	_, err := c.helmClient.DeleteRelease(releaseName, options...)
 	if err != nil {
