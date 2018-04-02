@@ -78,13 +78,17 @@ func (c *Client) GetReleaseContent(releaseName string) (*ReleaseContent, error) 
 		return nil, microerror.Mask(err)
 	}
 
-	// Raw values are returned by the Tiller API and we convert these to a map.
-	raw := []byte(resp.Release.Config.Raw)
-	values, err := chartutil.ReadValues(raw)
-	if err != nil {
-		return nil, microerror.Mask(err)
+	// If parametrtizable values were passed at release creation time, raw values
+	// are returned by the Tiller API and we convert these to a map. First we need
+	// to check if there are values actually passed.
+	var values chartutil.Values
+	if resp.Release.Config != nil {
+		raw := []byte(resp.Release.Config.Raw)
+		values, err = chartutil.ReadValues(raw)
+		if err != nil {
+			return nil, microerror.Mask(err)
+		}
 	}
-
 	content := &ReleaseContent{
 		Name:   resp.Release.Name,
 		Status: resp.Release.Info.Status.Code.String(),
