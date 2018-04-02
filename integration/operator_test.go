@@ -3,7 +3,6 @@
 package integration
 
 import (
-	"fmt"
 	"log"
 	"os"
 	"path/filepath"
@@ -15,6 +14,7 @@ import (
 	"github.com/spf13/afero"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
+	helmclient "k8s.io/helm/pkg/helm"
 
 	"github.com/giantswarm/chart-operator/service/chartconfig/v1/appr"
 	"github.com/giantswarm/chart-operator/service/chartconfig/v1/helm"
@@ -109,24 +109,28 @@ func TestInstallChart(t *testing.T) {
 
 	// integration dir is mounted in /e2e in the test container.
 	tarballPath := filepath.Join("/e2e", "tb-chart.tar.gz")
-	err = h.InstallFromTarball(tarballPath, "default")
+
+	const releaseName = "tb-chart-release"
+
+	err = h.InstallFromTarball(tarballPath, "default", helmclient.ReleaseName(releaseName))
 	if err != nil {
 		t.Fatalf("could not install chart %v", err)
 	}
 
-	releaseContent, err := h.GetReleaseContent("tb-chart")
+	releaseContent, err := h.GetReleaseContent(releaseName)
 	if err != nil {
 		t.Fatalf("could not get release content %v", err)
 	}
-	fmt.Printf("release content: %+v\n", releaseContent)
-	/*
-		expected := "5.5.5"
-		actual, err := a.GetReleaseVersion("tb-chart", "5-5-beta")
-		if err != nil {
-			t.Fatalf("could not get release %v", err)
-		}
 
-		if expected != actual {
-			t.Fatalf("release didn't match expected, want %q, got %q", expected, actual)
-		}*/
+	expectedName := releaseName
+	actualName := releaseContent.Name
+	if expectedName != actualName {
+		t.Fatalf("bad release name, want %q, got %q", expectedName, actualName)
+	}
+
+	expectedStatus := "DEPLOYED"
+	actualStatus := releaseContent.Status
+	if expectedStatus != actualStatus {
+		t.Fatalf("bad release status, want %q, got %q", expectedStatus, actualStatus)
+	}
 }
