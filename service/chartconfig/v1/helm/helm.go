@@ -137,6 +137,13 @@ func (c *Client) InstallFromTarball(path, ns string, options ...helmclient.Insta
 	return nil
 }
 
+// UpdateReleaseFromTarball updates the given release using the chart packaged
+// in the tarball.
+// TODO
+func (c *Client) UpdateReleaseFromTarball(releaseName, path string, options ...helmclient.UpdateOption) error {
+	return nil
+}
+
 func setupConnection(client kubernetes.Interface, config *rest.Config) (string, error) {
 	podName, err := getPodName(client, tillerLabelSelector, tillerDefaultNamespace)
 	if err != nil {

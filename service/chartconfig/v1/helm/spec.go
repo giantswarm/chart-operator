@@ -22,6 +22,9 @@ type Interface interface {
 	GetReleaseHistory(releaseName string) (*ReleaseHistory, error)
 	// InstallFromTarball installs a Helm Chart packaged in the given tarball.
 	InstallFromTarball(path, ns string, options ...helm.InstallOption) error
+	// UpdateReleaseFromTarball updates the given release using the chart packaged
+	// in the tarball.
+	UpdateReleaseFromTarball(releaseName, path string, options ...helm.UpdateOption) error
 }
 
 // ReleaseContent returns status information about a Helm Release.

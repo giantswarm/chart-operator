@@ -71,7 +71,7 @@ func New(config Config) (*Client, error) {
 }
 
 // GetReleaseVersion queries CNR for the release version of the chart
-// represented by the given custom object (including channel info).
+// represented by the given name and channel.
 func (c *Client) GetReleaseVersion(name, channel string) (string, error) {
 	p := path.Join("packages", c.organization, name, "channels", channel)
 
