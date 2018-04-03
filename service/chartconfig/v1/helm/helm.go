@@ -139,8 +139,12 @@ func (c *Client) InstallFromTarball(path, ns string, options ...helmclient.Insta
 
 // UpdateReleaseFromTarball updates the given release using the chart packaged
 // in the tarball.
-// TODO
 func (c *Client) UpdateReleaseFromTarball(releaseName, path string, options ...helmclient.UpdateOption) error {
+	_, err := c.helmClient.UpdateRelease(releaseName, path, options...)
+	if err != nil {
+		return microerror.Mask(err)
+	}
+
 	return nil
 }
 
