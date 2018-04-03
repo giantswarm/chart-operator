@@ -322,7 +322,7 @@ func Test_InstallRelease(t *testing.T) {
 	}
 }
 
-func Test_UpdateRelease(t *testing.T) {
+func Test_UpdateReleaseFromTarball(t *testing.T) {
 	testCases := []struct {
 		description  string
 		namespace    string
