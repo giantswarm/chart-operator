@@ -78,7 +78,7 @@ func (c *Client) GetReleaseContent(releaseName string) (*ReleaseContent, error) 
 		return nil, microerror.Mask(err)
 	}
 
-	// If parametrtizable values were passed at release creation time, raw values
+	// If parameterizable values were passed at release creation time, raw values
 	// are returned by the Tiller API and we convert these to a map. First we need
 	// to check if there are values actually passed.
 	var values chartutil.Values

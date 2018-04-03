@@ -14,7 +14,7 @@ import (
 	"k8s.io/client-go/transport/spdy"
 )
 
-// tunnel describes a ssh-like tunnel to a kubernetes pod
+// tunnel describes a ssh-like tunnel to a kubernetes pod.
 type tunnel struct {
 	Local     int
 	Remote    int
@@ -27,7 +27,7 @@ type tunnel struct {
 	client    rest.Interface
 }
 
-// newTunnel creates a new tunnel
+// newTunnel creates a new tunnel.
 func newTunnel(client rest.Interface, config *rest.Config, namespace, podName string, remote int) *tunnel {
 	return &tunnel{
 		config:    config,
@@ -41,15 +41,15 @@ func newTunnel(client rest.Interface, config *rest.Config, namespace, podName st
 	}
 }
 
-// close disconnects a tunnel connection
+// close disconnects a tunnel connection.
 func (t *tunnel) close() {
 	close(t.stopChan)
 }
 
-// forwardPort opens a tunnel to a kubernetes pod
+// forwardPort opens a tunnel to a kubernetes pod.
 func (t *tunnel) forwardPort() error {
-	// Build a url to the portforward endpoint
-	// example: http://localhost:8080/api/v1/namespaces/helm/pods/tiller-deploy-9itlq/portforward
+	// Build a url to the portforward endpoint.
+	// Example: http://localhost:8080/api/v1/namespaces/helm/pods/tiller-deploy-9itlq/portforward
 	u := t.client.Post().
 		Resource("pods").
 		Namespace(t.Namespace).
