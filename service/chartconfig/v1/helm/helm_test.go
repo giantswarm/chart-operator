@@ -321,3 +321,64 @@ func Test_InstallRelease(t *testing.T) {
 		})
 	}
 }
+
+func Test_UpdateRelease(t *testing.T) {
+	testCases := []struct {
+		description  string
+		namespace    string
+		releaseName  string
+		releases     []*helmrelease.Release
+		errorMatcher func(error) bool
+	}{
+		{
+			description:  "try to update non-existent release",
+			releaseName:  "chart-operator",
+			releases:     []*helmrelease.Release{},
+			errorMatcher: IsReleaseNotFound,
+		},
+		{
+			description: "update basic release",
+			releaseName: "chart-operator",
+			releases: []*helmrelease.Release{
+				helmclient.ReleaseMock(&helmclient.MockReleaseOptions{
+					Name: "chart-operator",
+				}),
+			},
+		},
+		{
+			description: "try to update release with wrong name",
+			releaseName: "chart-operator",
+			releases: []*helmrelease.Release{
+				helmclient.ReleaseMock(&helmclient.MockReleaseOptions{
+					Name:      "node-exporter",
+					Namespace: "default",
+				}),
+			},
+			errorMatcher: IsReleaseNotFound,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.description, func(t *testing.T) {
+			helm := Client{
+				helmClient: &helmclient.FakeClient{
+					Rels: tc.releases,
+				},
+				logger: microloggertest.New(),
+			}
+			// helm fake client does not actually use the tarball.
+			err := helm.UpdateReleaseFromTarball(tc.releaseName, "/path")
+
+			switch {
+			case err == nil && tc.errorMatcher == nil:
+				// correct; carry on
+			case err != nil && tc.errorMatcher == nil:
+				t.Fatalf("error == %#v, want nil", err)
+			case err == nil && tc.errorMatcher != nil:
+				t.Fatalf("error == nil, want non-nil")
+			case !tc.errorMatcher(err):
+				t.Fatalf("error == %#v, want matching", err)
+			}
+		})
+	}
+}
