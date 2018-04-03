@@ -20,23 +20,27 @@ func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange inte
 		return microerror.Mask(err)
 	}
 
-	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("updating chart %s", chartState.ChartName))
+	if chartState.ReleaseName != "" {
+		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("updating chart %s", chartState.ChartName))
 
-	name := key.ChartName(customObject)
-	releaseName := chartState.ReleaseName
-	channel := chartState.ChannelName
+		name := key.ChartName(customObject)
+		releaseName := chartState.ReleaseName
+		channel := chartState.ChannelName
 
-	tarballPath, err := r.apprClient.PullChartTarball(name, channel)
-	if err != nil {
-		return microerror.Mask(err)
+		tarballPath, err := r.apprClient.PullChartTarball(name, channel)
+		if err != nil {
+			return microerror.Mask(err)
+		}
+
+		err = r.helmClient.UpdateReleaseFromTarball(releaseName, tarballPath)
+		if err != nil {
+			return microerror.Mask(err)
+		}
+		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("updated chart %s", chartState.ChartName))
+
+	} else {
+		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("chart %s do not need to be updated", chartState.ChartName))
 	}
-
-	err = r.helmClient.UpdateReleaseFromTarball(releaseName, tarballPath)
-	if err != nil {
-		return microerror.Mask(err)
-	}
-	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("updated chart %s", chartState.ChartName))
-
 	return nil
 }
 
