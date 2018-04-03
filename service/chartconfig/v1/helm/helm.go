@@ -1,8 +1,13 @@
 package helm
 
 import (
+	"fmt"
+
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/micrologger"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/client-go/kubernetes"
+	"k8s.io/client-go/rest"
 	"k8s.io/helm/pkg/chartutil"
 	helmclient "k8s.io/helm/pkg/helm"
 )
@@ -13,9 +18,9 @@ const (
 
 // Config represents the configuration used to create a helm client.
 type Config struct {
-	Logger micrologger.Logger
-
-	Host string
+	K8sClient  kubernetes.Interface
+	Logger     micrologger.Logger
+	RestConfig *rest.Config
 }
 
 // Client knows how to talk with a Helm Tiller server.
@@ -29,11 +34,19 @@ func New(config Config) (*Client, error) {
 	if config.Logger == nil {
 		return nil, microerror.Maskf(invalidConfigError, "%T.Logger must not be empty", config)
 	}
-	if config.Host == "" {
-		return nil, microerror.Maskf(invalidConfigError, "%T.Host must not be empty", config)
+	if config.K8sClient == nil {
+		return nil, microerror.Maskf(invalidConfigError, "%T.K8sClient must not be empty", config)
+	}
+	if config.RestConfig == nil {
+		return nil, microerror.Maskf(invalidConfigError, "%T.RestConfig must not be empty", config)
 	}
 
-	hc := helmclient.NewClient(helmclient.Host(config.Host),
+	host, err := setupConnection(config.K8sClient, config.RestConfig)
+	if err != nil {
+		return nil, microerror.Mask(err)
+	}
+
+	hc := helmclient.NewClient(helmclient.Host(host),
 		helmclient.ConnectTimeout(connectionTimeoutSecs))
 
 	newHelm := &Client{
@@ -65,13 +78,17 @@ func (c *Client) GetReleaseContent(releaseName string) (*ReleaseContent, error) 
 		return nil, microerror.Mask(err)
 	}
 
-	// Raw values are returned by the Tiller API and we convert these to a map.
-	raw := []byte(resp.Release.Config.Raw)
-	values, err := chartutil.ReadValues(raw)
-	if err != nil {
-		return nil, microerror.Mask(err)
+	// If parameterizable values were passed at release creation time, raw values
+	// are returned by the Tiller API and we convert these to a map. First we need
+	// to check if there are values actually passed.
+	var values chartutil.Values
+	if resp.Release.Config != nil {
+		raw := []byte(resp.Release.Config.Raw)
+		values, err = chartutil.ReadValues(raw)
+		if err != nil {
+			return nil, microerror.Mask(err)
+		}
 	}
-
 	content := &ReleaseContent{
 		Name:   resp.Release.Name,
 		Status: resp.Release.Info.Status.Code.String(),
@@ -118,4 +135,40 @@ func (c *Client) InstallFromTarball(path, ns string, options ...helmclient.Insta
 	}
 
 	return nil
+}
+
+func setupConnection(client kubernetes.Interface, config *rest.Config) (string, error) {
+	podName, err := getPodName(client, tillerLabelSelector, tillerDefaultNamespace)
+	if err != nil {
+		return "", err
+	}
+
+	t := newTunnel(client.CoreV1().RESTClient(), config, tillerDefaultNamespace, podName, tillerPort)
+	err = t.forwardPort()
+	if err != nil {
+		return "", microerror.Mask(err)
+	}
+
+	host := fmt.Sprintf("127.0.0.1:%d", t.Local)
+
+	return host, nil
+}
+
+func getPodName(client kubernetes.Interface, labelSelector, namespace string) (string, error) {
+	pods, err := client.CoreV1().
+		Pods(namespace).
+		List(metav1.ListOptions{
+			LabelSelector: labelSelector,
+		})
+	if err != nil {
+		return "", microerror.Mask(err)
+	}
+	if len(pods.Items) > 1 {
+		return "", microerror.Mask(tooManyResultsError)
+	}
+	if len(pods.Items) == 0 {
+		return "", microerror.Mask(notFoundError)
+	}
+	pod := pods.Items[0]
+	return pod.Name, nil
 }

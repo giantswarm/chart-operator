@@ -2,6 +2,12 @@ package helm
 
 import "k8s.io/helm/pkg/helm"
 
+const (
+	tillerPort             = 44134
+	tillerDefaultNamespace = "kube-system"
+	tillerLabelSelector    = "app=helm,name=tiller"
+)
+
 // Interface describes the methods provided by the helm client.
 type Interface interface {
 	// DeleteRelease uninstalls a chart given its release name.

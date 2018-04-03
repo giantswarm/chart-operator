@@ -113,7 +113,6 @@ func mainWithError() (err error) {
 
 	daemonCommand.PersistentFlags().String(f.Service.CNR.Address, "https://quay.io", "Address used to connect to CNR, defaults to quay's managed offering.")
 	daemonCommand.PersistentFlags().String(f.Service.CNR.Organization, "giantswarm", "CNR organization.")
-	daemonCommand.PersistentFlags().String(f.Service.Helm.Host, ":44134", "Host and port for Helm client to connect to the Tiller endpoint.")
 	daemonCommand.PersistentFlags().String(f.Service.Kubernetes.Address, "", "Address used to connect to Kubernetes. When empty in-cluster config is created.")
 	daemonCommand.PersistentFlags().Bool(f.Service.Kubernetes.InCluster, false, "Whether to use the in-cluster config to authenticate with Kubernetes.")
 	daemonCommand.PersistentFlags().String(f.Service.Kubernetes.TLS.CAFile, "", "Certificate authority file path to use to authenticate with Kubernetes.")
