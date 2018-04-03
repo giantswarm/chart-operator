@@ -3,6 +3,7 @@ package chart
 import (
 	"context"
 	"fmt"
+	"reflect"
 
 	"github.com/giantswarm/chart-operator/service/chartconfig/v1/key"
 	"github.com/giantswarm/microerror"
@@ -59,7 +60,7 @@ func (r *Resource) newDeleteChange(ctx context.Context, obj, currentState, desir
 
 	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("finding out if the %s chart has to be deleted", desiredChartState.ChartName))
 
-	if currentChartState.ChartName != "" && currentChartState.ChartName == desiredChartState.ChartName {
+	if !reflect.DeepEqual(currentChartState, ChartState{}) && currentChartState.ChartName == desiredChartState.ChartName {
 		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("the %s chart needs to be deleted", desiredChartState.ChartName))
 
 		return &desiredChartState, nil
