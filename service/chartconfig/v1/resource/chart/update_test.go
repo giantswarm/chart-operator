@@ -21,8 +21,7 @@ func Test_Resource_Chart_newUpdateChange(t *testing.T) {
 		description         string
 		currentState        *ChartState
 		desiredState        *ChartState
-		expectedReleaseName string
-		expectedChannelName string
+		expectedUpdateState *ChartState
 	}{
 		{
 			description:  "empty current state, empty update change",
@@ -31,8 +30,7 @@ func Test_Resource_Chart_newUpdateChange(t *testing.T) {
 				ReleaseName: "desired-release-name",
 				ChannelName: "desired-channel-name",
 			},
-			expectedChannelName: "",
-			expectedReleaseName: "",
+			expectedUpdateState: nil,
 		},
 		{
 			description: "nonempty current state, different release version in desired state, expected desired state",
@@ -46,8 +44,10 @@ func Test_Resource_Chart_newUpdateChange(t *testing.T) {
 				ChannelName:    "desired-channel-name",
 				ReleaseVersion: "desired-release-version",
 			},
-			expectedChannelName: "desired-channel-name",
-			expectedReleaseName: "desired-release-name",
+			expectedUpdateState: &ChartState{
+				ChannelName: "desired-channel-name",
+				ReleaseName: "desired-release-name",
+			},
 		},
 		{
 			description: "nonempty current state, equal release version in desired state, empty update change",
@@ -61,8 +61,7 @@ func Test_Resource_Chart_newUpdateChange(t *testing.T) {
 				ChannelName:    "desired-channel-name",
 				ReleaseVersion: "release-version",
 			},
-			expectedChannelName: "",
-			expectedReleaseName: "",
+			expectedUpdateState: nil,
 		},
 	}
 	var newResource *Resource
@@ -86,15 +85,20 @@ func Test_Resource_Chart_newUpdateChange(t *testing.T) {
 			if err != nil {
 				t.Fatal("expected", nil, "got", err)
 			}
-			updateChange, ok := result.(*ChartState)
-			if !ok {
-				t.Fatalf("expected '%T', got '%T'", updateChange, result)
+			if tc.expectedUpdateState == nil && result != nil {
+				t.Fatal("expected", nil, "got", result)
 			}
-			if updateChange.ReleaseName != tc.expectedReleaseName {
-				t.Fatalf("expected ReleaseName %q, got %q", tc.expectedReleaseName, updateChange.ReleaseName)
-			}
-			if updateChange.ChannelName != tc.expectedChannelName {
-				t.Fatalf("expected ChannelName %q, got %q", tc.expectedChannelName, updateChange.ChannelName)
+			if result != nil {
+				updateChange, ok := result.(*ChartState)
+				if !ok {
+					t.Fatalf("expected '%T', got '%T'", updateChange, result)
+				}
+				if updateChange.ReleaseName != tc.expectedUpdateState.ReleaseName {
+					t.Fatalf("expected ReleaseName %q, got %q", tc.expectedUpdateState.ReleaseName, updateChange.ReleaseName)
+				}
+				if updateChange.ChannelName != tc.expectedUpdateState.ChannelName {
+					t.Fatalf("expected ChannelName %q, got %q", tc.expectedUpdateState.ChannelName, updateChange.ChannelName)
+				}
 			}
 		})
 	}

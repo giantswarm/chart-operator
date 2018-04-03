@@ -78,5 +78,5 @@ func (r *Resource) newUpdateChange(ctx context.Context, obj, currentState, desir
 		r.logger.LogCtx(ctx, "level", "debug", "message", "the chart does not have to be updated")
 	}
 
-	return &ChartState{}, nil
+	return nil, nil
 }
