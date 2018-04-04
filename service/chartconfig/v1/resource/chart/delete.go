@@ -58,14 +58,14 @@ func (r *Resource) newDeleteChange(ctx context.Context, obj, currentState, desir
 		return nil, microerror.Mask(err)
 	}
 
-	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("finding out if the %s chart has to be deleted", desiredChartState.ChartName))
+	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("finding out if the %s release has to be deleted", desiredChartState.ReleaseName))
 
-	if !reflect.DeepEqual(currentChartState, ChartState{}) && currentChartState.ChartName == desiredChartState.ChartName {
-		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("the %s chart needs to be deleted", desiredChartState.ChartName))
+	if !reflect.DeepEqual(currentChartState, ChartState{}) && currentChartState.ReleaseName == desiredChartState.ReleaseName {
+		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("the %s release needs to be deleted", desiredChartState.ReleaseName))
 
 		return &desiredChartState, nil
 	} else {
-		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("the %s chart does not need to be deleted", desiredChartState.ChartName))
+		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("the %s release does not need to be deleted", desiredChartState.ReleaseName))
 	}
 
 	return nil, nil
