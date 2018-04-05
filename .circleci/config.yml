@@ -54,7 +54,7 @@ jobs:
         chmod +x ./architect
         ./architect version
     - run: ./architect build
-    - run: ./architect publish --pipeline=false --channel=${CIRCLE_SHA1}
+    - run: ./architect publish --pipeline=false --channels=${CIRCLE_SHA1}
     - persist_to_workspace:
         root: .
         paths:
