@@ -20,6 +20,10 @@ import (
 	"github.com/giantswarm/chart-operator/service/chartconfig/v1/helm"
 )
 
+const (
+	chartOperatorValues = ``
+)
+
 var (
 	f *framework.Host
 )
@@ -35,7 +39,7 @@ func TestMain(m *testing.M) {
 		os.Exit(1)
 	}
 
-	if err := f.Setup(); err != nil {
+	if err := f.CreateNamespace("giantswarm"); err != nil {
 		log.Printf("unexpected error: %v\n", err)
 		v = 1
 	}
@@ -147,5 +151,13 @@ func TestInstallChart(t *testing.T) {
 	actualStatus = releaseContent.Status
 	if expectedStatus != actualStatus {
 		t.Fatalf("bad release status, want %q, got %q", expectedStatus, actualStatus)
+	}
+}
+
+func TestInstallOperator(t *testing.T) {
+	err := f.InstallOperator("chart-operator", "chartconfig", chartOperatorValues, ":${CIRCLE_SHA1}")
+
+	if err != nil {
+		t.Fatalf("could not install operator %v", err)
 	}
 }
