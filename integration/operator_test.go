@@ -107,7 +107,7 @@ func TestInstallChart(t *testing.T) {
 		t.Fatalf("could not create helm client %v", err)
 	}
 
-	// integration dir is mounted in /e2e in the test container.
+	// --test-dir dir is mounted in /e2e in the test container.
 	tarballPath := filepath.Join("/e2e", "tb-chart.tar.gz")
 
 	const releaseName = "tb-chart-release"
@@ -130,6 +130,21 @@ func TestInstallChart(t *testing.T) {
 
 	expectedStatus := "DEPLOYED"
 	actualStatus := releaseContent.Status
+	if expectedStatus != actualStatus {
+		t.Fatalf("bad release status, want %q, got %q", expectedStatus, actualStatus)
+	}
+
+	err = h.DeleteRelease(releaseName)
+	if err != nil {
+		t.Fatalf("could not delete release %v", err)
+	}
+
+	releaseContent, err = h.GetReleaseContent(releaseName)
+	if err != nil {
+		t.Fatalf("could not get release content %v", err)
+	}
+	expectedStatus = "DELETED"
+	actualStatus = releaseContent.Status
 	if expectedStatus != actualStatus {
 		t.Fatalf("bad release status, want %q, got %q", expectedStatus, actualStatus)
 	}
