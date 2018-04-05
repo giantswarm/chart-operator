@@ -36,39 +36,53 @@ func Test_Resource_Chart_newDeleteChange(t *testing.T) {
 			description:  "case 2: empty current, non-empty desired, expected empty",
 			currentState: &ChartState{},
 			desiredState: &ChartState{
-				ChartName: "desired",
+				ChartName:      "desired",
+				ReleaseName:    "desired",
+				ReleaseVersion: "desired",
 			},
 			expectedDeleteChange: nil,
 		},
 		{
 			description: "case 3: equal non-empty current and desired, expected desired",
 			currentState: &ChartState{
-				ChartName: "desired",
+				ChartName:      "desired",
+				ReleaseName:    "desired",
+				ReleaseVersion: "desired",
 			},
 			desiredState: &ChartState{
-				ChartName: "desired",
+				ChartName:      "desired",
+				ReleaseName:    "desired",
+				ReleaseVersion: "desired",
 			},
 			expectedDeleteChange: &ChartState{
-				ChartName: "desired",
+				ChartName:      "desired",
+				ReleaseName:    "desired",
+				ReleaseVersion: "desired",
 			},
 		},
 		{
 			description: "case 4: different non-empty current and desired, expected empty",
 			currentState: &ChartState{
-				ChartName: "current",
+				ChartName:      "current",
+				ReleaseName:    "current",
+				ReleaseVersion: "current",
 			},
 			desiredState: &ChartState{
-				ChartName: "desired",
+				ChartName:      "desired",
+				ReleaseName:    "desired",
+				ReleaseVersion: "desired",
 			},
 			expectedDeleteChange: nil,
 		},
 		{
-			description: "case 5: different same non-empty current and desired name, different version, expected empty",
+			description: "case 5: same non-empty current and desired name, different version, expected empty",
 			currentState: &ChartState{
+				ChartName:      "desired",
 				ReleaseName:    "desired",
 				ReleaseVersion: "current",
 			},
 			desiredState: &ChartState{
+				ChartName:      "desired",
 				ReleaseName:    "desired",
 				ReleaseVersion: "desired",
 			},
