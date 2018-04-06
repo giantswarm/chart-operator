@@ -1,0 +1,3 @@
+name: chartconfig-resource-chart
+version: 0.1.0
+description: chartconfig resource definition to be used in with chart-operator

@@ -1,0 +1,7 @@
+chart:
+  name: "mychart"
+  channel: "0-2-beta"
+  namespace: "default"
+  release: "0.2.0"
+
+versionBundleVersion: "0.1.0"
