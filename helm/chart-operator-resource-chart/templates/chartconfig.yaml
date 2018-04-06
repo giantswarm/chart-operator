@@ -1,0 +1,12 @@
+apiVersion: "provider.giantswarm.io/v1alpha1"
+kind: ChartConfig
+metadata:
+  name: "{{.Values.chart.name}}"
+spec:
+  chart:
+    channel: "{{.Values.chart.channel}}"
+    name: "{{.Values.chart.name}}"
+    namespace: "{{.Values.chart.namespace}}"
+    release: "{{.Values.chart.release}}"
+  versionBundle:
+    version: "{{.Values.versionBundleVersion}}"
