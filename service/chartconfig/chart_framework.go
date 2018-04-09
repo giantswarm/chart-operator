@@ -43,6 +43,7 @@ func NewChartFramework(config ChartFrameworkConfig) (*framework.Framework, error
 	if config.Logger == nil {
 		return nil, microerror.Maskf(invalidConfigError, "config.Logger must not be empty")
 	}
+
 	if config.ProjectName == "" {
 		return nil, microerror.Maskf(invalidConfigError, "config.ProjectName must not be empty")
 	}
