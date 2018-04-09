@@ -99,17 +99,15 @@ func (h *Host) AWSCluster(name string) (*v1alpha1.AWSConfig, error) {
 	return cluster, nil
 }
 
-func (h *Host) DeleteGuestCluster() error {
-	if err := runCmd("kubectl delete awsconfig ${CLUSTER_NAME}"); err != nil {
+func (h *Host) DeleteGuestCluster(name, cr, logEntry string) error {
+	if err := runCmd(fmt.Sprintf("kubectl delete %s ${CLUSTER_NAME}", cr)); err != nil {
 		return microerror.Mask(err)
 	}
 
-	operatorPodName, err := h.PodName("giantswarm", "app=aws-operator")
+	operatorPodName, err := h.PodName("giantswarm", fmt.Sprintf("app=%s", name))
 	if err != nil {
 		return microerror.Mask(err)
 	}
-
-	logEntry := "deleted the guest cluster main stack"
 
 	return h.WaitForPodLog("giantswarm", logEntry, operatorPodName)
 }
