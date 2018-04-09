@@ -7,6 +7,7 @@ import (
 
 	"github.com/giantswarm/apiextensions/pkg/apis/core/v1alpha1"
 	"github.com/giantswarm/micrologger/microloggertest"
+	"github.com/spf13/afero"
 	"k8s.io/client-go/kubernetes/fake"
 )
 
@@ -48,6 +49,7 @@ func Test_DesiredState(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			c := Config{
 				ApprClient: apprClient,
+				Fs:         afero.NewMemMapFs(),
 				HelmClient: helmClient,
 				K8sClient:  fake.NewSimpleClientset(),
 				Logger:     microloggertest.New(),
