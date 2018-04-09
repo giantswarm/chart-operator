@@ -3,6 +3,7 @@ package chart
 import (
 	"context"
 	"fmt"
+	"os"
 
 	"github.com/giantswarm/microerror"
 
@@ -29,6 +30,12 @@ func (r *Resource) ApplyCreateChange(ctx context.Context, obj, createChange inte
 		if err != nil {
 			return microerror.Mask(err)
 		}
+		defer func() {
+			err := os.Remove(tarballPath)
+			if err != nil {
+				r.logger.LogCtx(ctx, "level", "error", "message", fmt.Sprintf("deletion of %q failed: %v", tarballPath, err))
+			}
+		}()
 
 		err = r.helmClient.InstallFromTarball(tarballPath, ns)
 		if err != nil {
