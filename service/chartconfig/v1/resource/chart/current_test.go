@@ -8,6 +8,7 @@ import (
 
 	"github.com/giantswarm/apiextensions/pkg/apis/core/v1alpha1"
 	"github.com/giantswarm/micrologger/microloggertest"
+	"github.com/spf13/afero"
 	"k8s.io/client-go/kubernetes/fake"
 
 	"github.com/giantswarm/chart-operator/service/chartconfig/v1/helm"
@@ -132,6 +133,7 @@ func Test_CurrentState(t *testing.T) {
 
 			c := Config{
 				ApprClient: &apprMock{},
+				Fs:         afero.NewMemMapFs(),
 				HelmClient: helmClient,
 				K8sClient:  fake.NewSimpleClientset(),
 				Logger:     microloggertest.New(),

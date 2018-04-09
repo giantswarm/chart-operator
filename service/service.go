@@ -143,6 +143,7 @@ func New(config Config) (*Service, error) {
 	{
 		c := chartconfig.ChartFrameworkConfig{
 			ApprClient:   apprClient,
+			Fs:           fs,
 			HelmClient:   helmClient,
 			G8sClient:    g8sClient,
 			Logger:       config.Logger,

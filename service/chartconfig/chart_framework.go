@@ -9,6 +9,7 @@ import (
 	"github.com/giantswarm/operatorkit/client/k8scrdclient"
 	"github.com/giantswarm/operatorkit/framework"
 	"github.com/giantswarm/operatorkit/informer"
+	"github.com/spf13/afero"
 	apiextensionsclient "k8s.io/apiextensions-apiserver/pkg/client/clientset/clientset"
 	"k8s.io/client-go/kubernetes"
 
@@ -18,6 +19,7 @@ import (
 
 type ChartFrameworkConfig struct {
 	ApprClient   apprclient.Interface
+	Fs           afero.Fs
 	G8sClient    versioned.Interface
 	HelmClient   helm.Interface
 	K8sClient    kubernetes.Interface
@@ -110,6 +112,7 @@ func newChartResourceRouter(config ChartFrameworkConfig) (*framework.ResourceRou
 	{
 		c := v1.ResourceSetConfig{
 			ApprClient:  config.ApprClient,
+			Fs:          config.Fs,
 			HelmClient:  config.HelmClient,
 			K8sClient:   config.K8sClient,
 			Logger:      config.Logger,
