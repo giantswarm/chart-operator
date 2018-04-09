@@ -28,7 +28,7 @@ e2eTest: &e2eTest
         command: |
           docker run \
                  --network host \
-                 -v $(pwd)/integration/fixtures/test-chart:/test-chart \
+                 -v $(pwd)/integration/test/basic/fixtures/test-chart:/test-chart \
                  --entrypoint /usr/bin/appr \
                  --workdir /test-chart \
                  -t quay.io/giantswarm/docker-cnr-server:v0.1.0 \
