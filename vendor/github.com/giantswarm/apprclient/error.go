@@ -1,4 +1,4 @@
-package appr
+package apprclient
 
 import "github.com/giantswarm/microerror"
 

@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/cenkalti/backoff"
+	"github.com/giantswarm/apprclient"
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/micrologger"
 	"github.com/giantswarm/operatorkit/framework"
@@ -11,7 +12,6 @@ import (
 	"github.com/giantswarm/operatorkit/framework/resource/retryresource"
 	"k8s.io/client-go/kubernetes"
 
-	"github.com/giantswarm/chart-operator/service/chartconfig/v1/appr"
 	"github.com/giantswarm/chart-operator/service/chartconfig/v1/helm"
 	"github.com/giantswarm/chart-operator/service/chartconfig/v1/key"
 	"github.com/giantswarm/chart-operator/service/chartconfig/v1/resource/chart"
@@ -27,7 +27,7 @@ const (
 // ChartConfig framework ResourceSet configuration.
 type ResourceSetConfig struct {
 	// Dependencies.
-	ApprClient appr.Interface
+	ApprClient apprclient.Interface
 	HelmClient helm.Interface
 	K8sClient  kubernetes.Interface
 	Logger     micrologger.Logger

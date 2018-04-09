@@ -1,4 +1,4 @@
-package appr
+package apprclient
 
 const (
 	httpClientTimeout = 5

@@ -1,5 +1,6 @@
-// Package appr holds the client code required to interact with a CNR backend.
-package appr
+// Package apprclient holds the client code required to interact with a CNR
+// backend.
+package apprclient
 
 import (
 	"encoding/json"
@@ -39,35 +40,36 @@ func New(config Config) (*Client, error) {
 		return nil, microerror.Maskf(invalidConfigError, "%T.Fs must not be empty", config)
 	}
 	if config.Logger == nil {
-		return nil, microerror.Maskf(invalidConfigError, "%T.logger must not be empty", config)
+		return nil, microerror.Maskf(invalidConfigError, "%T.Logger must not be empty", config)
 	}
+
 	if config.Address == "" {
-		return nil, microerror.Maskf(invalidConfigError, "%T.address must not be empty", config)
+		return nil, microerror.Maskf(invalidConfigError, "%T.Address must not be empty", config)
 	}
 	if config.Organization == "" {
-		return nil, microerror.Maskf(invalidConfigError, "%T.organization must not be empty", config)
+		return nil, microerror.Maskf(invalidConfigError, "%T.Organization must not be empty", config)
 	}
 
-	// set client timeout to prevent leakages.
-	hc := &http.Client{
-		Timeout: time.Second * httpClientTimeout,
-	}
-
-	u, err := url.Parse(config.Address + "/cnr/api/v1/")
+	base, err := url.Parse(config.Address + "/cnr/api/v1/")
 	if err != nil {
 		return nil, microerror.Mask(err)
 	}
 
-	newAppr := &Client{
+	// set client timeout to prevent leakages.
+	httpClient := &http.Client{
+		Timeout: time.Second * httpClientTimeout,
+	}
+
+	c := &Client{
 		fs:     config.Fs,
 		logger: config.Logger,
 
-		base:         u,
-		httpClient:   hc,
+		base:         base,
+		httpClient:   httpClient,
 		organization: config.Organization,
 	}
 
-	return newAppr, nil
+	return c, nil
 }
 
 // GetReleaseVersion queries CNR for the release version of the chart

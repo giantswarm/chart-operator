@@ -39,6 +39,10 @@ required = [
 
 [[constraint]]
   branch = "master"
+  name = "github.com/giantswarm/apprclient"
+
+[[constraint]]
+  branch = "master"
   name = "github.com/giantswarm/k8shealthz"
 
 [[constraint]]

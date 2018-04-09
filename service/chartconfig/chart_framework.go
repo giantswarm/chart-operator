@@ -3,6 +3,7 @@ package chartconfig
 import (
 	"github.com/giantswarm/apiextensions/pkg/apis/core/v1alpha1"
 	"github.com/giantswarm/apiextensions/pkg/clientset/versioned"
+	"github.com/giantswarm/apprclient"
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/micrologger"
 	"github.com/giantswarm/operatorkit/client/k8scrdclient"
@@ -12,12 +13,11 @@ import (
 	"k8s.io/client-go/kubernetes"
 
 	"github.com/giantswarm/chart-operator/service/chartconfig/v1"
-	"github.com/giantswarm/chart-operator/service/chartconfig/v1/appr"
 	"github.com/giantswarm/chart-operator/service/chartconfig/v1/helm"
 )
 
 type ChartFrameworkConfig struct {
-	ApprClient   appr.Interface
+	ApprClient   apprclient.Interface
 	G8sClient    versioned.Interface
 	HelmClient   helm.Interface
 	K8sClient    kubernetes.Interface
@@ -87,8 +87,11 @@ func NewChartFramework(config ChartFrameworkConfig) (*framework.Framework, error
 			CRD:            v1alpha1.NewChartConfigCRD(),
 			CRDClient:      crdClient,
 			Informer:       newInformer,
+			K8sClient:      config.K8sClient,
 			Logger:         config.Logger,
 			ResourceRouter: resourceRouter,
+
+			Name: config.ProjectName,
 		}
 
 		crdFramework, err = framework.New(c)
