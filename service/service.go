@@ -5,6 +5,7 @@ import (
 
 	"github.com/giantswarm/apiextensions/pkg/clientset/versioned"
 	"github.com/giantswarm/apprclient"
+	"github.com/giantswarm/helmclient"
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/micrologger"
 	"github.com/giantswarm/operatorkit/client/k8srestconfig"
@@ -17,7 +18,6 @@ import (
 
 	"github.com/giantswarm/chart-operator/flag"
 	"github.com/giantswarm/chart-operator/service/chartconfig"
-	"github.com/giantswarm/chart-operator/service/chartconfig/v1/helm"
 	"github.com/giantswarm/chart-operator/service/healthz"
 )
 
@@ -107,20 +107,23 @@ func New(config Config) (*Service, error) {
 			Address:      config.Viper.GetString(config.Flag.Service.CNR.Address),
 			Organization: config.Viper.GetString(config.Flag.Service.CNR.Organization),
 		}
+
 		apprClient, err = apprclient.New(c)
 		if err != nil {
 			return nil, microerror.Mask(err)
 		}
 	}
 
-	var helmClient *helm.Client
+	var helmClient *helmclient.Client
 	{
-		c := helm.Config{
-			K8sClient:  k8sClient,
-			Logger:     config.Logger,
+		c := helmclient.Config{
+			K8sClient: k8sClient,
+			Logger:    config.Logger,
+
 			RestConfig: restConfig,
 		}
-		helmClient, err = helm.New(c)
+
+		helmClient, err = helmclient.New(c)
 		if err != nil {
 			return nil, microerror.Mask(err)
 		}
