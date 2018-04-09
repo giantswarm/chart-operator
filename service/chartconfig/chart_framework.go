@@ -24,7 +24,8 @@ type ChartFrameworkConfig struct {
 	K8sExtClient apiextensionsclient.Interface
 	Logger       micrologger.Logger
 
-	ProjectName string
+	ProjectName    string
+	WatchNamespace string
 }
 
 func NewChartFramework(config ChartFrameworkConfig) (*framework.Framework, error) {
@@ -41,6 +42,10 @@ func NewChartFramework(config ChartFrameworkConfig) (*framework.Framework, error
 	}
 	if config.Logger == nil {
 		return nil, microerror.Maskf(invalidConfigError, "config.Logger must not be empty")
+	}
+
+	if config.ProjectName == "" {
+		return nil, microerror.Maskf(invalidConfigError, "config.ProjectName must not be empty")
 	}
 
 	var crdClient *k8scrdclient.CRDClient
@@ -64,7 +69,7 @@ func NewChartFramework(config ChartFrameworkConfig) (*framework.Framework, error
 	var newInformer *informer.Informer
 	{
 		c := informer.Config{
-			Watcher: config.G8sClient.CoreV1alpha1().ChartConfigs(""),
+			Watcher: config.G8sClient.CoreV1alpha1().ChartConfigs(config.WatchNamespace),
 
 			RateWait:     informer.DefaultRateWait,
 			ResyncPeriod: informer.DefaultResyncPeriod,

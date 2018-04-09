@@ -140,7 +140,8 @@ func New(config Config) (*Service, error) {
 			K8sClient:    k8sClient,
 			K8sExtClient: k8sExtClient,
 
-			ProjectName: config.ProjectName,
+			ProjectName:    config.ProjectName,
+			WatchNamespace: config.Viper.GetString(config.Flag.Service.Kubernetes.Watch.Namespace),
 		}
 
 		chartFramework, err = chartconfig.NewChartFramework(c)

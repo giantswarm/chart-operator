@@ -13,3 +13,5 @@ data:
         address: 'https://quay.io'
       kubernetes:
         incluster: true
+        watch:
+          namespace: 'kube-system'
