@@ -3,10 +3,12 @@ package chart
 import (
 	"context"
 	"fmt"
+	"os"
 
-	"github.com/giantswarm/chart-operator/service/chartconfig/v1/key"
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/operatorkit/framework"
+
+	"github.com/giantswarm/chart-operator/service/chartconfig/v1/key"
 )
 
 func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange interface{}) error {
@@ -31,6 +33,12 @@ func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange inte
 		if err != nil {
 			return microerror.Mask(err)
 		}
+		defer func() {
+			err := os.Remove(tarballPath)
+			if err != nil {
+				r.logger.LogCtx(ctx, "level", "error", "message", fmt.Sprintf("deletion of %q failed", tarballPath), "stack", fmt.Sprintf("%#v", err))
+			}
+		}()
 
 		err = r.helmClient.UpdateReleaseFromTarball(releaseName, tarballPath)
 		if err != nil {
