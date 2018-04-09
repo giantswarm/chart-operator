@@ -7,7 +7,8 @@ import (
 )
 
 const (
-	chartOperatorValues = ``
+	chartOperatorValues = `cnr:
+  address: http://localhost:5000`
 )
 
 func TestInstallOperator(t *testing.T) {
