@@ -1,11 +1,11 @@
 package chart
 
 import (
+	"github.com/giantswarm/apprclient"
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/micrologger"
 	"k8s.io/client-go/kubernetes"
 
-	"github.com/giantswarm/chart-operator/service/chartconfig/v1/appr"
 	"github.com/giantswarm/chart-operator/service/chartconfig/v1/helm"
 )
 
@@ -17,7 +17,7 @@ const (
 // Config represents the configuration used to create a new chart resource.
 type Config struct {
 	// Dependencies.
-	ApprClient appr.Interface
+	ApprClient apprclient.Interface
 	HelmClient helm.Interface
 	K8sClient  kubernetes.Interface
 	Logger     micrologger.Logger
@@ -26,7 +26,7 @@ type Config struct {
 // Resource implements the chart resource.
 type Resource struct {
 	// Dependencies.
-	apprClient appr.Interface
+	apprClient apprclient.Interface
 	helmClient helm.Interface
 	k8sClient  kubernetes.Interface
 	logger     micrologger.Logger

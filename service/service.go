@@ -4,6 +4,7 @@ import (
 	"sync"
 
 	"github.com/giantswarm/apiextensions/pkg/clientset/versioned"
+	"github.com/giantswarm/apprclient"
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/micrologger"
 	"github.com/giantswarm/operatorkit/client/k8srestconfig"
@@ -16,7 +17,6 @@ import (
 
 	"github.com/giantswarm/chart-operator/flag"
 	"github.com/giantswarm/chart-operator/service/chartconfig"
-	"github.com/giantswarm/chart-operator/service/chartconfig/v1/appr"
 	"github.com/giantswarm/chart-operator/service/chartconfig/v1/helm"
 	"github.com/giantswarm/chart-operator/service/healthz"
 )
@@ -34,6 +34,15 @@ type Config struct {
 	GitCommit   string
 	ProjectName string
 	Source      string
+}
+
+// Service is a type providing implementation of microkit service interface.
+type Service struct {
+	ChartFramework *framework.Framework
+	Healthz        *healthz.Service
+
+	// Internals
+	bootOnce sync.Once
 }
 
 // New creates a new service with given configuration.
@@ -89,16 +98,16 @@ func New(config Config) (*Service, error) {
 	}
 
 	fs := afero.NewOsFs()
-	var apprClient *appr.Client
+	var apprClient *apprclient.Client
 	{
-		c := appr.Config{
+		c := apprclient.Config{
 			Fs:     fs,
 			Logger: config.Logger,
 
 			Address:      config.Viper.GetString(config.Flag.Service.CNR.Address),
 			Organization: config.Viper.GetString(config.Flag.Service.CNR.Organization),
 		}
-		apprClient, err = appr.New(c)
+		apprClient, err = apprclient.New(c)
 		if err != nil {
 			return nil, microerror.Mask(err)
 		}
@@ -150,7 +159,7 @@ func New(config Config) (*Service, error) {
 		}
 	}
 
-	newService := &Service{
+	s := &Service{
 		ChartFramework: chartFramework,
 		Healthz:        healthzService,
 
@@ -158,16 +167,7 @@ func New(config Config) (*Service, error) {
 		bootOnce: sync.Once{},
 	}
 
-	return newService, nil
-}
-
-// Service is a type providing implementation of microkit service interface.
-type Service struct {
-	ChartFramework *framework.Framework
-	Healthz        *healthz.Service
-
-	// Internals
-	bootOnce sync.Once
+	return s, nil
 }
 
 // Boot starts top level service implementation.
