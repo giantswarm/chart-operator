@@ -28,14 +28,14 @@ e2eTest: &e2eTest
         command: |
           docker run \
                  --network host \
-                 -v $(pwd)/integration/test-chart:/test-chart \
+                 -v $(pwd)/integration/fixtures/test-chart:/test-chart \
                  --entrypoint /usr/bin/appr \
                  --workdir /test-chart \
                  -t quay.io/giantswarm/docker-cnr-server:v0.1.0 \
                  push localhost:5000/giantswarm/test-chart \
                  --channel 3-2-beta
 
-    - run: ./e2e-harness test --test-dir=integration
+    - run: ./e2e-harness test --test-dir=integration/test/basic
 
     - run:
         name: Finish with cleanup, no matter if the test succeeded or not
