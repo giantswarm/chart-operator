@@ -5,6 +5,7 @@ import (
 
 	"github.com/cenkalti/backoff"
 	"github.com/giantswarm/apprclient"
+	"github.com/giantswarm/helmclient"
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/micrologger"
 	"github.com/giantswarm/operatorkit/framework"
@@ -13,7 +14,6 @@ import (
 	"github.com/spf13/afero"
 	"k8s.io/client-go/kubernetes"
 
-	"github.com/giantswarm/chart-operator/service/chartconfig/v1/helm"
 	"github.com/giantswarm/chart-operator/service/chartconfig/v1/key"
 	"github.com/giantswarm/chart-operator/service/chartconfig/v1/resource/chart"
 )
@@ -30,7 +30,7 @@ type ResourceSetConfig struct {
 	// Dependencies.
 	ApprClient apprclient.Interface
 	Fs         afero.Fs
-	HelmClient helm.Interface
+	HelmClient helmclient.Interface
 	K8sClient  kubernetes.Interface
 	Logger     micrologger.Logger
 

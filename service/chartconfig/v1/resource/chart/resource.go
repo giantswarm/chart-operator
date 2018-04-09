@@ -2,12 +2,11 @@ package chart
 
 import (
 	"github.com/giantswarm/apprclient"
+	"github.com/giantswarm/helmclient"
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/micrologger"
 	"github.com/spf13/afero"
 	"k8s.io/client-go/kubernetes"
-
-	"github.com/giantswarm/chart-operator/service/chartconfig/v1/helm"
 )
 
 const (
@@ -20,7 +19,7 @@ type Config struct {
 	// Dependencies.
 	ApprClient apprclient.Interface
 	Fs         afero.Fs
-	HelmClient helm.Interface
+	HelmClient helmclient.Interface
 	K8sClient  kubernetes.Interface
 	Logger     micrologger.Logger
 }
@@ -30,7 +29,7 @@ type Resource struct {
 	// Dependencies.
 	apprClient apprclient.Interface
 	fs         afero.Fs
-	helmClient helm.Interface
+	helmClient helmclient.Interface
 	k8sClient  kubernetes.Interface
 	logger     micrologger.Logger
 }

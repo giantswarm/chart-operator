@@ -3,9 +3,8 @@ package chart
 import (
 	"fmt"
 
-	helmclient "k8s.io/helm/pkg/helm"
-
-	"github.com/giantswarm/chart-operator/service/chartconfig/v1/helm"
+	"github.com/giantswarm/helmclient"
+	"k8s.io/helm/pkg/helm"
 )
 
 type apprMock struct {
@@ -26,12 +25,12 @@ func (a *apprMock) PullChartTarball(name, channel string) (string, error) {
 }
 
 type helmMock struct {
-	defaultReleaseContent *helm.ReleaseContent
-	defaultReleaseHistory *helm.ReleaseHistory
+	defaultReleaseContent *helmclient.ReleaseContent
+	defaultReleaseHistory *helmclient.ReleaseHistory
 	defaultError          error
 }
 
-func (h *helmMock) DeleteRelease(releaseName string, options ...helmclient.DeleteOption) error {
+func (h *helmMock) DeleteRelease(releaseName string, options ...helm.DeleteOption) error {
 	if h.defaultError != nil {
 		return h.defaultError
 	}
@@ -39,7 +38,7 @@ func (h *helmMock) DeleteRelease(releaseName string, options ...helmclient.Delet
 	return nil
 }
 
-func (h *helmMock) GetReleaseContent(releaseName string) (*helm.ReleaseContent, error) {
+func (h *helmMock) GetReleaseContent(releaseName string) (*helmclient.ReleaseContent, error) {
 	if h.defaultError != nil {
 		return nil, h.defaultError
 	}
@@ -47,7 +46,7 @@ func (h *helmMock) GetReleaseContent(releaseName string) (*helm.ReleaseContent, 
 	return h.defaultReleaseContent, nil
 }
 
-func (h *helmMock) GetReleaseHistory(releaseName string) (*helm.ReleaseHistory, error) {
+func (h *helmMock) GetReleaseHistory(releaseName string) (*helmclient.ReleaseHistory, error) {
 	if h.defaultError != nil {
 		return nil, h.defaultError
 	}
@@ -55,10 +54,10 @@ func (h *helmMock) GetReleaseHistory(releaseName string) (*helm.ReleaseHistory, 
 	return h.defaultReleaseHistory, nil
 }
 
-func (h *helmMock) InstallFromTarball(path, ns string, options ...helmclient.InstallOption) error {
+func (h *helmMock) InstallFromTarball(path, ns string, options ...helm.InstallOption) error {
 	return nil
 }
 
-func (h *helmMock) UpdateReleaseFromTarball(releaseName, path string, options ...helmclient.UpdateOption) error {
+func (h *helmMock) UpdateReleaseFromTarball(releaseName, path string, options ...helm.UpdateOption) error {
 	return nil
 }

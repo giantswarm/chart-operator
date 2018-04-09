@@ -1,4 +1,4 @@
-package helm
+package helmclient
 
 import (
 	"fmt"
@@ -18,8 +18,9 @@ const (
 
 // Config represents the configuration used to create a helm client.
 type Config struct {
-	K8sClient  kubernetes.Interface
-	Logger     micrologger.Logger
+	K8sClient kubernetes.Interface
+	Logger    micrologger.Logger
+
 	RestConfig *rest.Config
 }
 
@@ -37,6 +38,7 @@ func New(config Config) (*Client, error) {
 	if config.K8sClient == nil {
 		return nil, microerror.Maskf(invalidConfigError, "%T.K8sClient must not be empty", config)
 	}
+
 	if config.RestConfig == nil {
 		return nil, microerror.Maskf(invalidConfigError, "%T.RestConfig must not be empty", config)
 	}
@@ -46,15 +48,14 @@ func New(config Config) (*Client, error) {
 		return nil, microerror.Mask(err)
 	}
 
-	hc := helmclient.NewClient(helmclient.Host(host),
-		helmclient.ConnectTimeout(connectionTimeoutSecs))
+	helmClient := helmclient.NewClient(helmclient.Host(host), helmclient.ConnectTimeout(connectionTimeoutSecs))
 
-	newHelm := &Client{
-		helmClient: hc,
+	c := &Client{
+		helmClient: helmClient,
 		logger:     config.Logger,
 	}
 
-	return newHelm, nil
+	return c, nil
 }
 
 // DeleteRelease uninstalls a chart given its release name.

@@ -4,6 +4,7 @@ import (
 	"github.com/giantswarm/apiextensions/pkg/apis/core/v1alpha1"
 	"github.com/giantswarm/apiextensions/pkg/clientset/versioned"
 	"github.com/giantswarm/apprclient"
+	"github.com/giantswarm/helmclient"
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/micrologger"
 	"github.com/giantswarm/operatorkit/client/k8scrdclient"
@@ -14,14 +15,13 @@ import (
 	"k8s.io/client-go/kubernetes"
 
 	"github.com/giantswarm/chart-operator/service/chartconfig/v1"
-	"github.com/giantswarm/chart-operator/service/chartconfig/v1/helm"
 )
 
 type ChartFrameworkConfig struct {
 	ApprClient   apprclient.Interface
 	Fs           afero.Fs
 	G8sClient    versioned.Interface
-	HelmClient   helm.Interface
+	HelmClient   helmclient.Interface
 	K8sClient    kubernetes.Interface
 	K8sExtClient apiextensionsclient.Interface
 	Logger       micrologger.Logger

@@ -7,19 +7,18 @@ import (
 	"testing"
 
 	"github.com/giantswarm/apiextensions/pkg/apis/core/v1alpha1"
+	"github.com/giantswarm/helmclient"
 	"github.com/giantswarm/micrologger/microloggertest"
 	"github.com/spf13/afero"
 	"k8s.io/client-go/kubernetes/fake"
-
-	"github.com/giantswarm/chart-operator/service/chartconfig/v1/helm"
 )
 
 func Test_CurrentState(t *testing.T) {
 	testCases := []struct {
 		name           string
 		obj            *v1alpha1.ChartConfig
-		releaseContent *helm.ReleaseContent
-		releaseHistory *helm.ReleaseHistory
+		releaseContent *helmclient.ReleaseContent
+		releaseHistory *helmclient.ReleaseHistory
 		returnedError  error
 		expectedState  ChartState
 		expectedError  bool
@@ -35,14 +34,14 @@ func Test_CurrentState(t *testing.T) {
 					},
 				},
 			},
-			releaseContent: &helm.ReleaseContent{
+			releaseContent: &helmclient.ReleaseContent{
 				Name:   "chart-operator",
 				Status: "DEPLOYED",
 				Values: map[string]interface{}{
 					"key": "value",
 				},
 			},
-			releaseHistory: &helm.ReleaseHistory{
+			releaseHistory: &helmclient.ReleaseHistory{
 				Name:    "chart-operator",
 				Version: "0.1.2",
 			},
@@ -68,14 +67,14 @@ func Test_CurrentState(t *testing.T) {
 					},
 				},
 			},
-			releaseContent: &helm.ReleaseContent{
+			releaseContent: &helmclient.ReleaseContent{
 				Name:   "chart-operator",
 				Status: "FAILED",
 				Values: map[string]interface{}{
 					"foo": "bar",
 				},
 			},
-			releaseHistory: &helm.ReleaseHistory{
+			releaseHistory: &helmclient.ReleaseHistory{
 				Name:    "chart-operator",
 				Version: "0.1.3",
 			},
@@ -101,8 +100,8 @@ func Test_CurrentState(t *testing.T) {
 					},
 				},
 			},
-			releaseContent: &helm.ReleaseContent{},
-			releaseHistory: &helm.ReleaseHistory{},
+			releaseContent: &helmclient.ReleaseContent{},
+			releaseHistory: &helmclient.ReleaseHistory{},
 			returnedError:  fmt.Errorf("No such release: missing-operator"),
 		},
 		{
@@ -116,8 +115,8 @@ func Test_CurrentState(t *testing.T) {
 					},
 				},
 			},
-			releaseContent: &helm.ReleaseContent{},
-			releaseHistory: &helm.ReleaseHistory{},
+			releaseContent: &helmclient.ReleaseContent{},
+			releaseHistory: &helmclient.ReleaseHistory{},
 			returnedError:  fmt.Errorf("Unexpected error"),
 			expectedError:  true,
 		},
