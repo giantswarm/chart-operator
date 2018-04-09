@@ -1,14 +1,11 @@
 // +build k8srequired
 
-package integration
+package basic
 
 import (
-	"log"
-	"os"
 	"path/filepath"
 	"testing"
 
-	"github.com/giantswarm/e2e-harness/pkg/framework"
 	"github.com/giantswarm/e2e-harness/pkg/harness"
 	"github.com/giantswarm/micrologger"
 	"github.com/spf13/afero"
@@ -23,37 +20,6 @@ import (
 const (
 	chartOperatorValues = ``
 )
-
-var (
-	f *framework.Host
-)
-
-// TestMain allows us to have common setup and teardown steps that are run
-// once for all the tests https://golang.org/pkg/testing/#hdr-Main.
-func TestMain(m *testing.M) {
-	var v int
-	var err error
-	f, err = framework.NewHost(framework.HostConfig{})
-	if err != nil {
-		log.Printf("unexpected error: %v\n", err)
-		os.Exit(1)
-	}
-
-	if err := f.CreateNamespace("giantswarm"); err != nil {
-		log.Printf("unexpected error: %v\n", err)
-		v = 1
-	}
-
-	if v == 0 {
-		v = m.Run()
-	}
-
-	if os.Getenv("KEEP_RESOURCES") != "true" {
-		f.Teardown()
-	}
-
-	os.Exit(v)
-}
 
 func TestGetReleaseVersion(t *testing.T) {
 	l, err := micrologger.New(micrologger.Config{})
@@ -112,7 +78,7 @@ func TestInstallChart(t *testing.T) {
 	}
 
 	// --test-dir dir is mounted in /e2e in the test container.
-	tarballPath := filepath.Join("/e2e", "tb-chart.tar.gz")
+	tarballPath := filepath.Join("/e2e/fixtures/", "tb-chart.tar.gz")
 
 	const releaseName = "tb-chart-release"
 
