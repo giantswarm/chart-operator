@@ -5,6 +5,7 @@ import (
 	"github.com/giantswarm/helmclient"
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/micrologger"
+	"github.com/spf13/afero"
 	"k8s.io/client-go/kubernetes"
 )
 
@@ -17,6 +18,7 @@ const (
 type Config struct {
 	// Dependencies.
 	ApprClient apprclient.Interface
+	Fs         afero.Fs
 	HelmClient helmclient.Interface
 	K8sClient  kubernetes.Interface
 	Logger     micrologger.Logger
@@ -26,6 +28,7 @@ type Config struct {
 type Resource struct {
 	// Dependencies.
 	apprClient apprclient.Interface
+	fs         afero.Fs
 	helmClient helmclient.Interface
 	k8sClient  kubernetes.Interface
 	logger     micrologger.Logger
@@ -36,6 +39,9 @@ func New(config Config) (*Resource, error) {
 	// Dependencies.
 	if config.ApprClient == nil {
 		return nil, microerror.Maskf(invalidConfigError, "%T.ApprClient must not be empty", config)
+	}
+	if config.Fs == nil {
+		return nil, microerror.Maskf(invalidConfigError, "%T.Fs must not be empty", config)
 	}
 	if config.HelmClient == nil {
 		return nil, microerror.Maskf(invalidConfigError, "%T.HelmClient must not be empty", config)
@@ -50,6 +56,7 @@ func New(config Config) (*Resource, error) {
 	r := &Resource{
 		// Dependencies.
 		apprClient: config.ApprClient,
+		fs:         config.Fs,
 		helmClient: config.HelmClient,
 		k8sClient:  config.K8sClient,
 		logger:     config.Logger,

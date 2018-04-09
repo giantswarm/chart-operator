@@ -11,6 +11,7 @@ import (
 	"github.com/giantswarm/operatorkit/framework"
 	"github.com/giantswarm/operatorkit/framework/resource/metricsresource"
 	"github.com/giantswarm/operatorkit/framework/resource/retryresource"
+	"github.com/spf13/afero"
 	"k8s.io/client-go/kubernetes"
 
 	"github.com/giantswarm/chart-operator/service/chartconfig/v1/key"
@@ -28,6 +29,7 @@ const (
 type ResourceSetConfig struct {
 	// Dependencies.
 	ApprClient apprclient.Interface
+	Fs         afero.Fs
 	HelmClient helmclient.Interface
 	K8sClient  kubernetes.Interface
 	Logger     micrologger.Logger
@@ -58,6 +60,7 @@ func NewResourceSet(config ResourceSetConfig) (*framework.ResourceSet, error) {
 	{
 		c := chart.Config{
 			ApprClient: config.ApprClient,
+			Fs:         config.Fs,
 			HelmClient: config.HelmClient,
 			K8sClient:  config.K8sClient,
 			Logger:     config.Logger,

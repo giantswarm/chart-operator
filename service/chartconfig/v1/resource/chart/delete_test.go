@@ -6,6 +6,7 @@ import (
 
 	"github.com/giantswarm/apiextensions/pkg/apis/core/v1alpha1"
 	"github.com/giantswarm/micrologger/microloggertest"
+	"github.com/spf13/afero"
 	"k8s.io/client-go/kubernetes/fake"
 )
 
@@ -95,6 +96,7 @@ func Test_Resource_Chart_newDeleteChange(t *testing.T) {
 	{
 		c := Config{}
 		c.ApprClient = &apprMock{}
+		c.Fs = afero.NewMemMapFs()
 		c.HelmClient = &helmMock{}
 		c.K8sClient = fake.NewSimpleClientset()
 		c.Logger = microloggertest.New()

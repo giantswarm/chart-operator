@@ -3,7 +3,6 @@ package chart
 import (
 	"context"
 	"fmt"
-	"os"
 
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/operatorkit/framework"
@@ -34,7 +33,7 @@ func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange inte
 			return microerror.Mask(err)
 		}
 		defer func() {
-			err := os.Remove(tarballPath)
+			err := r.fs.Remove(tarballPath)
 			if err != nil {
 				r.logger.LogCtx(ctx, "level", "error", "message", fmt.Sprintf("deletion of %q failed", tarballPath), "stack", fmt.Sprintf("%#v", err))
 			}
