@@ -8,4 +8,5 @@ chart-operator
 !vendor/**
 
 .e2e-harness/
-integration/chart-operator-e2e
+
+integration/test/**/*-e2e
