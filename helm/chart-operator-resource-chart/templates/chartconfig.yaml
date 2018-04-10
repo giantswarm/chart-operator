@@ -1,4 +1,4 @@
-apiVersion: "provider.giantswarm.io/v1alpha1"
+apiVersion: "core.giantswarm.io/v1alpha1"
 kind: ChartConfig
 metadata:
   name: "{{.Values.chart.name}}"
