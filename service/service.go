@@ -17,7 +17,7 @@ import (
 	"k8s.io/client-go/rest"
 
 	"github.com/giantswarm/chart-operator/flag"
-	"github.com/giantswarm/chart-operator/service/chartconfig"
+	"github.com/giantswarm/chart-operator/service/controller"
 	"github.com/giantswarm/chart-operator/service/healthz"
 )
 
@@ -144,7 +144,7 @@ func New(config Config) (*Service, error) {
 
 	var chartFramework *framework.Framework
 	{
-		c := chartconfig.ChartFrameworkConfig{
+		c := controller.ChartFrameworkConfig{
 			ApprClient:   apprClient,
 			Fs:           fs,
 			HelmClient:   helmClient,
@@ -157,7 +157,7 @@ func New(config Config) (*Service, error) {
 			WatchNamespace: config.Viper.GetString(config.Flag.Service.Kubernetes.Watch.Namespace),
 		}
 
-		chartFramework, err = chartconfig.NewChartFramework(c)
+		chartFramework, err = controller.NewChartFramework(c)
 		if err != nil {
 			return nil, microerror.Mask(err)
 		}
