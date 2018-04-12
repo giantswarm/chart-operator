@@ -108,16 +108,22 @@
   revision = "c85c4e5941adcc2425b69ad7ace56b0b2e36930d"
 
 [[projects]]
-  branch = "master"
+  branch = "vendor-k8sportforward"
   name = "github.com/giantswarm/helmclient"
   packages = ["."]
-  revision = "e6c4e7cd8b93d54d29a56e54259be8b68b84f2d7"
+  revision = "a51be351b4a530e19b91fe130cc7427d9b0023a7"
 
 [[projects]]
   branch = "master"
   name = "github.com/giantswarm/k8shealthz"
   packages = ["."]
   revision = "9abe467ab9085610b261319dfe875c6d13537b06"
+
+[[projects]]
+  branch = "reduce-mutability"
+  name = "github.com/giantswarm/k8sportforward"
+  packages = ["."]
+  revision = "4e7d1a237a1f33a81b714bf58dd7b3bb01353711"
 
 [[projects]]
   branch = "master"
@@ -847,6 +853,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "432385b94adb70bf6165c03cfc34cf9a0116182161f869c4dbacfc61c6bb2970"
+  inputs-digest = "bca6b377c7a43c1d33a21f6f967cea3a8054c1d95229f5c82db2a8c775b93b99"
   solver-name = "gps-cdcl"
   solver-version = 1

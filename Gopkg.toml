@@ -42,7 +42,7 @@ required = [
   name = "github.com/giantswarm/apprclient"
 
 [[constraint]]
-  branch = "master"
+  branch = "vendor-k8sportforward"
   name = "github.com/giantswarm/helmclient"
 
 [[constraint]]

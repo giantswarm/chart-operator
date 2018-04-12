@@ -62,6 +62,12 @@
   version = "8735501"
 
 [[projects]]
+  branch = "reduce-mutability"
+  name = "github.com/giantswarm/k8sportforward"
+  packages = ["."]
+  revision = "4e7d1a237a1f33a81b714bf58dd7b3bb01353711"
+
+[[projects]]
   branch = "master"
   name = "github.com/giantswarm/microerror"
   packages = ["."]
@@ -537,6 +543,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "1036e2cbf79469410402033915a71f4fe9760c2935cf51dcc9a394c88ce06e62"
+  inputs-digest = "a423b2356ca7a80559cfe15e7ffc602d94b7ad082da5f79b70a539fc501aa98c"
   solver-name = "gps-cdcl"
   solver-version = 1
