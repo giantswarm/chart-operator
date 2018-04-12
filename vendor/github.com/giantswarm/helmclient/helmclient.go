@@ -3,6 +3,7 @@ package helmclient
 import (
 	"fmt"
 
+	"github.com/giantswarm/k8sportforward"
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/micrologger"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -152,11 +153,24 @@ func (c *Client) UpdateReleaseFromTarball(releaseName, path string, options ...h
 func setupConnection(client kubernetes.Interface, config *rest.Config) (string, error) {
 	podName, err := getPodName(client, tillerLabelSelector, tillerDefaultNamespace)
 	if err != nil {
-		return "", err
+		return "", microerror.Mask(err)
 	}
 
-	t := newTunnel(client.CoreV1().RESTClient(), config, tillerDefaultNamespace, podName, tillerPort)
-	err = t.forwardPort()
+	c := k8sportforward.Config{
+		RestConfig: config,
+	}
+	f, err := k8sportforward.New(c)
+	if err != nil {
+		return "", microerror.Mask(err)
+	}
+
+	tc := k8sportforward.TunnelConfig{
+		Remote:    tillerPort,
+		Namespace: tillerDefaultNamespace,
+		PodName:   podName,
+	}
+
+	t, err := f.ForwardPort(tc)
 	if err != nil {
 		return "", microerror.Mask(err)
 	}
@@ -167,14 +181,14 @@ func setupConnection(client kubernetes.Interface, config *rest.Config) (string, 
 }
 
 func getPodName(client kubernetes.Interface, labelSelector, namespace string) (string, error) {
-	pods, err := client.CoreV1().
-		Pods(namespace).
-		List(metav1.ListOptions{
-			LabelSelector: labelSelector,
-		})
+	o := metav1.ListOptions{
+		LabelSelector: labelSelector,
+	}
+	pods, err := client.CoreV1().Pods(namespace).List(o)
 	if err != nil {
 		return "", microerror.Mask(err)
 	}
+
 	if len(pods.Items) > 1 {
 		return "", microerror.Mask(tooManyResultsError)
 	}
@@ -182,5 +196,6 @@ func getPodName(client kubernetes.Interface, labelSelector, namespace string) (s
 		return "", microerror.Mask(notFoundError)
 	}
 	pod := pods.Items[0]
+
 	return pod.Name, nil
 }
