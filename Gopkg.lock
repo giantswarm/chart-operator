@@ -111,13 +111,19 @@
   branch = "master"
   name = "github.com/giantswarm/helmclient"
   packages = ["."]
-  revision = "e6c4e7cd8b93d54d29a56e54259be8b68b84f2d7"
+  revision = "5199e1fbc76197e30726fb25a20804cca7a36604"
 
 [[projects]]
   branch = "master"
   name = "github.com/giantswarm/k8shealthz"
   packages = ["."]
   revision = "9abe467ab9085610b261319dfe875c6d13537b06"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/giantswarm/k8sportforward"
+  packages = ["."]
+  revision = "323d6e929c88554cdc8ab8586ff5b89b9227ed8e"
 
 [[projects]]
   branch = "master"
