@@ -24,7 +24,7 @@ func TestChartInstalled(t *testing.T) {
 
 	var rc *helmclient.ReleaseContent
 	operation := func() error {
-		rc, err = helmClient.GetReleaseContent("tb-chart")
+		rc, err = helmClient.GetReleaseContent("tb-release")
 		if err != nil {
 			return fmt.Errorf("could not retrieve release content: %v", err)
 		}
@@ -51,7 +51,7 @@ func installChartOperatorResource(f *framework.Host) error {
   name: "tb-chart"
   channel: "5-5-beta"
   namespace: "default"
-  release: "5.5.5"
+  release: "tb-release"
 `
 
 	chartOperatorResourceValuesEnv := os.ExpandEnv(chartOperatorResourceValues)
