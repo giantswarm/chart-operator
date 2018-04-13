@@ -92,7 +92,7 @@ func initializeCNR(f *framework.Host, helmClient *helmclient.Client) error {
 }
 
 func installCNR(f *framework.Host, helmClient *helmclient.Client) error {
-	err := framework.HelmCmd("registry install --wait quay.io/giantswarm/cnr-server-chart:stable -- -n cnr-server")
+	err := framework.HelmCmd("registry install --wait quay.io/giantswarm/cnr-server-chart:stable -- -n cnr-server --set namespace=kube-system")
 	if err != nil {
 		return microerror.Mask(err)
 	}
@@ -146,13 +146,13 @@ func installInitialCharts(f *framework.Host) error {
 		return microerror.Mask(err)
 	}
 
-	podName, err := f.GetPodName("default", "app=cnr-server")
+	podName, err := f.GetPodName("kube-system", "app=cnr-server")
 	if err != nil {
 		return microerror.Mask(err)
 	}
 	tc := k8sportforward.TunnelConfig{
 		Remote:    5000,
-		Namespace: "default",
+		Namespace: "kube-system",
 		PodName:   podName,
 	}
 	tunnel, err := fw.ForwardPort(tc)
