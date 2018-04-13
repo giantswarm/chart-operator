@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/giantswarm/microerror"
+	"k8s.io/helm/pkg/helm"
 
 	"github.com/giantswarm/chart-operator/service/controller/v1/key"
 )
@@ -36,7 +37,7 @@ func (r *Resource) ApplyCreateChange(ctx context.Context, obj, createChange inte
 			}
 		}()
 
-		err = r.helmClient.InstallFromTarball(tarballPath, ns)
+		err = r.helmClient.InstallFromTarball(tarballPath, ns, helm.ReleaseName(chartState.ReleaseName))
 		if err != nil {
 			return microerror.Mask(err)
 		}
