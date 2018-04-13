@@ -6,7 +6,7 @@ import (
 
 	"github.com/giantswarm/microerror"
 
-	"github.com/giantswarm/chart-operator/service/chartconfig/v1/key"
+	"github.com/giantswarm/chart-operator/service/controller/v1/key"
 )
 
 func (r *Resource) ApplyCreateChange(ctx context.Context, obj, createChange interface{}) error {
