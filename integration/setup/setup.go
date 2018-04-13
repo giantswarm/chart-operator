@@ -4,7 +4,6 @@ package setup
 
 import (
 	"fmt"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -75,45 +74,6 @@ func resources(f *framework.Host, helmClient *helmclient.Client) error {
 		return microerror.Mask(err)
 	}
 
-	err = installChartOperatorResource(f)
-	if err != nil {
-		return microerror.Mask(err)
-	}
-
-	return nil
-}
-
-func installChartOperatorResource(f *framework.Host) error {
-	const chartOperatorResourceValues = `chart:
-  name: "test-chart"
-  channel: "3-2-beta"
-  namespace: "default"
-  release: "3.2.0"
-`
-
-	chartOperatorResourceValuesEnv := os.ExpandEnv(chartOperatorResourceValues)
-	d := []byte(chartOperatorResourceValuesEnv)
-
-	tmpfile, err := ioutil.TempFile("", "chart-operator-resource-values")
-	if err != nil {
-		return microerror.Mask(err)
-	}
-	defer os.Remove(tmpfile.Name())
-
-	_, err = tmpfile.Write(d)
-	if err != nil {
-		return microerror.Mask(err)
-	}
-	err = tmpfile.Close()
-	if err != nil {
-		return microerror.Mask(err)
-	}
-
-	err = framework.HelmCmd("registry install quay.io/giantswarm/chart-operator-resource-chart:stable -- -n chart-operator-resource --values " + tmpfile.Name())
-	if err != nil {
-		return microerror.Mask(err)
-	}
-
 	return nil
 }
 
@@ -138,34 +98,40 @@ func installCNR(f *framework.Host, helmClient *helmclient.Client) error {
 	}
 
 	/*
-		l, err := micrologger.New(micrologger.Config{})
-		if err != nil {
-			return microerror.Mask(err)
-		}
+		    FIXME: installing cnr-server from quay with helmclient is failing:
 
-		c := apprclient.Config{
-			Fs:     afero.NewOsFs(),
-			Logger: l,
+		    {rpc error: code = Unknown desc = render error in "cnr-server-chart/templates/deployment.yaml":
+		     template: cnr-server-chart/templates/deployment.yaml:20:26: executing "cnr-server-chart/templates/deployment.yaml"
+		     at <.Values.image.reposi...>: can't evaluate field repository in type interface {}}
 
-			Address:      "https://quay.io",
-			Organization: "giantswarm",
-		}
+				l, err := micrologger.New(micrologger.Config{})
+				if err != nil {
+					return microerror.Mask(err)
+				}
 
-		a, err := apprclient.New(c)
-		if err != nil {
-			return microerror.Mask(err)
-		}
+				c := apprclient.Config{
+					Fs:     afero.NewOsFs(),
+					Logger: l,
 
-		tarball, err := a.PullChartTarball("cnr-server-chart", "stable")
-		if err != nil {
-			return microerror.Mask(err)
-		}
-		content, _ := ioutil.ReadFile(tarball)
-		log.Printf("cnr-server tarball: %s\n", content)
-		err = helmClient.InstallFromTarball(tarball, "default", helm.ReleaseName("cnr-server"))
-		if err != nil {
-			return microerror.Mask(err)
-		}
+					Address:      "https://quay.io",
+					Organization: "giantswarm",
+				}
+
+				a, err := apprclient.New(c)
+				if err != nil {
+					return microerror.Mask(err)
+				}
+
+				tarball, err := a.PullChartTarball("cnr-server-chart", "stable")
+				if err != nil {
+					return microerror.Mask(err)
+				}
+				content, _ := ioutil.ReadFile(tarball)
+				log.Printf("cnr-server tarball: %s\n", content)
+				err = helmClient.InstallFromTarball(tarball, "default", helm.ReleaseName("cnr-server"))
+				if err != nil {
+					return microerror.Mask(err)
+				}
 	*/
 	return nil
 }
