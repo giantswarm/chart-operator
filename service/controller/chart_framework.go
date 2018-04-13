@@ -1,4 +1,4 @@
-package chartconfig
+package controller
 
 import (
 	"github.com/giantswarm/apiextensions/pkg/apis/core/v1alpha1"
@@ -14,7 +14,7 @@ import (
 	apiextensionsclient "k8s.io/apiextensions-apiserver/pkg/client/clientset/clientset"
 	"k8s.io/client-go/kubernetes"
 
-	"github.com/giantswarm/chart-operator/service/chartconfig/v1"
+	"github.com/giantswarm/chart-operator/service/controller/v1"
 )
 
 type ChartFrameworkConfig struct {
