@@ -61,7 +61,7 @@ func WrapTestMain(f *framework.Host, helmClient *helmclient.Client, m *testing.M
 
 func resources(f *framework.Host, helmClient *helmclient.Client) error {
 	const chartOperatorValues = `cnr:
-  address: http://localhost:5000
+  address: http://cnr-server:5000
 `
 	err := initializeCNR(f, helmClient)
 	if err != nil {
@@ -143,12 +143,12 @@ func installInitialCharts(f *framework.Host) error {
 
 	fw, err := k8sportforward.New(fwc)
 	if err != nil {
-		microerror.Mask(err)
+		return microerror.Mask(err)
 	}
 
 	podName, err := f.GetPodName("default", "app=cnr-server")
 	if err != nil {
-		microerror.Mask(err)
+		return microerror.Mask(err)
 	}
 	tc := k8sportforward.TunnelConfig{
 		Remote:    5000,
@@ -157,13 +157,13 @@ func installInitialCharts(f *framework.Host) error {
 	}
 	tunnel, err := fw.ForwardPort(tc)
 	if err != nil {
-		microerror.Mask(err)
+		return microerror.Mask(err)
 	}
 
 	serverAddress := "http://localhost:" + strconv.Itoa(tunnel.Local)
 	err = waitForServer(f, serverAddress+"/cnr/api/v1/packages")
 	if err != nil {
-		microerror.Mask(fmt.Errorf("server didn't come up on time"))
+		return microerror.Mask(fmt.Errorf("server didn't come up on time"))
 	}
 
 	l, err := micrologger.New(micrologger.Config{})
@@ -181,17 +181,17 @@ func installInitialCharts(f *framework.Host) error {
 
 	a, err := apprclient.New(c)
 	if err != nil {
-		microerror.Mask(err)
+		return microerror.Mask(err)
 	}
 
 	err = a.PushChartTarball("tb-chart", "5.5.5", "/e2e/fixtures/tb-chart.tar.gz")
 	if err != nil {
-		microerror.Mask(err)
+		return microerror.Mask(err)
 	}
 
 	err = a.PromoteChart("tb-chart", "5.5.5", "5-5-beta")
 	if err != nil {
-		microerror.Mask(err)
+		return microerror.Mask(err)
 	}
 
 	return nil

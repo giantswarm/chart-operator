@@ -2,6 +2,7 @@ apiVersion: "core.giantswarm.io/v1alpha1"
 kind: ChartConfig
 metadata:
   name: "{{.Values.chart.name}}"
+  namespace: "kube-system"
 spec:
   chart:
     channel: "{{.Values.chart.channel}}"
