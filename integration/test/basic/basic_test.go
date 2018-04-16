@@ -28,6 +28,9 @@ func TestChartInstalled(t *testing.T) {
 		if err != nil {
 			return fmt.Errorf("could not retrieve release content: %v", err)
 		}
+		if rc.Status == "PENDING_INSTALL" {
+			return fmt.Errorf("release still not installed: %v", err)
+		}
 		return nil
 	}
 
