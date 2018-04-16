@@ -96,7 +96,7 @@
   branch = "master"
   name = "github.com/giantswarm/apprclient"
   packages = ["."]
-  revision = "941678e89e3d8836ed99687217676cfdc7c711b1"
+  revision = "3b84395624cf804b3f43bb2f5bcf43ca36de9fee"
 
 [[projects]]
   branch = "master"
@@ -105,7 +105,7 @@
     "pkg/framework",
     "pkg/harness"
   ]
-  revision = "c85c4e5941adcc2425b69ad7ace56b0b2e36930d"
+  revision = "f07ffbbe515a9961c99f0e50f0c4df7902d7f6b4"
 
 [[projects]]
   branch = "master"
@@ -853,6 +853,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "432385b94adb70bf6165c03cfc34cf9a0116182161f869c4dbacfc61c6bb2970"
+  inputs-digest = "56b2035fa2d1959a46472b631615812f6d313be339a45b80550e3b1e2a9df78b"
   solver-name = "gps-cdcl"
   solver-version = 1

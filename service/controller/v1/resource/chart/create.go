@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/giantswarm/microerror"
+	"k8s.io/helm/pkg/helm"
 
 	"github.com/giantswarm/chart-operator/service/controller/v1/key"
 )
@@ -36,7 +37,19 @@ func (r *Resource) ApplyCreateChange(ctx context.Context, obj, createChange inte
 			}
 		}()
 
-		err = r.helmClient.InstallFromTarball(tarballPath, ns)
+		// We need to pass the ValueOverrides option to make the install process
+		// use the default values and prevent errors on nested values.
+		//
+		//     {
+		//      rpc error: code = Unknown desc = render error in "cnr-server-chart/templates/deployment.yaml":
+		//      template: cnr-server-chart/templates/deployment.yaml:20:26:
+		//      executing "cnr-server-chart/templates/deployment.yaml" at <.Values.image.reposi...>: can't evaluate field repository in type interface {}
+		//     }
+		//
+		err = r.helmClient.InstallFromTarball(tarballPath, ns,
+			helm.ReleaseName(chartState.ReleaseName),
+			helm.ValueOverrides([]byte("{}")),
+			helm.InstallWait(true))
 		if err != nil {
 			return microerror.Mask(err)
 		}

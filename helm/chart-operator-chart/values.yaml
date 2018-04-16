@@ -19,3 +19,6 @@ resources:
   limits:
     cpu: 250m
     memory: 250Mi
+
+cnr:
+  address: https://quay.io
