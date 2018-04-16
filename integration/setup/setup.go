@@ -19,6 +19,7 @@ import (
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/micrologger"
 	"github.com/spf13/afero"
+	"k8s.io/helm/pkg/helm"
 
 	"github.com/giantswarm/chart-operator/integration/teardown"
 )
@@ -92,47 +93,37 @@ func initializeCNR(f *framework.Host, helmClient *helmclient.Client) error {
 }
 
 func installCNR(f *framework.Host, helmClient *helmclient.Client) error {
-	err := framework.HelmCmd("registry install --wait quay.io/giantswarm/cnr-server-chart:stable -- -n cnr-server --set namespace=kube-system")
+	l, err := micrologger.New(micrologger.Config{})
 	if err != nil {
 		return microerror.Mask(err)
 	}
 
-	/*
-		    FIXME: installing cnr-server from quay with helmclient is failing:
+	c := apprclient.Config{
+		Fs:     afero.NewOsFs(),
+		Logger: l,
 
-		    {rpc error: code = Unknown desc = render error in "cnr-server-chart/templates/deployment.yaml":
-		     template: cnr-server-chart/templates/deployment.yaml:20:26: executing "cnr-server-chart/templates/deployment.yaml"
-		     at <.Values.image.reposi...>: can't evaluate field repository in type interface {}}
+		Address:      "https://quay.io",
+		Organization: "giantswarm",
+	}
 
-				l, err := micrologger.New(micrologger.Config{})
-				if err != nil {
-					return microerror.Mask(err)
-				}
+	a, err := apprclient.New(c)
+	if err != nil {
+		return microerror.Mask(err)
+	}
 
-				c := apprclient.Config{
-					Fs:     afero.NewOsFs(),
-					Logger: l,
+	tarball, err := a.PullChartTarball("cnr-server-chart", "stable")
+	if err != nil {
+		return microerror.Mask(err)
+	}
 
-					Address:      "https://quay.io",
-					Organization: "giantswarm",
-				}
+	err = helmClient.InstallFromTarball(tarball, "kube-system",
+		helm.ReleaseName("cnr-server"),
+		helm.ValueOverrides([]byte("{}")),
+		helm.InstallWait(true))
+	if err != nil {
+		return microerror.Mask(err)
+	}
 
-				a, err := apprclient.New(c)
-				if err != nil {
-					return microerror.Mask(err)
-				}
-
-				tarball, err := a.PullChartTarball("cnr-server-chart", "stable")
-				if err != nil {
-					return microerror.Mask(err)
-				}
-				content, _ := ioutil.ReadFile(tarball)
-				log.Printf("cnr-server tarball: %s\n", content)
-				err = helmClient.InstallFromTarball(tarball, "default", helm.ReleaseName("cnr-server"))
-				if err != nil {
-					return microerror.Mask(err)
-				}
-	*/
 	return nil
 }
 
@@ -146,7 +137,7 @@ func installInitialCharts(f *framework.Host) error {
 		return microerror.Mask(err)
 	}
 
-	podName, err := f.GetPodName("kube-system", "app=cnr-server")
+	podName, err := waitForPod(f, "kube-system", "app=cnr-server")
 	if err != nil {
 		return microerror.Mask(err)
 	}
@@ -217,4 +208,26 @@ func waitForServer(f *framework.Host, url string) error {
 		return microerror.Mask(err)
 	}
 	return nil
+}
+
+func waitForPod(f *framework.Host, ns, selector string) (string, error) {
+	var err error
+	var podName string
+	operation := func() error {
+		podName, err = f.GetPodName(ns, selector)
+		if err != nil {
+			return fmt.Errorf("could not retrieve pod %q on %q: %v", selector, ns, err)
+		}
+		return nil
+	}
+
+	notify := func(err error, t time.Duration) {
+		log.Printf("waiting for pod at %s: %v", t, err)
+	}
+
+	err = backoff.RetryNotify(operation, backoff.NewExponentialBackOff(), notify)
+	if err != nil {
+		return "", microerror.Mask(err)
+	}
+	return podName, nil
 }
