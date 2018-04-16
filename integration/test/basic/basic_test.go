@@ -25,7 +25,7 @@ func TestChartInstalled(t *testing.T) {
 	operation := func() error {
 		rc, err = helmClient.GetReleaseContent("tb-release")
 		if err != nil {
-			return microerror.Newf("could not retrieve release content: %v", err)
+			return microerror.Maskf("could not retrieve release content: %v", err)
 		}
 		if rc.Status == "PENDING_INSTALL" {
 			return microerror.Newf("release still not installed")
