@@ -10,8 +10,8 @@ import (
 )
 
 func Teardown(f *framework.Host) error {
-	//items := []string{"cnr-server", "chart-operator", "chart-operator-resource"}
-	items := []string{}
+	items := []string{"cnr-server", "chart-operator", "chart-operator-resource"}
+
 	for _, item := range items {
 		cmd := fmt.Sprintf("delete %s --purge", item)
 		err := framework.HelmCmd(cmd)

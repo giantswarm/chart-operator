@@ -3,7 +3,6 @@
 package basic
 
 import (
-	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
@@ -26,10 +25,10 @@ func TestChartInstalled(t *testing.T) {
 	operation := func() error {
 		rc, err = helmClient.GetReleaseContent("tb-release")
 		if err != nil {
-			return fmt.Errorf("could not retrieve release content: %v", err)
+			return microerror.Newf("could not retrieve release content: %v", err)
 		}
 		if rc.Status == "PENDING_INSTALL" {
-			return fmt.Errorf("release still not installed")
+			return microerror.Newf("release still not installed")
 		}
 		return nil
 	}
@@ -40,7 +39,7 @@ func TestChartInstalled(t *testing.T) {
 
 	err = backoff.RetryNotify(operation, backoff.NewExponentialBackOff(), notify)
 	if err != nil {
-		t.Fatalf("expected chart release was not found %v", err)
+		t.Fatal("expected nil found", err)
 	}
 
 	expectedStatus := "DEPLOYED"
