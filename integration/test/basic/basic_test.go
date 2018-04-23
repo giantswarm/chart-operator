@@ -72,11 +72,14 @@ func installChartOperatorResource(f *framework.Host, helmClient *helmclient.Clie
 	}
 
 	tarballPath, err := a.PullChartTarball("chart-operator-resource-chart", "stable")
+	if err != nil {
+		return microerror.Mask(err)
+	}
+
 	helmClient.InstallFromTarball(tarballPath, "kube-system",
 		helm.ReleaseName("chart-operator-resource"),
 		helm.ValueOverrides([]byte(chartOperatorResourceValues)),
 		helm.InstallWait(true))
-
 	if err != nil {
 		return microerror.Mask(err)
 	}
