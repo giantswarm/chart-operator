@@ -13,6 +13,7 @@ import (
 	"github.com/giantswarm/e2e-harness/pkg/framework"
 	"github.com/giantswarm/helmclient"
 	"github.com/giantswarm/microerror"
+	"github.com/giantswarm/micrologger"
 	"github.com/spf13/afero"
 	"k8s.io/helm/pkg/helm"
 )
@@ -61,6 +62,11 @@ func installChartOperatorResource(f *framework.Host, helmClient *helmclient.Clie
 	chartOperatorResourceValuesEnv := os.ExpandEnv(chartOperatorResourceValues)
 	v := []byte(chartOperatorResourceValuesEnv)
 
+	l, err := micrologger.New(micrologger.Config{})
+	if err != nil {
+		return microerror.Mask(err)
+	}
+
 	c := apprclient.Config{
 		Fs:     afero.NewOsFs(),
 		Logger: l,
@@ -75,7 +81,7 @@ func installChartOperatorResource(f *framework.Host, helmClient *helmclient.Clie
 	}
 
 	tarballPath, err := a.PullChartTarball("chart-operator-resource-chart", "stable")
-	helmClient.InstallFromTarball(tarballPath, "default",
+	helmClient.InstallFromTarball(tarballPath, "kube-system",
 		helm.ReleaseName("chart-operator-resource"),
 		helm.ValueOverrides(v),
 		helm.InstallWait(true))
