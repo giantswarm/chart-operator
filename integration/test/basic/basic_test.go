@@ -3,20 +3,22 @@
 package basic
 
 import (
-	"io/ioutil"
 	"log"
 	"os"
 	"testing"
 	"time"
 
 	"github.com/cenkalti/backoff"
+	"github.com/giantswarm/apprclient"
 	"github.com/giantswarm/e2e-harness/pkg/framework"
 	"github.com/giantswarm/helmclient"
 	"github.com/giantswarm/microerror"
+	"github.com/spf13/afero"
+	"k8s.io/helm/pkg/helm"
 )
 
 func TestChartInstalled(t *testing.T) {
-	err := installChartOperatorResource(f)
+	err := installChartOperatorResource(f, helmClient)
 	if err != nil {
 		t.Fatalf("could not install chart-operator-resource-chart %v", err)
 	}
@@ -48,7 +50,7 @@ func TestChartInstalled(t *testing.T) {
 	}
 }
 
-func installChartOperatorResource(f *framework.Host) error {
+func installChartOperatorResource(f *framework.Host, helmClient *helmclient.Client) error {
 	const chartOperatorResourceValues = `chart:
   name: "tb-chart"
   channel: "5-5-beta"
@@ -57,24 +59,27 @@ func installChartOperatorResource(f *framework.Host) error {
 `
 
 	chartOperatorResourceValuesEnv := os.ExpandEnv(chartOperatorResourceValues)
-	d := []byte(chartOperatorResourceValuesEnv)
+	v := []byte(chartOperatorResourceValuesEnv)
 
-	tmpfile, err := ioutil.TempFile("", "chart-operator-resource-values")
-	if err != nil {
-		return microerror.Mask(err)
-	}
-	defer os.Remove(tmpfile.Name())
+	c := apprclient.Config{
+		Fs:     afero.NewOsFs(),
+		Logger: l,
 
-	_, err = tmpfile.Write(d)
-	if err != nil {
-		return microerror.Mask(err)
+		Address:      "https://quay.io",
+		Organization: "giantswarm",
 	}
-	err = tmpfile.Close()
+
+	a, err := apprclient.New(c)
 	if err != nil {
 		return microerror.Mask(err)
 	}
 
-	err = framework.HelmCmd("registry install quay.io/giantswarm/chart-operator-resource-chart:stable -- -n chart-operator-resource --values " + tmpfile.Name())
+	tarballPath, err := a.PullChartTarball("chart-operator-resource-chart", "stable")
+	helmClient.InstallFromTarball(tarballPath, "default",
+		helm.ReleaseName("chart-operator-resource"),
+		helm.ValueOverrides(v),
+		helm.InstallWait(true))
+
 	if err != nil {
 		return microerror.Mask(err)
 	}
