@@ -51,7 +51,7 @@ func TestChartInstalled(t *testing.T) {
 }
 
 func installChartOperatorResource(f *framework.Host, helmClient *helmclient.Client) error {
-	const chartOperatorResourceValues = []byte("chart.name=tb-chart,chart.channel=5-5-beta,chart.namespace=default,chart.release=tb-release")
+	const chartOperatorResourceValues = "chart.name=tb-chart,chart.channel=5-5-beta,chart.namespace=default,chart.release=tb-release"
 
 	l, err := micrologger.New(micrologger.Config{})
 	if err != nil {
@@ -74,7 +74,7 @@ func installChartOperatorResource(f *framework.Host, helmClient *helmclient.Clie
 	tarballPath, err := a.PullChartTarball("chart-operator-resource-chart", "stable")
 	helmClient.InstallFromTarball(tarballPath, "kube-system",
 		helm.ReleaseName("chart-operator-resource"),
-		helm.ValueOverrides(chartOperatorResourceValues),
+		helm.ValueOverrides([]byte(chartOperatorResourceValues)),
 		helm.InstallWait(true))
 
 	if err != nil {
