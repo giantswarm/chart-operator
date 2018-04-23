@@ -51,8 +51,12 @@ func TestChartInstalled(t *testing.T) {
 }
 
 func installChartOperatorResource(f *framework.Host, helmClient *helmclient.Client) error {
-	const chartOperatorResourceValues = "chart.name=tb-chart,chart.channel=5-5-beta,chart.namespace=default,chart.release=tb-release"
-
+	const chartOperatorResourceValues = `chart:
+  name: "tb-chart"
+  channel: "5-5-beta"
+  namespace: "default"
+  release: "tb-release"
+`
 	l, err := micrologger.New(micrologger.Config{})
 	if err != nil {
 		return microerror.Mask(err)
