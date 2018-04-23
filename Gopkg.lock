@@ -175,17 +175,18 @@
   packages = [
     "client/k8scrdclient",
     "client/k8srestconfig",
-    "framework",
-    "framework/context/reconciliationcanceledcontext",
-    "framework/context/resourcecanceledcontext",
-    "framework/context/updateallowedcontext",
-    "framework/context/updatenecessarycontext",
-    "framework/resource/internal",
-    "framework/resource/metricsresource",
-    "framework/resource/retryresource",
+    "controller",
+    "controller/context/finalizerskeptcontext",
+    "controller/context/reconciliationcanceledcontext",
+    "controller/context/resourcecanceledcontext",
+    "controller/context/updateallowedcontext",
+    "controller/context/updatenecessarycontext",
+    "controller/resource/internal",
+    "controller/resource/metricsresource",
+    "controller/resource/retryresource",
     "informer"
   ]
-  revision = "1428f611909b304d221954fc09ddfbbe68beb3eb"
+  revision = "20be1f8c80b4b638cfebd5e8fb001a003c27762b"
 
 [[projects]]
   branch = "master"
@@ -853,6 +854,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "56b2035fa2d1959a46472b631615812f6d313be339a45b80550e3b1e2a9df78b"
+  inputs-digest = "116c84d0f0fea0fcb8d10c86856dae1d44dcd645eb4a6e821b3fbfa5f827db0d"
   solver-name = "gps-cdcl"
   solver-version = 1
