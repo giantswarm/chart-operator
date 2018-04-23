@@ -1,4 +1,4 @@
-package framework
+package controller
 
 import (
 	"context"
@@ -9,9 +9,9 @@ import (
 	"github.com/giantswarm/micrologger/loggermeta"
 	"k8s.io/apimachinery/pkg/api/meta"
 
-	"github.com/giantswarm/operatorkit/framework/context/reconciliationcanceledcontext"
-	"github.com/giantswarm/operatorkit/framework/context/updateallowedcontext"
-	"github.com/giantswarm/operatorkit/framework/context/updatenecessarycontext"
+	"github.com/giantswarm/operatorkit/controller/context/finalizerskeptcontext"
+	"github.com/giantswarm/operatorkit/controller/context/updateallowedcontext"
+	"github.com/giantswarm/operatorkit/controller/context/updatenecessarycontext"
 )
 
 type ResourceSetConfig struct {
@@ -27,8 +27,9 @@ type ResourceSetConfig struct {
 	InitCtx func(ctx context.Context, obj interface{}) (context.Context, error)
 	// Logger is a usual micrologger instance to emit log messages, if any.
 	Logger micrologger.Logger
-	// Resources is the list of framework resources being executed on runtime
-	// object reconciliation if Handles returns true when asked by the framework.
+	// Resources is the list of controller resources being executed on runtime
+	// object reconciliation if Handles returns true when asked by the
+	// controller. Resources are executed in given order.
 	Resources []Resource
 }
 
@@ -67,7 +68,7 @@ func NewResourceSet(c ResourceSetConfig) (*ResourceSet, error) {
 }
 
 func (r *ResourceSet) InitCtx(ctx context.Context, obj interface{}) (context.Context, error) {
-	ctx = reconciliationcanceledcontext.NewContext(ctx, make(chan struct{}))
+	ctx = finalizerskeptcontext.NewContext(ctx, make(chan struct{}))
 	ctx = updateallowedcontext.NewContext(ctx, make(chan struct{}))
 	ctx = updatenecessarycontext.NewContext(ctx, make(chan struct{}))
 
