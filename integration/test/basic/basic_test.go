@@ -14,35 +14,44 @@ import (
 	"github.com/giantswarm/chart-operator/integration/templates"
 )
 
-func TestChartInstalled(t *testing.T) {
+func TestChartLifecycle(t *testing.T) {
+	const release = "tb-release"
 	err := f.InstallResource("chart-operator-resource", templates.ChartOperatorResourceValues, ":stable")
 	if err != nil {
 		t.Fatalf("could not install chart-operator-resource-chart %v", err)
 	}
 
-	var rc *helmclient.ReleaseContent
+	err = waitForReleaseStatus(helmClient, release, "DEPLOYED")
+	if err != nil {
+		t.Fatal("could not get release status", err)
+	}
+
+	err = helmClient.DeleteRelease(release)
+	if err != nil {
+		t.Fatalf("could not delete chart-operator-resource-chart %v", err)
+	}
+
+	err = waitForReleaseStatus(helmClient, release, "DELETED")
+	if err != nil {
+		t.Fatal("could not get release status", err)
+	}
+}
+
+func waitForReleaseStatus(helmClient *helmclient.Client, release string, status string) error {
 	operation := func() error {
-		rc, err = helmClient.GetReleaseContent("tb-release")
+		rc, err := helmClient.GetReleaseContent(release)
 		if err != nil {
 			return microerror.Maskf(err, "could not retrieve release content")
 		}
-		if rc.Status == "PENDING_INSTALL" {
-			return microerror.Newf("release still not installed")
+		if rc.Status != status {
+			return microerror.Newf("waiting for %q, current %q", status, rc.Status)
 		}
 		return nil
 	}
 
 	notify := func(err error, t time.Duration) {
-		log.Printf("waiting for release %s: %v", t, err)
+		log.Printf("getting release status %s: %v", t, err)
 	}
 
-	err = backoff.RetryNotify(operation, backoff.NewExponentialBackOff(), notify)
-	if err != nil {
-		t.Fatal("expected nil found", err)
-	}
-
-	expectedStatus := "DEPLOYED"
-	if rc.Status != expectedStatus {
-		t.Fatalf("unexpected chart status, want %q, got %q", expectedStatus, rc.Status)
-	}
+	return backoff.RetryNotify(operation, backoff.NewExponentialBackOff(), notify)
 }
