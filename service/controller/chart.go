@@ -17,7 +17,7 @@ import (
 	"github.com/giantswarm/chart-operator/service/controller/v1"
 )
 
-type ChartFrameworkConfig struct {
+type ChartConfig struct {
 	ApprClient   apprclient.Interface
 	Fs           afero.Fs
 	G8sClient    versioned.Interface
@@ -30,7 +30,11 @@ type ChartFrameworkConfig struct {
 	WatchNamespace string
 }
 
-func NewChartFramework(config ChartFrameworkConfig) (*framework.Framework, error) {
+type Chart struct {
+	*framework.Framework
+}
+
+func NewChart(config ChartConfig) (*Chart, error) {
 	var err error
 
 	if config.G8sClient == nil {
@@ -102,10 +106,14 @@ func NewChartFramework(config ChartFrameworkConfig) (*framework.Framework, error
 		}
 	}
 
-	return crdFramework, nil
+	c := &Chart{
+		Framework: crdFramework,
+	}
+
+	return c, nil
 }
 
-func newChartResourceRouter(config ChartFrameworkConfig) (*framework.ResourceRouter, error) {
+func newChartResourceRouter(config ChartConfig) (*framework.ResourceRouter, error) {
 	var err error
 
 	var resourceSetV1 *framework.ResourceSet
