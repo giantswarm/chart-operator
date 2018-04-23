@@ -175,7 +175,7 @@ func New(config Config) (*Service, error) {
 // Boot starts top level service implementation.
 func (s *Service) Boot() {
 	s.bootOnce.Do(func() {
-		// Start the framework.
+		// Start the controller.
 		go s.chartController.Boot()
 	})
 }

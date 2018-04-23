@@ -8,9 +8,9 @@ import (
 	"github.com/giantswarm/helmclient"
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/micrologger"
-	"github.com/giantswarm/operatorkit/framework"
-	"github.com/giantswarm/operatorkit/framework/resource/metricsresource"
-	"github.com/giantswarm/operatorkit/framework/resource/retryresource"
+	"github.com/giantswarm/operatorkit/controller"
+	"github.com/giantswarm/operatorkit/controller/resource/metricsresource"
+	"github.com/giantswarm/operatorkit/controller/resource/retryresource"
 	"github.com/spf13/afero"
 	"k8s.io/client-go/kubernetes"
 
@@ -25,7 +25,7 @@ const (
 )
 
 // ResourceSetConfig contains necessary dependencies and settings for
-// ChartConfig framework ResourceSet configuration.
+// ChartConfig controller ResourceSet configuration.
 type ResourceSetConfig struct {
 	// Dependencies.
 	ApprClient apprclient.Interface
@@ -39,8 +39,8 @@ type ResourceSetConfig struct {
 	ProjectName           string
 }
 
-// NewResourceSet returns a configured ChartConfig framework ResourceSet.
-func NewResourceSet(config ResourceSetConfig) (*framework.ResourceSet, error) {
+// NewResourceSet returns a configured ChartConfig controller ResourceSet.
+func NewResourceSet(config ResourceSetConfig) (*controller.ResourceSet, error) {
 	var err error
 
 	// Dependencies.
@@ -56,7 +56,7 @@ func NewResourceSet(config ResourceSetConfig) (*framework.ResourceSet, error) {
 		return nil, microerror.Maskf(invalidConfigError, "%T.ProjectName must not be empty", config)
 	}
 
-	var chartResource framework.Resource
+	var chartResource controller.Resource
 	{
 		c := chart.Config{
 			ApprClient: config.ApprClient,
@@ -77,7 +77,7 @@ func NewResourceSet(config ResourceSetConfig) (*framework.ResourceSet, error) {
 		}
 	}
 
-	resources := []framework.Resource{
+	resources := []controller.Resource{
 		chartResource,
 	}
 
@@ -120,16 +120,16 @@ func NewResourceSet(config ResourceSetConfig) (*framework.ResourceSet, error) {
 		return true
 	}
 
-	var resourceSet *framework.ResourceSet
+	var resourceSet *controller.ResourceSet
 	{
-		c := framework.ResourceSetConfig{
+		c := controller.ResourceSetConfig{
 			Handles:   handlesFunc,
 			InitCtx:   initCtxFunc,
 			Logger:    config.Logger,
 			Resources: resources,
 		}
 
-		resourceSet, err = framework.NewResourceSet(c)
+		resourceSet, err = controller.NewResourceSet(c)
 		if err != nil {
 			return nil, microerror.Mask(err)
 		}
@@ -138,13 +138,13 @@ func NewResourceSet(config ResourceSetConfig) (*framework.ResourceSet, error) {
 	return resourceSet, nil
 }
 
-func toCRUDResource(logger micrologger.Logger, ops framework.CRUDResourceOps) (*framework.CRUDResource, error) {
-	c := framework.CRUDResourceConfig{
+func toCRUDResource(logger micrologger.Logger, ops controller.CRUDResourceOps) (*controller.CRUDResource, error) {
+	c := controller.CRUDResourceConfig{
 		Logger: logger,
 		Ops:    ops,
 	}
 
-	r, err := framework.NewCRUDResource(c)
+	r, err := controller.NewCRUDResource(c)
 	if err != nil {
 		return nil, microerror.Mask(err)
 	}

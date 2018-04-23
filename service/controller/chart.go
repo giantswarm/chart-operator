@@ -8,7 +8,7 @@ import (
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/micrologger"
 	"github.com/giantswarm/operatorkit/client/k8scrdclient"
-	"github.com/giantswarm/operatorkit/framework"
+	"github.com/giantswarm/operatorkit/controller"
 	"github.com/giantswarm/operatorkit/informer"
 	"github.com/spf13/afero"
 	apiextensionsclient "k8s.io/apiextensions-apiserver/pkg/client/clientset/clientset"
@@ -16,6 +16,8 @@ import (
 
 	"github.com/giantswarm/chart-operator/service/controller/v1"
 )
+
+const chartControllerSuffix = "-chart"
 
 type ChartConfig struct {
 	ApprClient   apprclient.Interface
@@ -31,7 +33,7 @@ type ChartConfig struct {
 }
 
 type Chart struct {
-	*framework.Framework
+	*controller.Controller
 }
 
 func NewChart(config ChartConfig) (*Chart, error) {
@@ -87,36 +89,36 @@ func NewChart(config ChartConfig) (*Chart, error) {
 		}
 	}
 
-	var crdFramework *framework.Framework
+	var operatorkitController *controller.Controller
 	{
-		c := framework.Config{
+		c := controller.Config{
 			CRD:            v1alpha1.NewChartConfigCRD(),
 			CRDClient:      crdClient,
 			Informer:       newInformer,
-			K8sClient:      config.K8sClient,
 			Logger:         config.Logger,
 			ResourceRouter: resourceRouter,
+			RESTClient:     config.K8sClient.CoreV1().RESTClient(),
 
-			Name: config.ProjectName,
+			Name: config.ProjectName + chartControllerSuffix,
 		}
 
-		crdFramework, err = framework.New(c)
+		operatorkitController, err = controller.New(c)
 		if err != nil {
 			return nil, microerror.Mask(err)
 		}
 	}
 
 	c := &Chart{
-		Framework: crdFramework,
+		Controller: operatorkitController,
 	}
 
 	return c, nil
 }
 
-func newChartResourceRouter(config ChartConfig) (*framework.ResourceRouter, error) {
+func newChartResourceRouter(config ChartConfig) (*controller.ResourceRouter, error) {
 	var err error
 
-	var resourceSetV1 *framework.ResourceSet
+	var resourceSetV1 *controller.ResourceSet
 	{
 		c := v1.ResourceSetConfig{
 			ApprClient:  config.ApprClient,
@@ -133,16 +135,16 @@ func newChartResourceRouter(config ChartConfig) (*framework.ResourceRouter, erro
 		}
 	}
 
-	var resourceRouter *framework.ResourceRouter
+	var resourceRouter *controller.ResourceRouter
 	{
-		c := framework.ResourceRouterConfig{
+		c := controller.ResourceRouterConfig{
 			Logger: config.Logger,
-			ResourceSets: []*framework.ResourceSet{
+			ResourceSets: []*controller.ResourceSet{
 				resourceSetV1,
 			},
 		}
 
-		resourceRouter, err = framework.NewResourceRouter(c)
+		resourceRouter, err = controller.NewResourceRouter(c)
 		if err != nil {
 			return nil, microerror.Mask(err)
 		}
