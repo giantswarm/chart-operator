@@ -8,13 +8,16 @@ import (
 	"testing"
 	"time"
 
+	"github.com/spf13/afero"
+	"k8s.io/helm/pkg/helm"
+
 	"github.com/cenkalti/backoff"
+	"github.com/giantswarm/apprclient"
+	"github.com/giantswarm/chart-operator/integration/templates"
 	"github.com/giantswarm/e2e-harness/pkg/framework"
 	"github.com/giantswarm/helmclient"
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/micrologger"
-
-	"github.com/giantswarm/chart-operator/integration/templates"
 )
 
 func TestChartLifecycle(t *testing.T) {
@@ -52,6 +55,23 @@ func TestChartLifecycle(t *testing.T) {
 	}
 	l.Log("level", "debug", "message", fmt.Sprintf("%s succesfully deployed", testRelease))
 
+	// Test Update
+	log.Printf("updating %q", cr)
+	err = updateChartOperatorResource(helmClient)
+	if err != nil {
+		t.Fatalf("could not update %q %v", cr, err)
+	}
+
+	err = waitForReleaseStatus(gsHelmClient, release, "PENDING_UPGRADE")
+	if err != nil {
+		t.Fatalf("could not get release status of %q %v", testRelease, err)
+	}
+	err = waitForReleaseStatus(gsHelmClient, release, "DEPLOYED")
+	if err != nil {
+		t.Fatalf("could not get release status of %q %v", testRelease, err)
+	}
+	log.Println("test chart succesfully updated")
+
 	// Test Deletion
 	l.Log("level", "debug", "message", fmt.Sprintf("deleting %s", cr))
 	err = helmClient.DeleteRelease(cr)
@@ -84,4 +104,45 @@ func waitForReleaseStatus(gsHelmClient *helmclient.Client, release string, statu
 
 	b := framework.NewExponentialBackoff(framework.ShortMaxWait, framework.LongMaxInterval)
 	return backoff.RetryNotify(operation, b, notify)
+}
+
+func updateChartOperatorResource(helmClient *helmclient.Client, releaseName String) error {
+	const chartOperatorResourceValues = `chart:
+  name: "tb-chart"
+  channel: "5-6-beta"
+  namespace: "default"
+  release: "tb-release"
+`
+	l, err := micrologger.New(micrologger.Config{})
+	if err != nil {
+		return microerror.Mask(err)
+	}
+
+	c := apprclient.Config{
+		Fs:     afero.NewOsFs(),
+		Logger: l,
+
+		Address:      "https://quay.io",
+		Organization: "giantswarm",
+	}
+
+	a, err := apprclient.New(c)
+	if err != nil {
+		return microerror.Mask(err)
+	}
+
+	tarballPath, err := a.PullChartTarball("chart-operator-resource-chart", "stable")
+	if err != nil {
+		return microerror.Mask(err)
+	}
+
+	helmClient.UpdateFromTarball(tarballPath, "default",
+		helm.ReleaseName(releaseName),
+		helm.ValueOverrides([]byte(chartOperatorResourceValues)),
+		helm.InstallWait(true))
+	if err != nil {
+		return microerror.Mask(err)
+	}
+
+	return nil
 }
