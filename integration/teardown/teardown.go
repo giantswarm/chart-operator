@@ -3,18 +3,17 @@
 package teardown
 
 import (
-	"fmt"
-
 	"github.com/giantswarm/e2e-harness/pkg/framework"
+	"github.com/giantswarm/helmclient"
 	"github.com/giantswarm/microerror"
+	"k8s.io/helm/pkg/helm"
 )
 
-func Teardown(f *framework.Host) error {
+func Teardown(f *framework.Host, helmClient *helmclient.Client) error {
 	items := []string{"cnr-server", "chart-operator", "chart-operator-resource"}
 
 	for _, item := range items {
-		cmd := fmt.Sprintf("delete %s --purge", item)
-		err := framework.HelmCmd(cmd)
+		err := helmClient.DeleteRelease(item, helm.DeletePurge(true))
 		if err != nil {
 			return microerror.Mask(err)
 		}

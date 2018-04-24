@@ -3,20 +3,22 @@
 package basic
 
 import (
-	"io/ioutil"
 	"log"
-	"os"
 	"testing"
 	"time"
 
 	"github.com/cenkalti/backoff"
+	"github.com/giantswarm/apprclient"
 	"github.com/giantswarm/e2e-harness/pkg/framework"
 	"github.com/giantswarm/helmclient"
 	"github.com/giantswarm/microerror"
+	"github.com/giantswarm/micrologger"
+	"github.com/spf13/afero"
+	"k8s.io/helm/pkg/helm"
 )
 
 func TestChartInstalled(t *testing.T) {
-	err := installChartOperatorResource(f)
+	err := installChartOperatorResource(f, helmClient)
 	if err != nil {
 		t.Fatalf("could not install chart-operator-resource-chart %v", err)
 	}
@@ -48,33 +50,40 @@ func TestChartInstalled(t *testing.T) {
 	}
 }
 
-func installChartOperatorResource(f *framework.Host) error {
+func installChartOperatorResource(f *framework.Host, helmClient *helmclient.Client) error {
 	const chartOperatorResourceValues = `chart:
   name: "tb-chart"
   channel: "5-5-beta"
   namespace: "default"
   release: "tb-release"
 `
-
-	chartOperatorResourceValuesEnv := os.ExpandEnv(chartOperatorResourceValues)
-	d := []byte(chartOperatorResourceValuesEnv)
-
-	tmpfile, err := ioutil.TempFile("", "chart-operator-resource-values")
-	if err != nil {
-		return microerror.Mask(err)
-	}
-	defer os.Remove(tmpfile.Name())
-
-	_, err = tmpfile.Write(d)
-	if err != nil {
-		return microerror.Mask(err)
-	}
-	err = tmpfile.Close()
+	l, err := micrologger.New(micrologger.Config{})
 	if err != nil {
 		return microerror.Mask(err)
 	}
 
-	err = framework.HelmCmd("registry install quay.io/giantswarm/chart-operator-resource-chart:stable -- -n chart-operator-resource --values " + tmpfile.Name())
+	c := apprclient.Config{
+		Fs:     afero.NewOsFs(),
+		Logger: l,
+
+		Address:      "https://quay.io",
+		Organization: "giantswarm",
+	}
+
+	a, err := apprclient.New(c)
+	if err != nil {
+		return microerror.Mask(err)
+	}
+
+	tarballPath, err := a.PullChartTarball("chart-operator-resource-chart", "stable")
+	if err != nil {
+		return microerror.Mask(err)
+	}
+
+	helmClient.InstallFromTarball(tarballPath, "default",
+		helm.ReleaseName("chart-operator-resource"),
+		helm.ValueOverrides([]byte(chartOperatorResourceValues)),
+		helm.InstallWait(true))
 	if err != nil {
 		return microerror.Mask(err)
 	}
