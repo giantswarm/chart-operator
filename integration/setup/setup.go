@@ -183,6 +183,16 @@ func installInitialCharts(f *framework.Host) error {
 		return microerror.Mask(err)
 	}
 
+	err = a.PushChartTarball("tb-chart", "5.6.0", "/e2e/fixtures/tb-chart-5.6.0.tgz")
+	if err != nil {
+		return microerror.Mask(err)
+	}
+
+	err = a.PromoteChart("tb-chart", "5.6.0", "5-6-beta")
+	if err != nil {
+		return microerror.Mask(err)
+	}
+
 	return nil
 }
 
