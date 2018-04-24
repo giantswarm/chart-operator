@@ -16,6 +16,8 @@ import (
 
 func TestChartLifecycle(t *testing.T) {
 	const release = "tb-release"
+
+	log.Println("creating test chart CR")
 	err := f.InstallResource("chart-operator-resource", templates.ChartOperatorResourceValues, ":stable")
 	if err != nil {
 		t.Fatalf("could not install chart-operator-resource-chart %v", err)
@@ -25,7 +27,9 @@ func TestChartLifecycle(t *testing.T) {
 	if err != nil {
 		t.Fatal("could not get release status", err)
 	}
+	log.Println("test chart succesfully deployed")
 
+	log.Println("deleting test chart CR")
 	err = helmClient.DeleteRelease(release)
 	if err != nil {
 		t.Fatalf("could not delete chart-operator-resource-chart %v", err)
@@ -35,6 +39,7 @@ func TestChartLifecycle(t *testing.T) {
 	if err != nil {
 		t.Fatal("could not get release status", err)
 	}
+	log.Println("test chart succesfully deleted")
 }
 
 func waitForReleaseStatus(helmClient *helmclient.Client, release string, status string) error {
