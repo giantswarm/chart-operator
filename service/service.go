@@ -9,7 +9,6 @@ import (
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/micrologger"
 	"github.com/giantswarm/operatorkit/client/k8srestconfig"
-	"github.com/giantswarm/operatorkit/framework"
 	"github.com/spf13/afero"
 	"github.com/spf13/viper"
 	apiextensionsclient "k8s.io/apiextensions-apiserver/pkg/client/clientset/clientset"
@@ -17,7 +16,7 @@ import (
 	"k8s.io/client-go/rest"
 
 	"github.com/giantswarm/chart-operator/flag"
-	"github.com/giantswarm/chart-operator/service/chartconfig"
+	"github.com/giantswarm/chart-operator/service/controller"
 	"github.com/giantswarm/chart-operator/service/healthz"
 )
 
@@ -38,11 +37,11 @@ type Config struct {
 
 // Service is a type providing implementation of microkit service interface.
 type Service struct {
-	ChartFramework *framework.Framework
-	Healthz        *healthz.Service
+	Healthz *healthz.Service
 
 	// Internals
-	bootOnce sync.Once
+	bootOnce        sync.Once
+	chartController *controller.Chart
 }
 
 // New creates a new service with given configuration.
@@ -142,9 +141,9 @@ func New(config Config) (*Service, error) {
 		}
 	}
 
-	var chartFramework *framework.Framework
+	var chartController *controller.Chart
 	{
-		c := chartconfig.ChartFrameworkConfig{
+		c := controller.ChartConfig{
 			ApprClient:   apprClient,
 			Fs:           fs,
 			HelmClient:   helmClient,
@@ -157,18 +156,17 @@ func New(config Config) (*Service, error) {
 			WatchNamespace: config.Viper.GetString(config.Flag.Service.Kubernetes.Watch.Namespace),
 		}
 
-		chartFramework, err = chartconfig.NewChartFramework(c)
+		chartController, err = controller.NewChart(c)
 		if err != nil {
 			return nil, microerror.Mask(err)
 		}
 	}
 
 	s := &Service{
-		ChartFramework: chartFramework,
-		Healthz:        healthzService,
+		Healthz: healthzService,
 
-		// Internals
-		bootOnce: sync.Once{},
+		bootOnce:        sync.Once{},
+		chartController: chartController,
 	}
 
 	return s, nil
@@ -177,7 +175,7 @@ func New(config Config) (*Service, error) {
 // Boot starts top level service implementation.
 func (s *Service) Boot() {
 	s.bootOnce.Do(func() {
-		// Start the framework.
-		go s.ChartFramework.Boot()
+		// Start the controller.
+		go s.chartController.Boot()
 	})
 }

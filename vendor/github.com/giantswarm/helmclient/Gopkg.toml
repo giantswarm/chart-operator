@@ -28,6 +28,10 @@
 
 [[constraint]]
   branch = "master"
+  name = "github.com/giantswarm/k8sportforward"
+
+[[constraint]]
+  branch = "master"
   name = "github.com/giantswarm/microerror"
 
 [[constraint]]
