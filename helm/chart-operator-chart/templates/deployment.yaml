@@ -5,6 +5,7 @@ metadata:
   namespace: {{ .Values.namespace }}
   labels:
     app: {{ .Values.name }}
+    giantswarm.io/service-type: "managed"
 spec:
   replicas: 1
   revisionHistoryLimit: 3
