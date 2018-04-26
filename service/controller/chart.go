@@ -97,7 +97,7 @@ func NewChart(config ChartConfig) (*Chart, error) {
 			Informer:       newInformer,
 			Logger:         config.Logger,
 			ResourceRouter: resourceRouter,
-			RESTClient:     config.K8sClient.CoreV1().RESTClient(),
+			RESTClient:     config.G8sClient.CoreV1alpha1().RESTClient(),
 
 			Name: config.ProjectName + chartControllerSuffix,
 		}
