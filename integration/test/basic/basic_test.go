@@ -15,7 +15,7 @@ import (
 )
 
 func TestChartInstalled(t *testing.T) {
-	err := f.InstallResource("chart-operator-resource", templates.ChartOperatorValues, ":stable")
+	err := f.InstallResource("chart-operator-resource", templates.ChartOperatorResourceValues, ":stable")
 	if err != nil {
 		t.Fatalf("could not install chart-operator-resource-chart %v", err)
 	}
