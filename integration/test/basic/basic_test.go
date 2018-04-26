@@ -8,17 +8,14 @@ import (
 	"time"
 
 	"github.com/cenkalti/backoff"
-	"github.com/giantswarm/apprclient"
-	"github.com/giantswarm/e2e-harness/pkg/framework"
 	"github.com/giantswarm/helmclient"
 	"github.com/giantswarm/microerror"
-	"github.com/giantswarm/micrologger"
-	"github.com/spf13/afero"
-	"k8s.io/helm/pkg/helm"
+
+	"github.com/giantswarm/chart-operator/integration/templates"
 )
 
 func TestChartInstalled(t *testing.T) {
-	err := installChartOperatorResource(f, helmClient)
+	err := f.InstallResource("chart-operator-resource", templates.ChartOperatorValues, ":stable")
 	if err != nil {
 		t.Fatalf("could not install chart-operator-resource-chart %v", err)
 	}
@@ -48,45 +45,4 @@ func TestChartInstalled(t *testing.T) {
 	if rc.Status != expectedStatus {
 		t.Fatalf("unexpected chart status, want %q, got %q", expectedStatus, rc.Status)
 	}
-}
-
-func installChartOperatorResource(f *framework.Host, helmClient *helmclient.Client) error {
-	const chartOperatorResourceValues = `chart:
-  name: "tb-chart"
-  channel: "5-5-beta"
-  namespace: "default"
-  release: "tb-release"
-`
-	l, err := micrologger.New(micrologger.Config{})
-	if err != nil {
-		return microerror.Mask(err)
-	}
-
-	c := apprclient.Config{
-		Fs:     afero.NewOsFs(),
-		Logger: l,
-
-		Address:      "https://quay.io",
-		Organization: "giantswarm",
-	}
-
-	a, err := apprclient.New(c)
-	if err != nil {
-		return microerror.Mask(err)
-	}
-
-	tarballPath, err := a.PullChartTarball("chart-operator-resource-chart", "stable")
-	if err != nil {
-		return microerror.Mask(err)
-	}
-
-	helmClient.InstallFromTarball(tarballPath, "default",
-		helm.ReleaseName("chart-operator-resource"),
-		helm.ValueOverrides([]byte(chartOperatorResourceValues)),
-		helm.InstallWait(true))
-	if err != nil {
-		return microerror.Mask(err)
-	}
-
-	return nil
 }
