@@ -16,6 +16,8 @@ spec:
       labels:
         app: {{ .Values.name }}
         giantswarm.io/service-type: "managed"
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
     spec:
       volumes:
       - name: {{ .Values.name }}

@@ -22,6 +22,7 @@ import (
 	"k8s.io/helm/pkg/helm"
 
 	"github.com/giantswarm/chart-operator/integration/teardown"
+	"github.com/giantswarm/chart-operator/integration/templates"
 )
 
 func WrapTestMain(f *framework.Host, helmClient *helmclient.Client, m *testing.M) {
@@ -61,15 +62,12 @@ func WrapTestMain(f *framework.Host, helmClient *helmclient.Client, m *testing.M
 }
 
 func resources(f *framework.Host, helmClient *helmclient.Client) error {
-	const chartOperatorValues = `cnr:
-  address: http://cnr-server:5000
-`
 	err := initializeCNR(f, helmClient)
 	if err != nil {
 		return microerror.Mask(err)
 	}
 
-	err = f.InstallOperator("chart-operator", "chartconfig", chartOperatorValues, ":${CIRCLE_SHA1}")
+	err = f.InstallOperator("chart-operator", "chartconfig", templates.ChartOperatorValues, ":${CIRCLE_SHA1}")
 
 	if err != nil {
 		return microerror.Mask(err)
