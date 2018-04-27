@@ -15,6 +15,7 @@ spec:
     metadata:
       labels:
         app: {{ .Values.name }}
+        giantswarm.io/service-type: "managed"
     spec:
       volumes:
       - name: {{ .Values.name }}
