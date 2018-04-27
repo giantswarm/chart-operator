@@ -5,6 +5,7 @@ metadata:
   namespace: {{ .Values.namespace }}
   labels:
     app: {{ .Values.name }}
+    giantswarm.io/service-type: "managed"
   annotations:
     prometheus.io/scrape: "true"
 spec:

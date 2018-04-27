@@ -5,6 +5,7 @@ metadata:
   namespace: {{ .Values.namespace }}
   labels:
     app: {{ .Values.name }}
+    giantswarm.io/service-type: "managed"
 spec:
   replicas: 1
   revisionHistoryLimit: 3
@@ -14,8 +15,9 @@ spec:
     metadata:
       labels:
         app: {{ .Values.name }}
-        annotations:
-          checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+        giantswarm.io/service-type: "managed"
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
     spec:
       volumes:
       - name: {{ .Values.name }}
