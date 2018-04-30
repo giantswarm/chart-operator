@@ -15,29 +15,29 @@ import (
 )
 
 func TestChartLifecycle(t *testing.T) {
-	const release = "tb-release"
+	const testRelease = "tb-release"
+	const cr = "chart-operator-resource"
 
 	log.Println("creating test chart CR")
-	err := f.InstallResource("chart-operator-resource", templates.ChartOperatorResourceValues, ":stable")
+	err := f.InstallResource(cr, templates.ChartOperatorResourceValues, ":stable")
 	if err != nil {
-		t.Fatalf("could not install chart-operator-resource-chart %v", err)
+		t.Fatalf("could not install %q %v", cr, err)
 	}
 
-	err = waitForReleaseStatus(helmClient, release, "DEPLOYED")
+	err = waitForReleaseStatus(helmClient, testRelease, "DEPLOYED")
 	if err != nil {
-		t.Fatal("could not get release status", err)
+		t.Fatalf("could not get release status of %q %v", testRelease, err)
 	}
 	log.Println("test chart succesfully deployed")
 
-	log.Println("deleting test chart CR")
-	err = helmClient.DeleteRelease(release)
+	err = helmClient.DeleteRelease(cr)
 	if err != nil {
-		t.Fatalf("could not delete chart-operator-resource-chart %v", err)
+		t.Fatalf("could not delete %q %v", cr, err)
 	}
 
-	err = waitForReleaseStatus(helmClient, release, "DELETED")
+	err = waitForReleaseStatus(helmClient, testRelease, "DELETED")
 	if err != nil {
-		t.Fatal("could not get release status", err)
+		t.Fatalf("could not get release status of %q %v", testRelease, err)
 	}
 	log.Println("test chart succesfully deleted")
 }
