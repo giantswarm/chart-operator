@@ -77,6 +77,7 @@ func NewChart(config ChartConfig) (*Chart, error) {
 	var newInformer *informer.Informer
 	{
 		c := informer.Config{
+			Logger:  config.Logger,
 			Watcher: config.G8sClient.CoreV1alpha1().ChartConfigs(config.WatchNamespace),
 
 			RateWait:     informer.DefaultRateWait,
