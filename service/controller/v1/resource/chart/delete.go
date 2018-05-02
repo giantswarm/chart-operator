@@ -5,16 +5,11 @@ import (
 	"fmt"
 	"reflect"
 
-	"github.com/giantswarm/chart-operator/service/controller/v1/key"
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/operatorkit/controller"
 )
 
 func (r *Resource) ApplyDeleteChange(ctx context.Context, obj, deleteChange interface{}) error {
-	customObject, err := key.ToCustomObject(obj)
-	if err != nil {
-		return microerror.Mask(err)
-	}
 	chartState, err := toChartState(deleteChange)
 	if err != nil {
 		return microerror.Mask(err)
@@ -22,9 +17,8 @@ func (r *Resource) ApplyDeleteChange(ctx context.Context, obj, deleteChange inte
 
 	if chartState.ReleaseName != "" {
 		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("deleting release %s", chartState.ReleaseName))
-		release := key.ReleaseName(customObject)
 
-		err := r.helmClient.DeleteRelease(release)
+		err := r.helmClient.DeleteRelease(chartState.ReleaseName)
 		if err != nil {
 			return microerror.Mask(err)
 		}
@@ -60,7 +54,7 @@ func (r *Resource) newDeleteChange(ctx context.Context, obj, currentState, desir
 
 	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("finding out if the %s release has to be deleted", desiredChartState.ReleaseName))
 
-	if !reflect.DeepEqual(currentChartState, ChartState{}) && reflect.DeepEqual(currentChartState, desiredChartState) {
+	if !reflect.DeepEqual(currentChartState, ChartState{}) && currentChartState.ReleaseName == desiredChartState.ReleaseName && currentChartState.ReleaseVersion == desiredChartState.ReleaseVersion {
 		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("the %s release needs to be deleted", desiredChartState.ReleaseName))
 
 		return &desiredChartState, nil

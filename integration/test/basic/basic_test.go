@@ -14,35 +14,49 @@ import (
 	"github.com/giantswarm/chart-operator/integration/templates"
 )
 
-func TestChartInstalled(t *testing.T) {
-	err := f.InstallResource("chart-operator-resource", templates.ChartOperatorResourceValues, ":stable")
+func TestChartLifecycle(t *testing.T) {
+	const testRelease = "tb-release"
+	const cr = "chart-operator-resource"
+
+	log.Println("creating test chart CR")
+	err := f.InstallResource(cr, templates.ChartOperatorResourceValues, ":stable")
 	if err != nil {
-		t.Fatalf("could not install chart-operator-resource-chart %v", err)
+		t.Fatalf("could not install %q %v", cr, err)
 	}
 
-	var rc *helmclient.ReleaseContent
+	err = waitForReleaseStatus(helmClient, testRelease, "DEPLOYED")
+	if err != nil {
+		t.Fatalf("could not get release status of %q %v", testRelease, err)
+	}
+	log.Println("test chart succesfully deployed")
+
+	err = helmClient.DeleteRelease(cr)
+	if err != nil {
+		t.Fatalf("could not delete %q %v", cr, err)
+	}
+
+	err = waitForReleaseStatus(helmClient, testRelease, "DELETED")
+	if err != nil {
+		t.Fatalf("could not get release status of %q %v", testRelease, err)
+	}
+	log.Println("test chart succesfully deleted")
+}
+
+func waitForReleaseStatus(helmClient *helmclient.Client, release string, status string) error {
 	operation := func() error {
-		rc, err = helmClient.GetReleaseContent("tb-release")
+		rc, err := helmClient.GetReleaseContent(release)
 		if err != nil {
 			return microerror.Maskf(err, "could not retrieve release content")
 		}
-		if rc.Status == "PENDING_INSTALL" {
-			return microerror.Newf("release still not installed")
+		if rc.Status != status {
+			return microerror.Newf("waiting for %q, current %q", status, rc.Status)
 		}
 		return nil
 	}
 
 	notify := func(err error, t time.Duration) {
-		log.Printf("waiting for release %s: %v", t, err)
+		log.Printf("getting release status %s: %v", t, err)
 	}
 
-	err = backoff.RetryNotify(operation, backoff.NewExponentialBackOff(), notify)
-	if err != nil {
-		t.Fatal("expected nil found", err)
-	}
-
-	expectedStatus := "DEPLOYED"
-	if rc.Status != expectedStatus {
-		t.Fatalf("unexpected chart status, want %q, got %q", expectedStatus, rc.Status)
-	}
+	return backoff.RetryNotify(operation, backoff.NewExponentialBackOff(), notify)
 }
