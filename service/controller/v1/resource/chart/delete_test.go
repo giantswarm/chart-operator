@@ -27,7 +27,7 @@ func Test_Resource_Chart_newDeleteChange(t *testing.T) {
 		{
 			description: "case 1: non-empty current, empty desired, expected empty",
 			currentState: &ChartState{
-				ChartName: "current",
+				ReleaseName: "current",
 			},
 			desiredState:         &ChartState{},
 			expectedDeleteChange: nil,
