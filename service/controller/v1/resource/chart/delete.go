@@ -5,16 +5,11 @@ import (
 	"fmt"
 	"reflect"
 
-	"github.com/giantswarm/chart-operator/service/controller/v1/key"
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/operatorkit/controller"
 )
 
 func (r *Resource) ApplyDeleteChange(ctx context.Context, obj, deleteChange interface{}) error {
-	customObject, err := key.ToCustomObject(obj)
-	if err != nil {
-		return microerror.Mask(err)
-	}
 	chartState, err := toChartState(deleteChange)
 	if err != nil {
 		return microerror.Mask(err)
@@ -22,8 +17,6 @@ func (r *Resource) ApplyDeleteChange(ctx context.Context, obj, deleteChange inte
 
 	if chartState.ReleaseName != "" {
 		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("deleting release %s", chartState.ReleaseName))
-		release := key.ReleaseName(customObject)
-		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("deleting custom object release %s", release))
 
 		err := r.helmClient.DeleteRelease(chartState.ReleaseName)
 		if err != nil {
