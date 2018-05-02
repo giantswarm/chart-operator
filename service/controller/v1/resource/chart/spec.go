@@ -1,5 +1,7 @@
 package chart
 
+import "reflect"
+
 // ChartState holds the state of the chart to be reconciled.
 type ChartState struct {
 	// ChartName is the fully qualified name of the Helm Chart.
@@ -20,4 +22,16 @@ type ChartState struct {
 	// ReleaseVersion is the version of the Helm Chart to be deployed.
 	// e.g. 0.1.2
 	ReleaseVersion string
+}
+
+// Equals asseses the equality of ChartStates with regards to distinguishing fields
+func (a *ChartState) Equals(b ChartState) bool {
+	if a.ReleaseName != b.ReleaseName || a.ReleaseVersion != b.ReleaseVersion || a.ChartName != b.ChartName {
+		return false
+	}
+	if !reflect.DeepEqual(a.ChartValues, b.ChartValues) {
+		return false
+	}
+
+	return true
 }
