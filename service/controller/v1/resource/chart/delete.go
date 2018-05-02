@@ -5,16 +5,11 @@ import (
 	"fmt"
 	"reflect"
 
-	"github.com/giantswarm/chart-operator/service/controller/v1/key"
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/operatorkit/controller"
 )
 
 func (r *Resource) ApplyDeleteChange(ctx context.Context, obj, deleteChange interface{}) error {
-	customObject, err := key.ToCustomObject(obj)
-	if err != nil {
-		return microerror.Mask(err)
-	}
 	chartState, err := toChartState(deleteChange)
 	if err != nil {
 		return microerror.Mask(err)
