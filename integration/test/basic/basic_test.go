@@ -59,5 +59,8 @@ func waitForReleaseStatus(helmClient *helmclient.Client, release string, status 
 		log.Printf("getting release status %s: %v", t, err)
 	}
 
-	return backoff.RetryNotify(operation, backoff.NewExponentialBackOff(), notify)
+	eb := backoff.NewExponentialBackOff()
+	eb.MaxElapsedTime = time.Minute
+
+	return backoff.RetryNotify(operation, eb, notify)
 }
