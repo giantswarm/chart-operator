@@ -24,12 +24,12 @@ rules:
   - pods
   verbs:
   - "get"
+  - "list"
 - nonResourceURLs:
   - "/"
   - "/healthz"
   verbs:
     - get
-    - list
 ---
 apiVersion: rbac.authorization.k8s.io/v1beta1
 kind: ClusterRoleBinding
