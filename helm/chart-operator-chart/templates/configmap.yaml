@@ -19,4 +19,4 @@ data:
       kubernetes:
         incluster: true
         watch:
-          namespace: 'kube-system'
+          namespace: '{{ .Values.namespace }}'
