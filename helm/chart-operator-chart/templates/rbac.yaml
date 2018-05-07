@@ -25,6 +25,18 @@ rules:
   verbs:
   - "get"
   - "list"
+- apiGroups:
+  - "rbac.authorization.k8s.io"
+  resources:
+  - clusterrolebinding
+  verbs:
+  - "*"
+- apiGroups:
+  - ""
+  resources:
+  - serviceaccount
+  verbs:
+  - "*"
 - nonResourceURLs:
   - "/"
   - "/healthz"
