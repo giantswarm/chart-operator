@@ -14,6 +14,8 @@ data:
     service:
       cnr:
         address: '{{ .Values.cnr.address }}'
+      helm:
+        tillerNamespace: 'giantswarm'
       kubernetes:
         incluster: true
         watch:
