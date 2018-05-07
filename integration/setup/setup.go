@@ -114,7 +114,7 @@ func installCNR(f *framework.Host, helmClient *helmclient.Client) error {
 		return microerror.Mask(err)
 	}
 
-	err = helmClient.InstallFromTarball(tarball, "kube-system",
+	err = helmClient.InstallFromTarball(tarball, "giantswarm",
 		helm.ReleaseName("cnr-server"),
 		helm.ValueOverrides([]byte("{}")),
 		helm.InstallWait(true))
@@ -135,13 +135,13 @@ func installInitialCharts(f *framework.Host) error {
 		return microerror.Mask(err)
 	}
 
-	podName, err := waitForPod(f, "kube-system", "app=cnr-server")
+	podName, err := waitForPod(f, "giantswarm", "app=cnr-server")
 	if err != nil {
 		return microerror.Mask(err)
 	}
 	tc := k8sportforward.TunnelConfig{
 		Remote:    5000,
-		Namespace: "kube-system",
+		Namespace: "giantswarm",
 		PodName:   podName,
 	}
 	tunnel, err := fw.ForwardPort(tc)
