@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 
+	"k8s.io/helm/pkg/helm"
+
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/operatorkit/controller"
 )
@@ -17,7 +19,7 @@ func (r *Resource) ApplyDeleteChange(ctx context.Context, obj, deleteChange inte
 	if chartState.ReleaseName != "" {
 		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("deleting release %s", chartState.ReleaseName))
 
-		err := r.helmClient.DeleteRelease(chartState.ReleaseName)
+		err := r.helmClient.DeleteRelease(chartState.ReleaseName, helm.DeletePurge(true))
 		if err != nil {
 			return microerror.Mask(err)
 		}
