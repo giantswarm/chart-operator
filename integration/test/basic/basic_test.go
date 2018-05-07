@@ -36,9 +36,9 @@ func TestChartLifecycle(t *testing.T) {
 		t.Fatalf("could not delete %q %v", cr, err)
 	}
 
-	err = waitForReleaseStatus(helmClient, testRelease, "DELETED")
-	if err != nil {
-		t.Fatalf("could not get release status of %q %v", testRelease, err)
+	_, err = helmClient.GetReleaseContent(testRelease)
+	if !helmclient.IsReleaseNotFound(err) {
+		t.Fatalf("not succesfully deleted %q %v", testRelease, err)
 	}
 	log.Printf("%q succesfully deleted", testRelease)
 }
