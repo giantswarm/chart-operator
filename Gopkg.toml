@@ -52,7 +52,7 @@ required = [
   name = "github.com/giantswarm/apprclient"
 
 [[constraint]]
-  branch = "pin-apiserver"
+  branch = "master"
   name = "github.com/giantswarm/helmclient"
 
 [[constraint]]
