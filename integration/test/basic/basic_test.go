@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/cenkalti/backoff"
+	"github.com/giantswarm/e2e-harness/pkg/framework"
 	"github.com/giantswarm/helmclient"
 	"github.com/giantswarm/microerror"
 
@@ -59,8 +60,6 @@ func waitForReleaseStatus(helmClient *helmclient.Client, release string, status 
 		log.Printf("getting release status %s: %v", t, err)
 	}
 
-	eb := backoff.NewExponentialBackOff()
-	eb.MaxElapsedTime = time.Minute
-
-	return backoff.RetryNotify(operation, eb, notify)
+	b := framework.NewExponentialBackoff(framework.ShortMaxWait, framework.LongMaxInterval)
+	return backoff.RetryNotify(operation, b, notify)
 }
