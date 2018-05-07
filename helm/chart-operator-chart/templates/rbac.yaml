@@ -18,6 +18,12 @@ rules:
   - chartconfigs
   verbs:
   - "*"
+- apiGroups:
+  - ""
+  resources:
+  - pods
+  verbs:
+  - "get"
 - nonResourceURLs:
   - "/"
   - "/healthz"
