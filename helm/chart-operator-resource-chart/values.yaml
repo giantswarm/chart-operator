@@ -4,4 +4,5 @@ chart:
   namespace: "default"
   release: "0.2.0"
 
+namespace: "giantswarm"
 versionBundleVersion: "0.1.0"
