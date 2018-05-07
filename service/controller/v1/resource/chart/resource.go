@@ -53,6 +53,12 @@ func New(config Config) (*Resource, error) {
 		return nil, microerror.Maskf(invalidConfigError, "%T.Logger must not be empty", config)
 	}
 
+	// Ensure Tiller is installed in the configured namespace.
+	err := config.HelmClient.EnsureTillerInstalled()
+	if err != nil {
+		return nil, microerror.Mask(err)
+	}
+
 	r := &Resource{
 		// Dependencies.
 		apprClient: config.ApprClient,
