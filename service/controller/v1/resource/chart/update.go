@@ -39,6 +39,11 @@ func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange inte
 			}
 		}()
 
+		err = r.helmClient.EnsureTillerInstalled()
+		if err != nil {
+			return microerror.Mask(err)
+		}
+
 		err = r.helmClient.UpdateReleaseFromTarball(releaseName, tarballPath)
 		if err != nil {
 			return microerror.Mask(err)
