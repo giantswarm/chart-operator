@@ -24,7 +24,13 @@ type ChartState struct {
 
 // Equals asseses the equality of ChartStates with regards to distinguishing fields.
 func (a *ChartState) Equals(b ChartState) bool {
-	if a.ReleaseName != b.ReleaseName || a.ReleaseVersion != b.ReleaseVersion || a.ChartName != b.ChartName {
+	if a.ReleaseName != b.ReleaseName {
+		return false
+	}
+	if a.ReleaseVersion != b.ReleaseVersion {
+		return false
+	}
+	if a.ChartName != b.ChartName {
 		return false
 	}
 	return true
