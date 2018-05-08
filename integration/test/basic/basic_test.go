@@ -31,7 +31,7 @@ func TestChartLifecycle(t *testing.T) {
 		RestConfig:      f.RestConfig(),
 		TillerNamespace: "giantswarm",
 	}
-	helmClient, err := helmclient.New(c)
+	gsHelmClient, err := helmclient.New(c)
 	if err != nil {
 		t.Fatalf("could not create helmClient %v", err)
 	}
@@ -42,7 +42,7 @@ func TestChartLifecycle(t *testing.T) {
 		t.Fatalf("could not install %q %v", cr, err)
 	}
 
-	err = waitForReleaseStatus(helmClient, testRelease, "DEPLOYED")
+	err = waitForReleaseStatus(gsHelmClient, testRelease, "DEPLOYED")
 	if err != nil {
 		t.Fatalf("could not get release status of %q %v", testRelease, err)
 	}
@@ -54,7 +54,7 @@ func TestChartLifecycle(t *testing.T) {
 		t.Fatalf("could not delete %q %v", cr, err)
 	}
 
-	err = waitForReleaseStatus(helmClient, testRelease, "DELETED")
+	err = waitForReleaseStatus(gsHelmClient, testRelease, "DELETED")
 	if !helmclient.IsReleaseNotFound(err) {
 		t.Fatalf("%q not succesfully deleted %v", testRelease, err)
 	}
