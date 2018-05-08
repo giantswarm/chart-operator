@@ -20,6 +20,7 @@ func TestChartLifecycle(t *testing.T) {
 	const testRelease = "tb-release"
 	const cr = "chart-operator-resource"
 
+	// Setup helm client for giantswarm tiller
 	l, err := micrologger.New(micrologger.Config{})
 	if err != nil {
 		t.Fatalf("could not create logger %v", err)
@@ -31,11 +32,13 @@ func TestChartLifecycle(t *testing.T) {
 		RestConfig:      f.RestConfig(),
 		TillerNamespace: "giantswarm",
 	}
+
 	gsHelmClient, err := helmclient.New(c)
 	if err != nil {
 		t.Fatalf("could not create helmClient %v", err)
 	}
 
+	// Test Creation
 	log.Printf("creating %q", cr)
 	err = f.InstallResource(cr, templates.ChartOperatorResourceValues, ":stable")
 	if err != nil {
@@ -48,6 +51,7 @@ func TestChartLifecycle(t *testing.T) {
 	}
 	log.Printf("%q succesfully deployed", testRelease)
 
+	// Test Deletion
 	log.Printf("deleting %q", cr)
 	err = helmClient.DeleteRelease(cr)
 	if err != nil {
