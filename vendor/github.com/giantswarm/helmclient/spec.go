@@ -6,7 +6,7 @@ const (
 	tillerDefaultNamespace = "kube-system"
 	tillerImageSpec        = "gcr.io/kubernetes-helm/tiller:v2.8.2"
 	tillerLabelSelector    = "app=helm,name=tiller"
-	tillerPodName          = "tiller"
+	tillerPodName          = "tiller-giantswarm"
 	tillerPort             = 44134
 )
 

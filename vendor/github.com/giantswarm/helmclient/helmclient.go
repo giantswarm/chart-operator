@@ -138,6 +138,7 @@ func (c *Client) EnsureTillerInstalled() error {
 
 		_, err := c.k8sClient.CoreV1().ServiceAccounts(n).Create(i)
 		if errors.IsAlreadyExists(err) {
+			c.logger.Log("level", "debug", "message", fmt.Sprintf("serviceaccount %s creation failed", tillerPodName), "stack", fmt.Sprintf("%#v", err))
 			// fall through
 		} else if err != nil {
 			return microerror.Mask(err)
@@ -170,6 +171,7 @@ func (c *Client) EnsureTillerInstalled() error {
 
 		_, err := c.k8sClient.RbacV1().ClusterRoleBindings().Create(i)
 		if errors.IsAlreadyExists(err) {
+			c.logger.Log("level", "debug", "message", fmt.Sprintf("clusterrolebinding %s creation failed", tillerPodName), "stack", fmt.Sprintf("%#v", err))
 			// fall through
 		} else if err != nil {
 			return microerror.Mask(err)
@@ -186,6 +188,7 @@ func (c *Client) EnsureTillerInstalled() error {
 
 		err := installer.Install(c.k8sClient, o)
 		if errors.IsAlreadyExists(err) {
+			c.logger.Log("level", "debug", "message", "tiller deployment installation failed", "stack", fmt.Sprintf("%#v", err))
 			// fall through
 		} else if err != nil {
 			return microerror.Mask(err)
