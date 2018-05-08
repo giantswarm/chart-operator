@@ -3,14 +3,18 @@ package chart
 import (
 	"context"
 	"fmt"
+	"reflect"
 
-	"k8s.io/helm/pkg/helm"
-
+	"github.com/giantswarm/chart-operator/service/controller/v1/key"
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/operatorkit/controller"
 )
 
 func (r *Resource) ApplyDeleteChange(ctx context.Context, obj, deleteChange interface{}) error {
+	customObject, err := key.ToCustomObject(obj)
+	if err != nil {
+		return microerror.Mask(err)
+	}
 	chartState, err := toChartState(deleteChange)
 	if err != nil {
 		return microerror.Mask(err)
@@ -18,18 +22,19 @@ func (r *Resource) ApplyDeleteChange(ctx context.Context, obj, deleteChange inte
 
 	if chartState.ReleaseName != "" {
 		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("deleting release %s", chartState.ReleaseName))
+		release := key.ReleaseName(customObject)
 
-		err := r.helmClient.EnsureTillerInstalled()
+		err = r.helmClient.EnsureTillerInstalled()
 		if err != nil {
 			return microerror.Mask(err)
 		}
 
-		err = r.helmClient.DeleteRelease(chartState.ReleaseName, helm.DeletePurge(true))
+		err := r.helmClient.DeleteRelease(release)
 		if err != nil {
 			return microerror.Mask(err)
 		}
 
-		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("deleted release %s", chartState.ReleaseName))
+		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("deleting release %s", chartState.ReleaseName))
 	} else {
 		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("not deleting release %s", chartState.ReleaseName))
 	}
@@ -60,7 +65,7 @@ func (r *Resource) newDeleteChange(ctx context.Context, obj, currentState, desir
 
 	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("finding out if the %s release has to be deleted", desiredChartState.ReleaseName))
 
-	if !currentChartState.IsEmpty() && currentChartState.Equals(desiredChartState) {
+	if !reflect.DeepEqual(currentChartState, ChartState{}) && reflect.DeepEqual(currentChartState, desiredChartState) {
 		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("the %s release needs to be deleted", desiredChartState.ReleaseName))
 
 		return &desiredChartState, nil
