@@ -35,3 +35,8 @@ func (a *ChartState) Equals(b ChartState) bool {
 	}
 	return true
 }
+
+// IsEmpty checks if a ChartState is empty.
+func (c *ChartState) IsEmpty() bool {
+	return c.Equals(ChartState{})
+}

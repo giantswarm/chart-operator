@@ -55,7 +55,7 @@ func (r *Resource) newDeleteChange(ctx context.Context, obj, currentState, desir
 
 	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("finding out if the %s release has to be deleted", desiredChartState.ReleaseName))
 
-	if !currentChartState.Equals(ChartState{}) && currentChartState.Equals(desiredChartState) {
+	if !currentChartState.IsEmpty() && currentChartState.Equals(desiredChartState) {
 		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("the %s release needs to be deleted", desiredChartState.ReleaseName))
 
 		return &desiredChartState, nil
