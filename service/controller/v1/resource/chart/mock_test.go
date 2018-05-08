@@ -38,6 +38,10 @@ func (h *helmMock) DeleteRelease(releaseName string, options ...helm.DeleteOptio
 	return nil
 }
 
+func (h *helmMock) EnsureTillerInstalled() error {
+	return nil
+}
+
 func (h *helmMock) GetReleaseContent(releaseName string) (*helmclient.ReleaseContent, error) {
 	if h.defaultError != nil {
 		return nil, h.defaultError

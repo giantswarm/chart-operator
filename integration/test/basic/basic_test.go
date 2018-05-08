@@ -11,6 +11,7 @@ import (
 	"github.com/giantswarm/e2e-harness/pkg/framework"
 	"github.com/giantswarm/helmclient"
 	"github.com/giantswarm/microerror"
+	"github.com/giantswarm/micrologger"
 
 	"github.com/giantswarm/chart-operator/integration/templates"
 )
@@ -18,6 +19,22 @@ import (
 func TestChartLifecycle(t *testing.T) {
 	const testRelease = "tb-release"
 	const cr = "chart-operator-resource"
+
+	l, err := micrologger.New(micrologger.Config{})
+	if err != nil {
+		t.Fatalf("could not create logger %v", err)
+	}
+
+	c := helmclient.Config{
+		Logger:          l,
+		K8sClient:       f.K8sClient(),
+		RestConfig:      f.RestConfig(),
+		TillerNamespace: "giantswarm",
+	}
+	helmClient, err := helmclient.New(c)
+	if err != nil {
+		t.Fatalf("could not create helmClient %v", err)
+	}
 
 	log.Printf("creating %q", cr)
 	err := f.InstallResource(cr, templates.ChartOperatorResourceValues, ":stable")

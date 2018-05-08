@@ -14,7 +14,9 @@ data:
     service:
       cnr:
         address: '{{ .Values.cnr.address }}'
+      helm:
+        tillerNamespace:  '{{ .Values.namespace }}'
       kubernetes:
         incluster: true
         watch:
-          namespace: 'kube-system'
+          namespace: '{{ .Values.namespace }}'

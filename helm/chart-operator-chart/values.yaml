@@ -3,7 +3,7 @@
 # Declare variables to be passed into your templates.
 
 name: chart-operator
-namespace: kube-system
+namespace: giantswarm
 port: 8000
 
 replicas: 1
