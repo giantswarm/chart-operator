@@ -28,13 +28,13 @@ rules:
 - apiGroups:
   - "rbac.authorization.k8s.io"
   resources:
-  - clusterrolebinding
+  - clusterrolebindings
   verbs:
   - "*"
 - apiGroups:
   - ""
   resources:
-  - serviceaccount
+  - serviceaccounts
   verbs:
   - "*"
 - nonResourceURLs:
