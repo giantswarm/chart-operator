@@ -57,16 +57,16 @@ func TestChartLifecycle(t *testing.T) {
 
 	// Test Update
 	log.Printf("updating %q", cr)
-	err = updateChartOperatorResource(helmClient)
+	err = updateChartOperatorResource(helmClient, cr)
 	if err != nil {
 		t.Fatalf("could not update %q %v", cr, err)
 	}
 
-	err = waitForReleaseStatus(gsHelmClient, release, "PENDING_UPGRADE")
+	err = waitForReleaseStatus(gsHelmClient, testRelease, "PENDING_UPGRADE")
 	if err != nil {
 		t.Fatalf("could not get release status of %q %v", testRelease, err)
 	}
-	err = waitForReleaseStatus(gsHelmClient, release, "DEPLOYED")
+	err = waitForReleaseStatus(gsHelmClient, testRelease, "DEPLOYED")
 	if err != nil {
 		t.Fatalf("could not get release status of %q %v", testRelease, err)
 	}
@@ -106,7 +106,7 @@ func waitForReleaseStatus(gsHelmClient *helmclient.Client, release string, statu
 	return backoff.RetryNotify(operation, b, notify)
 }
 
-func updateChartOperatorResource(helmClient *helmclient.Client, releaseName String) error {
+func updateChartOperatorResource(helmClient *helmclient.Client, releaseName string) error {
 	const chartOperatorResourceValues = `chart:
   name: "tb-chart"
   channel: "5-6-beta"
