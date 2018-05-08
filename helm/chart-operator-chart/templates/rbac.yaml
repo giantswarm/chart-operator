@@ -29,7 +29,7 @@ rules:
 - apiGroups:
   - ""
   resources:
-  - pod/portforward
+  - pods/portforward
   verbs:
   - "create"
 - apiGroups:
