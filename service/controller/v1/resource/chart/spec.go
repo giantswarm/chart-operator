@@ -21,3 +21,22 @@ type ChartState struct {
 	// e.g. 0.1.2
 	ReleaseVersion string
 }
+
+// Equals asseses the equality of ChartStates with regards to distinguishing fields.
+func (a *ChartState) Equals(b ChartState) bool {
+	if a.ReleaseName != b.ReleaseName {
+		return false
+	}
+	if a.ReleaseVersion != b.ReleaseVersion {
+		return false
+	}
+	if a.ChartName != b.ChartName {
+		return false
+	}
+	return true
+}
+
+// IsEmpty checks if a ChartState is empty.
+func (c *ChartState) IsEmpty() bool {
+	return c.Equals(ChartState{})
+}
