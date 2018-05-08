@@ -32,7 +32,7 @@ func TestChartInstalled(t *testing.T) {
 		t.Fatalf("could not create helmClient %v", err)
 	}
 
-	err := f.InstallResource("chart-operator-resource", templates.ChartOperatorResourceValues, ":stable")
+	err = f.InstallResource("chart-operator-resource", templates.ChartOperatorResourceValues, ":stable")
 	if err != nil {
 		t.Fatalf("could not install chart-operator-resource-chart %v", err)
 	}
