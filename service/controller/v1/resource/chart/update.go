@@ -51,7 +51,7 @@ func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange inte
 		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("updated chart %s", chartState.ChartName))
 
 	} else {
-		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("chart %s does not need to be updated", chartState.ChartName))
+		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("chart %s do not need to be updated", chartState.ChartName))
 	}
 	return nil
 }
