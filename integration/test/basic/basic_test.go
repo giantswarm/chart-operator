@@ -37,7 +37,7 @@ func TestChartLifecycle(t *testing.T) {
 	}
 
 	log.Printf("creating %q", cr)
-	err := f.InstallResource(cr, templates.ChartOperatorResourceValues, ":stable")
+	err = f.InstallResource(cr, templates.ChartOperatorResourceValues, ":stable")
 	if err != nil {
 		t.Fatalf("could not install %q %v", cr, err)
 	}
