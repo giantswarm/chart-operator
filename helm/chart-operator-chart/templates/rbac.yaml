@@ -37,7 +37,7 @@ rules:
   resources:
   - clusterrolebindings
   verbs:
-  - "*"
+  - "create"
 - apiGroups:
   - "rbac.authorization.k8s.io"
   resources:
@@ -49,13 +49,13 @@ rules:
   resources:
   - serviceaccounts
   verbs:
-  - "*"
+  - "create"
 - apiGroups:
   - extensions
   resources:
   - deployments
   verbs:
-  - '*'
+  - 'create'
 - nonResourceURLs:
   - "/"
   - "/healthz"
