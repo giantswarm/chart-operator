@@ -57,7 +57,19 @@ jobs:
 
     - run: ./architect deploy
 
-    - run: ./architect publish
+    - run:
+        name: publish to beta
+        command: ./architect publish
+
+  publish_to_stable:
+    machine: true
+    steps:
+    - checkout
+
+    - attach_workspace:
+        at: .
+
+    - run: ./architect publish --stable
 
 workflows:
   version: 2
@@ -90,3 +102,10 @@ workflows:
               only: master
           requires:
           - e2eTestMaster
+
+      - publish_to_stable:
+          filters:
+            branches:
+              only: master
+          requires:
+          - deploy
