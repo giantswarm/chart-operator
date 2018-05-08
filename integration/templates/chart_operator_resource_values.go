@@ -6,6 +6,6 @@ package templates
 const ChartOperatorResourceValues = `chart:
   name: "tb-chart"
   channel: "5-5-beta"
-  namespace: "giantswarm"
+  namespace: "default"
   release: "tb-release"
 `
