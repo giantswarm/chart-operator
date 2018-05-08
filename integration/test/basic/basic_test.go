@@ -107,12 +107,6 @@ func waitForReleaseStatus(gsHelmClient *helmclient.Client, release string, statu
 }
 
 func updateChartOperatorResource(helmClient *helmclient.Client, releaseName string) error {
-	const chartOperatorResourceValues = `chart:
-  name: "tb-chart"
-  channel: "5-6-beta"
-  namespace: "default"
-  release: "tb-release"
-`
 	l, err := micrologger.New(micrologger.Config{})
 	if err != nil {
 		return microerror.Mask(err)
@@ -131,13 +125,13 @@ func updateChartOperatorResource(helmClient *helmclient.Client, releaseName stri
 		return microerror.Mask(err)
 	}
 
-	tarballPath, err := a.PullChartTarball("chart-operator-resource-chart", "stable")
+	tarballPath, err := a.PullChartTarball(fmt.Sprintf("%s-chart", releaseName), "stable")
 	if err != nil {
 		return microerror.Mask(err)
 	}
 
 	helmClient.UpdateReleaseFromTarball(releaseName, tarballPath,
-		helm.UpdateValueOverrides([]byte(chartOperatorResourceValues)),
+		helm.UpdateValueOverrides([]byte(templates.UpdatedChartOperatorResourceValues)),
 		helm.UpgradeWait(true))
 	if err != nil {
 		return microerror.Mask(err)
