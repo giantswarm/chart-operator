@@ -24,6 +24,11 @@ func (r *Resource) ApplyDeleteChange(ctx context.Context, obj, deleteChange inte
 		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("deleting release %s", chartState.ReleaseName))
 		release := key.ReleaseName(customObject)
 
+		err = r.helmClient.EnsureTillerInstalled()
+		if err != nil {
+			return microerror.Mask(err)
+		}
+
 		err := r.helmClient.DeleteRelease(release)
 		if err != nil {
 			return microerror.Mask(err)

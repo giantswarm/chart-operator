@@ -37,6 +37,11 @@ func (r *Resource) ApplyCreateChange(ctx context.Context, obj, createChange inte
 			}
 		}()
 
+		err = r.helmClient.EnsureTillerInstalled()
+		if err != nil {
+			return microerror.Mask(err)
+		}
+
 		// We need to pass the ValueOverrides option to make the install process
 		// use the default values and prevent errors on nested values.
 		//

@@ -27,11 +27,21 @@
 
 
 required = [
+  "github.com/Azure/go-autorest/autorest",
+  "github.com/docker/distribution/reference",
   "k8s.io/api/core/v1",
   "k8s.io/apimachinery/pkg/apis/meta/v1",
 ]
 
 
+
+[[constraint]]
+  name = "github.com/Azure/go-autorest"
+  version = "9.1.0"
+
+[[constraint]]
+  branch = "master"
+  name = "github.com/docker/distribution"
 
 [[constraint]]
   branch = "master"

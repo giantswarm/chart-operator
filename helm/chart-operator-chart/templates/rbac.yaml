@@ -18,6 +18,45 @@ rules:
   - chartconfigs
   verbs:
   - "*"
+- apiGroups:
+  - ""
+  resources:
+  - configmaps
+  - pods
+  verbs:
+  - "get"
+  - "list"
+- apiGroups:
+  - ""
+  resources:
+  - pods/portforward
+  verbs:
+  - "create"
+- apiGroups:
+  - "rbac.authorization.k8s.io"
+  resources:
+  - clusterrolebindings
+  verbs:
+  - "create"
+- apiGroups:
+  - "rbac.authorization.k8s.io"
+  resources:
+  - clusterroles
+  verbs:
+  - "bind"
+- apiGroups:
+  - ""
+  resources:
+  - services
+  - serviceaccounts
+  verbs:
+  - "create"
+- apiGroups:
+  - extensions
+  resources:
+  - deployments
+  verbs:
+  - 'create'
 - nonResourceURLs:
   - "/"
   - "/healthz"

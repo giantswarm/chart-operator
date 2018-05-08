@@ -15,6 +15,11 @@ func (r *Resource) GetCurrentState(ctx context.Context, obj interface{}) (interf
 		return nil, microerror.Mask(err)
 	}
 
+	err = r.helmClient.EnsureTillerInstalled()
+	if err != nil {
+		return nil, microerror.Mask(err)
+	}
+
 	releaseName := key.ReleaseName(customObject)
 	releaseContent, err := r.helmClient.GetReleaseContent(releaseName)
 	if helmclient.IsReleaseNotFound(err) {
