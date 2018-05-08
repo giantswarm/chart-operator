@@ -61,9 +61,9 @@ func TestChartLifecycle(t *testing.T) {
 	log.Printf("%q succesfully deleted", testRelease)
 }
 
-func waitForReleaseStatus(helmClient *helmclient.Client, release string, status string) error {
+func waitForReleaseStatus(gsHelmClient *helmclient.Client, release string, status string) error {
 	operation := func() error {
-		rc, err := helmClient.GetReleaseContent(release)
+		rc, err := gsHelmClient.GetReleaseContent(release)
 		if err != nil {
 			return microerror.Maskf(err, "could not retrieve release content")
 		}
