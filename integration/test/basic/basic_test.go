@@ -10,12 +10,29 @@ import (
 	"github.com/cenkalti/backoff"
 	"github.com/giantswarm/helmclient"
 	"github.com/giantswarm/microerror"
+	"github.com/giantswarm/micrologger"
 
 	"github.com/giantswarm/chart-operator/integration/templates"
 )
 
 func TestChartInstalled(t *testing.T) {
-	err := f.InstallResource("chart-operator-resource", templates.ChartOperatorResourceValues, ":stable")
+	l, err := micrologger.New(micrologger.Config{})
+	if err != nil {
+		t.Fatalf("could not create logger %v", err)
+	}
+
+	c := helmclient.Config{
+		Logger:          l,
+		K8sClient:       f.K8sClient(),
+		RestConfig:      f.RestConfig(),
+		TillerNamespace: "giantswarm",
+	}
+	helmClient, err := helmclient.New(c)
+	if err != nil {
+		t.Fatalf("could not create helmClient %v", err)
+	}
+
+	err = f.InstallResource("chart-operator-resource", templates.ChartOperatorResourceValues, ":stable")
 	if err != nil {
 		t.Fatalf("could not install chart-operator-resource-chart %v", err)
 	}
