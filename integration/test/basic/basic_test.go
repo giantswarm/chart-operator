@@ -24,23 +24,7 @@ func TestChartLifecycle(t *testing.T) {
 	const testRelease = "tb-release"
 	const cr = "chart-operator-resource"
 
-	// Setup helm client for giantswarm tiller
-	l, err := micrologger.New(micrologger.Config{})
-	if err != nil {
-		t.Fatalf("could not create logger %v", err)
-	}
-
-	c := helmclient.Config{
-		Logger:          l,
-		K8sClient:       f.K8sClient(),
-		RestConfig:      f.RestConfig(),
-		TillerNamespace: "giantswarm",
-	}
-
-	gsHelmClient, err := helmclient.New(c)
-	if err != nil {
-		t.Fatalf("could not create helmClient %v", err)
-	}
+	gsHelmClient := createGsHelmClient()
 
 	// Test Creation
 	l.Log("level", "debug", "message", fmt.Sprintf("creating %s", cr))
@@ -86,24 +70,25 @@ func TestChartLifecycle(t *testing.T) {
 	l.Log("level", "debug", "message", fmt.Sprintf("%s succesfully deleted", testRelease))
 }
 
-func waitForReleaseStatus(gsHelmClient *helmclient.Client, release string, status string) error {
-	operation := func() error {
-		rc, err := gsHelmClient.GetReleaseContent(release)
-		if err != nil {
-			return microerror.Maskf(err, "could not retrieve release content")
-		}
-		if rc.Status != status {
-			return microerror.Newf("waiting for %q, current %q", status, rc.Status)
-		}
-		return nil
+func createGsHelmClient() *helmclient.Client {
+	l, err := micrologger.New(micrologger.Config{})
+	if err != nil {
+		t.Fatalf("could not create logger %v", err)
 	}
 
-	notify := func(err error, t time.Duration) {
-		log.Printf("getting release status %s: %v", t, err)
+	c := helmclient.Config{
+		Logger:          l,
+		K8sClient:       f.K8sClient(),
+		RestConfig:      f.RestConfig(),
+		TillerNamespace: "giantswarm",
 	}
 
-	b := framework.NewExponentialBackoff(framework.ShortMaxWait, framework.LongMaxInterval)
-	return backoff.RetryNotify(operation, b, notify)
+	gsHelmClient, err := helmclient.New(c)
+	if err != nil {
+		t.Fatalf("could not create helmClient %v", err)
+	}
+
+	return gsHelmClient
 }
 
 func updateChartOperatorResource(helmClient *helmclient.Client, releaseName string) error {
@@ -138,4 +123,24 @@ func updateChartOperatorResource(helmClient *helmclient.Client, releaseName stri
 	}
 
 	return nil
+}
+
+func waitForReleaseStatus(gsHelmClient *helmclient.Client, release string, status string) error {
+	operation := func() error {
+		rc, err := gsHelmClient.GetReleaseContent(release)
+		if err != nil {
+			return microerror.Maskf(err, "could not retrieve release content")
+		}
+		if rc.Status != status {
+			return microerror.Newf("waiting for %q, current %q", status, rc.Status)
+		}
+		return nil
+	}
+
+	notify := func(err error, t time.Duration) {
+		log.Printf("getting release status %s: %v", t, err)
+	}
+
+	b := framework.NewExponentialBackoff(framework.ShortMaxWait, framework.LongMaxInterval)
+	return backoff.RetryNotify(operation, b, notify)
 }
