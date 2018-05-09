@@ -24,7 +24,10 @@ func TestChartLifecycle(t *testing.T) {
 	const testRelease = "tb-release"
 	const cr = "chart-operator-resource"
 
-	gsHelmClient := createGsHelmClient()
+	gsHelmClient, err := createGsHelmClient()
+	if err != nil {
+		t.Fatalf("could create giant swarm helmClient %v", err)
+	}
 
 	// Test Creation
 	l.Log("level", "debug", "message", fmt.Sprintf("creating %s", cr))
@@ -54,7 +57,7 @@ func TestChartLifecycle(t *testing.T) {
 	if err != nil {
 		t.Fatalf("could not get release status of %q %v", testRelease, err)
 	}
-	log.Println("test chart succesfully updated")
+	log.Printf("%q succesfully updated", testRelease)
 
 	// Test Deletion
 	l.Log("level", "debug", "message", fmt.Sprintf("deleting %s", cr))
@@ -70,10 +73,10 @@ func TestChartLifecycle(t *testing.T) {
 	l.Log("level", "debug", "message", fmt.Sprintf("%s succesfully deleted", testRelease))
 }
 
-func createGsHelmClient() *helmclient.Client {
+func createGsHelmClient() (*helmclient.Client, error) {
 	l, err := micrologger.New(micrologger.Config{})
 	if err != nil {
-		t.Fatalf("could not create logger %v", err)
+		return nil, microerror.Maskf(err, "could not create logger")
 	}
 
 	c := helmclient.Config{
@@ -85,10 +88,10 @@ func createGsHelmClient() *helmclient.Client {
 
 	gsHelmClient, err := helmclient.New(c)
 	if err != nil {
-		t.Fatalf("could not create helmClient %v", err)
+		return nil, microerror.Maskf(err, "could not create helmClient")
 	}
 
-	return gsHelmClient
+	return gsHelmClient, nil
 }
 
 func updateChartOperatorResource(helmClient *helmclient.Client, releaseName string) error {
