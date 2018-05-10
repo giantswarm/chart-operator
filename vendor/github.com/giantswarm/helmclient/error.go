@@ -103,6 +103,13 @@ func IsReleaseNotFound(err error) bool {
 	return false
 }
 
+var tillerInstallationFailedError = microerror.New("Tiller installation failed")
+
+// IsTillerInstallationFailed asserts tillerInstallationFailedError.
+func IsTillerInstallationFailed(err error) bool {
+	return microerror.Cause(err) == tillerInstallationFailedError
+}
+
 var tooManyResultsError = microerror.New("too many results")
 
 // IsTooManyResults asserts tooManyResultsError.
