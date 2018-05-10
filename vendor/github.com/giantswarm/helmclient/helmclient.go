@@ -358,12 +358,15 @@ func (c *Client) InstallFromTarball(path, ns string, options ...helmclient.Insta
 		}
 		defer c.closeTunnel(t)
 
-		_, err = c.newHelmClientFromTunnel(t).InstallRelease(path, ns, options...)
+		release, err := c.newHelmClientFromTunnel(t).InstallRelease(path, ns, options...)
 		if IsReleaseNotFound(err) {
 			return backoff.Permanent(releaseNotFoundError)
 		} else if IsCannotReuseRelease(err) {
 			return backoff.Permanent(cannotReuseReleaseError)
 		} else if err != nil {
+			if IsInvalidGZipHeader(err) {
+				c.logger.Log("level", "debug", "message", fmt.Sprintf("invalid GZip header, returned release info: %#v", release), "stack", fmt.Sprintf("%#v", err))
+			}
 			return microerror.Mask(err)
 		}
 
@@ -392,10 +395,13 @@ func (c *Client) UpdateReleaseFromTarball(releaseName, path string, options ...h
 		}
 		defer c.closeTunnel(t)
 
-		_, err = c.newHelmClientFromTunnel(t).UpdateRelease(releaseName, path, options...)
+		release, err := c.newHelmClientFromTunnel(t).UpdateRelease(releaseName, path, options...)
 		if IsReleaseNotFound(err) {
 			return backoff.Permanent(microerror.Maskf(releaseNotFoundError, releaseName))
 		} else if err != nil {
+			if IsInvalidGZipHeader(err) {
+				c.logger.Log("level", "debug", "message", fmt.Sprintf("invalid GZip header, returned release info: %#v", release), "stack", fmt.Sprintf("%#v", err))
+			}
 			return microerror.Mask(err)
 		}
 
