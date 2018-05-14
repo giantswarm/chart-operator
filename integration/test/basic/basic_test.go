@@ -40,7 +40,7 @@ func TestChartLifecycle(t *testing.T) {
 	}
 
 	// Test Creation
-	l.Log("level", "debug", "message", fmt.Sprintf("creating %q", cr))
+	l.Log("level", "debug", "message", fmt.Sprintf("creating %s", cr))
 	err = f.InstallResource(cr, templates.ChartOperatorResourceValues, ":stable")
 	if err != nil {
 		t.Fatalf("could not install %q %v", cr, err)
@@ -50,10 +50,10 @@ func TestChartLifecycle(t *testing.T) {
 	if err != nil {
 		t.Fatalf("could not get release status of %q %v", testRelease, err)
 	}
-	l.Log("level", "debug", "message", fmt.Sprintf("%q succesfully deployed", testRelease))
+	l.Log("level", "debug", "message", fmt.Sprintf("%s succesfully deployed", testRelease))
 
 	// Test Deletion
-	l.Log("level", "debug", "message", fmt.Sprintf("deleting %q", cr))
+	l.Log("level", "debug", "message", fmt.Sprintf("deleting %s", cr))
 	err = helmClient.DeleteRelease(cr)
 	if err != nil {
 		t.Fatalf("could not delete %q %v", cr, err)
@@ -63,7 +63,7 @@ func TestChartLifecycle(t *testing.T) {
 	if !helmclient.IsReleaseNotFound(err) {
 		t.Fatalf("%q not succesfully deleted %v", testRelease, err)
 	}
-	l.Log("level", "debug", "message", fmt.Sprintf("%q succesfully deleted", testRelease))
+	l.Log("level", "debug", "message", fmt.Sprintf("%s succesfully deleted", testRelease))
 }
 
 func waitForReleaseStatus(gsHelmClient *helmclient.Client, release string, status string) error {
