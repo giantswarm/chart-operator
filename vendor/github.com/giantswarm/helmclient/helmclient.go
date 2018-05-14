@@ -2,6 +2,7 @@ package helmclient
 
 import (
 	"fmt"
+	"io/ioutil"
 	"time"
 
 	"github.com/cenkalti/backoff"
@@ -230,7 +231,7 @@ func (c *Client) EnsureTillerInstalled() error {
 
 		err := backoff.RetryNotify(o, b, n)
 		if err != nil {
-			return microerror.Mask(err)
+			return microerror.Maskf(tillerInstallationFailedError, err.Error())
 		}
 
 		c.logger.Log("level", "debug", "message", "succeeded pinging tiller")
@@ -358,12 +359,20 @@ func (c *Client) InstallFromTarball(path, ns string, options ...helmclient.Insta
 		}
 		defer c.closeTunnel(t)
 
-		_, err = c.newHelmClientFromTunnel(t).InstallRelease(path, ns, options...)
+		release, err := c.newHelmClientFromTunnel(t).InstallRelease(path, ns, options...)
 		if IsReleaseNotFound(err) {
 			return backoff.Permanent(releaseNotFoundError)
 		} else if IsCannotReuseRelease(err) {
 			return backoff.Permanent(cannotReuseReleaseError)
 		} else if err != nil {
+			if IsInvalidGZipHeader(err) {
+				content, readErr := ioutil.ReadFile(path)
+				if readErr == nil {
+					c.logger.Log("level", "debug", "message", fmt.Sprintf("invalid GZip header, returned release info: %#v, tarball file content %s", release, content), "stack", fmt.Sprintf("%#v", err))
+				} else {
+					c.logger.Log("level", "debug", "message", fmt.Sprintf("could not read chart tarball %s", path), "stack", fmt.Sprintf("%#v", readErr))
+				}
+			}
 			return microerror.Mask(err)
 		}
 
@@ -392,10 +401,18 @@ func (c *Client) UpdateReleaseFromTarball(releaseName, path string, options ...h
 		}
 		defer c.closeTunnel(t)
 
-		_, err = c.newHelmClientFromTunnel(t).UpdateRelease(releaseName, path, options...)
+		release, err := c.newHelmClientFromTunnel(t).UpdateRelease(releaseName, path, options...)
 		if IsReleaseNotFound(err) {
 			return backoff.Permanent(microerror.Maskf(releaseNotFoundError, releaseName))
 		} else if err != nil {
+			if IsInvalidGZipHeader(err) {
+				content, readErr := ioutil.ReadFile(path)
+				if readErr == nil {
+					c.logger.Log("level", "debug", "message", fmt.Sprintf("invalid GZip header, returned release info: %#v, tarball file content %s", release, content), "stack", fmt.Sprintf("%#v", err))
+				} else {
+					c.logger.Log("level", "debug", "message", fmt.Sprintf("could not read chart tarball %s", path), "stack", fmt.Sprintf("%#v", readErr))
+				}
+			}
 			return microerror.Mask(err)
 		}
 

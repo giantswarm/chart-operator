@@ -44,6 +44,30 @@ func IsInvalidConfig(err error) bool {
 	return microerror.Cause(err) == invalidConfigError
 }
 
+const (
+	invalidGZipHeaderErrorPrefix = "gzip: invalid header"
+)
+
+var invalidGZipHeaderError = microerror.New("invalid gzip header")
+
+// IsInvalidGZipHeader asserts invalidGZipHeaderError.
+func IsInvalidGZipHeader(err error) bool {
+	if err == nil {
+		return false
+	}
+
+	c := microerror.Cause(err)
+
+	if strings.HasPrefix(c.Error(), invalidGZipHeaderErrorPrefix) {
+		return true
+	}
+	if c == invalidGZipHeaderError {
+		return true
+	}
+
+	return false
+}
+
 var podNotFoundError = microerror.New("pod not found")
 
 // IsPodNotFound asserts podNotFoundError.
@@ -77,6 +101,13 @@ func IsReleaseNotFound(err error) bool {
 	}
 
 	return false
+}
+
+var tillerInstallationFailedError = microerror.New("Tiller installation failed")
+
+// IsTillerInstallationFailed asserts tillerInstallationFailedError.
+func IsTillerInstallationFailed(err error) bool {
+	return microerror.Cause(err) == tillerInstallationFailedError
 }
 
 var tooManyResultsError = microerror.New("too many results")
