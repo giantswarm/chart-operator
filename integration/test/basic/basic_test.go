@@ -124,8 +124,7 @@ func updateChartOperatorResource(helmClient *helmclient.Client, releaseName stri
 	}
 
 	helmClient.UpdateReleaseFromTarball(releaseName, tarballPath,
-		helm.UpdateValueOverrides([]byte(templates.UpdatedChartOperatorResourceValues)),
-		helm.UpgradeWait(true))
+		helm.UpdateValueOverrides([]byte(templates.UpdatedChartOperatorResourceValues)))
 	if err != nil {
 		return microerror.Mask(err)
 	}
