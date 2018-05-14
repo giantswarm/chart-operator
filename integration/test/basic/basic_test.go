@@ -43,7 +43,7 @@ func TestChartLifecycle(t *testing.T) {
 	l.Log("level", "debug", "message", fmt.Sprintf("%s succesfully deployed", testRelease))
 
 	// Test Update
-	log.Printf("updating %q", cr)
+	l.Log("level", "debug", "message", fmt.Sprintf("updating %s", cr))
 	err = updateChartOperatorResource(helmClient, cr)
 	if err != nil {
 		t.Fatalf("could not update %q %v", cr, err)
@@ -57,7 +57,7 @@ func TestChartLifecycle(t *testing.T) {
 	if err != nil {
 		t.Fatalf("could not get release status of %q %v", testRelease, err)
 	}
-	log.Printf("%q succesfully updated", testRelease)
+	l.Log("level", "debug", "message", fmt.Sprintf("%s succesfully updated", testRelease))
 
 	// Test Deletion
 	l.Log("level", "debug", "message", fmt.Sprintf("deleting %s", cr))
