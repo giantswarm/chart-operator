@@ -24,6 +24,7 @@ func TestChartLifecycle(t *testing.T) {
 	const testRelease = "tb-release"
 	const cr = "chart-operator-resource"
 
+	// Setup
 	l, err := micrologger.New(micrologger.Config{})
 	if err != nil {
 		t.Fatalf("could not create logger %v", err)
@@ -54,13 +55,9 @@ func TestChartLifecycle(t *testing.T) {
 		t.Fatalf("could not update %q %v", cr, err)
 	}
 
-	err = waitForReleaseStatus(gsHelmClient, testRelease, "PENDING_UPGRADE")
+	err = waitForReleaseVersion(gsHelmClient, testRelease, "5.6.0")
 	if err != nil {
-		t.Fatalf("could not get release status of %q %v", testRelease, err)
-	}
-	err = waitForReleaseStatus(gsHelmClient, testRelease, "DEPLOYED")
-	if err != nil {
-		t.Fatalf("could not get release status of %q %v", testRelease, err)
+		t.Fatalf("could not get release version of %q %v", testRelease, err)
 	}
 	l.Log("level", "debug", "message", fmt.Sprintf("%s succesfully updated", testRelease))
 
@@ -146,6 +143,26 @@ func waitForReleaseStatus(gsHelmClient *helmclient.Client, release string, statu
 
 	notify := func(err error, t time.Duration) {
 		log.Printf("getting release status %s: %v", t, err)
+	}
+
+	b := framework.NewExponentialBackoff(framework.ShortMaxWait, framework.LongMaxInterval)
+	return backoff.RetryNotify(operation, b, notify)
+}
+
+func waitForReleaseVersion(gsHelmClient *helmclient.Client, release string, version string) error {
+	operation := func() error {
+		rh, err := gsHelmClient.GetReleaseHistory(release)
+		if err != nil {
+			return microerror.Maskf(err, "could not retrieve release history")
+		}
+		if rh.Version != version {
+			return microerror.Newf("waiting for %q, current %q", version, rh.Version)
+		}
+		return nil
+	}
+
+	notify := func(err error, t time.Duration) {
+		log.Printf("getting release version %s: %v", t, err)
 	}
 
 	b := framework.NewExponentialBackoff(framework.ShortMaxWait, framework.LongMaxInterval)
