@@ -13,11 +13,12 @@ import (
 
 	"github.com/cenkalti/backoff"
 	"github.com/giantswarm/apprclient"
-	"github.com/giantswarm/chart-operator/integration/templates"
 	"github.com/giantswarm/e2e-harness/pkg/framework"
 	"github.com/giantswarm/helmclient"
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/micrologger"
+
+	"github.com/giantswarm/chart-operator/integration/templates"
 )
 
 func TestChartLifecycle(t *testing.T) {
