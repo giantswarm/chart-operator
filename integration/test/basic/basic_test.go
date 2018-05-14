@@ -33,7 +33,7 @@ func TestChartLifecycle(t *testing.T) {
 
 	gsHelmClient, err := createGsHelmClient()
 	if err != nil {
-		t.Fatalf("could create giantswarm helmClient %v", err)
+		t.Fatalf("could not create giantswarm helmClient %v", err)
 	}
 
 	// Test Creation
