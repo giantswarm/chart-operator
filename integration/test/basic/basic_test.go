@@ -3,11 +3,13 @@
 package basic
 
 import (
+	"fmt"
 	"log"
 	"testing"
 	"time"
 
 	"github.com/cenkalti/backoff"
+	"github.com/giantswarm/e2e-harness/pkg/framework"
 	"github.com/giantswarm/helmclient"
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/micrologger"
@@ -15,7 +17,11 @@ import (
 	"github.com/giantswarm/chart-operator/integration/templates"
 )
 
-func TestChartInstalled(t *testing.T) {
+func TestChartLifecycle(t *testing.T) {
+	const testRelease = "tb-release"
+	const cr = "chart-operator-resource"
+
+	// Setup helm client for giantswarm tiller
 	l, err := micrologger.New(micrologger.Config{})
 	if err != nil {
 		t.Fatalf("could not create logger %v", err)
@@ -27,39 +33,55 @@ func TestChartInstalled(t *testing.T) {
 		RestConfig:      f.RestConfig(),
 		TillerNamespace: "giantswarm",
 	}
-	helmClient, err := helmclient.New(c)
+
+	gsHelmClient, err := helmclient.New(c)
 	if err != nil {
 		t.Fatalf("could not create helmClient %v", err)
 	}
 
-	err = f.InstallResource("chart-operator-resource", templates.ChartOperatorResourceValues, ":stable")
+	// Test Creation
+	l.Log("level", "debug", "message", fmt.Sprintf("creating %s", cr))
+	err = f.InstallResource(cr, templates.ChartOperatorResourceValues, ":stable")
 	if err != nil {
-		t.Fatalf("could not install chart-operator-resource-chart %v", err)
+		t.Fatalf("could not install %q %v", cr, err)
 	}
 
-	var rc *helmclient.ReleaseContent
+	err = waitForReleaseStatus(gsHelmClient, testRelease, "DEPLOYED")
+	if err != nil {
+		t.Fatalf("could not get release status of %q %v", testRelease, err)
+	}
+	l.Log("level", "debug", "message", fmt.Sprintf("%s succesfully deployed", testRelease))
+
+	// Test Deletion
+	l.Log("level", "debug", "message", fmt.Sprintf("deleting %s", cr))
+	err = helmClient.DeleteRelease(cr)
+	if err != nil {
+		t.Fatalf("could not delete %q %v", cr, err)
+	}
+
+	err = waitForReleaseStatus(gsHelmClient, testRelease, "DELETED")
+	if !helmclient.IsReleaseNotFound(err) {
+		t.Fatalf("%q not succesfully deleted %v", testRelease, err)
+	}
+	l.Log("level", "debug", "message", fmt.Sprintf("%s succesfully deleted", testRelease))
+}
+
+func waitForReleaseStatus(gsHelmClient *helmclient.Client, release string, status string) error {
 	operation := func() error {
-		rc, err = helmClient.GetReleaseContent("tb-release")
+		rc, err := gsHelmClient.GetReleaseContent(release)
 		if err != nil {
 			return microerror.Maskf(err, "could not retrieve release content")
 		}
-		if rc.Status == "PENDING_INSTALL" {
-			return microerror.Newf("release still not installed")
+		if rc.Status != status {
+			return microerror.Newf("waiting for %q, current %q", status, rc.Status)
 		}
 		return nil
 	}
 
 	notify := func(err error, t time.Duration) {
-		log.Printf("waiting for release %s: %v", t, err)
+		log.Printf("getting release status %s: %v", t, err)
 	}
 
-	err = backoff.RetryNotify(operation, backoff.NewExponentialBackOff(), notify)
-	if err != nil {
-		t.Fatal("expected nil found", err)
-	}
-
-	expectedStatus := "DEPLOYED"
-	if rc.Status != expectedStatus {
-		t.Fatalf("unexpected chart status, want %q, got %q", expectedStatus, rc.Status)
-	}
+	b := framework.NewExponentialBackoff(framework.ShortMaxWait, framework.LongMaxInterval)
+	return backoff.RetryNotify(operation, b, notify)
 }
