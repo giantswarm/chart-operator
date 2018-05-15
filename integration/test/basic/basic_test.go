@@ -8,7 +8,11 @@ import (
 	"testing"
 	"time"
 
+	"github.com/spf13/afero"
+	"k8s.io/helm/pkg/helm"
+
 	"github.com/cenkalti/backoff"
+	"github.com/giantswarm/apprclient"
 	"github.com/giantswarm/e2e-harness/pkg/framework"
 	"github.com/giantswarm/helmclient"
 	"github.com/giantswarm/microerror"
@@ -21,22 +25,15 @@ func TestChartLifecycle(t *testing.T) {
 	const testRelease = "tb-release"
 	const cr = "chart-operator-resource"
 
-	// Setup helm client for giantswarm tiller
+	// Setup
 	l, err := micrologger.New(micrologger.Config{})
 	if err != nil {
 		t.Fatalf("could not create logger %v", err)
 	}
 
-	c := helmclient.Config{
-		Logger:          l,
-		K8sClient:       f.K8sClient(),
-		RestConfig:      f.RestConfig(),
-		TillerNamespace: "giantswarm",
-	}
-
-	gsHelmClient, err := helmclient.New(c)
+	gsHelmClient, err := createGsHelmClient()
 	if err != nil {
-		t.Fatalf("could not create helmClient %v", err)
+		t.Fatalf("could not create giantswarm helmClient %v", err)
 	}
 
 	// Test Creation
@@ -52,6 +49,19 @@ func TestChartLifecycle(t *testing.T) {
 	}
 	l.Log("level", "debug", "message", fmt.Sprintf("%s succesfully deployed", testRelease))
 
+	// Test Update
+	l.Log("level", "debug", "message", fmt.Sprintf("updating %s", cr))
+	err = updateChartOperatorResource(helmClient, cr)
+	if err != nil {
+		t.Fatalf("could not update %q %v", cr, err)
+	}
+
+	err = waitForReleaseVersion(gsHelmClient, testRelease, "5.6.0")
+	if err != nil {
+		t.Fatalf("could not get release version of %q %v", testRelease, err)
+	}
+	l.Log("level", "debug", "message", fmt.Sprintf("%s succesfully updated", testRelease))
+
 	// Test Deletion
 	l.Log("level", "debug", "message", fmt.Sprintf("deleting %s", cr))
 	err = helmClient.DeleteRelease(cr)
@@ -66,14 +76,68 @@ func TestChartLifecycle(t *testing.T) {
 	l.Log("level", "debug", "message", fmt.Sprintf("%s succesfully deleted", testRelease))
 }
 
+func createGsHelmClient() (*helmclient.Client, error) {
+	l, err := micrologger.New(micrologger.Config{})
+	if err != nil {
+		return nil, microerror.Maskf(err, "could not create logger")
+	}
+
+	c := helmclient.Config{
+		Logger:          l,
+		K8sClient:       f.K8sClient(),
+		RestConfig:      f.RestConfig(),
+		TillerNamespace: "giantswarm",
+	}
+
+	gsHelmClient, err := helmclient.New(c)
+	if err != nil {
+		return nil, microerror.Maskf(err, "could not create helmClient")
+	}
+
+	return gsHelmClient, nil
+}
+
+func updateChartOperatorResource(helmClient *helmclient.Client, releaseName string) error {
+	l, err := micrologger.New(micrologger.Config{})
+	if err != nil {
+		return microerror.Mask(err)
+	}
+
+	c := apprclient.Config{
+		Fs:     afero.NewOsFs(),
+		Logger: l,
+
+		Address:      "https://quay.io",
+		Organization: "giantswarm",
+	}
+
+	a, err := apprclient.New(c)
+	if err != nil {
+		return microerror.Mask(err)
+	}
+
+	tarballPath, err := a.PullChartTarball(fmt.Sprintf("%s-chart", releaseName), "stable")
+	if err != nil {
+		return microerror.Mask(err)
+	}
+
+	helmClient.UpdateReleaseFromTarball(releaseName, tarballPath,
+		helm.UpdateValueOverrides([]byte(templates.UpdatedChartOperatorResourceValues)))
+	if err != nil {
+		return microerror.Mask(err)
+	}
+
+	return nil
+}
+
 func waitForReleaseStatus(gsHelmClient *helmclient.Client, release string, status string) error {
 	operation := func() error {
 		rc, err := gsHelmClient.GetReleaseContent(release)
 		if err != nil {
-			return microerror.Maskf(err, "could not retrieve release content")
+			return microerror.Mask(err)
 		}
 		if rc.Status != status {
-			return microerror.Newf("waiting for %q, current %q", status, rc.Status)
+			return microerror.Maskf(releaseStatusNotMatchingError, "waiting for %q, current %q", status, rc.Status)
 		}
 		return nil
 	}
@@ -83,5 +147,33 @@ func waitForReleaseStatus(gsHelmClient *helmclient.Client, release string, statu
 	}
 
 	b := framework.NewExponentialBackoff(framework.ShortMaxWait, framework.LongMaxInterval)
-	return backoff.RetryNotify(operation, b, notify)
+	err := backoff.RetryNotify(operation, b, notify)
+	if err != nil {
+		return microerror.Mask(err)
+	}
+	return nil
+}
+
+func waitForReleaseVersion(gsHelmClient *helmclient.Client, release string, version string) error {
+	operation := func() error {
+		rh, err := gsHelmClient.GetReleaseHistory(release)
+		if err != nil {
+			return microerror.Mask(err)
+		}
+		if rh.Version != version {
+			return microerror.Maskf(releaseVersionNotMatchingError, "waiting for %q, current %q", version, rh.Version)
+		}
+		return nil
+	}
+
+	notify := func(err error, t time.Duration) {
+		log.Printf("getting release version %s: %v", t, err)
+	}
+
+	b := framework.NewExponentialBackoff(framework.ShortMaxWait, framework.LongMaxInterval)
+	err := backoff.RetryNotify(operation, b, notify)
+	if err != nil {
+		return microerror.Mask(err)
+	}
+	return nil
 }

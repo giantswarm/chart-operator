@@ -9,3 +9,11 @@ const ChartOperatorResourceValues = `chart:
   namespace: "giantswarm"
   release: "tb-release"
 `
+
+// UpdatedChartOperatorResourceValues values required to update chart-operator-resource-chart.
+const UpdatedChartOperatorResourceValues = `chart:
+  name: "tb-chart"
+  channel: "5-6-beta"
+  namespace: "giantswarm"
+  release: "tb-release"
+`
