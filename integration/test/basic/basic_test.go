@@ -137,7 +137,7 @@ func waitForReleaseStatus(gsHelmClient *helmclient.Client, release string, statu
 			return microerror.Mask(err)
 		}
 		if rc.Status != status {
-			return microerror.Newf("waiting for %q, current %q", status, rc.Status)
+			return microerror.Maskf(releaseStatusNotMatchingError, "waiting for %q, current %q", status, rc.Status)
 		}
 		return nil
 	}
@@ -161,7 +161,7 @@ func waitForReleaseVersion(gsHelmClient *helmclient.Client, release string, vers
 			return microerror.Mask(err)
 		}
 		if rh.Version != version {
-			return microerror.Newf("waiting for %q, current %q", version, rh.Version)
+			return microerror.Maskf(releaseVersionNotMatchingError, "waiting for %q, current %q", version, rh.Version)
 		}
 		return nil
 	}
