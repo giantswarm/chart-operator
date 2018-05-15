@@ -134,7 +134,7 @@ func waitForReleaseStatus(gsHelmClient *helmclient.Client, release string, statu
 	operation := func() error {
 		rc, err := gsHelmClient.GetReleaseContent(release)
 		if err != nil {
-			return microerror.Maskf(err, "could not retrieve release content")
+			return microerror.Mask(err)
 		}
 		if rc.Status != status {
 			return microerror.Newf("waiting for %q, current %q", status, rc.Status)
@@ -158,7 +158,7 @@ func waitForReleaseVersion(gsHelmClient *helmclient.Client, release string, vers
 	operation := func() error {
 		rh, err := gsHelmClient.GetReleaseHistory(release)
 		if err != nil {
-			return microerror.Maskf(err, "could not retrieve release history")
+			return microerror.Mask(err)
 		}
 		if rh.Version != version {
 			return microerror.Newf("waiting for %q, current %q", version, rh.Version)
