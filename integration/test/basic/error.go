@@ -13,7 +13,7 @@ func IsReleaseStatusNotMatching(err error) bool {
 
 var releaseVersionNotMatchingError = microerror.New("release version not matching")
 
-// IsReleaseVesionNotMatching asserts releaseVersionNotMatchingError
-func IsReleaseVesionNotMatching(err error) bool {
+// IsReleaseVersionNotMatching asserts releaseVersionNotMatchingError
+func IsReleaseVersionNotMatching(err error) bool {
 	return microerror.Cause(err) == releaseVersionNotMatchingError
 }
