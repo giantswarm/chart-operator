@@ -14,6 +14,6 @@ const ChartOperatorResourceValues = `chart:
 const UpdatedChartOperatorResourceValues = `chart:
   name: "tb-chart"
   channel: "5-6-beta"
-  namespace: "default"
+  namespace: "giantswarm"
   release: "tb-release"
 `
