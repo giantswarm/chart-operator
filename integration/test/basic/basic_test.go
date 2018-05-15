@@ -147,7 +147,11 @@ func waitForReleaseStatus(gsHelmClient *helmclient.Client, release string, statu
 	}
 
 	b := framework.NewExponentialBackoff(framework.ShortMaxWait, framework.LongMaxInterval)
-	return backoff.RetryNotify(operation, b, notify)
+	err := backoff.RetryNotify(operation, b, notify)
+	if err != nil {
+		return microerror.Mask(err)
+	}
+	return nil
 }
 
 func waitForReleaseVersion(gsHelmClient *helmclient.Client, release string, version string) error {
@@ -167,5 +171,9 @@ func waitForReleaseVersion(gsHelmClient *helmclient.Client, release string, vers
 	}
 
 	b := framework.NewExponentialBackoff(framework.ShortMaxWait, framework.LongMaxInterval)
-	return backoff.RetryNotify(operation, b, notify)
+	err := backoff.RetryNotify(operation, b, notify)
+	if err != nil {
+		return microerror.Mask(err)
+	}
+	return nil
 }
