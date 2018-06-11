@@ -239,7 +239,7 @@
   branch = "master"
   name = "github.com/giantswarm/versionbundle"
   packages = ["."]
-  revision = "4fac1282be1ff8d3c097a8a6e9e9795a2c41a847"
+  revision = "5a861dc7cd1cc6c24816af3aadadb85ea1b372ff"
 
 [[projects]]
   name = "github.com/go-kit/kit"
