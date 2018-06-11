@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/cenkalti/backoff"
+	"github.com/giantswarm/apiextensions/pkg/clientset/versioned"
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/micrologger"
 	"k8s.io/api/core/v1"
@@ -29,6 +30,7 @@ type GuestConfig struct {
 type Guest struct {
 	logger micrologger.Logger
 
+	g8sClient  versioned.Interface
 	k8sClient  kubernetes.Interface
 	restConfig *rest.Config
 }
@@ -41,6 +43,7 @@ func NewGuest(config GuestConfig) (*Guest, error) {
 	g := &Guest{
 		logger: config.Logger,
 
+		g8sClient:  nil,
 		k8sClient:  nil,
 		restConfig: nil,
 	}
@@ -48,28 +51,29 @@ func NewGuest(config GuestConfig) (*Guest, error) {
 	return g, nil
 }
 
+// G8sClient returns the guest cluster framework's apiextensions clientset. The
+// client being returned is properly configured once Guest.Setup() is executed
+// successfully.
+func (g *Guest) G8sClient() versioned.Interface {
+	return g.g8sClient
+}
+
 // K8sClient returns the guest cluster framework's Kubernetes client. The client
-// being returned is properly configured ones Guest.Setup() got executed
+// being returned is properly configured once Guest.Setup() is executed
 // successfully.
 func (g *Guest) K8sClient() kubernetes.Interface {
 	return g.k8sClient
 }
 
 // RestConfig returns the guest cluster framework's rest config. The config
-// being returned is properly configured ones Guest.Setup() got executed
+// being returned is properly configured once Guest.Setup() is executed
 // successfully.
 func (g *Guest) RestConfig() *rest.Config {
 	return g.restConfig
 }
 
-// Setup provides a separate initialization step because of the nature of the
-// host/guest cluster design. We have to setup things in different stages.
-// Constructing the frameworks can be done right away but setting them up can
-// only happen as soon as certain requirements have been met. A requirement for
-// the guest framework is a set up host cluster.
-func (g *Guest) Setup() error {
-	var err error
-
+// Initialize sets up the Guest fields that are not directly injected.
+func (g *Guest) Initialize() error {
 	var hostK8sClient kubernetes.Interface
 	{
 		c, err := clientcmd.BuildConfigFromFlags("", harness.DefaultKubeConfig)
@@ -82,6 +86,7 @@ func (g *Guest) Setup() error {
 		}
 	}
 
+	var guestG8sClient versioned.Interface
 	var guestK8sClient kubernetes.Interface
 	var guestRestConfig *rest.Config
 	{
@@ -92,12 +97,17 @@ func (g *Guest) Setup() error {
 		}
 
 		guestRestConfig = &rest.Config{
-			Host: os.ExpandEnv("https://api.${CLUSTER_NAME}.${COMMON_DOMAIN_GUEST}"),
+			Host: os.ExpandEnv("https://api.${CLUSTER_NAME}.k8s.${COMMON_DOMAIN}"),
 			TLSClientConfig: rest.TLSClientConfig{
 				CAData:   s.Data["ca"],
 				CertData: s.Data["crt"],
 				KeyData:  s.Data["key"],
 			},
+		}
+
+		guestG8sClient, err = versioned.NewForConfig(guestRestConfig)
+		if err != nil {
+			return microerror.Mask(err)
 		}
 
 		guestK8sClient, err = kubernetes.NewForConfig(guestRestConfig)
@@ -106,8 +116,23 @@ func (g *Guest) Setup() error {
 		}
 	}
 
+	g.g8sClient = guestG8sClient
 	g.k8sClient = guestK8sClient
 	g.restConfig = guestRestConfig
+
+	return nil
+}
+
+// Setup provides a separate initialization step because of the nature of the
+// host/guest cluster design. We have to setup things in different stages.
+// Constructing the frameworks can be done right away but setting them up can
+// only happen as soon as certain requirements have been met. A requirement for
+// the guest framework is a set up host cluster.
+func (g *Guest) Setup() error {
+	err := g.Initialize()
+	if err != nil {
+		return microerror.Mask(err)
+	}
 
 	err = g.WaitForGuestReady()
 	if err != nil {
