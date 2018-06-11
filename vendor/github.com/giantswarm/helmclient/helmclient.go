@@ -141,6 +141,8 @@ func (c *Client) EnsureTillerInstalled() error {
 		if errors.IsAlreadyExists(err) {
 			c.logger.Log("level", "debug", "message", fmt.Sprintf("serviceaccount %s creation failed", tillerPodName), "stack", fmt.Sprintf("%#v", err))
 			// fall through
+		} else if IsGuestAPINotAvailable(err) {
+			return microerror.Maskf(guestAPINotAvailableError, err.Error())
 		} else if err != nil {
 			return microerror.Mask(err)
 		}
