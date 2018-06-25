@@ -6,6 +6,7 @@ import (
 	"github.com/giantswarm/apiextensions/pkg/clientset/versioned"
 	"github.com/giantswarm/apprclient"
 	"github.com/giantswarm/helmclient"
+	"github.com/giantswarm/microendpoint/service/version"
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/micrologger"
 	"github.com/giantswarm/operatorkit/client/k8srestconfig"
@@ -38,6 +39,7 @@ type Config struct {
 // Service is a type providing implementation of microkit service interface.
 type Service struct {
 	Healthz *healthz.Service
+	Version *version.Service
 
 	// Internals
 	bootOnce        sync.Once
@@ -163,8 +165,25 @@ func New(config Config) (*Service, error) {
 		}
 	}
 
+	var versionService *version.Service
+	{
+		versionConfig := version.Config{
+			Description:    config.Description,
+			GitCommit:      config.GitCommit,
+			Name:           config.ProjectName,
+			Source:         config.Source,
+			VersionBundles: NewVersionBundles(),
+		}
+
+		versionService, err = version.New(versionConfig)
+		if err != nil {
+			return nil, microerror.Mask(err)
+		}
+	}
+
 	s := &Service{
 		Healthz: healthzService,
+		Version: versionService,
 
 		bootOnce:        sync.Once{},
 		chartController: chartController,

@@ -60,7 +60,10 @@ func Test_Service_New(t *testing.T) {
 					Logger: microloggertest.New(),
 					Viper:  viper.New(),
 
+					Description: "test",
+					GitCommit:   "test",
 					ProjectName: "chart-operator",
+					Source:      "test",
 				}
 
 				c.Viper.Set(c.Flag.Service.Kubernetes.Address, ts.URL)
