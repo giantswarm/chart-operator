@@ -5,7 +5,7 @@ import (
 
 	"github.com/giantswarm/microerror"
 
-	"github.com/giantswarm/chart-operator/service/controller/v1/key"
+	"github.com/giantswarm/chart-operator/service/controller/v2/key"
 )
 
 func (r *Resource) GetDesiredState(ctx context.Context, obj interface{}) (interface{}, error) {

@@ -1,4 +1,4 @@
-package v1
+package v2
 
 import (
 	"context"
@@ -14,8 +14,8 @@ import (
 	"github.com/spf13/afero"
 	"k8s.io/client-go/kubernetes"
 
-	"github.com/giantswarm/chart-operator/service/controller/v1/key"
-	"github.com/giantswarm/chart-operator/service/controller/v1/resource/chart"
+	"github.com/giantswarm/chart-operator/service/controller/v2/key"
+	"github.com/giantswarm/chart-operator/service/controller/v2/resource/chart"
 )
 
 const (
