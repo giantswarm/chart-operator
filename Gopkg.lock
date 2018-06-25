@@ -152,19 +152,19 @@
     "pkg/framework",
     "pkg/harness"
   ]
-  revision = "c5b82c0351c122d5c4f96de2381c58fd97f1e354"
+  revision = "fd0ebd0ec770f6ffb095dc5daa2fa23ca505e762"
 
 [[projects]]
   branch = "master"
   name = "github.com/giantswarm/errors"
-  packages = ["api"]
-  revision = "282cac0812c7870825c66648f1e61471d4a33bf2"
+  packages = ["guest"]
+  revision = "1aa8d2252e47796136320c0cf768b79fb3d969d6"
 
 [[projects]]
   branch = "master"
   name = "github.com/giantswarm/helmclient"
   packages = ["."]
-  revision = "ef96695ed455e1f051c945c7db6d21d1681a7bb5"
+  revision = "b48ae48e60b4891baf6f3ab23eff9ed469532ad0"
 
 [[projects]]
   branch = "master"
@@ -183,7 +183,9 @@
   name = "github.com/giantswarm/microendpoint"
   packages = [
     "endpoint/healthz",
-    "service/healthz"
+    "endpoint/version",
+    "service/healthz",
+    "service/version"
   ]
   revision = "7d8dc82edffbe68d1d7cf5624736d637e2541002"
 
@@ -1201,6 +1203,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "8ad18336292b1b1d4f99e086f93f31ad3e377441c18550bc447d33947d38595b"
+  inputs-digest = "7069d55764cc7c3ee797685a0364d817dcc6ba5974f6bcfd59311d429c4c80a0"
   solver-name = "gps-cdcl"
   solver-version = 1
