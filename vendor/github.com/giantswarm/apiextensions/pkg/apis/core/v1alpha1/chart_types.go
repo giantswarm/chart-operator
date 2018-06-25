@@ -60,17 +60,29 @@ type ChartConfigSpec struct {
 
 type ChartConfigSpecChart struct {
 	// Channel is the name of the Appr channel to reconcile against.
-	// e.g. 1.0-stable
+	// e.g. 1-0-stable
 	Channel string `json:"channel" yaml:"channel"`
-	// Name is the fully qualified name of the Helm chart to deploy.
-	// e.g. quay.io/giantswarm/chart-operator-chart
+	// ConfigMap references a config map containing values that should be
+	// applied to the chart.
+	ConfigMap ChartConfigSpecConfigMap `json:"configMap" yaml:"configMap"`
+	// Name is the name of the Helm chart to deploy.
+	// e.g. kubernetes-node-exporter
 	Name string `json:"name" yaml:"name"`
 	// Namespace is the namespace where the Helm chart is to be deployed.
 	// e.g. giantswarm
 	Namespace string `json:"namespace" yaml:"namespace"`
 	// Release is the name of the Helm release when the chart is deployed.
-	// e.g. chart-operator
+	// e.g. node-exporter
 	Release string `json:"release" yaml:"release"`
+}
+
+type ChartConfigSpecConfigMap struct {
+	// Name is the name of the config map containing chart values to apply.
+	// e.g. node-exporter-chart-values
+	Name string `json:"name" yaml:"name"`
+	// Namespace is the namespace of the values config map.
+	// e.g. kube-system
+	Namespace string `json:"namespace" yaml:"namespace"`
 }
 
 type ChartConfigSpecVersionBundle struct {

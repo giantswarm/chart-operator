@@ -125,7 +125,7 @@
   version = "v1.0.0"
 
 [[projects]]
-  branch = "master"
+  branch = "chartconfig-configmap"
   name = "github.com/giantswarm/apiextensions"
   packages = [
     "pkg/apis/core/v1alpha1",
@@ -137,7 +137,7 @@
     "pkg/clientset/versioned/typed/example/v1alpha1",
     "pkg/clientset/versioned/typed/provider/v1alpha1"
   ]
-  revision = "18c1aa070409bfa5ebdf91660837370dfb4071b1"
+  revision = "4b639e46fb4ffa12a7d8205b0e3b2a33b7a92fde"
 
 [[projects]]
   branch = "master"
@@ -1201,6 +1201,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "8ad18336292b1b1d4f99e086f93f31ad3e377441c18550bc447d33947d38595b"
+  inputs-digest = "3ef940461bb03b21047d680d1c35118650c0f0ed113f8c9733d81885e2bcb771"
   solver-name = "gps-cdcl"
   solver-version = 1
