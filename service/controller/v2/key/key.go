@@ -43,3 +43,7 @@ func ToCustomObject(v interface{}) (v1alpha1.ChartConfig, error) {
 
 	return *customObjectPointer, nil
 }
+
+func VersionBundleVersion(customObject v1alpha1.ChartConfig) string {
+	return customObject.Spec.VersionBundle.Version
+}

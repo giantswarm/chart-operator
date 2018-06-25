@@ -15,6 +15,7 @@ import (
 	"k8s.io/client-go/kubernetes"
 
 	"github.com/giantswarm/chart-operator/service/controller/v1"
+	"github.com/giantswarm/chart-operator/service/controller/v2"
 )
 
 const chartControllerSuffix = "-chart"
@@ -69,11 +70,6 @@ func NewChart(config ChartConfig) (*Chart, error) {
 		}
 	}
 
-	resourceRouter, err := newChartResourceRouter(config)
-	if err != nil {
-		return nil, microerror.Mask(err)
-	}
-
 	var newInformer *informer.Informer
 	{
 		c := informer.Config{
@@ -89,35 +85,6 @@ func NewChart(config ChartConfig) (*Chart, error) {
 			return nil, microerror.Mask(err)
 		}
 	}
-
-	var operatorkitController *controller.Controller
-	{
-		c := controller.Config{
-			CRD:            v1alpha1.NewChartConfigCRD(),
-			CRDClient:      crdClient,
-			Informer:       newInformer,
-			Logger:         config.Logger,
-			ResourceRouter: resourceRouter,
-			RESTClient:     config.G8sClient.CoreV1alpha1().RESTClient(),
-
-			Name: config.ProjectName + chartControllerSuffix,
-		}
-
-		operatorkitController, err = controller.New(c)
-		if err != nil {
-			return nil, microerror.Mask(err)
-		}
-	}
-
-	c := &Chart{
-		Controller: operatorkitController,
-	}
-
-	return c, nil
-}
-
-func newChartResourceRouter(config ChartConfig) (*controller.ResourceRouter, error) {
-	var err error
 
 	var resourceSetV1 *controller.ResourceSet
 	{
@@ -136,12 +103,30 @@ func newChartResourceRouter(config ChartConfig) (*controller.ResourceRouter, err
 		}
 	}
 
+	var resourceSetV2 *controller.ResourceSet
+	{
+		c := v2.ResourceSetConfig{
+			ApprClient:  config.ApprClient,
+			Fs:          config.Fs,
+			HelmClient:  config.HelmClient,
+			K8sClient:   config.K8sClient,
+			Logger:      config.Logger,
+			ProjectName: config.ProjectName,
+		}
+
+		resourceSetV2, err = v2.NewResourceSet(c)
+		if err != nil {
+			return nil, microerror.Mask(err)
+		}
+	}
+
 	var resourceRouter *controller.ResourceRouter
 	{
 		c := controller.ResourceRouterConfig{
 			Logger: config.Logger,
 			ResourceSets: []*controller.ResourceSet{
 				resourceSetV1,
+				resourceSetV2,
 			},
 		}
 
@@ -151,5 +136,28 @@ func newChartResourceRouter(config ChartConfig) (*controller.ResourceRouter, err
 		}
 	}
 
-	return resourceRouter, nil
+	var chartController *controller.Controller
+	{
+		c := controller.Config{
+			CRD:            v1alpha1.NewChartConfigCRD(),
+			CRDClient:      crdClient,
+			Informer:       newInformer,
+			Logger:         config.Logger,
+			ResourceRouter: resourceRouter,
+			RESTClient:     config.G8sClient.CoreV1alpha1().RESTClient(),
+
+			Name: config.ProjectName + chartControllerSuffix,
+		}
+
+		chartController, err = controller.New(c)
+		if err != nil {
+			return nil, microerror.Mask(err)
+		}
+	}
+
+	c := &Chart{
+		Controller: chartController,
+	}
+
+	return c, nil
 }
