@@ -2,6 +2,8 @@ package chart
 
 import (
 	"context"
+	"encoding/json"
+	"fmt"
 
 	"github.com/giantswarm/apiextensions/pkg/apis/core/v1alpha1"
 	"github.com/giantswarm/microerror"
@@ -44,7 +46,7 @@ func (r *Resource) GetDesiredState(ctx context.Context, obj interface{}) (interf
 }
 
 func (r *Resource) getConfigMapValues(ctx context.Context, customObject v1alpha1.ChartConfig) (map[string]interface{}, error) {
-	chartValues := map[string]interface{}{}
+	chartValues := make(map[string]interface{})
 
 	if key.ConfigMapName(customObject) != "" {
 		configMapName := key.ConfigMapName(customObject)
@@ -57,8 +59,14 @@ func (r *Resource) getConfigMapValues(ctx context.Context, customObject v1alpha1
 			return chartValues, microerror.Mask(err)
 		}
 
-		values := configMap.Data[ValuesData]
-		r.logger.LogCtx(ctx, "found data %q for config map %q", values, configMapName)
+		jsonData := configMap.Data[ValuesData]
+		err = json.Unmarshal([]byte(jsonData), &chartValues)
+		if err != nil {
+			return chartValues, microerror.Mask(err)
+		}
+
+		r.logger.LogCtx(ctx, "level", "debug", fmt.Sprintf("found data %q for config map %q", jsonData, configMapName))
+		r.logger.LogCtx(ctx, "level", "debug", fmt.Sprintf("chart values %#v", chartValues))
 	}
 
 	return chartValues, nil
