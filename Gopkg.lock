@@ -157,14 +157,14 @@
 [[projects]]
   branch = "master"
   name = "github.com/giantswarm/errors"
-  packages = ["api"]
-  revision = "282cac0812c7870825c66648f1e61471d4a33bf2"
+  packages = ["guest"]
+  revision = "1aa8d2252e47796136320c0cf768b79fb3d969d6"
 
 [[projects]]
   branch = "master"
   name = "github.com/giantswarm/helmclient"
   packages = ["."]
-  revision = "ef96695ed455e1f051c945c7db6d21d1681a7bb5"
+  revision = "b48ae48e60b4891baf6f3ab23eff9ed469532ad0"
 
 [[projects]]
   branch = "master"
