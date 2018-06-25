@@ -15,6 +15,7 @@ import (
 	"k8s.io/client-go/kubernetes"
 
 	"github.com/giantswarm/chart-operator/service/controller/v1"
+	"github.com/giantswarm/chart-operator/service/controller/v2"
 )
 
 const chartControllerSuffix = "-chart"
@@ -136,12 +137,30 @@ func newChartResourceRouter(config ChartConfig) (*controller.ResourceRouter, err
 		}
 	}
 
+	var resourceSetV2 *controller.ResourceSet
+	{
+		c := v2.ResourceSetConfig{
+			ApprClient:  config.ApprClient,
+			Fs:          config.Fs,
+			HelmClient:  config.HelmClient,
+			K8sClient:   config.K8sClient,
+			Logger:      config.Logger,
+			ProjectName: config.ProjectName,
+		}
+
+		resourceSetV2, err = v2.NewResourceSet(c)
+		if err != nil {
+			return nil, microerror.Mask(err)
+		}
+	}
+
 	var resourceRouter *controller.ResourceRouter
 	{
 		c := controller.ResourceRouterConfig{
 			Logger: config.Logger,
 			ResourceSets: []*controller.ResourceSet{
 				resourceSetV1,
+				resourceSetV2,
 			},
 		}
 
