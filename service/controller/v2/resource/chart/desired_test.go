@@ -31,6 +31,7 @@ func Test_DesiredState(t *testing.T) {
 			},
 			expectedState: ChartState{
 				ChartName:      "quay.io/giantswarm/chart-operator-chart",
+				ChartValues:    map[string]interface{}{},
 				ChannelName:    "0.1-beta",
 				ReleaseName:    "chart-operator",
 				ReleaseVersion: "0.1.2",
