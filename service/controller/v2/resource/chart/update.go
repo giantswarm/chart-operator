@@ -95,7 +95,7 @@ func (r *Resource) newUpdateChange(ctx context.Context, obj, currentState, desir
 
 	r.logger.LogCtx(ctx, "level", "debug", "message", "finding out if the chart has to be updated")
 
-	if currentChartState.ReleaseVersion != "" && desiredChartState.ReleaseVersion != currentChartState.ReleaseVersion {
+	if currentChartState.ReleaseVersion != "" && !reflect.DeepEqual(desiredChartState, currentChartState) {
 		r.logger.LogCtx(ctx, "level", "debug", "message", "the chart has to be updated")
 
 		return &desiredChartState, nil

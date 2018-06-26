@@ -25,7 +25,7 @@ func Test_Resource_Chart_newUpdateChange(t *testing.T) {
 		expectedUpdateState *ChartState
 	}{
 		{
-			description:  "empty current state, empty update change",
+			description:  "case 0: empty current state, empty update change",
 			currentState: &ChartState{},
 			desiredState: &ChartState{
 				ReleaseName: "desired-release-name",
@@ -34,7 +34,7 @@ func Test_Resource_Chart_newUpdateChange(t *testing.T) {
 			expectedUpdateState: nil,
 		},
 		{
-			description: "nonempty current state, different release version in desired state, expected desired state",
+			description: "case 1: nonempty current state, different release version in desired state, expected desired state",
 			currentState: &ChartState{
 				ReleaseName:    "current-release-name",
 				ChannelName:    "current-channel-name",
@@ -51,18 +51,66 @@ func Test_Resource_Chart_newUpdateChange(t *testing.T) {
 			},
 		},
 		{
-			description: "nonempty current state, equal release version in desired state, empty update change",
+			description: "case 2: nonempty current state, equal desired state, empty update change",
 			currentState: &ChartState{
-				ReleaseName:    "current-release-name",
-				ChannelName:    "current-channel-name",
+				ReleaseName:    "release-name",
+				ChannelName:    "channel-name",
 				ReleaseVersion: "release-version",
 			},
 			desiredState: &ChartState{
-				ReleaseName:    "desired-release-name",
-				ChannelName:    "desired-channel-name",
+				ReleaseName:    "release-name",
+				ChannelName:    "channel-name",
 				ReleaseVersion: "release-version",
 			},
 			expectedUpdateState: nil,
+		},
+		{
+			description: "case 3: nonempty current state, desired state has values, expected desired state",
+			currentState: &ChartState{
+				ReleaseName:    "release-name",
+				ChannelName:    "channel-name",
+				ReleaseVersion: "release-version",
+			},
+			desiredState: &ChartState{
+				ReleaseName: "release-name",
+				ChannelName: "channel-name",
+				ChartValues: map[string]interface{}{
+					"key": "value",
+				},
+				ReleaseVersion: "release-version",
+			},
+			expectedUpdateState: &ChartState{
+				ReleaseName: "release-name",
+				ChannelName: "channel-name",
+				ChartValues: map[string]interface{}{
+					"key": "value",
+				},
+				ReleaseVersion: "release-version",
+			},
+		},
+		{
+			description: "case 4: nonempty current state, desired state has different values, expected desired state",
+			currentState: &ChartState{
+				ReleaseName:    "release-name",
+				ChannelName:    "channel-name",
+				ReleaseVersion: "release-version",
+			},
+			desiredState: &ChartState{
+				ReleaseName: "release-name",
+				ChannelName: "channel-name",
+				ChartValues: map[string]interface{}{
+					"key": "new-value",
+				},
+				ReleaseVersion: "release-version",
+			},
+			expectedUpdateState: &ChartState{
+				ReleaseName: "release-name",
+				ChannelName: "channel-name",
+				ChartValues: map[string]interface{}{
+					"key": "new-value",
+				},
+				ReleaseVersion: "release-version",
+			},
 		},
 	}
 	var newResource *Resource
