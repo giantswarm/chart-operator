@@ -12,10 +12,6 @@ import (
 	"github.com/giantswarm/chart-operator/service/controller/v2/key"
 )
 
-const (
-	ValuesData = "values.json"
-)
-
 func (r *Resource) GetDesiredState(ctx context.Context, obj interface{}) (interface{}, error) {
 	customObject, err := key.ToCustomObject(obj)
 	if err != nil {
@@ -58,7 +54,7 @@ func (r *Resource) getConfigMapValues(ctx context.Context, customObject v1alpha1
 			return chartValues, microerror.Mask(err)
 		}
 
-		jsonData := configMap.Data[ValuesData]
+		jsonData := configMap.Data["values.json"]
 		if jsonData != "" {
 			err = json.Unmarshal([]byte(jsonData), &chartValues)
 			if err != nil {
