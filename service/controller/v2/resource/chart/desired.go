@@ -3,7 +3,6 @@ package chart
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 
 	"github.com/giantswarm/apiextensions/pkg/apis/core/v1alpha1"
 	"github.com/giantswarm/microerror"
@@ -66,9 +65,6 @@ func (r *Resource) getConfigMapValues(ctx context.Context, customObject v1alpha1
 				return chartValues, microerror.Mask(err)
 			}
 		}
-
-		r.logger.LogCtx(ctx, "level", "debug", fmt.Sprintf("found data %q for config map %q", jsonData, configMapName))
-		r.logger.LogCtx(ctx, "level", "debug", fmt.Sprintf("chart values %#v", chartValues))
 	}
 
 	return chartValues, nil
