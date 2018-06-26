@@ -43,6 +43,50 @@ func Test_ChannelName(t *testing.T) {
 	}
 }
 
+func Test_ConfigMapName(t *testing.T) {
+	expectedConfigMapName := "chart-operator-chart-values"
+
+	obj := v1alpha1.ChartConfig{
+		Spec: v1alpha1.ChartConfigSpec{
+			Chart: v1alpha1.ChartConfigSpecChart{
+				Name:    "chart-operator-chart",
+				Channel: "0.1-beta",
+				ConfigMap: v1alpha1.ChartConfigSpecConfigMap{
+					Name:      "chart-operator-chart-values",
+					Namespace: "giantswarm",
+				},
+				Release: "chart-operator",
+			},
+		},
+	}
+
+	if ConfigMapName(obj) != expectedConfigMapName {
+		t.Fatalf("config map name %s, want %s", ConfigMapName(obj), expectedConfigMapName)
+	}
+}
+
+func Test_ConfigMapNamespace(t *testing.T) {
+	expectedConfigMapNamespace := "giantswarm"
+
+	obj := v1alpha1.ChartConfig{
+		Spec: v1alpha1.ChartConfigSpec{
+			Chart: v1alpha1.ChartConfigSpecChart{
+				Name:    "chart-operator-chart",
+				Channel: "0.1-beta",
+				ConfigMap: v1alpha1.ChartConfigSpecConfigMap{
+					Name:      "chart-operator-chart-values",
+					Namespace: "giantswarm",
+				},
+				Release: "chart-operator",
+			},
+		},
+	}
+
+	if ConfigMapNamespace(obj) != expectedConfigMapNamespace {
+		t.Fatalf("config map namespace %s, want %s", ConfigMapNamespace(obj), expectedConfigMapNamespace)
+	}
+}
+
 func Test_Namespace(t *testing.T) {
 	expected := "giantswarm"
 
