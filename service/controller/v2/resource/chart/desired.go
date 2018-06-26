@@ -54,15 +54,17 @@ func (r *Resource) getConfigMapValues(ctx context.Context, customObject v1alpha1
 
 		configMap, err := r.k8sClient.CoreV1().ConfigMaps(configMapNamespace).Get(configMapName, metav1.GetOptions{})
 		if apierrors.IsNotFound(err) {
-			return chartValues, microerror.Maskf(notFoundError, "config map '%s' not found", configMapName)
+			return chartValues, microerror.Maskf(notFoundError, "config map '%s' in namespace '%s' not found", configMapName, configMapNamespace)
 		} else if err != nil {
 			return chartValues, microerror.Mask(err)
 		}
 
 		jsonData := configMap.Data[ValuesData]
-		err = json.Unmarshal([]byte(jsonData), &chartValues)
-		if err != nil {
-			return chartValues, microerror.Mask(err)
+		if jsonData != "" {
+			err = json.Unmarshal([]byte(jsonData), &chartValues)
+			if err != nil {
+				return chartValues, microerror.Mask(err)
+			}
 		}
 
 		r.logger.LogCtx(ctx, "level", "debug", fmt.Sprintf("found data %q for config map %q", jsonData, configMapName))
