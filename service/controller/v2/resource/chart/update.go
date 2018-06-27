@@ -2,10 +2,13 @@ package chart
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
+	"reflect"
 
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/operatorkit/controller"
+	"k8s.io/helm/pkg/helm"
 
 	"github.com/giantswarm/chart-operator/service/controller/v2/key"
 )
@@ -44,7 +47,13 @@ func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange inte
 			return microerror.Mask(err)
 		}
 
-		err = r.helmClient.UpdateReleaseFromTarball(releaseName, tarballPath)
+		values, err := json.Marshal(chartState.ChartValues)
+		if err != nil {
+			return microerror.Mask(err)
+		}
+
+		err = r.helmClient.UpdateReleaseFromTarball(releaseName, tarballPath,
+			helm.UpdateValueOverrides(values))
 		if err != nil {
 			return microerror.Mask(err)
 		}
@@ -86,7 +95,7 @@ func (r *Resource) newUpdateChange(ctx context.Context, obj, currentState, desir
 
 	r.logger.LogCtx(ctx, "level", "debug", "message", "finding out if the chart has to be updated")
 
-	if currentChartState.ReleaseVersion != "" && desiredChartState.ReleaseVersion != currentChartState.ReleaseVersion {
+	if currentChartState.ReleaseVersion != "" && !reflect.DeepEqual(desiredChartState, currentChartState) {
 		r.logger.LogCtx(ctx, "level", "debug", "message", "the chart has to be updated")
 
 		return &desiredChartState, nil

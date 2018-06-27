@@ -2,6 +2,7 @@ package chart
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 
 	"github.com/giantswarm/microerror"
@@ -42,6 +43,11 @@ func (r *Resource) ApplyCreateChange(ctx context.Context, obj, createChange inte
 			return microerror.Mask(err)
 		}
 
+		values, err := json.Marshal(chartState.ChartValues)
+		if err != nil {
+			return microerror.Mask(err)
+		}
+
 		// We need to pass the ValueOverrides option to make the install process
 		// use the default values and prevent errors on nested values.
 		//
@@ -53,7 +59,7 @@ func (r *Resource) ApplyCreateChange(ctx context.Context, obj, createChange inte
 		//
 		err = r.helmClient.InstallFromTarball(tarballPath, ns,
 			helm.ReleaseName(chartState.ReleaseName),
-			helm.ValueOverrides([]byte("{}")),
+			helm.ValueOverrides(values),
 			helm.InstallWait(true))
 		if err != nil {
 			return microerror.Mask(err)
