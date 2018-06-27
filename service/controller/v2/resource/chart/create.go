@@ -59,8 +59,7 @@ func (r *Resource) ApplyCreateChange(ctx context.Context, obj, createChange inte
 		//
 		err = r.helmClient.InstallFromTarball(tarballPath, ns,
 			helm.ReleaseName(chartState.ReleaseName),
-			helm.ValueOverrides(values),
-			helm.InstallWait(true))
+			helm.ValueOverrides(values))
 		if err != nil {
 			return microerror.Mask(err)
 		}
