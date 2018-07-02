@@ -72,13 +72,15 @@ func (r *Resource) Name() string {
 }
 
 func isChartModified(a, b ChartState) bool {
-	// ChartValues have changed so we need to update.
-	if !reflect.DeepEqual(a.ChartValues, b.ChartValues) {
+	// ReleaseVersion has changed for the channel so we need to update the Helm
+	// Release.
+	if a.ReleaseVersion != b.ReleaseVersion {
 		return true
 	}
 
-	// ReleaseVersion has changed for the channel so we need to update.
-	if a.ReleaseVersion != b.ReleaseVersion {
+	// ChartValues have changed so we need to update the values for the current
+	// Helm Release.
+	if !reflect.DeepEqual(a.ChartValues, b.ChartValues) {
 		return true
 	}
 

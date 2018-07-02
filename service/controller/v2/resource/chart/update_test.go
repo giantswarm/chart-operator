@@ -134,6 +134,35 @@ func Test_Resource_Chart_newUpdateChange(t *testing.T) {
 			},
 			expectedUpdateState: nil,
 		},
+		{
+			description: "case 6: current state has values, desired state has new release and equal values, expected desired state",
+			currentState: &ChartState{
+				ReleaseName: "release-name",
+				ChannelName: "channel-name",
+				ChartValues: map[string]interface{}{
+					"key": "value",
+				},
+				// ReleaseStatus is set but is not compared.
+				ReleaseStatus:  "DEPLOYED",
+				ReleaseVersion: "release-version",
+			},
+			desiredState: &ChartState{
+				ReleaseName: "release-name",
+				ChannelName: "channel-name",
+				ChartValues: map[string]interface{}{
+					"key": "value",
+				},
+				ReleaseVersion: "new-release-version",
+			},
+			expectedUpdateState: &ChartState{
+				ReleaseName: "release-name",
+				ChannelName: "channel-name",
+				ChartValues: map[string]interface{}{
+					"key": "value",
+				},
+				ReleaseVersion: "new-release-version",
+			},
+		},
 	}
 	var newResource *Resource
 	var err error
