@@ -34,7 +34,21 @@ func Test_Resource_Chart_newUpdateChange(t *testing.T) {
 			expectedUpdateState: nil,
 		},
 		{
-			description: "case 1: nonempty current state, different release version in desired state, expected desired state",
+			description: "case 1: nonempty current state, equal desired state, empty update change",
+			currentState: &ChartState{
+				ReleaseName:    "release-name",
+				ChannelName:    "channel-name",
+				ReleaseVersion: "release-version",
+			},
+			desiredState: &ChartState{
+				ReleaseName:    "release-name",
+				ChannelName:    "channel-name",
+				ReleaseVersion: "release-version",
+			},
+			expectedUpdateState: nil,
+		},
+		{
+			description: "case 2: nonempty current state, different release version in desired state, expected desired state",
 			currentState: &ChartState{
 				ReleaseName:    "current-release-name",
 				ChannelName:    "current-channel-name",
@@ -49,20 +63,6 @@ func Test_Resource_Chart_newUpdateChange(t *testing.T) {
 				ChannelName: "desired-channel-name",
 				ReleaseName: "desired-release-name",
 			},
-		},
-		{
-			description: "case 2: nonempty current state, equal desired state, empty update change",
-			currentState: &ChartState{
-				ReleaseName:    "release-name",
-				ChannelName:    "channel-name",
-				ReleaseVersion: "release-version",
-			},
-			desiredState: &ChartState{
-				ReleaseName:    "release-name",
-				ChannelName:    "channel-name",
-				ReleaseVersion: "release-version",
-			},
-			expectedUpdateState: nil,
 		},
 		{
 			description: "case 3: nonempty current state, desired state has values, expected desired state",
@@ -110,6 +110,57 @@ func Test_Resource_Chart_newUpdateChange(t *testing.T) {
 					"key": "new-value",
 				},
 				ReleaseVersion: "release-version",
+			},
+		},
+		{
+			description: "case 5: current state has values, desired state has equal values, empty update change",
+			currentState: &ChartState{
+				ReleaseName: "release-name",
+				ChannelName: "channel-name",
+				ChartValues: map[string]interface{}{
+					"key": "value",
+				},
+				// ReleaseStatus is set but is not compared.
+				ReleaseStatus:  "DEPLOYED",
+				ReleaseVersion: "release-version",
+			},
+			desiredState: &ChartState{
+				ReleaseName: "release-name",
+				ChannelName: "channel-name",
+				ChartValues: map[string]interface{}{
+					"key": "value",
+				},
+				ReleaseVersion: "release-version",
+			},
+			expectedUpdateState: nil,
+		},
+		{
+			description: "case 6: current state has values, desired state has new release and equal values, expected desired state",
+			currentState: &ChartState{
+				ReleaseName: "release-name",
+				ChannelName: "channel-name",
+				ChartValues: map[string]interface{}{
+					"key": "value",
+				},
+				// ReleaseStatus is set but is not compared.
+				ReleaseStatus:  "DEPLOYED",
+				ReleaseVersion: "release-version",
+			},
+			desiredState: &ChartState{
+				ReleaseName: "release-name",
+				ChannelName: "channel-name",
+				ChartValues: map[string]interface{}{
+					"key": "value",
+				},
+				ReleaseVersion: "new-release-version",
+			},
+			expectedUpdateState: &ChartState{
+				ReleaseName: "release-name",
+				ChannelName: "channel-name",
+				ChartValues: map[string]interface{}{
+					"key": "value",
+				},
+				ReleaseVersion: "new-release-version",
 			},
 		},
 	}
