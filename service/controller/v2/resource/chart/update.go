@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"reflect"
 
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/operatorkit/controller"
@@ -95,7 +94,7 @@ func (r *Resource) newUpdateChange(ctx context.Context, obj, currentState, desir
 
 	r.logger.LogCtx(ctx, "level", "debug", "message", "finding out if the chart has to be updated")
 
-	if currentChartState.ReleaseVersion != "" && !reflect.DeepEqual(desiredChartState, currentChartState) {
+	if currentChartState.ReleaseVersion != "" && isChartModified(currentChartState, desiredChartState) {
 		r.logger.LogCtx(ctx, "level", "debug", "message", "the chart has to be updated")
 
 		return &desiredChartState, nil

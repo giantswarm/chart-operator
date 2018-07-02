@@ -1,6 +1,8 @@
 package chart
 
 import (
+	"reflect"
+
 	"github.com/giantswarm/apprclient"
 	"github.com/giantswarm/helmclient"
 	"github.com/giantswarm/microerror"
@@ -67,6 +69,21 @@ func New(config Config) (*Resource, error) {
 
 func (r *Resource) Name() string {
 	return Name
+}
+
+func isChartModified(a, b ChartState) bool {
+	// ChartValues have changed so we need to update.
+	if !reflect.DeepEqual(a.ChartValues, b.ChartValues) {
+		return true
+	}
+
+	// ReleaseVersion has changed for the channel so we need to update.
+	if a.ReleaseVersion != b.ReleaseVersion {
+		return true
+	}
+
+	return false
+
 }
 
 func toChartState(v interface{}) (ChartState, error) {
