@@ -9,7 +9,8 @@ port: 8000
 replicas: 1
 
 image:
-  repository: quay.io/giantswarm/chart-operator
+  registry: quay.io
+  repository: giantswarm/chart-operator
   tag: [[ .SHA ]]
 
 resources:
