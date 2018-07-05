@@ -29,7 +29,7 @@ spec:
       serviceAccountName: {{ .Values.name }}
       containers:
       - name: {{ .Values.name }}
-        image: "{{ .Values.image.registry }}/{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        image: "quay.io/{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         volumeMounts:
         - name: {{ .Values.name }}
           mountPath: /var/run/{{ .Values.name }}/configmap/
