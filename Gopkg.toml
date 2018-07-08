@@ -44,7 +44,7 @@ required = [
   name = "github.com/docker/distribution"
 
 [[constraint]]
-  branch = "master"
+  branch = "chartconfig-status"
   name = "github.com/giantswarm/apiextensions"
 
 [[constraint]]

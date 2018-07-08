@@ -60,9 +60,8 @@ type AzureConfigSpec struct {
 }
 
 type AzureConfigSpecAzure struct {
-	CredentialSecret CredentialSecret                   `json:"credentialSecret" yaml:"credentialSecret"`
-	DNSZones         AzureConfigSpecAzureDNSZones       `json:"dnsZones" yaml:"dnsZones"`
-	VirtualNetwork   AzureConfigSpecAzureVirtualNetwork `json:"virtualNetwork" yaml:"virtualNetwork"`
+	DNSZones       AzureConfigSpecAzureDNSZones       `json:"dnsZones" yaml:"dnsZones"`
+	VirtualNetwork AzureConfigSpecAzureVirtualNetwork `json:"virtualNetwork" yaml:"virtualNetwork"`
 
 	Masters []AzureConfigSpecAzureNode `json:"masters" yaml:"masters"`
 	Workers []AzureConfigSpecAzureNode `json:"workers" yaml:"workers"`
@@ -92,8 +91,6 @@ type AzureConfigSpecAzureVirtualNetwork struct {
 
 	// MasterSubnetCIDR is the CIDR for the master subnet.
 	MasterSubnetCIDR string `json:"masterSubnetCIDR" yaml:"masterSubnetCIDR"`
-	// VPNSubnetCIDR is the CIDR for the vpn gateway subnet.
-	VPNSubnetCIDR string `json:"vpnSubnetCIDR" yaml:"vpnSubnetCIDR"`
 	// WorkerSubnetCIDR is the CIDR for the worker subnet.
 	WorkerSubnetCIDR string `json:"workerSubnetCIDR" yaml:"workerSubnetCIDR"`
 
