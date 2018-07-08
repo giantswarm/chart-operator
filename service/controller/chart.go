@@ -56,6 +56,9 @@ func NewChart(config ChartConfig) (*Chart, error) {
 	if config.ProjectName == "" {
 		return nil, microerror.Maskf(invalidConfigError, "config.ProjectName must not be empty")
 	}
+	if config.WatchNamespace == "" {
+		return nil, microerror.Maskf(invalidConfigError, "config.WatchNamespace must not be empty")
+	}
 
 	var crdClient *k8scrdclient.CRDClient
 	{
@@ -106,14 +109,14 @@ func NewChart(config ChartConfig) (*Chart, error) {
 	var resourceSetV2 *controller.ResourceSet
 	{
 		c := v2.ResourceSetConfig{
-			ApprClient:     config.ApprClient,
-			Fs:             config.Fs,
-			G8sClient:      config.G8sClient,
-			HelmClient:     config.HelmClient,
-			K8sClient:      config.K8sClient,
-			Logger:         config.Logger,
-			ProjectName:    config.ProjectName,
-			WatchNamespace: config.WatchNamespace,
+			ApprClient:           config.ApprClient,
+			ChartConfigNamespace: config.WatchNamespace,
+			Fs:                   config.Fs,
+			G8sClient:            config.G8sClient,
+			HelmClient:           config.HelmClient,
+			K8sClient:            config.K8sClient,
+			Logger:               config.Logger,
+			ProjectName:          config.ProjectName,
 		}
 
 		resourceSetV2, err = v2.NewResourceSet(c)
