@@ -109,14 +109,13 @@ func NewChart(config ChartConfig) (*Chart, error) {
 	var resourceSetV2 *controller.ResourceSet
 	{
 		c := v2.ResourceSetConfig{
-			ApprClient:           config.ApprClient,
-			ChartConfigNamespace: config.WatchNamespace,
-			Fs:                   config.Fs,
-			G8sClient:            config.G8sClient,
-			HelmClient:           config.HelmClient,
-			K8sClient:            config.K8sClient,
-			Logger:               config.Logger,
-			ProjectName:          config.ProjectName,
+			ApprClient:  config.ApprClient,
+			Fs:          config.Fs,
+			G8sClient:   config.G8sClient,
+			HelmClient:  config.HelmClient,
+			K8sClient:   config.K8sClient,
+			Logger:      config.Logger,
+			ProjectName: config.ProjectName,
 		}
 
 		resourceSetV2, err = v2.NewResourceSet(c)
