@@ -16,7 +16,7 @@ func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
 	}
 
 	releaseName := key.ReleaseName(customObject)
-	r.logger.LogCtx(ctx, "level", "debug", fmt.Sprintf("getting status for release '%s'", releaseName))
+	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("getting status for release '%s'", releaseName))
 
 	releaseContent, err := r.helmClient.GetReleaseContent(releaseName)
 	// TODO
@@ -25,7 +25,7 @@ func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
 	}
 
 	if key.ReleaseStatus(customObject) != releaseContent.Status {
-		r.logger.LogCtx(ctx, "level", "debug", fmt.Sprintf("setting status for release '%s' status to '%s'", releaseName, releaseContent.Status))
+		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("setting status for release '%s' status to '%s'", releaseName, releaseContent.Status))
 
 		customObjectCopy := customObject.DeepCopy()
 		customObjectCopy.Status.ReleaseStatus = releaseContent.Status
@@ -37,9 +37,9 @@ func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
 			return microerror.Mask(err)
 		}
 
-		r.logger.LogCtx(ctx, "level", "debug", fmt.Sprintf("status set for release '%s'", releaseName))
+		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("status set for release '%s'", releaseName))
 	} else {
-		r.logger.LogCtx(ctx, "level", "debug", fmt.Sprintf("status for release '%s' already set to '%s'", releaseName, releaseContent.Status))
+		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("status for release '%s' already set to '%s'", releaseName, releaseContent.Status))
 	}
 
 	return nil
