@@ -30,8 +30,7 @@ func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
 		customObjectCopy := customObject.DeepCopy()
 		customObjectCopy.Status.ReleaseStatus = releaseContent.Status
 
-		namespace := key.Namespace(customObject)
-		_, err := r.g8sClient.CoreV1alpha1().ChartConfigs(namespace).UpdateStatus(customObjectCopy)
+		_, err := r.g8sClient.CoreV1alpha1().ChartConfigs(r.chartConfigNamespace).UpdateStatus(customObjectCopy)
 		// TODO
 		if err != nil {
 			return microerror.Mask(err)
