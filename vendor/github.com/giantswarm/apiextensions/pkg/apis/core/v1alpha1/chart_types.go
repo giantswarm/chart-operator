@@ -91,14 +91,14 @@ type ChartConfigSpecConfigMap struct {
 	ResourceVersion string `json:"resourceVersion" yaml:"resourceVersion"`
 }
 
-type ChartConfigSpecVersionBundle struct {
-	Version string `json:"version" yaml:"version"`
+type ChartConfigStatus struct {
+	// ReleaseStatus is the status of the Helm release when the chart is
+	// installed, e.g. DEPLOYED.
+	ReleaseStatus string `json:"releaseStatus" yaml:"releaseStatus"`
 }
 
-type ChartConfigStatus struct {
-	// ReleaseStatus is the status of the Helm releases when the chart is
-	// deployed, e.g. DEPLOYED.
-	ReleaseStatus string `json:"releaseStatus" yaml:"releaseStatus"`
+type ChartConfigSpecVersionBundle struct {
+	Version string `json:"version" yaml:"version"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
