@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/giantswarm/helmclient"
 	"github.com/giantswarm/microerror"
 
 	"github.com/giantswarm/chart-operator/service/controller/v2/key"
@@ -19,8 +20,12 @@ func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
 	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("getting status for release '%s'", releaseName))
 
 	releaseContent, err := r.helmClient.GetReleaseContent(releaseName)
-	// TODO
-	if err != nil {
+	if helmclient.IsReleaseNotFound(err) {
+		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("release '%s' not found", releaseName))
+
+		// Return early. We will retry on the next execution.
+		return nil
+	} else if err != nil {
 		return microerror.Mask(err)
 	}
 
@@ -29,9 +34,7 @@ func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
 
 		customObjectCopy := customObject.DeepCopy()
 		customObjectCopy.Status.ReleaseStatus = releaseContent.Status
-
 		_, err := r.g8sClient.CoreV1alpha1().ChartConfigs(customObject.Namespace).UpdateStatus(customObjectCopy)
-		// TODO
 		if err != nil {
 			return microerror.Mask(err)
 		}
