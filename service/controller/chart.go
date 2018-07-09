@@ -56,9 +56,6 @@ func NewChart(config ChartConfig) (*Chart, error) {
 	if config.ProjectName == "" {
 		return nil, microerror.Maskf(invalidConfigError, "config.ProjectName must not be empty")
 	}
-	if config.WatchNamespace == "" {
-		return nil, microerror.Maskf(invalidConfigError, "config.WatchNamespace must not be empty")
-	}
 
 	var crdClient *k8scrdclient.CRDClient
 	{
