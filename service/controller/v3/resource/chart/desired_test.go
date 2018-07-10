@@ -258,7 +258,7 @@ func Test_DesiredState(t *testing.T) {
 			errorMatcher: IsNotFound,
 		},
 		{
-			name: "case 5: secret and configmap clash",
+			name: "case 8: secret and configmap clash",
 			obj: &v1alpha1.ChartConfig{
 				Spec: v1alpha1.ChartConfigSpec{
 					Chart: v1alpha1.ChartConfigSpecChart{
