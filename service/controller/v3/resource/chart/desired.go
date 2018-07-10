@@ -20,7 +20,15 @@ func (r *Resource) GetDesiredState(ctx context.Context, obj interface{}) (interf
 
 	name := key.ChartName(customObject)
 	channel := key.ChannelName(customObject)
-	chartValues, err := r.getConfigMapValues(ctx, customObject)
+	chartConfigmapValues, err := r.getConfigMapValues(ctx, customObject)
+	if err != nil {
+		return nil, microerror.Mask(err)
+	}
+	chartSecretValues, err := r.getSecretValues(ctx, customObject)
+	if err != nil {
+		return nil, microerror.Mask(err)
+	}
+	chartValues, err := union(chartConfigmapValues, chartSecretValues)
 	if err != nil {
 		return nil, microerror.Mask(err)
 	}
@@ -64,4 +72,44 @@ func (r *Resource) getConfigMapValues(ctx context.Context, customObject v1alpha1
 	}
 
 	return chartValues, nil
+}
+
+func (r *Resource) getSecretValues(ctx context.Context, customObject v1alpha1.ChartConfig) (map[string]interface{}, error) {
+	secretValues := make(map[string]interface{})
+
+	if key.SecretName(customObject) != "" {
+		secretName := key.SecretName(customObject)
+		secretNamespace := key.SecretNamespace(customObject)
+
+		secret, err := r.k8sClient.CoreV1().Secrets(secretNamespace).Get(secretName, metav1.GetOptions{})
+		if apierrors.IsNotFound(err) {
+			return make(map[string]interface{}), microerror.Maskf(notFoundError, "secret '%s' in namespace '%s' not found", secretName, secretNamespace)
+		} else if err != nil {
+			return make(map[string]interface{}), microerror.Mask(err)
+		}
+
+		// TODO: fix this "secret.json" name somewhere and access it in release-operator.
+		secretData := secret.Data["secret.json"]
+		if secretData != nil {
+			err = json.Unmarshal(secretData, &secretValues)
+			if err != nil {
+				return secretValues, microerror.Mask(err)
+			}
+		}
+	}
+
+	return secretValues, nil
+}
+
+func union(a, b map[string]interface{}) (map[string]interface{}, error) {
+	for k, v := range b {
+		_, ok := a[k]
+		if ok {
+			// The secret and config map we use have atleast one shared key. We can not
+			// decide which value is supposed to be applied.
+			return make(map[string]interface{}), microerror.Maskf(invalidConfigError, "secret and config map share the same key %s", k)
+		}
+		a[k] = v
+	}
+	return a, nil
 }

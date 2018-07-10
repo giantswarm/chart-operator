@@ -19,6 +19,7 @@ func Test_DesiredState(t *testing.T) {
 		name          string
 		obj           *v1alpha1.ChartConfig
 		configMap     *apiv1.ConfigMap
+		secret        *apiv1.Secret
 		expectedState ChartState
 		errorMatcher  func(error) bool
 	}{
@@ -164,6 +165,137 @@ func Test_DesiredState(t *testing.T) {
 			},
 			errorMatcher: IsNotFound,
 		},
+		{
+			name: "case 5: basic match with secret value",
+			obj: &v1alpha1.ChartConfig{
+				Spec: v1alpha1.ChartConfigSpec{
+					Chart: v1alpha1.ChartConfigSpecChart{
+						Name: "chart-operator-chart",
+						Secret: v1alpha1.ChartConfigSpecSecret{
+							Name:      "chart-operator-values-secret",
+							Namespace: "giantswarm",
+						},
+						Channel: "0-1-beta",
+						Release: "chart-operator",
+					},
+				},
+			},
+			secret: &apiv1.Secret{
+				ObjectMeta: metav1.ObjectMeta{
+					Name:      "chart-operator-values-secret",
+					Namespace: "giantswarm",
+				},
+				Data: map[string][]byte{
+					"secret.json": []byte(`{ "test": "test" }`),
+				},
+			},
+			expectedState: ChartState{
+				ChartName: "chart-operator-chart",
+				ChartValues: map[string]interface{}{
+					"test": "test",
+				},
+				ChannelName:    "0-1-beta",
+				ReleaseName:    "chart-operator",
+				ReleaseVersion: "0.1.2",
+			},
+		},
+		{
+			name: "case 5: secret with multiple values",
+			obj: &v1alpha1.ChartConfig{
+				Spec: v1alpha1.ChartConfigSpec{
+					Chart: v1alpha1.ChartConfigSpecChart{
+						Name: "chart-operator-chart",
+						Secret: v1alpha1.ChartConfigSpecSecret{
+							Name:      "chart-operator-values-secret",
+							Namespace: "giantswarm",
+						},
+						Channel: "0-1-beta",
+						Release: "chart-operator",
+					},
+				},
+			},
+			secret: &apiv1.Secret{
+				ObjectMeta: metav1.ObjectMeta{
+					Name:      "chart-operator-values-secret",
+					Namespace: "giantswarm",
+				},
+				Data: map[string][]byte{
+					"secret.json": []byte(`{ "secretpassword": "admin", "secretnumber": 2 }`),
+				},
+			},
+			expectedState: ChartState{
+				ChartName: "chart-operator-chart",
+				ChartValues: map[string]interface{}{
+					"secretpassword": "admin",
+					"secretnumber":   float64(2),
+				},
+				ChannelName:    "0-1-beta",
+				ReleaseName:    "chart-operator",
+				ReleaseVersion: "0.1.2",
+			},
+		},
+		{
+			name: "case 7: secret not found",
+			obj: &v1alpha1.ChartConfig{
+				Spec: v1alpha1.ChartConfigSpec{
+					Chart: v1alpha1.ChartConfigSpecChart{
+						Name: "chart-operator-chart",
+						Secret: v1alpha1.ChartConfigSpecSecret{
+							Name:      "chart-operator-values-secret",
+							Namespace: "giantswarm",
+						},
+						Channel: "0-1-beta",
+						Release: "chart-operator",
+					},
+				},
+			},
+			secret: &apiv1.Secret{
+				ObjectMeta: metav1.ObjectMeta{
+					Name:      "missing-values-secret",
+					Namespace: "giantswarm",
+				},
+			},
+			errorMatcher: IsNotFound,
+		},
+		{
+			name: "case 5: secret and configmap clash",
+			obj: &v1alpha1.ChartConfig{
+				Spec: v1alpha1.ChartConfigSpec{
+					Chart: v1alpha1.ChartConfigSpecChart{
+						Name: "chart-operator-chart",
+						ConfigMap: v1alpha1.ChartConfigSpecConfigMap{
+							Name:      "chart-operator-values-configmap",
+							Namespace: "giantswarm",
+						},
+						Secret: v1alpha1.ChartConfigSpecSecret{
+							Name:      "chart-operator-values-secret",
+							Namespace: "giantswarm",
+						},
+						Channel: "0-1-beta",
+						Release: "chart-operator",
+					},
+				},
+			},
+			configMap: &apiv1.ConfigMap{
+				ObjectMeta: metav1.ObjectMeta{
+					Name:      "chart-operator-values-configmap",
+					Namespace: "giantswarm",
+				},
+				Data: map[string]string{
+					"values.json": `{ "username": "admin", "replicas": 2 }`,
+				},
+			},
+			secret: &apiv1.Secret{
+				ObjectMeta: metav1.ObjectMeta{
+					Name:      "chart-operator-values-secret",
+					Namespace: "giantswarm",
+				},
+				Data: map[string][]byte{
+					"secret.json": []byte(`{ "username": "admin", "secretnumber": 2 }`),
+				},
+			},
+			errorMatcher: IsInvalidConfig,
+		},
 	}
 
 	apprClient := &apprMock{
@@ -178,6 +310,9 @@ func Test_DesiredState(t *testing.T) {
 			objs := make([]runtime.Object, 0, 0)
 			if tc.configMap != nil {
 				objs = append(objs, tc.configMap)
+			}
+			if tc.secret != nil {
+				objs = append(objs, tc.secret)
 			}
 
 			c := Config{
