@@ -9,7 +9,7 @@ func VersionBundle() versionbundle.Bundle {
 		Changelogs: []versionbundle.Changelog{
 			{
 				Component:   "chart-operator",
-				Description: "Add your changes here.",
+				Description: "Added support for setting the chartconfig CR status with the Helm release status.",
 				Kind:        versionbundle.KindAdded,
 			},
 		},
