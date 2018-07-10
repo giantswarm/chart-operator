@@ -126,6 +126,7 @@ func NewChart(config ChartConfig) (*Chart, error) {
 		c := v3.ResourceSetConfig{
 			ApprClient:  config.ApprClient,
 			Fs:          config.Fs,
+			G8sClient:   config.G8sClient,
 			HelmClient:  config.HelmClient,
 			K8sClient:   config.K8sClient,
 			Logger:      config.Logger,

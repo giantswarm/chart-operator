@@ -16,6 +16,7 @@ rules:
   - core.giantswarm.io
   resources:
   - chartconfigs
+  - chartconfigs/status
   verbs:
   - "*"
 - apiGroups:

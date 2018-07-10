@@ -166,6 +166,27 @@ func Test_ReleaseName(t *testing.T) {
 	}
 }
 
+func Test_ReleaseStatus(t *testing.T) {
+	expectedStatus := "DEPLOYED"
+
+	obj := v1alpha1.ChartConfig{
+		Spec: v1alpha1.ChartConfigSpec{
+			Chart: v1alpha1.ChartConfigSpecChart{
+				Name:    "chart-operator-chart",
+				Channel: "0.1-beta",
+				Release: "chart-operator",
+			},
+		},
+		Status: v1alpha1.ChartConfigStatus{
+			ReleaseStatus: "DEPLOYED",
+		},
+	}
+
+	if ReleaseStatus(obj) != expectedStatus {
+		t.Fatalf("release status %s, want %s", ReleaseStatus(obj), expectedStatus)
+	}
+}
+
 func Test_ToCustomObject(t *testing.T) {
 	testCases := []struct {
 		name           string
