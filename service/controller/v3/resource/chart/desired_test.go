@@ -200,7 +200,7 @@ func Test_DesiredState(t *testing.T) {
 			},
 		},
 		{
-			name: "case 5: secret with multiple values",
+			name: "case 6: secret with multiple values",
 			obj: &v1alpha1.ChartConfig{
 				Spec: v1alpha1.ChartConfigSpec{
 					Chart: v1alpha1.ChartConfigSpecChart{
@@ -348,4 +348,79 @@ func Test_DesiredState(t *testing.T) {
 		})
 	}
 
+}
+
+func Test_union(t *testing.T) {
+	testCases := []struct {
+		name         string
+		inputA       map[string]interface{}
+		inputB       map[string]interface{}
+		expectedMap  map[string]interface{}
+		errorMatcher func(error) bool
+	}{
+		{
+			name: "case 0: both maps with exclusive entries",
+			inputA: map[string]interface{}{
+				"secret": "secret",
+			},
+			inputB: map[string]interface{}{
+				"config": "config",
+			},
+			expectedMap: map[string]interface{}{
+				"secret": "secret",
+				"config": "config",
+			},
+		},
+		{
+			name: "case 1: only the first input",
+			inputA: map[string]interface{}{
+				"secret": "secret",
+			},
+			expectedMap: map[string]interface{}{
+				"secret": "secret",
+			},
+		},
+		{
+			name: "case 2: only the second input",
+			inputB: map[string]interface{}{
+				"config": "config",
+			},
+			expectedMap: map[string]interface{}{
+				"config": "config",
+			},
+		},
+		{
+			name:        "case 3: no input",
+			expectedMap: nil,
+		},
+		{
+			name: "case 4: entries are not exclusive",
+			inputA: map[string]interface{}{
+				"secret": "secret",
+			},
+			inputB: map[string]interface{}{
+				"config": "config",
+				"secret": "config",
+			},
+			errorMatcher: IsInvalidConfig,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			result, err := union(tc.inputA, tc.inputB)
+			switch {
+			case err != nil && tc.errorMatcher == nil:
+				t.Fatalf("error == %#v, want nil", err)
+			case err == nil && tc.errorMatcher != nil:
+				t.Fatalf("error == nil, want non-nil")
+			case err != nil && !tc.errorMatcher(err):
+				t.Fatalf("error == %#v, want matching", err)
+			}
+
+			if !reflect.DeepEqual(result, tc.expectedMap) {
+				t.Fatalf("Map == %q, want %q", result, tc.expectedMap)
+			}
+		})
+	}
 }

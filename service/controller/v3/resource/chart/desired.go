@@ -102,12 +102,16 @@ func (r *Resource) getSecretValues(ctx context.Context, customObject v1alpha1.Ch
 }
 
 func union(a, b map[string]interface{}) (map[string]interface{}, error) {
+	if a == nil {
+		return b, nil
+	}
+
 	for k, v := range b {
 		_, ok := a[k]
 		if ok {
-			// The secret and config map we use have atleast one shared key. We can not
+			// The secret and config map we use have at least one shared key. We can not
 			// decide which value is supposed to be applied.
-			return make(map[string]interface{}), microerror.Maskf(invalidConfigError, "secret and config map share the same key %s", k)
+			return nil, microerror.Maskf(invalidConfigError, "secret and config map share the same key %s", k)
 		}
 		a[k] = v
 	}
