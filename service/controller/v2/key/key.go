@@ -29,10 +29,6 @@ func ReleaseName(customObject v1alpha1.ChartConfig) string {
 	return customObject.Spec.Chart.Release
 }
 
-func ReleaseStatus(customObject v1alpha1.ChartConfig) string {
-	return customObject.Status.ReleaseStatus
-}
-
 // ToCustomObject converts value to v1alpha1.ChartConfig and returns it or error
 // if type does not match.
 func ToCustomObject(v interface{}) (v1alpha1.ChartConfig, error) {
