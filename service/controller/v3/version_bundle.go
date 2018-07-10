@@ -1,4 +1,4 @@
-package v2
+package v3
 
 import (
 	"github.com/giantswarm/versionbundle"
@@ -9,12 +9,12 @@ func VersionBundle() versionbundle.Bundle {
 		Changelogs: []versionbundle.Changelog{
 			{
 				Component:   "chart-operator",
-				Description: "Added support for providing dynamic values to Helm charts.",
+				Description: "Add your changes here.",
 				Kind:        versionbundle.KindAdded,
 			},
 		},
 		Components: []versionbundle.Component{},
 		Name:       "chart-operator",
-		Version:    "0.2.0",
+		Version:    "0.3.0",
 	}
 }
