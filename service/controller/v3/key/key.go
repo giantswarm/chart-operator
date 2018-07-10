@@ -25,6 +25,14 @@ func Namespace(customObject v1alpha1.ChartConfig) string {
 	return customObject.Spec.Chart.Namespace
 }
 
+func SecretName(customObject v1alpha1.ChartConfig) string {
+	return customObject.Spec.Chart.Secret.Name
+}
+
+func SecretNamespace(customObject v1alpha1.ChartConfig) string {
+	return customObject.Spec.Chart.Secret.Namespace
+}
+
 func ReleaseName(customObject v1alpha1.ChartConfig) string {
 	return customObject.Spec.Chart.Release
 }

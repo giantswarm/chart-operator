@@ -104,6 +104,50 @@ func Test_Namespace(t *testing.T) {
 	}
 }
 
+func Test_SecretName(t *testing.T) {
+	expectedSecretName := "chart-operator-chart-secret"
+
+	obj := v1alpha1.ChartConfig{
+		Spec: v1alpha1.ChartConfigSpec{
+			Chart: v1alpha1.ChartConfigSpecChart{
+				Name:    "chart-operator-chart",
+				Channel: "0.1-beta",
+				Secret: v1alpha1.ChartConfigSpecSecret{
+					Name:      "chart-operator-chart-secret",
+					Namespace: "giantswarm",
+				},
+				Release: "chart-operator",
+			},
+		},
+	}
+
+	if SecretName(obj) != expectedSecretName {
+		t.Fatalf("secret name %s, want %s", SecretName(obj), expectedSecretName)
+	}
+}
+
+func Test_SecretNamespace(t *testing.T) {
+	expectedSecretNamespace := "giantswarm"
+
+	obj := v1alpha1.ChartConfig{
+		Spec: v1alpha1.ChartConfigSpec{
+			Chart: v1alpha1.ChartConfigSpecChart{
+				Name:    "chart-operator-chart",
+				Channel: "0.1-beta",
+				Secret: v1alpha1.ChartConfigSpecSecret{
+					Name:      "chart-operator-chart-secret",
+					Namespace: "giantswarm",
+				},
+				Release: "chart-operator",
+			},
+		},
+	}
+
+	if SecretNamespace(obj) != expectedSecretNamespace {
+		t.Fatalf("secret namespace %s, want %s", SecretNamespace(obj), expectedSecretNamespace)
+	}
+}
+
 func Test_ReleaseName(t *testing.T) {
 	expectedRelease := "chart-operator"
 
