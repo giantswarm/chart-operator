@@ -83,9 +83,9 @@ func (r *Resource) getSecretValues(ctx context.Context, customObject v1alpha1.Ch
 
 		secret, err := r.k8sClient.CoreV1().Secrets(secretNamespace).Get(secretName, metav1.GetOptions{})
 		if apierrors.IsNotFound(err) {
-			return make(map[string]interface{}), microerror.Maskf(notFoundError, "secret '%s' in namespace '%s' not found", secretName, secretNamespace)
+			return nil, microerror.Maskf(notFoundError, "secret '%s' in namespace '%s' not found", secretName, secretNamespace)
 		} else if err != nil {
-			return make(map[string]interface{}), microerror.Mask(err)
+			return nil, microerror.Mask(err)
 		}
 
 		// TODO: fix this "secret.json" name somewhere and access it in release-operator.
@@ -93,7 +93,7 @@ func (r *Resource) getSecretValues(ctx context.Context, customObject v1alpha1.Ch
 		if secretData != nil {
 			err = json.Unmarshal(secretData, &secretValues)
 			if err != nil {
-				return secretValues, microerror.Mask(err)
+				return nil, microerror.Mask(err)
 			}
 		}
 	}
