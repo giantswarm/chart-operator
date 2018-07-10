@@ -1,4 +1,4 @@
-package v2
+package v3
 
 import (
 	"github.com/giantswarm/versionbundle"
@@ -15,6 +15,6 @@ func VersionBundle() versionbundle.Bundle {
 		},
 		Components: []versionbundle.Component{},
 		Name:       "chart-operator",
-		Version:    "0.2.0",
+		Version:    "0.3.0",
 	}
 }
