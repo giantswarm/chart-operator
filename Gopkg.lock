@@ -137,7 +137,7 @@
     "pkg/clientset/versioned/typed/example/v1alpha1",
     "pkg/clientset/versioned/typed/provider/v1alpha1"
   ]
-  revision = "a72dd523ec5869f57098641171078612854373be"
+  revision = "52949fbd1f95f7ed0da3edf56061bc0d2571537f"
 
 [[projects]]
   branch = "master"
@@ -1203,6 +1203,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "541628b41c54f19f2e84f80cc9d6882b310ef3c18097f761f7cf165c7d6c0a8d"
+  inputs-digest = "9904102fc4c5bad79bbf07daf3c5e018256b4a6dcec4b7a7932410a4aacca020"
   solver-name = "gps-cdcl"
   solver-version = 1
