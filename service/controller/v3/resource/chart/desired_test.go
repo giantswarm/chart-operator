@@ -376,12 +376,14 @@ func Test_union(t *testing.T) {
 			inputA: map[string]interface{}{
 				"secret": "secret",
 			},
+			inputB: nil,
 			expectedMap: map[string]interface{}{
 				"secret": "secret",
 			},
 		},
 		{
-			name: "case 2: only the second input",
+			name:   "case 2: only the second input",
+			inputA: nil,
 			inputB: map[string]interface{}{
 				"config": "config",
 			},
@@ -391,6 +393,8 @@ func Test_union(t *testing.T) {
 		},
 		{
 			name:        "case 3: no input",
+			inputA:      nil,
+			inputB:      nil,
 			expectedMap: nil,
 		},
 		{

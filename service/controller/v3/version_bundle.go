@@ -12,6 +12,11 @@ func VersionBundle() versionbundle.Bundle {
 				Description: "Added support for setting the chartconfig CR status with the Helm release status.",
 				Kind:        versionbundle.KindAdded,
 			},
+			{
+				Component:   "chart-operator",
+				Description: "Added support for providing values from secrets to helm charts.",
+				Kind:        versionbundle.KindAdded,
+			},
 		},
 		Components: []versionbundle.Component{},
 		Name:       "chart-operator",
