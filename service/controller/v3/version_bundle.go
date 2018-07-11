@@ -14,7 +14,7 @@ func VersionBundle() versionbundle.Bundle {
 			},
 			{
 				Component:   "chart-operator",
-				Description: "Added support for providing values from secrets to helm charts.",
+				Description: "Added support for providing values from secrets to Helm charts.",
 				Kind:        versionbundle.KindAdded,
 			},
 		},
