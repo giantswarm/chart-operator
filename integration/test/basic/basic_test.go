@@ -40,7 +40,7 @@ func TestChartLifecycle(t *testing.T) {
 		t.Fatalf("could not install %q %v", cr, err)
 	}
 
-	err = release.WaitForReleaseStatus(gsHelmClient, testRelease, "DEPLOYED")
+	err = release.WaitForStatus(gsHelmClient, testRelease, "DEPLOYED")
 	if err != nil {
 		t.Fatalf("could not get release status of %q %v", testRelease, err)
 	}
@@ -53,7 +53,7 @@ func TestChartLifecycle(t *testing.T) {
 		t.Fatalf("could not update %q %v", cr, err)
 	}
 
-	err = release.WaitForReleaseVersion(gsHelmClient, testRelease, "5.6.0")
+	err = release.WaitForVersion(gsHelmClient, testRelease, "5.6.0")
 	if err != nil {
 		t.Fatalf("could not get release version of %q %v", testRelease, err)
 	}
@@ -66,7 +66,7 @@ func TestChartLifecycle(t *testing.T) {
 		t.Fatalf("could not delete %q %v", cr, err)
 	}
 
-	err = release.WaitForReleaseStatus(gsHelmClient, testRelease, "DELETED")
+	err = release.WaitForStatus(gsHelmClient, testRelease, "DELETED")
 	if !helmclient.IsReleaseNotFound(err) {
 		t.Fatalf("%q not succesfully deleted %v", testRelease, err)
 	}

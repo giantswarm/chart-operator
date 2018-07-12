@@ -12,7 +12,7 @@ import (
 	"github.com/giantswarm/microerror"
 )
 
-func WaitForReleaseStatus(gsHelmClient *helmclient.Client, release string, status string) error {
+func WaitForStatus(gsHelmClient *helmclient.Client, release string, status string) error {
 	operation := func() error {
 		rc, err := gsHelmClient.GetReleaseContent(release)
 		if err != nil {
@@ -36,7 +36,7 @@ func WaitForReleaseStatus(gsHelmClient *helmclient.Client, release string, statu
 	return nil
 }
 
-func WaitForReleaseVersion(gsHelmClient *helmclient.Client, release string, version string) error {
+func WaitForVersion(gsHelmClient *helmclient.Client, release string, version string) error {
 	operation := func() error {
 		rh, err := gsHelmClient.GetReleaseHistory(release)
 		if err != nil {
