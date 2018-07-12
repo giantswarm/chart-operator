@@ -25,7 +25,7 @@ type Chart struct {
 	Name    string
 }
 
-func Install(f *framework.Host, charts []Chart) error {
+func Push(f *framework.Host, charts []Chart) error {
 	fwc := k8sportforward.Config{
 		RestConfig: f.RestConfig(),
 	}

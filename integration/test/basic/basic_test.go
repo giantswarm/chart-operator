@@ -49,9 +49,9 @@ func TestChartLifecycle(t *testing.T) {
 		t.Fatalf("could not create giantswarm helmClient %v", err)
 	}
 
-	err = chart.Install(f, charts)
+	err = chart.Push(f, charts)
 	if err != nil {
-		t.Fatalf("could not install inital charts %v", err)
+		t.Fatalf("could not push inital charts to cnr %v", err)
 	}
 
 	// Test Creation
