@@ -7,6 +7,9 @@ import (
 	"testing"
 
 	"github.com/giantswarm/micrologger"
+
+	"github.com/giantswarm/chart-operator/integration/chart"
+	"github.com/giantswarm/chart-operator/integration/templates"
 )
 
 func TestChartValues(t *testing.T) {
@@ -25,11 +28,6 @@ func TestChartValues(t *testing.T) {
 	l, err := micrologger.New(micrologger.Config{})
 	if err != nil {
 		t.Fatalf("could not create logger %v", err)
-	}
-
-	gsHelmClient, err := createGsHelmClient()
-	if err != nil {
-		t.Fatalf("could not create giantswarm helmClient %v", err)
 	}
 
 	err = chart.Push(f, charts)
