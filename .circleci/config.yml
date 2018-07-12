@@ -126,7 +126,8 @@ workflows:
             branches:
               only: master
           requires:
-          - e2eTestMaster
+          - e2eTestBasicMaster
+          - e2eTestChartValuesMaster
 
       - publish_to_stable:
           filters:
