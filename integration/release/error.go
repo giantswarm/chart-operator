@@ -1,8 +1,8 @@
-package basic
+// +build k8srequired
 
-import (
-	"github.com/giantswarm/microerror"
-)
+package release
+
+import "github.com/giantswarm/microerror"
 
 var releaseStatusNotMatchingError = microerror.New("release status not matching")
 
