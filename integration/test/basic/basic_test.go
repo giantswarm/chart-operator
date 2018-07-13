@@ -14,6 +14,7 @@ import (
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/micrologger"
 
+	"github.com/giantswarm/chart-operator/integration/chart"
 	"github.com/giantswarm/chart-operator/integration/release"
 	"github.com/giantswarm/chart-operator/integration/templates"
 )
@@ -21,6 +22,21 @@ import (
 func TestChartLifecycle(t *testing.T) {
 	const testRelease = "tb-release"
 	const cr = "chart-operator-resource"
+
+	charts := []chart.Chart{
+		{
+			Channel: "5-5-beta",
+			Release: "5.5.5",
+			Tarball: "/e2e/fixtures/tb-chart-5.5.5.tgz",
+			Name:    "tb-chart",
+		},
+		{
+			Channel: "5-6-beta",
+			Release: "5.6.0",
+			Tarball: "/e2e/fixtures/tb-chart-5.6.0.tgz",
+			Name:    "tb-chart",
+		},
+	}
 
 	// Setup
 	l, err := micrologger.New(micrologger.Config{})
@@ -31,6 +47,11 @@ func TestChartLifecycle(t *testing.T) {
 	gsHelmClient, err := createGsHelmClient()
 	if err != nil {
 		t.Fatalf("could not create giantswarm helmClient %v", err)
+	}
+
+	err = chart.Push(f, charts)
+	if err != nil {
+		t.Fatalf("could not push inital charts to cnr %v", err)
 	}
 
 	// Test Creation

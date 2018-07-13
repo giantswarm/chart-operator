@@ -15,7 +15,7 @@ e2eTest: &e2eTest
 
     - run: ./e2e-harness setup --remote=false
 
-    - run: ./e2e-harness test --test-dir=integration/test/basic
+    - run: ./e2e-harness test --test-dir=${TEST_DIR}
 
     - run:
         name: Finish with cleanup, no matter if the test succeeded or not
@@ -41,10 +41,24 @@ jobs:
         - ./chart-operator
         - ./architect
 
-  e2eTestPR:
+  e2eTestBasicPR:
+    environment:
+      TEST_DIR: "integration/test/basic"
     <<: *e2eTest
 
-  e2eTestMaster:
+  e2eTestBasicMaster:
+    environment:
+      TEST_DIR: "integration/test/basic"
+    <<: *e2eTest
+
+  e2eTestChartValuesPR:
+    environment:
+      TEST_DIR: "integration/test/chartvalues"
+    <<: *e2eTest
+
+  e2eTestChartValuesMaster:
+    environment:
+      TEST_DIR: "integration/test/chartvalues"
     <<: *e2eTest
 
   deploy:
@@ -85,11 +99,22 @@ workflows:
           requires:
           - build
 
-      - e2eTestPR:
+      - e2eTestBasicPR:
           requires:
           - hold
 
-      - e2eTestMaster:
+      - e2eTestBasicMaster:
+          filters:
+            branches:
+              only: master
+          requires:
+          - build
+
+      - e2eTestChartValuesPR:
+          requires:
+          - hold
+
+      - e2eTestChartValuesMaster:
           filters:
             branches:
               only: master
@@ -101,7 +126,8 @@ workflows:
             branches:
               only: master
           requires:
-          - e2eTestMaster
+          - e2eTestBasicMaster
+          - e2eTestChartValuesMaster
 
       - publish_to_stable:
           filters:
