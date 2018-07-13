@@ -6,8 +6,6 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/giantswarm/micrologger"
-
 	"github.com/giantswarm/chart-operator/integration/chart"
 	"github.com/giantswarm/chart-operator/integration/templates"
 )
@@ -22,12 +20,6 @@ func TestChartValues(t *testing.T) {
 			Tarball: "/e2e/fixtures/tb-chart-1.0.0.tgz",
 			Name:    "tb-chart",
 		},
-	}
-
-	// Setup
-	l, err := micrologger.New(micrologger.Config{})
-	if err != nil {
-		t.Fatalf("could not create logger %v", err)
 	}
 
 	err = chart.Push(f, charts)

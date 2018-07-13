@@ -15,6 +15,7 @@ import (
 var (
 	f          *framework.Host
 	helmClient *helmclient.Client
+	l          micrologger.Logger
 )
 
 // TestMain allows us to have common setup and teardown steps that are run
@@ -27,7 +28,7 @@ func TestMain(m *testing.M) {
 		panic(err.Error())
 	}
 
-	l, err := micrologger.New(micrologger.Config{})
+	l, err = micrologger.New(micrologger.Config{})
 	if err != nil {
 		panic(err.Error())
 	}
