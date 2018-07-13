@@ -22,7 +22,7 @@ func TestChartValues(t *testing.T) {
 		},
 	}
 
-	err = chart.Push(f, charts)
+	err := chart.Push(f, charts)
 	if err != nil {
 		t.Fatalf("could not push inital charts to cnr %v", err)
 	}
