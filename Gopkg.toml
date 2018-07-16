@@ -31,6 +31,7 @@ required = [
   "github.com/docker/distribution/reference",
   "k8s.io/api/core/v1",
   "k8s.io/apimachinery/pkg/apis/meta/v1",
+  "k8s.io/apiserver/pkg/endpoints/request"
 ]
 
 
@@ -105,6 +106,10 @@ required = [
 
 [[constraint]]
   name = "k8s.io/apimachinery"
+  version = "kubernetes-1.10.4"
+
+[[constraint]]
+  name = "k8s.io/apiserver"
   version = "kubernetes-1.10.4"
 
 [[constraint]]
