@@ -11,7 +11,7 @@ import (
 )
 
 func TestChartValues(t *testing.T) {
-	const cr = "chart-operator-resource"
+	const cr = "apiextensions-chart-config-e2e"
 
 	charts := []chart.Chart{
 		{

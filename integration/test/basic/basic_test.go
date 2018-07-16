@@ -21,7 +21,7 @@ import (
 
 func TestChartLifecycle(t *testing.T) {
 	const testRelease = "tb-release"
-	const cr = "chart-operator-resource"
+	const cr = "apiextensions-chart-config-e2e"
 
 	charts := []chart.Chart{
 		{
