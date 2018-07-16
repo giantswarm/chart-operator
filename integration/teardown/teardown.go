@@ -10,7 +10,7 @@ import (
 )
 
 func Teardown(f *framework.Host, helmClient *helmclient.Client) error {
-	items := []string{"cnr-server", "chart-operator", "chart-operator-resource"}
+	items := []string{"cnr-server", "chart-operator", "apiextensions-chart-config-e2e"}
 
 	for _, item := range items {
 		err := helmClient.DeleteRelease(item, helm.DeletePurge(true))
