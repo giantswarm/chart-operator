@@ -26,14 +26,12 @@ type ChartValuesConfig struct {
 }
 
 type ChartConfig struct {
-	chartValuesConfig   ChartValuesConfig
-	chartValuesTemplate *template.Template
+	chartValuesConfig ChartValuesConfig
 }
 
 func NewChartConfig(config Config) (*ChartConfig, error) {
 	cc := &ChartConfig{
-		chartValuesConfig:   config.ChartValuesConfig,
-		chartValuesTemplate: template.Must(template.New("chartConfigChartValues").Parse(e2etemplates.ApiextensionsChartConfigE2EChartValues)),
+		chartValuesConfig: config.ChartValuesConfig,
 	}
 	return cc, nil
 }
@@ -44,7 +42,8 @@ func (cc ChartConfig) ChartValuesConfig() ChartValuesConfig {
 
 func (cc ChartConfig) ExecuteChartValuesTemplate() (string, error) {
 	buf := &bytes.Buffer{}
-	err := cc.chartValuesTemplate.Execute(buf, cc.chartValuesConfig)
+	chartValuesTemplate := template.Must(template.New("chartConfigChartValues").Parse(e2etemplates.ApiextensionsChartConfigE2EChartValues))
+	err := chartValuesTemplate.Execute(buf, cc.chartValuesConfig)
 	if err != nil {
 		return "", err
 	}
