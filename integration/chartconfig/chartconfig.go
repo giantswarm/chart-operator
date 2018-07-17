@@ -8,7 +8,7 @@ import (
 )
 
 type Config struct {
-	ChartValuesConfig
+	*ChartValuesConfig
 }
 
 type ChartValuesConfig struct {
@@ -31,13 +31,13 @@ type ChartConfig struct {
 
 func NewChartConfig(config Config) (*ChartConfig, error) {
 	cc := &ChartConfig{
-		chartValuesConfig: config.ChartValuesConfig,
+		chartValuesConfig: *config.ChartValuesConfig,
 	}
 	return cc, nil
 }
 
-func (cc ChartConfig) ChartValuesConfig() ChartValuesConfig {
-	return cc.chartValuesConfig
+func (cc ChartConfig) ChartValuesConfig() *ChartValuesConfig {
+	return &cc.chartValuesConfig
 }
 
 func (cc ChartConfig) ExecuteChartValuesTemplate() (string, error) {
@@ -51,7 +51,7 @@ func (cc ChartConfig) ExecuteChartValuesTemplate() (string, error) {
 	return buf.String(), nil
 }
 
-func (cc ChartConfig) SetChartValuesConfig(values ChartValuesConfig) ChartValuesConfig {
-	cc.chartValuesConfig = values
-	return cc.chartValuesConfig
+func (cc ChartConfig) SetChartValuesConfig(values *ChartValuesConfig) *ChartValuesConfig {
+	cc.chartValuesConfig = *values
+	return &cc.chartValuesConfig
 }
