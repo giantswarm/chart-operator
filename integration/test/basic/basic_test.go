@@ -163,8 +163,8 @@ func updateChartOperatorResource(cc *chartconfig.ChartConfig, helmClient *helmcl
 	}
 	chartValuesConfig := cc.ChartValuesConfig()
 	chartValuesConfig.Channel = "5-6-beta"
-	cc.SetChartValuesConfig(chartValuesConfig)
-	l.Log(chartValuesConfig)
+	newChartValuesConf := cc.SetChartValuesConfig(chartValuesConfig)
+	l.Log(newChartValuesConf)
 
 	chartValues, err := cc.ExecuteChartValuesTemplate()
 	if err != nil {
