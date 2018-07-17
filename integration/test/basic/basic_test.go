@@ -138,7 +138,7 @@ func createGsHelmClient() (*helmclient.Client, error) {
 	return gsHelmClient, nil
 }
 
-func updateChartOperatorResource(cc *chartconfig.ChartConfig,helmClient *helmclient.Client, releaseName string) error {
+func updateChartOperatorResource(cc *chartconfig.ChartConfig, helmClient *helmclient.Client, releaseName string) error {
 	l, err := micrologger.New(micrologger.Config{})
 	if err != nil {
 		return microerror.Mask(err)
@@ -171,7 +171,7 @@ func updateChartOperatorResource(cc *chartconfig.ChartConfig,helmClient *helmcli
 	}
 
 	helmClient.UpdateReleaseFromTarball(releaseName, tarballPath,
-		helm.UpdateValueOverrides([]byte(chartValues))
+		helm.UpdateValueOverrides([]byte(chartValues)))
 	if err != nil {
 		return microerror.Mask(err)
 	}
