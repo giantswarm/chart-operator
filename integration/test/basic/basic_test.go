@@ -44,7 +44,7 @@ func TestChartLifecycle(t *testing.T) {
 		Namespace: "giantswarm",
 		Release:   "tb-release",
 		//TODO: fix this static VersionBundleVersion
-		VersionBundleVersion: "0.1.0",
+		VersionBundleVersion: "0.2.0",
 	}
 
 	config := chartconfig.Config{
@@ -169,6 +169,7 @@ func updateChartOperatorResource(cc *chartconfig.ChartConfig, helmClient *helmcl
 	if err != nil {
 		return microerror.Mask(err)
 	}
+	l.Log(chartValues)
 
 	helmClient.UpdateReleaseFromTarball(releaseName, tarballPath,
 		helm.UpdateValueOverrides([]byte(chartValues)))
