@@ -29,7 +29,7 @@ func TestChartValues(t *testing.T) {
 
 	// Test Creation
 	l.Log("level", "debug", "message", fmt.Sprintf("creating %s", cr))
-	err = f.InstallResource(cr, templates.ChartOperatorResourceValues, ":stable")
+	err = f.InstallResource(cr, templates.ChartConfigResourceValues, ":stable")
 	if err != nil {
 		t.Fatalf("could not install %q %v", cr, err)
 	}

@@ -155,6 +155,12 @@
   revision = "fd0ebd0ec770f6ffb095dc5daa2fa23ca505e762"
 
 [[projects]]
+  branch = "add-chart-config"
+  name = "github.com/giantswarm/e2etemplates"
+  packages = ["pkg/e2etemplates"]
+  revision = "bd98a1fd8e12ead59c8ef7cea3f2f751a6b15413"
+
+[[projects]]
   branch = "master"
   name = "github.com/giantswarm/errors"
   packages = ["guest"]
@@ -1203,6 +1209,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "9904102fc4c5bad79bbf07daf3c5e018256b4a6dcec4b7a7932410a4aacca020"
+  inputs-digest = "61eabcaec9d92eaf19cad89e9ddb7428cf14d3d1845e1a850bf8cf906b4d238b"
   solver-name = "gps-cdcl"
   solver-version = 1

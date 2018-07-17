@@ -15,8 +15,8 @@ import (
 	"github.com/giantswarm/micrologger"
 
 	"github.com/giantswarm/chart-operator/integration/chart"
+	"github.com/giantswarm/chart-operator/integration/chartconfig"
 	"github.com/giantswarm/chart-operator/integration/release"
-	"github.com/giantswarm/chart-operator/integration/templates"
 )
 
 func TestChartLifecycle(t *testing.T) {
@@ -38,6 +38,24 @@ func TestChartLifecycle(t *testing.T) {
 		},
 	}
 
+	chartValuesConfig := chartconfig.ChartValuesConfig{
+		Channel:   "5-5-beta",
+		Name:      "tb-chart",
+		Namespace: "giantswarm",
+		Release:   "tb-release",
+		//TODO: fix this static VersionBundleVersion
+		VersionBundleVersion: "0.2.0",
+	}
+
+	config := chartconfig.Config{
+		ChartValuesConfig: chartValuesConfig,
+	}
+
+	cc, err := chartconfig.NewChartConfig(config)
+	if err != nil {
+		t.Fatalf("could not create chartconfig %v", err)
+	}
+
 	// Setup
 	l, err := micrologger.New(micrologger.Config{})
 	if err != nil {
@@ -56,7 +74,12 @@ func TestChartLifecycle(t *testing.T) {
 
 	// Test Creation
 	l.Log("level", "debug", "message", fmt.Sprintf("creating %s", cr))
-	err = f.InstallResource(cr, templates.ChartOperatorResourceValues, ":stable")
+	chartValues, err := cc.ExecuteChartValuesTemplate()
+	if err != nil {
+		t.Fatalf("could not template chart values %q %v", chartValues, err)
+	}
+
+	err = f.InstallResource(cr, chartValues, ":stable")
 	if err != nil {
 		t.Fatalf("could not install %q %v", cr, err)
 	}
@@ -115,7 +138,7 @@ func createGsHelmClient() (*helmclient.Client, error) {
 	return gsHelmClient, nil
 }
 
-func updateChartOperatorResource(helmClient *helmclient.Client, releaseName string) error {
+func updateChartOperatorResource(cc *chartconfig.ChartConfig,helmClient *helmclient.Client, releaseName string) error {
 	l, err := micrologger.New(micrologger.Config{})
 	if err != nil {
 		return microerror.Mask(err)
@@ -138,9 +161,17 @@ func updateChartOperatorResource(helmClient *helmclient.Client, releaseName stri
 	if err != nil {
 		return microerror.Mask(err)
 	}
+	chartValuesConfig := cc.ChartValuesConfig()
+	chartValuesConfig.Channel = "5-6-beta"
+	cc.SetChartValuesConfig(chartValuesConfig)
+
+	chartValues, err := cc.ExecuteChartValuesTemplate()
+	if err != nil {
+		return microerror.Mask(err)
+	}
 
 	helmClient.UpdateReleaseFromTarball(releaseName, tarballPath,
-		helm.UpdateValueOverrides([]byte(templates.UpdatedChartOperatorResourceValues)))
+		helm.UpdateValueOverrides([]byte(chartValues))
 	if err != nil {
 		return microerror.Mask(err)
 	}
