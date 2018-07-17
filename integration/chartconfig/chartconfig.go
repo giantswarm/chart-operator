@@ -5,9 +5,13 @@ import (
 	"html/template"
 
 	"github.com/giantswarm/e2etemplates/pkg/e2etemplates"
+	"github.com/giantswarm/microerror"
+	"github.com/giantswarm/micrologger"
 )
 
 type Config struct {
+	Logger micrologger.Logger
+
 	*ChartValuesConfig
 }
 
@@ -26,10 +30,15 @@ type ChartValuesConfig struct {
 }
 
 type ChartConfig struct {
+	logger micrologger.Logger
+
 	chartValuesConfig ChartValuesConfig
 }
 
 func NewChartConfig(config Config) (*ChartConfig, error) {
+	if config.Logger == nil {
+		return nil, microerror.Maskf(invalidConfigError, "%T.Logger must not be empty", config)
+	}
 	cc := &ChartConfig{
 		chartValuesConfig: *config.ChartValuesConfig,
 	}
@@ -43,6 +52,7 @@ func (cc ChartConfig) ChartValuesConfig() *ChartValuesConfig {
 func (cc ChartConfig) ExecuteChartValuesTemplate() (string, error) {
 	buf := &bytes.Buffer{}
 	chartValuesTemplate := template.Must(template.New("chartConfigChartValues").Parse(e2etemplates.ApiextensionsChartConfigE2EChartValues))
+	cc.logger.Log(*cc.ChartValuesConfig())
 	err := chartValuesTemplate.Execute(buf, cc.chartValuesConfig)
 	if err != nil {
 		return "", err

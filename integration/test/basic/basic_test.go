@@ -47,15 +47,6 @@ func TestChartLifecycle(t *testing.T) {
 		VersionBundleVersion: "0.2.0",
 	}
 
-	config := chartconfig.Config{
-		ChartValuesConfig: &chartValuesConfig,
-	}
-
-	cc, err := chartconfig.NewChartConfig(config)
-	if err != nil {
-		t.Fatalf("could not create chartconfig %v", err)
-	}
-
 	// Setup
 	l, err := micrologger.New(micrologger.Config{})
 	if err != nil {
@@ -65,6 +56,16 @@ func TestChartLifecycle(t *testing.T) {
 	gsHelmClient, err := createGsHelmClient()
 	if err != nil {
 		t.Fatalf("could not create giantswarm helmClient %v", err)
+	}
+
+	config := chartconfig.Config{
+		Logger:            l,
+		ChartValuesConfig: &chartValuesConfig,
+	}
+
+	cc, err := chartconfig.NewChartConfig(config)
+	if err != nil {
+		t.Fatalf("could not create chartconfig %v", err)
 	}
 
 	err = chart.Push(f, charts)
