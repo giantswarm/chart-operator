@@ -92,7 +92,7 @@ func TestChartLifecycle(t *testing.T) {
 
 	// Test Update
 	l.Log("level", "debug", "message", fmt.Sprintf("updating %s", cr))
-	err = updateChartOperatorResource(helmClient, cr)
+	err = updateChartOperatorResource(cc, helmClient, cr)
 	if err != nil {
 		t.Fatalf("could not update %q %v", cr, err)
 	}
