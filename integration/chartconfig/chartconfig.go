@@ -52,7 +52,7 @@ func (cc ChartConfig) ChartValuesConfig() *ChartValuesConfig {
 func (cc ChartConfig) ExecuteChartValuesTemplate() (string, error) {
 	buf := &bytes.Buffer{}
 	chartValuesTemplate := template.Must(template.New("chartConfigChartValues").Parse(e2etemplates.ApiextensionsChartConfigE2EChartValues))
-	cc.logger.Log(*cc.ChartValuesConfig())
+	cc.logger.Log(cc.ChartValuesConfig())
 	err := chartValuesTemplate.Execute(buf, cc.chartValuesConfig)
 	if err != nil {
 		return "", err
