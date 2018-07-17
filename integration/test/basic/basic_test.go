@@ -44,7 +44,7 @@ func TestChartLifecycle(t *testing.T) {
 		Namespace: "giantswarm",
 		Release:   "tb-release",
 		//TODO: fix this static VersionBundleVersion
-		VersionBundleVersion: "0.2.0",
+		VersionBundleVersion: "0.1.0",
 	}
 
 	config := chartconfig.Config{
