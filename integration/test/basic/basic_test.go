@@ -48,7 +48,7 @@ func TestChartLifecycle(t *testing.T) {
 	}
 
 	config := chartconfig.Config{
-		ChartValuesConfig: chartValuesConfig,
+		ChartValuesConfig: &chartValuesConfig,
 	}
 
 	cc, err := chartconfig.NewChartConfig(config)
