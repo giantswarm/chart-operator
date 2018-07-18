@@ -129,7 +129,7 @@ func createGsHelmClient() (*helmclient.Client, error) {
 	return gsHelmClient, nil
 }
 
-func updateChartOperatorResource(ccv ChartConfigValues, helmClient *helmclient.Client, releaseName string) error {
+func updateChartOperatorResource(ccv chartconfig.ChartConfigValues, helmClient *helmclient.Client, releaseName string) error {
 	l, err := micrologger.New(micrologger.Config{})
 	if err != nil {
 		return microerror.Mask(err)
