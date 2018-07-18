@@ -158,7 +158,7 @@
   branch = "add-chart-config"
   name = "github.com/giantswarm/e2etemplates"
   packages = ["pkg/e2etemplates"]
-  revision = "bd98a1fd8e12ead59c8ef7cea3f2f751a6b15413"
+  revision = "5171f5413018e437feff5113ee64254a80e41f71"
 
 [[projects]]
   branch = "master"

@@ -16,17 +16,25 @@ import (
 )
 
 type ChartConfigValues struct {
-	Channel                  string
-	ConfigMapName            string
-	ConfigMapNamespace       string
-	ConfigMapResourceVersion string
-	Name                     string
-	Namespace                string
-	Release                  string
-	SecretName               string
-	SecretNamespace          string
-	SecretResourceVersion    string
-	VersionBundleVersion     string
+	Channel              string
+	ConfigMap            ConfigMap
+	Name                 string
+	Namespace            string
+	Release              string
+	Secret               Secret
+	VersionBundleVersion string
+}
+
+type ConfigMap struct {
+	Name            string
+	Namespace       string
+	ResourceVersion string
+}
+
+type Secret struct {
+	Name            string
+	Namespace       string
+	ResourceVersion string
 }
 
 func (ccv ChartConfigValues) ExecuteChartValuesTemplate() (string, error) {
