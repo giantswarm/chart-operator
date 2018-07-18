@@ -38,7 +38,7 @@ func TestChartLifecycle(t *testing.T) {
 		},
 	}
 
-	chartValuesConfig := chartconfig.ChartValuesConfig{
+	chartConfigValues := chartconfig.ChartConfigValues{
 		Channel:   "5-5-beta",
 		Name:      "tb-chart",
 		Namespace: "giantswarm",
@@ -58,16 +58,6 @@ func TestChartLifecycle(t *testing.T) {
 		t.Fatalf("could not create giantswarm helmClient %v", err)
 	}
 
-	config := chartconfig.Config{
-		Logger:            l,
-		ChartValuesConfig: &chartValuesConfig,
-	}
-
-	cc, err := chartconfig.NewChartConfig(config)
-	if err != nil {
-		t.Fatalf("could not create chartconfig %v", err)
-	}
-
 	err = chart.Push(f, charts)
 	if err != nil {
 		t.Fatalf("could not push inital charts to cnr %v", err)
@@ -75,7 +65,7 @@ func TestChartLifecycle(t *testing.T) {
 
 	// Test Creation
 	l.Log("level", "debug", "message", fmt.Sprintf("creating %s", cr))
-	chartValues, err := cc.ExecuteChartValuesTemplate()
+	chartValues, err := chartConfigValues.ExecuteChartValuesTemplate()
 	if err != nil {
 		t.Fatalf("could not template chart values %q %v", chartValues, err)
 	}
@@ -93,7 +83,7 @@ func TestChartLifecycle(t *testing.T) {
 
 	// Test Update
 	l.Log("level", "debug", "message", fmt.Sprintf("updating %s", cr))
-	err = updateChartOperatorResource(cc, helmClient, cr)
+	err = updateChartOperatorResource(chartConfigValues, helmClient, cr)
 	if err != nil {
 		t.Fatalf("could not update %q %v", cr, err)
 	}
@@ -139,7 +129,7 @@ func createGsHelmClient() (*helmclient.Client, error) {
 	return gsHelmClient, nil
 }
 
-func updateChartOperatorResource(cc *chartconfig.ChartConfig, helmClient *helmclient.Client, releaseName string) error {
+func updateChartOperatorResource(ccv ChartConfigValues, helmClient *helmclient.Client, releaseName string) error {
 	l, err := micrologger.New(micrologger.Config{})
 	if err != nil {
 		return microerror.Mask(err)
@@ -162,11 +152,9 @@ func updateChartOperatorResource(cc *chartconfig.ChartConfig, helmClient *helmcl
 	if err != nil {
 		return microerror.Mask(err)
 	}
-	chartValuesConfig := cc.ChartValuesConfig()
-	chartValuesConfig.Channel = "5-6-beta"
-	cc.SetChartValuesConfig(chartValuesConfig)
+	ccv.Channel = "5-6-beta"
 
-	chartValues, err := cc.ExecuteChartValuesTemplate()
+	chartValues, err := ccv.ExecuteChartValuesTemplate()
 	if err != nil {
 		return microerror.Mask(err)
 	}
