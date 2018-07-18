@@ -72,7 +72,7 @@ func (ccv ChartConfigValues) UpdateChartOperatorResource(logger micrologger.Logg
 		return microerror.Mask(err)
 	}
 
-	helmClient.UpdateReleaseFromTarball(releaseName, tarballPath,
+	err = helmClient.UpdateReleaseFromTarball(releaseName, tarballPath,
 		helm.UpdateValueOverrides([]byte(chartValues)))
 	if err != nil {
 		return microerror.Mask(err)
