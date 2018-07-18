@@ -19,7 +19,6 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/spf13/viper"
-	"github.com/tylerb/graceful"
 
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/microkit/tls"
@@ -46,6 +45,10 @@ type Config struct {
 	HandlerWrapper func(h http.Handler) http.Handler
 	// ListenAddress is the address the server is listening on.
 	ListenAddress string
+	// ListenMetricsAddress is an optional address where the server will expose the
+	// `/metrics` endpoint for prometheus scraping. When left blank the `/metrics`
+	// endpoint will be available at the ListenAddress.
+	ListenMetricsAddress string
 	// LogAccess decides whether to emit logs for each requested route.
 	LogAccess bool
 	// RequestFuncs is the server's configured list of request functions. These
@@ -107,16 +110,33 @@ func New(config Config) (Server, error) {
 		return nil, microerror.Maskf(invalidConfigError, err.Error())
 	}
 
+	var listenMetricsURL *url.URL
+	if config.ListenMetricsAddress != "" {
+		listenMetricsURL, err = url.Parse(config.ListenMetricsAddress)
+		if err != nil {
+			return nil, microerror.Maskf(invalidConfigError, err.Error())
+		}
+
+		// Check if the user supplied a https scheme for the optional metrics endpoint
+		// listener. Let them know that tls configuration for this endpoint is not yet
+		// implemented.
+		if listenMetricsURL.Scheme == "https" {
+			return nil, microerror.Maskf(invalidConfigError, "The optional metrics listener currently does not support tls configuration. Listening on https is thus disabled.")
+		}
+	}
+
 	newServer := &server{
 		errorEncoder: config.ErrorEncoder,
 		logger:       config.Logger,
 		router:       config.Router,
 
-		bootOnce:     sync.Once{},
-		config:       config,
-		httpServer:   nil,
-		listenURL:    listenURL,
-		shutdownOnce: sync.Once{},
+		bootOnce:          sync.Once{},
+		config:            config,
+		httpServer:        nil,
+		metricsHTTPServer: nil,
+		listenURL:         listenURL,
+		listenMetricsUrl:  listenMetricsURL,
+		shutdownOnce:      sync.Once{},
 
 		endpoints:      config.Endpoints,
 		handlerWrapper: config.HandlerWrapper,
@@ -141,11 +161,13 @@ type server struct {
 	router       *mux.Router
 
 	// Internals.
-	bootOnce     sync.Once
-	config       Config
-	httpServer   *graceful.Server
-	listenURL    *url.URL
-	shutdownOnce sync.Once
+	bootOnce          sync.Once
+	config            Config
+	httpServer        *http.Server
+	metricsHTTPServer *http.Server
+	listenURL         *url.URL
+	listenMetricsUrl  *url.URL
+	shutdownOnce      sync.Once
 
 	// Settings.
 	endpoints      []Endpoint
@@ -230,18 +252,40 @@ func (s *server) Boot() {
 			}(e)
 		}
 
-		// Register prometheus metrics endpoint.
-		s.router.Path("/metrics").Handler(promhttp.Handler())
+		// If the user provided a specific url for the metrics endpoint:
+		if s.listenMetricsUrl != nil {
+			// Register prometheus metrics endpoint to a different server as the rest
+			// of the endpoints.
+			go func() {
+				s.logger.Log("level", "debug", "message", fmt.Sprintf("running metrics server at %s", s.listenMetricsUrl.String()))
+
+				metricsRouter := mux.NewRouter()
+				metricsRouter.Path("/metrics").Handler(promhttp.Handler())
+
+				s.metricsHTTPServer = &http.Server{
+					Addr:    s.listenMetricsUrl.Host,
+					Handler: metricsRouter,
+				}
+
+				err := s.metricsHTTPServer.ListenAndServe()
+				if IsServerClosed(err) {
+					// We get a closed error in case the server is shutting down. We expect
+					// this at times so we just fall through here.
+				} else if err != nil {
+					panic(err)
+				}
+			}()
+		} else {
+			// Register prometheus metrics endpoint to the same server as the rest of
+			// the endpoints.
+			s.router.Path("/metrics").Handler(promhttp.Handler())
+		}
 
 		// Register the router which has all of the configured custom endpoints
 		// registered.
-		s.httpServer = &graceful.Server{
-			NoSignalHandling: true,
-			Server: &http.Server{
-				Addr:    s.listenURL.Host,
-				Handler: s.router,
-			},
-			Timeout: 3 * time.Second,
+		s.httpServer = &http.Server{
+			Addr:    s.listenURL.Host,
+			Handler: s.router,
 		}
 
 		go func() {
@@ -252,15 +296,15 @@ func (s *server) Boot() {
 				if err != nil {
 					panic(err)
 				}
-				err = s.httpServer.ListenAndServeTLSConfig(tlsConfig)
-				if err != nil {
-					panic(err)
-				}
-			} else {
-				err := s.httpServer.ListenAndServe()
-				if err != nil {
-					panic(err)
-				}
+				s.httpServer.TLSConfig = tlsConfig
+			}
+
+			err := s.httpServer.ListenAndServe()
+			if IsServerClosed(err) {
+				// We get a closed error in case the server is shutting down. We expect
+				// this at times so we just fall through here.
+			} else if err != nil {
+				panic(err)
 			}
 		}()
 	})
@@ -272,18 +316,19 @@ func (s *server) Config() Config {
 
 func (s *server) Shutdown() {
 	s.shutdownOnce.Do(func() {
-		var wg sync.WaitGroup
-
-		wg.Add(1)
+		// Stop the HTTP server gracefully and wait some time for open connections
+		// to be closed. Then force it to be stopped.
 		go func() {
-			// Stop the HTTP server gracefully and wait some time for open connections
-			// to be closed. Then force it to be stopped.
-			s.httpServer.Stop(s.httpServer.Timeout)
-			<-s.httpServer.StopChan()
-			wg.Done()
+			err := s.httpServer.Shutdown(context.Background())
+			if err != nil {
+				s.logger.Log("level", "error", "message", "shutting down server failed", "stack", fmt.Sprintf("%#v", err))
+			}
 		}()
-
-		wg.Wait()
+		<-time.After(3 * time.Second)
+		err := s.httpServer.Close()
+		if err != nil {
+			s.logger.Log("level", "error", "message", "closing server failed", "stack", fmt.Sprintf("%#v", err))
+		}
 	})
 }
 

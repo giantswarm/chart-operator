@@ -91,17 +91,9 @@ workflows:
     jobs:
       - build
 
-      - hold:
-          type: approval
-          filters:
-            branches:
-              ignore: master
-          requires:
-          - build
-
       - e2eTestBasicPR:
           requires:
-          - hold
+          - build
 
       - e2eTestBasicMaster:
           filters:
@@ -112,7 +104,7 @@ workflows:
 
       - e2eTestChartValuesPR:
           requires:
-          - hold
+          - build
 
       - e2eTestChartValuesMaster:
           filters:

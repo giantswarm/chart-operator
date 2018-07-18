@@ -139,32 +139,19 @@ func NewChart(config ChartConfig) (*Chart, error) {
 		}
 	}
 
-	var resourceRouter *controller.ResourceRouter
+	var chartController *controller.Controller
 	{
-		c := controller.ResourceRouterConfig{
-			Logger: config.Logger,
+		c := controller.Config{
+			CRD:       v1alpha1.NewChartConfigCRD(),
+			CRDClient: crdClient,
+			Informer:  newInformer,
+			Logger:    config.Logger,
 			ResourceSets: []*controller.ResourceSet{
 				resourceSetV1,
 				resourceSetV2,
 				resourceSetV3,
 			},
-		}
-
-		resourceRouter, err = controller.NewResourceRouter(c)
-		if err != nil {
-			return nil, microerror.Mask(err)
-		}
-	}
-
-	var chartController *controller.Controller
-	{
-		c := controller.Config{
-			CRD:            v1alpha1.NewChartConfigCRD(),
-			CRDClient:      crdClient,
-			Informer:       newInformer,
-			Logger:         config.Logger,
-			ResourceRouter: resourceRouter,
-			RESTClient:     config.G8sClient.CoreV1alpha1().RESTClient(),
+			RESTClient: config.G8sClient.CoreV1alpha1().RESTClient(),
 
 			Name: config.ProjectName + chartControllerSuffix,
 		}
