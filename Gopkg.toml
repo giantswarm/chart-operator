@@ -68,7 +68,7 @@ required = [
   name = "github.com/giantswarm/e2e-harness"
 
   [[constraint]]
-    branch = "add-chart-config"
+    branch = "master"
     name = "github.com/giantswarm/e2etemplates"
 
 [[constraint]]
