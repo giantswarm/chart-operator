@@ -2,9 +2,17 @@ package chartconfig
 
 import (
 	"bytes"
+	"fmt"
 	"html/template"
 
+	"k8s.io/helm/pkg/helm"
+
+	"github.com/giantswarm/apprclient"
 	"github.com/giantswarm/e2etemplates/pkg/e2etemplates"
+	"github.com/giantswarm/helmclient"
+	"github.com/giantswarm/microerror"
+	"github.com/giantswarm/micrologger"
+	"github.com/spf13/afero"
 )
 
 type ChartConfigValues struct {
@@ -30,4 +38,37 @@ func (ccv ChartConfigValues) ExecuteChartValuesTemplate() (string, error) {
 	}
 
 	return buf.String(), nil
+}
+
+func (ccv ChartConfigValues) UpdateChartOperatorResource(logger micrologger.Logger, helmClient *helmclient.Client, releaseName string) error {
+	c := apprclient.Config{
+		Fs:     afero.NewOsFs(),
+		Logger: logger,
+
+		Address:      "https://quay.io",
+		Organization: "giantswarm",
+	}
+
+	a, err := apprclient.New(c)
+	if err != nil {
+		return microerror.Mask(err)
+	}
+
+	tarballPath, err := a.PullChartTarball(fmt.Sprintf("%s-chart", releaseName), "stable")
+	if err != nil {
+		return microerror.Mask(err)
+	}
+
+	chartValues, err := ccv.ExecuteChartValuesTemplate()
+	if err != nil {
+		return microerror.Mask(err)
+	}
+
+	helmClient.UpdateReleaseFromTarball(releaseName, tarballPath,
+		helm.UpdateValueOverrides([]byte(chartValues)))
+	if err != nil {
+		return microerror.Mask(err)
+	}
+
+	return nil
 }
