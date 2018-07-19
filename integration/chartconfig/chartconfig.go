@@ -7,14 +7,13 @@ import (
 	"fmt"
 	"html/template"
 
-	"k8s.io/helm/pkg/helm"
-
 	"github.com/giantswarm/apprclient"
 	"github.com/giantswarm/e2etemplates/pkg/e2etemplates"
 	"github.com/giantswarm/helmclient"
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/micrologger"
 	"github.com/spf13/afero"
+	"k8s.io/helm/pkg/helm"
 )
 
 type ChartConfigValues struct {
@@ -74,8 +73,7 @@ func (ccv ChartConfigValues) UpdateChartOperatorResource(logger micrologger.Logg
 		return microerror.Mask(err)
 	}
 
-	err = helmClient.UpdateReleaseFromTarball(releaseName, tarballPath,
-		helm.UpdateValueOverrides([]byte(chartValues)))
+	err = helmClient.UpdateReleaseFromTarball(releaseName, tarballPath, helm.UpdateValueOverrides([]byte(chartValues)))
 	if err != nil {
 		return microerror.Mask(err)
 	}
