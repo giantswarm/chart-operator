@@ -98,7 +98,7 @@ func installCNR(f *framework.Host, helmClient *helmclient.Client) error {
 		return microerror.Mask(err)
 	}
 
-	tarball, err := a.PullChartTarball("cnr-server-chart", "stable")
+	tarball, err := a.PullChartTarballFromChannel("cnr-server-chart", "stable")
 	if err != nil {
 		return microerror.Mask(err)
 	}

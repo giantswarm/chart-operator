@@ -140,10 +140,10 @@
   revision = "6cb2b75722069008d2a01e29be897236224c9f9f"
 
 [[projects]]
-  branch = "master"
+  branch = "add-pull-from-channel"
   name = "github.com/giantswarm/apprclient"
   packages = ["."]
-  revision = "32a7099fbb5b6af28013d7cce3918a6aa3fb2e8d"
+  revision = "0c39a509f6a9b14e05097ec8b5074f3916f4eaab"
 
 [[projects]]
   branch = "master"
@@ -1199,6 +1199,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "8b7f5c724c0eeaadd44076215c5afe698807d33656c8377b54c12a479887c187"
+  inputs-digest = "4d704015b1812594d255ce47fcf8ab0ea55c933f72ff4d187871abe58cca2809"
   solver-name = "gps-cdcl"
   solver-version = 1
