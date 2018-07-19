@@ -28,7 +28,7 @@ func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange inte
 		releaseName := chartState.ReleaseName
 		channel := chartState.ChannelName
 
-		tarballPath, err := r.apprClient.PullChartTarball(name, channel)
+		tarballPath, err := r.apprClient.PullChartTarballFromChannel(name, channel)
 		if err != nil {
 			return microerror.Mask(err)
 		}

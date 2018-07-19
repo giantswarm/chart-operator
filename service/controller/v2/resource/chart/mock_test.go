@@ -20,7 +20,7 @@ func (a *apprMock) GetReleaseVersion(name, channel string) (string, error) {
 	return a.defaultReleaseVersion, nil
 }
 
-func (a *apprMock) PullChartTarball(name, channel string) (string, error) {
+func (a *apprMock) PullChartTarballFromChannel(name, channel string) (string, error) {
 	return "", nil
 }
 

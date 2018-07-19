@@ -134,7 +134,7 @@ func updateChartOperatorResource(helmClient *helmclient.Client, releaseName stri
 		return microerror.Mask(err)
 	}
 
-	tarballPath, err := a.PullChartTarball(fmt.Sprintf("%s-chart", releaseName), "stable")
+	tarballPath, err := a.PullChartTarballFromChannel(fmt.Sprintf("%s-chart", releaseName), "stable")
 	if err != nil {
 		return microerror.Mask(err)
 	}

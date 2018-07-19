@@ -13,7 +13,8 @@ const (
 // Interface describes the methods provided by the appr client.
 type Interface interface {
 	GetReleaseVersion(name, channel string) (string, error)
-	PullChartTarball(name, channel string) (string, error)
+	PullChartTarball(name, release string) (string, error)
+	PullChartTarballFromChannel(name, channel string) (string, error)
 }
 
 // Channel represents a CNR channel.
