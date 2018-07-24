@@ -38,9 +38,9 @@ func (r *Resource) GetDesiredState(ctx context.Context, obj interface{}) (interf
 	}
 
 	chartState := &ChartState{
+		ChannelName:    key.ChannelName(customObject),
 		ChartName:      key.ChartName(customObject),
 		ChartValues:    chartValues,
-		ChannelName:    key.ChannelName(customObject),
 		ReleaseName:    key.ReleaseName(customObject),
 		ReleaseVersion: releaseVersion,
 	}
