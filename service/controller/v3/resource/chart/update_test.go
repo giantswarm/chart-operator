@@ -120,8 +120,6 @@ func Test_Resource_Chart_newUpdateChange(t *testing.T) {
 				ChartValues: map[string]interface{}{
 					"key": "value",
 				},
-				// ReleaseStatus is set but is not compared.
-				ReleaseStatus:  "DEPLOYED",
 				ReleaseVersion: "release-version",
 			},
 			desiredState: &ChartState{
@@ -142,8 +140,6 @@ func Test_Resource_Chart_newUpdateChange(t *testing.T) {
 				ChartValues: map[string]interface{}{
 					"key": "value",
 				},
-				// ReleaseStatus is set but is not compared.
-				ReleaseStatus:  "DEPLOYED",
 				ReleaseVersion: "release-version",
 			},
 			desiredState: &ChartState{
