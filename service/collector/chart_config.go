@@ -9,20 +9,18 @@ import (
 )
 
 const (
-	gaugeValue          float64 = 1
-	chartNameLabel              = "chart_name"
-	channelNameLabel            = "channel_name"
-	releaseNameLabel            = "release_name"
-	releaseStatusLabel          = "release_status"
-	releaseVersionLabel         = "release_version"
+	gaugeValue         float64 = 1
+	chartNameLabel             = "chart_name"
+	channelNameLabel           = "channel_name"
+	releaseNameLabel           = "release_name"
+	releaseStatusLabel         = "release_status"
 )
 
 type chartState struct {
-	chartName      string
-	channelName    string
-	releaseName    string
-	releaseStatus  string
-	releaseVersion string
+	chartName     string
+	channelName   string
+	releaseName   string
+	releaseStatus string
 }
 
 var (
