@@ -5,7 +5,7 @@ import (
 
 	"github.com/giantswarm/microerror"
 	"github.com/prometheus/client_golang/prometheus"
-	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 const (
@@ -38,7 +38,7 @@ var (
 )
 
 func (c *Collector) collectChartConfigStatus(ch chan<- prometheus.Metric) {
-	c.logger.Log("level", "debug", "message", "collecting metrics for vpcs")
+	c.logger.Log("level", "debug", "message", "collecting metrics for ChartConfigs")
 
 	chartConfigs, err := c.getChartConfigs()
 	if err != nil {
@@ -62,8 +62,7 @@ func (c *Collector) collectChartConfigStatus(ch chan<- prometheus.Metric) {
 func (c *Collector) getChartConfigs() ([]*chartState, error) {
 	r, err := c.g8sClient.CoreV1alpha1().
 		ChartConfigs("giantswarm").
-		List(v1.ListOptions{})
-
+		List(metav1.ListOptions{})
 	if err != nil {
 		return nil, microerror.Mask(err)
 	}
