@@ -271,7 +271,7 @@ func (c *Client) doFile(req *http.Request) (string, error) {
 		if err != nil {
 			return "", microerror.Mask(err)
 		}
-		return "", microerror.Maskf(invalidStatusCodeError, fmt.Sprintf("Got StatusCode %d with body %s", resp.StatusCode, buf.String()))
+		return "", microerror.Maskf(invalidStatusCodeError, fmt.Sprintf("got StatusCode %d with body %s", resp.StatusCode, buf.String()))
 	}
 
 	tmpfile, err := afero.TempFile(c.fs, "", "chart-tarball")
