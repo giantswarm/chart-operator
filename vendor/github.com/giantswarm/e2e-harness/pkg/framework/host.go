@@ -15,6 +15,7 @@ import (
 	"github.com/giantswarm/apiextensions/pkg/apis/provider/v1alpha1"
 	"github.com/giantswarm/apiextensions/pkg/clientset/versioned"
 	"github.com/giantswarm/microerror"
+	"github.com/giantswarm/micrologger"
 	"k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
@@ -25,34 +26,45 @@ import (
 	"github.com/giantswarm/e2e-harness/pkg/harness"
 )
 
-// PatchSpec is a generic patch type to update objects with JSONPatchType operations.
-type PatchSpec struct {
-	Op    string      `json:"op"`
-	Path  string      `json:"path"`
-	Value interface{} `json:"value"`
-}
-
 type HostConfig struct {
 	Backoff *backoff.ExponentialBackOff
+	Logger  micrologger.Logger
+
+	ClusterID  string
+	VaultToken string
 }
 
 type Host struct {
-	backoff    *backoff.ExponentialBackOff
+	backoff *backoff.ExponentialBackOff
+	logger  micrologger.Logger
+
 	g8sClient  *versioned.Clientset
 	k8sClient  kubernetes.Interface
 	restConfig *rest.Config
+
+	clusterID  string
+	vaultToken string
 }
 
 func NewHost(c HostConfig) (*Host, error) {
 	if c.Backoff == nil {
-		c.Backoff = newCustomExponentialBackoff()
+		c.Backoff = NewExponentialBackoff(ShortMaxWait, backoff.DefaultMaxInterval)
+	}
+	if c.Logger == nil {
+		return nil, microerror.Maskf(invalidConfigError, "%T.Logger must not be empty", c)
+	}
+
+	if c.ClusterID == "" {
+		return nil, microerror.Maskf(invalidConfigError, "%T.ClusterID must not be empty", c)
+	}
+	if c.VaultToken == "" {
+		return nil, microerror.Maskf(invalidConfigError, "%T.VaultToken must not be empty", c)
 	}
 
 	restConfig, err := clientcmd.BuildConfigFromFlags("", harness.DefaultKubeConfig)
 	if err != nil {
 		return nil, microerror.Mask(err)
 	}
-
 	g8sClient, err := versioned.NewForConfig(restConfig)
 	if err != nil {
 		return nil, microerror.Mask(err)
@@ -63,10 +75,15 @@ func NewHost(c HostConfig) (*Host, error) {
 	}
 
 	h := &Host{
-		backoff:    c.Backoff,
+		backoff: c.Backoff,
+		logger:  c.Logger,
+
 		g8sClient:  g8sClient,
 		k8sClient:  k8sClient,
 		restConfig: restConfig,
+
+		clusterID:  c.ClusterID,
+		vaultToken: c.VaultToken,
 	}
 
 	return h, nil
@@ -123,7 +140,7 @@ func (h *Host) CreateNamespace(ns string) error {
 		return microerror.Mask(err)
 	}
 
-	activeNamespace := func() error {
+	o := func() error {
 		ns, err := h.k8sClient.CoreV1().
 			Namespaces().
 			Get(ns, metav1.GetOptions{})
@@ -140,11 +157,17 @@ func (h *Host) CreateNamespace(ns string) error {
 		return nil
 	}
 
-	return waitFor(activeNamespace)
+	n := newNotify("namespace active")
+	err = backoff.RetryNotify(o, h.backoff, n)
+	if err != nil {
+		return microerror.Mask(err)
+	}
+
+	return nil
 }
 
 func (h *Host) DeleteGuestCluster(name, cr, logEntry string) error {
-	if err := runCmd(fmt.Sprintf("kubectl delete %s ${CLUSTER_NAME}", cr)); err != nil {
+	if err := runCmd(fmt.Sprintf("kubectl delete %s %s", cr, h.clusterID)); err != nil {
 		return microerror.Mask(err)
 	}
 
@@ -235,8 +258,9 @@ func (h *Host) InstallResource(name, values, version string, conditions ...func(
 		return microerror.Mask(err)
 	}
 
-	for _, c := range conditions {
-		err = waitFor(c)
+	for i, c := range conditions {
+		n := newNotify(fmt.Sprintf("condition %d active", i))
+		err = backoff.RetryNotify(c, h.backoff, n)
 		if err != nil {
 			return microerror.Mask(err)
 		}
@@ -247,7 +271,7 @@ func (h *Host) InstallResource(name, values, version string, conditions ...func(
 
 func (h *Host) InstallCertResource() error {
 	{
-		log.Println("level", "debug", "message", "installing cert resource chart")
+		h.logger.Log("level", "debug", "message", "installing cert resource chart")
 
 		o := func() error {
 			// NOTE we ignore errors here because we cannot get really useful error
@@ -255,7 +279,8 @@ func (h *Host) InstallCertResource() error {
 			// the helm client lib. Then error handling will be better.
 			HelmCmd("delete --purge cert-config-e2e")
 
-			err := HelmCmd("registry install quay.io/giantswarm/apiextensions-cert-config-e2e-chart:stable -- -n cert-config-e2e --set commonDomain=${COMMON_DOMAIN} --set clusterName=${CLUSTER_NAME}")
+			cmdStr := fmt.Sprintf("registry install quay.io/giantswarm/apiextensions-cert-config-e2e-chart:stable -- -n cert-config-e2e --set commonDomain=${COMMON_DOMAIN} --set clusterName=%s", h.clusterID)
+			err := HelmCmd(cmdStr)
 			if err != nil {
 				return microerror.Mask(err)
 			}
@@ -269,14 +294,14 @@ func (h *Host) InstallCertResource() error {
 			return microerror.Mask(err)
 		}
 
-		log.Println("level", "debug", "message", "installed cert resource chart")
+		h.logger.Log("level", "debug", "message", "installed cert resource chart")
 	}
 
 	{
-		log.Println("level", "debug", "message", "waiting for k8s secret to be there")
+		h.logger.Log("level", "debug", "message", "waiting for k8s secret to be there")
 
 		o := func() error {
-			n := fmt.Sprintf("%s-api", os.Getenv("CLUSTER_NAME"))
+			n := fmt.Sprintf("%s-api", h.clusterID)
 			_, err := h.k8sClient.CoreV1().Secrets("default").Get(n, metav1.GetOptions{})
 			if err != nil {
 				// TODO remove this when not needed for debugging anymore
@@ -288,7 +313,7 @@ func (h *Host) InstallCertResource() error {
 		}
 		b := NewExponentialBackoff(ShortMaxWait, ShortMaxInterval)
 		n := func(err error, delay time.Duration) {
-			log.Println("level", "debug", "message", err.Error())
+			h.logger.Log("level", "debug", "message", err.Error())
 		}
 
 		err := backoff.RetryNotify(o, b, n)
@@ -296,7 +321,7 @@ func (h *Host) InstallCertResource() error {
 			return microerror.Mask(err)
 		}
 
-		log.Println("level", "debug", "message", "k8s secret is there")
+		h.logger.Log("level", "debug", "message", "k8s secret is there")
 	}
 
 	return nil
@@ -353,7 +378,7 @@ func (h *Host) Teardown() {
 func (h *Host) WaitForPodLog(namespace, needle, podName string) error {
 	needle = os.ExpandEnv(needle)
 
-	timeout := time.After(defaultTimeout * time.Second)
+	timeout := time.After(LongMaxWait)
 
 	req := h.k8sClient.CoreV1().
 		RESTClient().
@@ -407,7 +432,7 @@ func (h *Host) installVault() error {
 		// the helm client lib. Then error handling will be better.
 		HelmCmd("delete --purge vault")
 
-		err := HelmCmd("registry install quay.io/giantswarm/vaultlab-chart:stable -- --set vaultToken=${VAULT_TOKEN} -n vault")
+		err := HelmCmd(fmt.Sprintf("registry install quay.io/giantswarm/vaultlab-chart:stable -- --set vaultToken=%s -n vault", h.vaultToken))
 		if err != nil {
 			return microerror.Mask(err)
 		}
@@ -420,7 +445,14 @@ func (h *Host) installVault() error {
 		return microerror.Mask(err)
 	}
 
-	return waitFor(h.runningPod("default", "app=vault"))
+	o := h.runningPod("default", "app=vault")
+	n := newNotify("vault pod running")
+	err = backoff.RetryNotify(o, h.backoff, n)
+	if err != nil {
+		return microerror.Mask(err)
+	}
+
+	return nil
 }
 
 func (h *Host) runningPod(namespace, labelSelector string) func() error {

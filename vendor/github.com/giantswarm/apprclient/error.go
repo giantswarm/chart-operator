@@ -9,6 +9,13 @@ func IsInvalidConfig(err error) bool {
 	return microerror.Cause(err) == invalidConfigError
 }
 
+var invalidStatusCodeError = microerror.New("invalid statuscode")
+
+// IsInvalidStatusCode asserts invalidStatusCodeError.
+func IsInvalidStatusCode(err error) bool {
+	return microerror.Cause(err) == invalidStatusCodeError
+}
+
 var unknownStatusError = microerror.New("unknown status")
 
 // IsUnknownStatus asserts unknownStatusError.
