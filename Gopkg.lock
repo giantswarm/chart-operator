@@ -158,7 +158,7 @@
   branch = "master"
   name = "github.com/giantswarm/errors"
   packages = ["guest"]
-  revision = "823a4ad2876212aba33bcf7ad831f93baffcbdbb"
+  revision = "9e78ca0e32a019481beb21ae3e158d1bb150730d"
 
 [[projects]]
   branch = "master"
