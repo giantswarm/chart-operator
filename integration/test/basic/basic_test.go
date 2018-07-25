@@ -39,10 +39,6 @@ func TestChartLifecycle(t *testing.T) {
 	}
 
 	// Setup
-	l, err := micrologger.New(micrologger.Config{})
-	if err != nil {
-		t.Fatalf("could not create logger %v", err)
-	}
 
 	gsHelmClient, err := createGsHelmClient()
 	if err != nil {

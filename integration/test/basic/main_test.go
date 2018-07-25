@@ -16,6 +16,7 @@ import (
 var (
 	f          *framework.Host
 	helmClient *helmclient.Client
+	l          micrologger.Logger
 	r          *resource.Resource
 )
 
@@ -24,33 +25,37 @@ var (
 func TestMain(m *testing.M) {
 	var err error
 
-	var l micrologger.Logger
 	{
-		l, err = micrologger.New(micrologger.Config{})
+		c := micrologger.Config{}
+		l, err = micrologger.New(c)
 		if err != nil {
 			panic(err.Error())
 		}
 	}
 
-	c := framework.HostConfig{
-		Logger:     l,
-		ClusterID:  "someval",
-		VaultToken: "someval",
+	{
+		c := framework.HostConfig{
+			Logger:     l,
+			ClusterID:  "someval",
+			VaultToken: "someval",
+		}
+
+		f, err = framework.NewHost(c)
+		if err != nil {
+			panic(err.Error())
+		}
 	}
 
-	f, err = framework.NewHost(c)
-	if err != nil {
-		panic(err.Error())
-	}
-
-	helmConfig := helmclient.Config{
-		Logger:     l,
-		K8sClient:  f.K8sClient(),
-		RestConfig: f.RestConfig(),
-	}
-	helmClient, err = helmclient.New(helmConfig)
-	if err != nil {
-		panic(err.Error())
+	{
+		c := helmclient.Config{
+			Logger:     l,
+			K8sClient:  f.K8sClient(),
+			RestConfig: f.RestConfig(),
+		}
+		helmClient, err = helmclient.New(c)
+		if err != nil {
+			panic(err.Error())
+		}
 	}
 
 	resourceConfig := resource.ResourceConfig{
