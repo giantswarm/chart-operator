@@ -49,7 +49,7 @@ required = [
   name = "github.com/giantswarm/apiextensions"
 
 [[constraint]]
-  branch = "check-status"
+  branch = "master"
   name = "github.com/giantswarm/apprclient"
 
 [[constraint]]
