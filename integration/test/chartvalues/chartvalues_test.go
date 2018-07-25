@@ -7,7 +7,7 @@ import (
 	"testing"
 
 	"github.com/giantswarm/chart-operator/integration/chart"
-	"github.com/giantswarm/chart-operator/integration/templates"
+	"github.com/giantswarm/chart-operator/integration/chartconfig"
 )
 
 func TestChartValues(t *testing.T) {
@@ -22,6 +22,15 @@ func TestChartValues(t *testing.T) {
 		},
 	}
 
+	chartConfigValues := chartconfig.ChartConfigValues{
+		Channel:   "1-0-beta",
+		Name:      "tb-chart",
+		Namespace: "giantswarm",
+		Release:   "tb-release",
+		//TODO: fix this static VersionBundleVersion
+		VersionBundleVersion: "0.2.0",
+	}
+
 	err := chart.Push(f, charts)
 	if err != nil {
 		t.Fatalf("could not push inital charts to cnr %v", err)
@@ -29,7 +38,12 @@ func TestChartValues(t *testing.T) {
 
 	// Test Creation
 	l.Log("level", "debug", "message", fmt.Sprintf("creating %s", cr))
-	err = f.InstallResource(cr, templates.ChartOperatorResourceValues, ":stable")
+	chartValues, err := chartConfigValues.ExecuteChartValuesTemplate()
+	if err != nil {
+		t.Fatalf("could not template chart values %q %v", chartValues, err)
+	}
+
+	err = f.InstallResource(cr, chartValues, ":stable")
 	if err != nil {
 		t.Fatalf("could not install %q %v", cr, err)
 	}

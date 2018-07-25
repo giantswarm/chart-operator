@@ -6,17 +6,13 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/spf13/afero"
-	"k8s.io/helm/pkg/helm"
-
-	"github.com/giantswarm/apprclient"
 	"github.com/giantswarm/helmclient"
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/micrologger"
 
 	"github.com/giantswarm/chart-operator/integration/chart"
+	"github.com/giantswarm/chart-operator/integration/chartconfig"
 	"github.com/giantswarm/chart-operator/integration/release"
-	"github.com/giantswarm/chart-operator/integration/templates"
 )
 
 func TestChartLifecycle(t *testing.T) {
@@ -38,12 +34,16 @@ func TestChartLifecycle(t *testing.T) {
 		},
 	}
 
-	// Setup
-	l, err := micrologger.New(micrologger.Config{})
-	if err != nil {
-		t.Fatalf("could not create logger %v", err)
+	chartConfigValues := chartconfig.ChartConfigValues{
+		Channel:   "5-5-beta",
+		Name:      "tb-chart",
+		Namespace: "giantswarm",
+		Release:   "tb-release",
+		//TODO: fix this static VersionBundleVersion
+		VersionBundleVersion: "0.2.0",
 	}
 
+	// Setup
 	gsHelmClient, err := createGsHelmClient()
 	if err != nil {
 		t.Fatalf("could not create giantswarm helmClient %v", err)
@@ -56,7 +56,12 @@ func TestChartLifecycle(t *testing.T) {
 
 	// Test Creation
 	l.Log("level", "debug", "message", fmt.Sprintf("creating %s", cr))
-	err = f.InstallResource(cr, templates.ChartOperatorResourceValues, ":stable")
+	chartValues, err := chartConfigValues.ExecuteChartValuesTemplate()
+	if err != nil {
+		t.Fatalf("could not template chart values %q %v", chartValues, err)
+	}
+
+	err = f.InstallResource(cr, chartValues, ":stable")
 	if err != nil {
 		t.Fatalf("could not install %q %v", cr, err)
 	}
@@ -69,7 +74,8 @@ func TestChartLifecycle(t *testing.T) {
 
 	// Test Update
 	l.Log("level", "debug", "message", fmt.Sprintf("updating %s", cr))
-	err = updateChartOperatorResource(helmClient, cr)
+	chartConfigValues.Channel = "5-6-beta"
+	err = chartConfigValues.UpdateChartOperatorResource(l, helmClient, cr)
 	if err != nil {
 		t.Fatalf("could not update %q %v", cr, err)
 	}
@@ -113,37 +119,4 @@ func createGsHelmClient() (*helmclient.Client, error) {
 	}
 
 	return gsHelmClient, nil
-}
-
-func updateChartOperatorResource(helmClient *helmclient.Client, releaseName string) error {
-	l, err := micrologger.New(micrologger.Config{})
-	if err != nil {
-		return microerror.Mask(err)
-	}
-
-	c := apprclient.Config{
-		Fs:     afero.NewOsFs(),
-		Logger: l,
-
-		Address:      "https://quay.io",
-		Organization: "giantswarm",
-	}
-
-	a, err := apprclient.New(c)
-	if err != nil {
-		return microerror.Mask(err)
-	}
-
-	tarballPath, err := a.PullChartTarball(fmt.Sprintf("%s-chart", releaseName), "stable")
-	if err != nil {
-		return microerror.Mask(err)
-	}
-
-	helmClient.UpdateReleaseFromTarball(releaseName, tarballPath,
-		helm.UpdateValueOverrides([]byte(templates.UpdatedChartOperatorResourceValues)))
-	if err != nil {
-		return microerror.Mask(err)
-	}
-
-	return nil
 }
