@@ -35,11 +35,10 @@ func (r *Resource) GetCurrentState(ctx context.Context, obj interface{}) (interf
 	}
 
 	chartState := &ChartState{
-		ChartName:      key.ChartName(customObject),
 		ChannelName:    key.ChannelName(customObject),
-		ReleaseName:    releaseName,
+		ChartName:      key.ChartName(customObject),
 		ChartValues:    releaseContent.Values,
-		ReleaseStatus:  releaseContent.Status,
+		ReleaseName:    releaseName,
 		ReleaseVersion: releaseHistory.Version,
 	}
 
