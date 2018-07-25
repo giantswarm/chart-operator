@@ -24,6 +24,10 @@ func (a *apprMock) PullChartTarball(name, channel string) (string, error) {
 	return "", nil
 }
 
+func (a *apprMock) PullChartTarballFromRelease(name, release string) (string, error) {
+	return "", nil
+}
+
 type helmMock struct {
 	defaultReleaseContent *helmclient.ReleaseContent
 	defaultReleaseHistory *helmclient.ReleaseHistory

@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/giantswarm/e2e-harness/pkg/framework"
+	"github.com/giantswarm/e2e-harness/pkg/framework/resource"
 	"github.com/giantswarm/helmclient"
 	"github.com/giantswarm/micrologger"
 
@@ -15,6 +16,8 @@ import (
 var (
 	f          *framework.Host
 	helmClient *helmclient.Client
+	l          micrologger.Logger
+	r          *resource.Resource
 )
 
 // TestMain allows us to have common setup and teardown steps that are run
@@ -22,22 +25,45 @@ var (
 func TestMain(m *testing.M) {
 	var err error
 
-	f, err = framework.NewHost(framework.HostConfig{})
-	if err != nil {
-		panic(err.Error())
+	{
+		c := micrologger.Config{}
+		l, err = micrologger.New(c)
+		if err != nil {
+			panic(err.Error())
+		}
 	}
 
-	l, err := micrologger.New(micrologger.Config{})
-	if err != nil {
-		panic(err.Error())
+	{
+		c := framework.HostConfig{
+			Logger:     l,
+			ClusterID:  "someval",
+			VaultToken: "someval",
+		}
+
+		f, err = framework.NewHost(c)
+		if err != nil {
+			panic(err.Error())
+		}
 	}
 
-	c := helmclient.Config{
+	{
+		c := helmclient.Config{
+			Logger:     l,
+			K8sClient:  f.K8sClient(),
+			RestConfig: f.RestConfig(),
+		}
+		helmClient, err = helmclient.New(c)
+		if err != nil {
+			panic(err.Error())
+		}
+	}
+
+	resourceConfig := resource.ResourceConfig{
 		Logger:     l,
-		K8sClient:  f.K8sClient(),
-		RestConfig: f.RestConfig(),
+		HelmClient: helmClient,
+		Namespace:  "giantswarm",
 	}
-	helmClient, err = helmclient.New(c)
+	r, err = resource.New(resourceConfig)
 	if err != nil {
 		panic(err.Error())
 	}

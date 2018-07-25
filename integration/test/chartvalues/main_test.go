@@ -23,24 +23,37 @@ var (
 func TestMain(m *testing.M) {
 	var err error
 
-	f, err = framework.NewHost(framework.HostConfig{})
-	if err != nil {
-		panic(err.Error())
+	{
+		c := micrologger.Config{}
+		l, err = micrologger.New(c)
+		if err != nil {
+			panic(err.Error())
+		}
 	}
 
-	l, err = micrologger.New(micrologger.Config{})
-	if err != nil {
-		panic(err.Error())
+	{
+		c := framework.HostConfig{
+			Logger:     l,
+			ClusterID:  "someval",
+			VaultToken: "someval",
+		}
+
+		f, err = framework.NewHost(c)
+		if err != nil {
+			panic(err.Error())
+		}
 	}
 
-	c := helmclient.Config{
-		Logger:     l,
-		K8sClient:  f.K8sClient(),
-		RestConfig: f.RestConfig(),
-	}
-	helmClient, err = helmclient.New(c)
-	if err != nil {
-		panic(err.Error())
+	{
+		c := helmclient.Config{
+			Logger:     l,
+			K8sClient:  f.K8sClient(),
+			RestConfig: f.RestConfig(),
+		}
+		helmClient, err = helmclient.New(c)
+		if err != nil {
+			panic(err.Error())
+		}
 	}
 
 	setup.WrapTestMain(f, helmClient, m)

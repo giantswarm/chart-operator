@@ -60,7 +60,7 @@
     "digestset",
     "reference"
   ]
-  revision = "749f6afb4572201e3c37325d0ffedb6f32be8950"
+  revision = "0dae0957e5fe3156c265d22bef4cba9efbf388e2"
 
 [[projects]]
   name = "github.com/docker/docker"
@@ -137,22 +137,23 @@
     "pkg/clientset/versioned/typed/example/v1alpha1",
     "pkg/clientset/versioned/typed/provider/v1alpha1"
   ]
-  revision = "6cb2b75722069008d2a01e29be897236224c9f9f"
+  revision = "dbe7aa4771048f64040c9e6148a708c21226a1b2"
 
 [[projects]]
   branch = "master"
   name = "github.com/giantswarm/apprclient"
   packages = ["."]
-  revision = "32a7099fbb5b6af28013d7cce3918a6aa3fb2e8d"
+  revision = "96bf5b8e512b112c7fdfb0b5a7f0725ea7f4f9ce"
 
 [[projects]]
   branch = "master"
   name = "github.com/giantswarm/e2e-harness"
   packages = [
     "pkg/framework",
+    "pkg/framework/resource",
     "pkg/harness"
   ]
-  revision = "4e46ca575b4e7fded983e72facad8da587a21f1c"
+  revision = "ac8e0e2442b8a593ff8d3286056e80a4d31f4301"
 
 [[projects]]
   branch = "master"
@@ -164,7 +165,7 @@
   branch = "master"
   name = "github.com/giantswarm/helmclient"
   packages = ["."]
-  revision = "3914877fd51ce6d6fed716e770748abc8ab73501"
+  revision = "25e403a55384357736eadc54fe28d53c06d0fead"
 
 [[projects]]
   branch = "master"
@@ -241,7 +242,7 @@
     "controller/resource/retryresource",
     "informer"
   ]
-  revision = "e299b3f2585f09f50ce40debe7aab42345deb7e0"
+  revision = "b549537227f0b5de6525ed65361a4bc660ba90c4"
 
 [[projects]]
   branch = "master"
@@ -298,8 +299,8 @@
     "proto",
     "sortkeys"
   ]
-  revision = "7d68e886eac4f7e34d0d82241a6273d6c304c5cf"
-  version = "v1.1.0"
+  revision = "636bf0302bc95575d69441b25a2603156ffdddf1"
+  version = "v1.1.1"
 
 [[projects]]
   branch = "master"
@@ -329,7 +330,7 @@
   branch = "master"
   name = "github.com/google/go-github"
   packages = ["github"]
-  revision = "b14883f2b71b5f7dd303ed96d00bfaefeaeecea2"
+  revision = "b93adc1c7febaf7dad1bed965e5310a86bc2623e"
 
 [[projects]]
   branch = "master"
@@ -558,7 +559,7 @@
     "ed25519/internal/edwards25519",
     "ssh/terminal"
   ]
-  revision = "a49355c7e3f8fe157a85be2f77e6e269a0f89602"
+  revision = "c126467f60eb25f8f27e5a981f32a87e3965053f"
 
 [[projects]]
   branch = "master"
@@ -574,7 +575,7 @@
     "publicsuffix",
     "trace"
   ]
-  revision = "d0887baf81f4598189d4e12a37c6da86f0bba4d0"
+  revision = "3673e40ba22529d22c3fd7c93e97b0ce50fa7bdd"
 
 [[projects]]
   branch = "master"
@@ -583,7 +584,7 @@
     ".",
     "internal"
   ]
-  revision = "ef147856a6ddbb60760db74283d2424e98c87bff"
+  revision = "3d292e4d0cdc3a0113e6d207bb137145ef1de42f"
 
 [[projects]]
   branch = "master"
@@ -598,7 +599,7 @@
     "unix",
     "windows"
   ]
-  revision = "ac767d655b305d4e9612f5f6e33120b9176c4ad4"
+  revision = "e072cadbbdc8dd3d3ffa82b8b4b9304c261d9311"
 
 [[projects]]
   name = "golang.org/x/text"
@@ -651,7 +652,7 @@
   branch = "master"
   name = "google.golang.org/genproto"
   packages = ["googleapis/rpc/status"]
-  revision = "e92b116572682a5b432ddd840aeaba2a559eeff1"
+  revision = "02b4e95473316948020af0b7a4f0f22c73929b0e"
 
 [[projects]]
   name = "google.golang.org/grpc"
@@ -1023,7 +1024,7 @@
   branch = "master"
   name = "k8s.io/kube-openapi"
   packages = ["pkg/util/proto"]
-  revision = "0cf8f7e6ed1d2e3d47d02e3b6e559369af24d803"
+  revision = "d8ea2fe547a448256204cfc68dfee7b26c720acb"
 
 [[projects]]
   name = "k8s.io/kubernetes"
@@ -1188,7 +1189,7 @@
   branch = "master"
   name = "k8s.io/utils"
   packages = ["exec"]
-  revision = "ab9069044f32ba0c6da081bb46bb0b12e3862c21"
+  revision = "73fcbfe1475a06d24a3e101012024bdf9e884cbb"
 
 [[projects]]
   branch = "master"
@@ -1199,6 +1200,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "3802b4a6474dd3c52a877dbe22225e5c55e74caf297ab92a0d66b28464dbed6f"
+  inputs-digest = "0d0630c1f08b505c9ea11efe6ae0a364dffeea75c4318707a829e6ccade21258"
   solver-name = "gps-cdcl"
   solver-version = 1

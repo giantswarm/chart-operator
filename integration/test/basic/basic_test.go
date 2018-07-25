@@ -39,10 +39,6 @@ func TestChartLifecycle(t *testing.T) {
 	}
 
 	// Setup
-	l, err := micrologger.New(micrologger.Config{})
-	if err != nil {
-		t.Fatalf("could not create logger %v", err)
-	}
 
 	gsHelmClient, err := createGsHelmClient()
 	if err != nil {
@@ -56,7 +52,7 @@ func TestChartLifecycle(t *testing.T) {
 
 	// Test Creation
 	l.Log("level", "debug", "message", fmt.Sprintf("creating %s", cr))
-	err = f.InstallResource(cr, templates.ChartOperatorResourceValues, ":stable")
+	err = r.InstallResource(cr, templates.ChartOperatorResourceValues, "stable")
 	if err != nil {
 		t.Fatalf("could not install %q %v", cr, err)
 	}
