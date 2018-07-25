@@ -10,6 +10,7 @@ import (
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/micrologger"
 	"github.com/giantswarm/operatorkit/client/k8srestconfig"
+	"github.com/prometheus/client_golang/prometheus"
 	"github.com/spf13/afero"
 	"github.com/spf13/viper"
 	apiextensionsclient "k8s.io/apiextensions-apiserver/pkg/client/clientset/clientset"
@@ -17,6 +18,7 @@ import (
 	"k8s.io/client-go/rest"
 
 	"github.com/giantswarm/chart-operator/flag"
+	"github.com/giantswarm/chart-operator/service/collector"
 	"github.com/giantswarm/chart-operator/service/controller"
 	"github.com/giantswarm/chart-operator/service/healthz"
 )
@@ -42,8 +44,9 @@ type Service struct {
 	Version *version.Service
 
 	// Internals
-	bootOnce        sync.Once
-	chartController *controller.Chart
+	bootOnce         sync.Once
+	chartController  *controller.Chart
+	metricsCollector *collector.Collector
 }
 
 // New creates a new service with given configuration.
@@ -131,6 +134,19 @@ func New(config Config) (*Service, error) {
 		}
 	}
 
+	var metricsCollector *collector.Collector
+	{
+		c := collector.Config{
+			G8sClient: g8sClient,
+			Logger:    config.Logger,
+		}
+
+		metricsCollector, err = collector.New(c)
+		if err != nil {
+			return nil, microerror.Mask(err)
+		}
+	}
+
 	var healthzService *healthz.Service
 	{
 		c := healthz.Config{
@@ -185,8 +201,9 @@ func New(config Config) (*Service, error) {
 		Healthz: healthzService,
 		Version: versionService,
 
-		bootOnce:        sync.Once{},
-		chartController: chartController,
+		bootOnce:         sync.Once{},
+		chartController:  chartController,
+		metricsCollector: metricsCollector,
 	}
 
 	return s, nil
@@ -195,6 +212,8 @@ func New(config Config) (*Service, error) {
 // Boot starts top level service implementation.
 func (s *Service) Boot() {
 	s.bootOnce.Do(func() {
+		prometheus.MustRegister(s.metricsCollector)
+
 		// Start the controller.
 		go s.chartController.Boot()
 	})

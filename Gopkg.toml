@@ -93,6 +93,10 @@ required = [
   name = "github.com/giantswarm/versionbundle"
 
 [[constraint]]
+  branch = "master"
+  name = "github.com/prometheus/client_golang"
+
+[[constraint]]
   name = "github.com/spf13/viper"
   version = "1.0.0"
 
