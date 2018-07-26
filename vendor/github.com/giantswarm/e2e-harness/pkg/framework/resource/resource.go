@@ -3,15 +3,17 @@ package resource
 import (
 	"fmt"
 	"os"
+	"time"
 
 	"github.com/cenkalti/backoff"
 	"github.com/giantswarm/apprclient"
-	"github.com/giantswarm/e2e-harness/pkg/framework"
 	"github.com/giantswarm/helmclient"
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/micrologger"
 	"github.com/spf13/afero"
 	"k8s.io/helm/pkg/helm"
+
+	"github.com/giantswarm/e2e-harness/pkg/framework"
 )
 
 type ResourceConfig struct {
@@ -91,5 +93,53 @@ func (r *Resource) InstallResource(name, values, channel string, conditions ...f
 		}
 	}
 
+	return nil
+}
+
+func (r *Resource) WaitForStatus(release string, status string) error {
+	operation := func() error {
+		rc, err := r.helmClient.GetReleaseContent(release)
+		if err != nil {
+			return microerror.Mask(err)
+		}
+		if rc.Status != status {
+			return microerror.Maskf(releaseStatusNotMatchingError, "waiting for '%s', current '%s'", status, rc.Status)
+		}
+		return nil
+	}
+
+	notify := func(err error, t time.Duration) {
+		r.logger.Log("level", "debug", "message", fmt.Sprintf("failed to get release status '%s': retrying in %s", status, t), "stack", fmt.Sprintf("%v", err))
+	}
+
+	b := framework.NewExponentialBackoff(framework.ShortMaxWait, framework.LongMaxInterval)
+	err := backoff.RetryNotify(operation, b, notify)
+	if err != nil {
+		return microerror.Mask(err)
+	}
+	return nil
+}
+
+func (r *Resource) WaitForVersion(release string, version string) error {
+	operation := func() error {
+		rh, err := r.helmClient.GetReleaseHistory(release)
+		if err != nil {
+			return microerror.Mask(err)
+		}
+		if rh.Version != version {
+			return microerror.Maskf(releaseVersionNotMatchingError, "waiting for '%s', current '%s'", version, rh.Version)
+		}
+		return nil
+	}
+
+	notify := func(err error, t time.Duration) {
+		r.logger.Log("level", "debug", "message", fmt.Sprintf("failed to get release version '%s': retrying in %s", version, t), "stack", fmt.Sprintf("%v", err))
+	}
+
+	b := framework.NewExponentialBackoff(framework.ShortMaxWait, framework.LongMaxInterval)
+	err := backoff.RetryNotify(operation, b, notify)
+	if err != nil {
+		return microerror.Mask(err)
+	}
 	return nil
 }
