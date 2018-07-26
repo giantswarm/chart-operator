@@ -51,6 +51,7 @@ func TestMain(m *testing.M) {
 			Logger:     l,
 			K8sClient:  f.K8sClient(),
 			RestConfig: f.RestConfig(),
+			TillerNamespace: "giantswarm"
 		}
 		helmClient, err = helmclient.New(c)
 		if err != nil {
