@@ -103,6 +103,20 @@ func IsReleaseNotFound(err error) bool {
 	return false
 }
 
+var testReleaseFailureError = microerror.New("test release failure")
+
+// IsTestReleaseFailure asserts testReleaseFailureError.
+func IsTestReleaseFailure(err error) bool {
+	return microerror.Cause(err) == testReleaseFailureError
+}
+
+var testReleaseTimeoutError = microerror.New("test release timeout")
+
+// IsTestReleaseTimeout asserts testReleaseTimeoutError.
+func IsTestReleaseTimeout(err error) bool {
+	return microerror.Cause(err) == testReleaseTimeoutError
+}
+
 var tillerInstallationFailedError = microerror.New("Tiller installation failed")
 
 // IsTillerInstallationFailed asserts tillerInstallationFailedError.
