@@ -100,7 +100,7 @@ func (r *Resource) UpdateResource(name, values, channel string, conditions ...fu
 	chartValuesEnv := os.ExpandEnv(values)
 	chartname := fmt.Sprintf("%s-chart", name)
 
-	tarballPath, err := r.apprClient.PullChartTarball(chartname, "stable")
+	tarballPath, err := r.apprClient.PullChartTarball(chartname, channel)
 	if err != nil {
 		return microerror.Mask(err)
 	}
