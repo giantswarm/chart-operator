@@ -157,6 +157,12 @@
 
 [[projects]]
   branch = "master"
+  name = "github.com/giantswarm/e2etemplates"
+  packages = ["pkg/e2etemplates"]
+  revision = "b6c06a28674e73c7e266202c50a4c8a12b16b255"
+
+[[projects]]
+  branch = "master"
   name = "github.com/giantswarm/errors"
   packages = ["guest"]
   revision = "9e78ca0e32a019481beb21ae3e158d1bb150730d"
@@ -1200,6 +1206,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "3d3cd298d019e1de310656b831c55b44a1285bd9db2755857c33e2b01960cada"
+  inputs-digest = "0b7790f20ba2e81356f60b6c2184e9adb06f321fe2820f0177809e26a0c02dc4"
   solver-name = "gps-cdcl"
   solver-version = 1
