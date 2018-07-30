@@ -2,7 +2,6 @@ package resource
 
 import (
 	"fmt"
-	"os"
 	"time"
 
 	"github.com/cenkalti/backoff"
@@ -74,14 +73,13 @@ func New(config ResourceConfig) (*Resource, error) {
 }
 
 func (r *Resource) InstallResource(name, values, channel string, conditions ...func() error) error {
-	chartValuesEnv := os.ExpandEnv(values)
 	chartname := fmt.Sprintf("%s-chart", name)
 
 	tarball, err := r.apprClient.PullChartTarball(chartname, channel)
 	if err != nil {
 		return microerror.Mask(err)
 	}
-	err = r.helmClient.InstallFromTarball(tarball, r.namespace, helm.ReleaseName(name), helm.ValueOverrides([]byte(chartValuesEnv)), helm.InstallWait(true))
+	err = r.helmClient.InstallFromTarball(tarball, r.namespace, helm.ReleaseName(name), helm.ValueOverrides([]byte(values)), helm.InstallWait(true))
 	if err != nil {
 		return microerror.Mask(err)
 	}
@@ -97,7 +95,6 @@ func (r *Resource) InstallResource(name, values, channel string, conditions ...f
 }
 
 func (r *Resource) UpdateResource(name, values, channel string, conditions ...func() error) error {
-	chartValuesEnv := os.ExpandEnv(values)
 	chartname := fmt.Sprintf("%s-chart", name)
 
 	tarballPath, err := r.apprClient.PullChartTarball(chartname, channel)
@@ -105,7 +102,7 @@ func (r *Resource) UpdateResource(name, values, channel string, conditions ...fu
 		return microerror.Mask(err)
 	}
 
-	err = r.helmClient.UpdateReleaseFromTarball(name, tarballPath, helm.UpdateValueOverrides([]byte(chartValuesEnv)))
+	err = r.helmClient.UpdateReleaseFromTarball(name, tarballPath, helm.UpdateValueOverrides([]byte(values)))
 	if err != nil {
 		return microerror.Mask(err)
 	}
