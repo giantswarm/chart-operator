@@ -153,7 +153,7 @@
     "pkg/framework/resource",
     "pkg/harness"
   ]
-  revision = "ac8e0e2442b8a593ff8d3286056e80a4d31f4301"
+  revision = "0195240d6f11565e602721d796bd0ced9a972605"
 
 [[projects]]
   branch = "master"
@@ -1200,6 +1200,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "0d0630c1f08b505c9ea11efe6ae0a364dffeea75c4318707a829e6ccade21258"
+  inputs-digest = "3d3cd298d019e1de310656b831c55b44a1285bd9db2755857c33e2b01960cada"
   solver-name = "gps-cdcl"
   solver-version = 1
