@@ -7,8 +7,6 @@ import (
 	"testing"
 
 	"github.com/giantswarm/helmclient"
-	"github.com/giantswarm/microerror"
-	"github.com/giantswarm/micrologger"
 
 	"github.com/giantswarm/chart-operator/integration/chart"
 	"github.com/giantswarm/chart-operator/integration/templates"
@@ -77,37 +75,4 @@ func TestChartLifecycle(t *testing.T) {
 		t.Fatalf("%q not succesfully deleted %v", testRelease, err)
 	}
 	l.Log("level", "debug", "message", fmt.Sprintf("%s succesfully deleted", testRelease))
-}
-
-func updateChartOperatorResource(helmClient *helmclient.Client, releaseName string) error {
-	l, err := micrologger.New(micrologger.Config{})
-	if err != nil {
-		return microerror.Mask(err)
-	}
-
-	c := apprclient.Config{
-		Fs:     afero.NewOsFs(),
-		Logger: l,
-
-		Address:      "https://quay.io",
-		Organization: "giantswarm",
-	}
-
-	a, err := apprclient.New(c)
-	if err != nil {
-		return microerror.Mask(err)
-	}
-
-	tarballPath, err := a.PullChartTarball(fmt.Sprintf("%s-chart", releaseName), "stable")
-	if err != nil {
-		return microerror.Mask(err)
-	}
-
-	helmClient.UpdateReleaseFromTarball(releaseName, tarballPath,
-		helm.UpdateValueOverrides([]byte(templates.UpdatedChartOperatorResourceValues)))
-	if err != nil {
-		return microerror.Mask(err)
-	}
-
-	return nil
 }
