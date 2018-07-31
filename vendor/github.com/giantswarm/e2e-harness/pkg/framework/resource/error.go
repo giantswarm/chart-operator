@@ -2,21 +2,27 @@ package resource
 
 import "github.com/giantswarm/microerror"
 
-var invalidConfigError = microerror.New("invalid config")
+var invalidConfigError = &microerror.Error{
+	Kind: "invalidConfigError",
+}
 
 // IsInvalidConfig asserts invalidConfigError.
 func IsInvalidConfig(err error) bool {
 	return microerror.Cause(err) == invalidConfigError
 }
 
-var releaseStatusNotMatchingError = microerror.New("release status not matching")
+var releaseStatusNotMatchingError = &microerror.Error{
+	Kind: "releaseStatusNotMatchingError",
+}
 
 // IsReleaseStatusNotMatching asserts releaseStatusNotMatchingError
 func IsReleaseStatusNotMatching(err error) bool {
 	return microerror.Cause(err) == releaseStatusNotMatchingError
 }
 
-var releaseVersionNotMatchingError = microerror.New("release version not matching")
+var releaseVersionNotMatchingError = &microerror.Error{
+	Kind: "releaseVersionNotMatchingError",
+}
 
 // IsReleaseVersionNotMatching asserts releaseVersionNotMatchingError
 func IsReleaseVersionNotMatching(err error) bool {
