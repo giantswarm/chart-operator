@@ -85,7 +85,7 @@ func (r *Resource) newCreateChange(ctx context.Context, obj, currentState, desir
 
 	createState := &ChartState{}
 
-	if currentChartState.ChartName == "" || desiredChartState.ChartName != currentChartState.ChartName {
+	if currentChartState.IsEmpty() {
 		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("the %s chart needs to be created", desiredChartState.ChartName))
 
 		createState = &desiredChartState

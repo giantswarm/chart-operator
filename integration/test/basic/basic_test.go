@@ -6,10 +6,6 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/spf13/afero"
-	"k8s.io/helm/pkg/helm"
-
-	"github.com/giantswarm/apprclient"
 	"github.com/giantswarm/helmclient"
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/micrologger"
@@ -58,7 +54,7 @@ func TestChartLifecycle(t *testing.T) {
 
 	// Test Update
 	l.Log("level", "debug", "message", fmt.Sprintf("updating %s", cr))
-	err = updateChartOperatorResource(helmClient, cr)
+	err = r.UpdateResource(cr, templates.UpdatedChartOperatorResourceValues, "stable")
 	if err != nil {
 		t.Fatalf("could not update %q %v", cr, err)
 	}
