@@ -4,14 +4,18 @@ package release
 
 import "github.com/giantswarm/microerror"
 
-var releaseStatusNotMatchingError = microerror.New("release status not matching")
+var releaseStatusNotMatchingError = &microerror.Error{
+	Kind: "releaseStatusNotMatchingError",
+}
 
 // IsReleaseStatusNotMatching asserts releaseStatusNotMatchingError
 func IsReleaseStatusNotMatching(err error) bool {
 	return microerror.Cause(err) == releaseStatusNotMatchingError
 }
 
-var releaseVersionNotMatchingError = microerror.New("release version not matching")
+var releaseVersionNotMatchingError = &microerror.Error{
+	Kind: "releaseVersionNotMatchingError",
+}
 
 // IsReleaseVersionNotMatching asserts releaseVersionNotMatchingError
 func IsReleaseVersionNotMatching(err error) bool {
