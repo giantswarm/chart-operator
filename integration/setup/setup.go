@@ -29,12 +29,6 @@ func WrapTestMain(f *framework.Host, helmClient *helmclient.Client, m *testing.M
 		v = 1
 	}
 
-	err = helmClient.EnsureTillerInstalled()
-	if err != nil {
-		log.Printf("%#v\n", err)
-		v = 1
-	}
-
 	err = resources(f, helmClient)
 	if err != nil {
 		log.Printf("%#v\n", err)

@@ -46,10 +46,9 @@ func TestMain(m *testing.M) {
 
 	{
 		c := helmclient.Config{
-			Logger:          l,
-			K8sClient:       f.K8sClient(),
-			RestConfig:      f.RestConfig(),
-			TillerNamespace: "giantswarm",
+			Logger:     l,
+			K8sClient:  f.K8sClient(),
+			RestConfig: f.RestConfig(),
 		}
 		helmClient, err = helmclient.New(c)
 		if err != nil {
