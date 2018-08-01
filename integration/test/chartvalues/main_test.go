@@ -56,6 +56,18 @@ func init() {
 			panic(err.Error())
 		}
 	}
+
+	{
+		c := resource.ResourceConfig{
+			Logger:     l,
+			HelmClient: helmClient,
+			Namespace:  "giantswarm",
+		}
+		r, err = resource.New(c)
+		if err != nil {
+			panic(err.Error())
+		}
+	}
 }
 
 // TestMain allows us to have common setup and teardown steps that are run
