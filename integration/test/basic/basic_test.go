@@ -7,11 +7,8 @@ import (
 	"testing"
 
 	"github.com/giantswarm/helmclient"
-	"github.com/giantswarm/microerror"
-	"github.com/giantswarm/micrologger"
 
 	"github.com/giantswarm/chart-operator/integration/chart"
-	"github.com/giantswarm/chart-operator/integration/release"
 	"github.com/giantswarm/chart-operator/integration/templates"
 )
 
@@ -35,13 +32,7 @@ func TestChartLifecycle(t *testing.T) {
 	}
 
 	// Setup
-
-	gsHelmClient, err := createGsHelmClient()
-	if err != nil {
-		t.Fatalf("could not create giantswarm helmClient %v", err)
-	}
-
-	err = chart.Push(f, charts)
+	err := chart.Push(h, charts)
 	if err != nil {
 		t.Fatalf("could not push inital charts to cnr %v", err)
 	}
@@ -53,7 +44,7 @@ func TestChartLifecycle(t *testing.T) {
 		t.Fatalf("could not install %q %v", cr, err)
 	}
 
-	err = release.WaitForStatus(gsHelmClient, testRelease, "DEPLOYED")
+	err = r.WaitForStatus(testRelease, "DEPLOYED")
 	if err != nil {
 		t.Fatalf("could not get release status of %q %v", testRelease, err)
 	}
@@ -66,7 +57,7 @@ func TestChartLifecycle(t *testing.T) {
 		t.Fatalf("could not update %q %v", cr, err)
 	}
 
-	err = release.WaitForVersion(gsHelmClient, testRelease, "5.6.0")
+	err = r.WaitForVersion(testRelease, "5.6.0")
 	if err != nil {
 		t.Fatalf("could not get release version of %q %v", testRelease, err)
 	}
@@ -79,30 +70,9 @@ func TestChartLifecycle(t *testing.T) {
 		t.Fatalf("could not delete %q %v", cr, err)
 	}
 
-	err = release.WaitForStatus(gsHelmClient, testRelease, "DELETED")
+	err = r.WaitForStatus(testRelease, "DELETED")
 	if !helmclient.IsReleaseNotFound(err) {
 		t.Fatalf("%q not succesfully deleted %v", testRelease, err)
 	}
 	l.Log("level", "debug", "message", fmt.Sprintf("%s succesfully deleted", testRelease))
-}
-
-func createGsHelmClient() (*helmclient.Client, error) {
-	l, err := micrologger.New(micrologger.Config{})
-	if err != nil {
-		return nil, microerror.Maskf(err, "could not create logger")
-	}
-
-	c := helmclient.Config{
-		Logger:          l,
-		K8sClient:       f.K8sClient(),
-		RestConfig:      f.RestConfig(),
-		TillerNamespace: "giantswarm",
-	}
-
-	gsHelmClient, err := helmclient.New(c)
-	if err != nil {
-		return nil, microerror.Maskf(err, "could not create helmClient")
-	}
-
-	return gsHelmClient, nil
 }

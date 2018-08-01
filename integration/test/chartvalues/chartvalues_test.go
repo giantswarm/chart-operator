@@ -22,14 +22,14 @@ func TestChartValues(t *testing.T) {
 		},
 	}
 
-	err := chart.Push(f, charts)
+	err := chart.Push(h, charts)
 	if err != nil {
 		t.Fatalf("could not push inital charts to cnr %v", err)
 	}
 
 	// Test Creation
 	l.Log("level", "debug", "message", fmt.Sprintf("creating %s", cr))
-	err = f.InstallResource(cr, templates.ChartOperatorResourceValues, ":stable")
+	err = h.InstallResource(cr, templates.ChartOperatorResourceValues, ":stable")
 	if err != nil {
 		t.Fatalf("could not install %q %v", cr, err)
 	}

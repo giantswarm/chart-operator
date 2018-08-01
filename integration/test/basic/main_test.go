@@ -14,7 +14,7 @@ import (
 )
 
 var (
-	f          *framework.Host
+	h          *framework.Host
 	helmClient *helmclient.Client
 	l          micrologger.Logger
 	r          *resource.Resource
@@ -40,7 +40,7 @@ func TestMain(m *testing.M) {
 			VaultToken: "someval",
 		}
 
-		f, err = framework.NewHost(c)
+		h, err = framework.NewHost(c)
 		if err != nil {
 			panic(err.Error())
 		}
@@ -48,9 +48,10 @@ func TestMain(m *testing.M) {
 
 	{
 		c := helmclient.Config{
-			Logger:     l,
-			K8sClient:  f.K8sClient(),
-			RestConfig: f.RestConfig(),
+			Logger:          l,
+			K8sClient:       h.K8sClient(),
+			RestConfig:      h.RestConfig(),
+			TillerNamespace: "giantswarm",
 		}
 		helmClient, err = helmclient.New(c)
 		if err != nil {
@@ -68,5 +69,5 @@ func TestMain(m *testing.M) {
 		panic(err.Error())
 	}
 
-	setup.WrapTestMain(f, helmClient, m)
+	setup.WrapTestMain(h, helmClient, m)
 }
