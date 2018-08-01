@@ -14,15 +14,13 @@ import (
 )
 
 var (
-	f          *framework.Host
+	h          *framework.Host
 	helmClient *helmclient.Client
 	l          micrologger.Logger
 	r          *resource.Resource
 )
 
-// TestMain allows us to have common setup and teardown steps that are run
-// once for all the tests https://golang.org/pkg/testing/#hdr-Main.
-func TestMain(m *testing.M) {
+func init() {
 	var err error
 
 	{
@@ -40,7 +38,7 @@ func TestMain(m *testing.M) {
 			VaultToken: "someval",
 		}
 
-		f, err = framework.NewHost(c)
+		h, err = framework.NewHost(c)
 		if err != nil {
 			panic(err.Error())
 		}
@@ -48,25 +46,20 @@ func TestMain(m *testing.M) {
 
 	{
 		c := helmclient.Config{
-			Logger:     l,
-			K8sClient:  f.K8sClient(),
-			RestConfig: f.RestConfig(),
+			Logger:          l,
+			K8sClient:       h.K8sClient(),
+			RestConfig:      h.RestConfig(),
+			TillerNamespace: "giantswarm",
 		}
 		helmClient, err = helmclient.New(c)
 		if err != nil {
 			panic(err.Error())
 		}
 	}
+}
 
-	resourceConfig := resource.ResourceConfig{
-		Logger:     l,
-		HelmClient: helmClient,
-		Namespace:  "giantswarm",
-	}
-	r, err = resource.New(resourceConfig)
-	if err != nil {
-		panic(err.Error())
-	}
-
-	setup.WrapTestMain(f, helmClient, m)
+// TestMain allows us to have common setup and teardown steps that are run
+// once for all the tests https://golang.org/pkg/testing/#hdr-Main.
+func TestMain(m *testing.M) {
+	setup.WrapTestMain(h, helmClient, l, m)
 }

@@ -19,17 +19,23 @@ import (
 	"github.com/giantswarm/chart-operator/integration/templates"
 )
 
-func WrapTestMain(f *framework.Host, helmClient *helmclient.Client, m *testing.M) {
+func WrapTestMain(h *framework.Host, helmClient *helmclient.Client, l micrologger.Logger, m *testing.M) {
 	var v int
 	var err error
 
-	err = f.CreateNamespace("giantswarm")
+	err = h.CreateNamespace("giantswarm")
 	if err != nil {
 		log.Printf("%#v\n", err)
 		v = 1
 	}
 
-	err = resources(f, helmClient)
+	err = helmClient.EnsureTillerInstalled()
+	if err != nil {
+		log.Printf("%#v\n", err)
+		v = 1
+	}
+
+	err = resources(h, helmClient, l)
 	if err != nil {
 		log.Printf("%#v\n", err)
 		v = 1
@@ -42,36 +48,27 @@ func WrapTestMain(f *framework.Host, helmClient *helmclient.Client, m *testing.M
 	if os.Getenv("KEEP_RESOURCES") != "true" {
 		// only do full teardown when not on CI
 		if os.Getenv("CIRCLECI") != "true" {
-			err := teardown.Teardown(f, helmClient)
+			err := teardown.Teardown(h, helmClient)
 			if err != nil {
 				log.Printf("%#v\n", err)
 				v = 1
 			}
 			// TODO there should be error handling for the framework teardown.
-			f.Teardown()
+			h.Teardown()
 		}
 	}
 
 	os.Exit(v)
 }
 
-func resources(f *framework.Host, helmClient *helmclient.Client) error {
-	err := initializeCNR(f, helmClient)
+func resources(h *framework.Host, helmClient *helmclient.Client, l micrologger.Logger) error {
+	err := initializeCNR(h, helmClient, l)
 	if err != nil {
 		return microerror.Mask(err)
 	}
 
-	err = f.InstallOperator("chart-operator", "chartconfig", templates.ChartOperatorValues, ":${CIRCLE_SHA1}")
+	err = h.InstallOperator("chart-operator", "chartconfig", templates.ChartOperatorValues, ":${CIRCLE_SHA1}")
 
-	if err != nil {
-		return microerror.Mask(err)
-	}
-
-	return nil
-}
-
-func initializeCNR(f *framework.Host, helmClient *helmclient.Client) error {
-	err := installCNR(f, helmClient)
 	if err != nil {
 		return microerror.Mask(err)
 	}
@@ -79,12 +76,16 @@ func initializeCNR(f *framework.Host, helmClient *helmclient.Client) error {
 	return nil
 }
 
-func installCNR(f *framework.Host, helmClient *helmclient.Client) error {
-	l, err := micrologger.New(micrologger.Config{})
+func initializeCNR(h *framework.Host, helmClient *helmclient.Client, l micrologger.Logger) error {
+	err := installCNR(h, helmClient, l)
 	if err != nil {
 		return microerror.Mask(err)
 	}
 
+	return nil
+}
+
+func installCNR(h *framework.Host, helmClient *helmclient.Client, l micrologger.Logger) error {
 	c := apprclient.Config{
 		Fs:     afero.NewOsFs(),
 		Logger: l,

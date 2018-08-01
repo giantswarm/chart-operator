@@ -31,8 +31,7 @@ func TestChartValues(t *testing.T) {
 		//TODO: fix this static VersionBundleVersion
 		VersionBundleVersion: "0.2.0",
 	}
-
-	err := chart.Push(f, charts)
+	err := chart.Push(h, charts)
 	if err != nil {
 		t.Fatalf("could not push inital charts to cnr %v", err)
 	}
