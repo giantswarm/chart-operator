@@ -15,6 +15,7 @@ import (
 	"github.com/spf13/afero"
 	"k8s.io/helm/pkg/helm"
 
+	"github.com/giantswarm/chart-operator/integration/env"
 	"github.com/giantswarm/chart-operator/integration/teardown"
 	"github.com/giantswarm/chart-operator/integration/templates"
 )
@@ -45,9 +46,9 @@ func WrapTestMain(h *framework.Host, helmClient *helmclient.Client, l micrologge
 		v = m.Run()
 	}
 
-	if os.Getenv("KEEP_RESOURCES") != "true" {
+	if env.KeepResources() != "true" {
 		// only do full teardown when not on CI
-		if os.Getenv("CIRCLECI") != "true" {
+		if env.CircleCI() != "true" {
 			err := teardown.Teardown(h, helmClient)
 			if err != nil {
 				log.Printf("%#v\n", err)
