@@ -54,7 +54,6 @@ func init() {
 			panic(err.Error())
 		}
 	}
-
 }
 
 // TestMain allows us to have common setup and teardown steps that are run
