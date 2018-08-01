@@ -13,6 +13,7 @@ import (
 	"github.com/giantswarm/chart-operator/integration/chart"
 	"github.com/giantswarm/chart-operator/integration/chartconfig"
 	"github.com/giantswarm/chart-operator/integration/release"
+	"github.com/giantswarm/e2etemplates/pkg/e2etemplates"
 )
 
 func TestChartLifecycle(t *testing.T) {
@@ -34,7 +35,7 @@ func TestChartLifecycle(t *testing.T) {
 		},
 	}
 
-	chartConfigValues := chartconfig.ChartConfigValues{
+	chartConfigValues := e2etemplates.ApiextensionsChartConfigValues{
 		Channel:   "5-5-beta",
 		Name:      "tb-chart",
 		Namespace: "giantswarm",
@@ -57,7 +58,7 @@ func TestChartLifecycle(t *testing.T) {
 
 	// Test Creation
 	l.Log("level", "debug", "message", fmt.Sprintf("creating %s", cr))
-	chartValues, err := chartConfigValues.ExecuteChartValuesTemplate()
+	chartValues, err := chartconfig.ExecuteChartValuesTemplate(chartConfigValues)
 	if err != nil {
 		t.Fatalf("could not template chart values %q %v", chartValues, err)
 	}
@@ -76,7 +77,7 @@ func TestChartLifecycle(t *testing.T) {
 	// Test Update
 	l.Log("level", "debug", "message", fmt.Sprintf("updating %s", cr))
 	chartConfigValues.Channel = "5-6-beta"
-	chartValues, err = chartConfigValues.ExecuteChartValuesTemplate()
+	chartValues, err = chartconfig.ExecuteChartValuesTemplate(chartConfigValues)
 	if err != nil {
 		t.Fatalf("could not template chart values %q %v", chartValues, err)
 	}

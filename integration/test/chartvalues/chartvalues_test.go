@@ -8,6 +8,7 @@ import (
 
 	"github.com/giantswarm/chart-operator/integration/chart"
 	"github.com/giantswarm/chart-operator/integration/chartconfig"
+	"github.com/giantswarm/e2etemplates/pkg/e2etemplates"
 )
 
 func TestChartValues(t *testing.T) {
@@ -22,7 +23,7 @@ func TestChartValues(t *testing.T) {
 		},
 	}
 
-	chartConfigValues := chartconfig.ChartConfigValues{
+	chartConfigValues := e2etemplates.ApiextensionsChartConfigValues{
 		Channel:   "1-0-beta",
 		Name:      "tb-chart",
 		Namespace: "giantswarm",
@@ -38,7 +39,7 @@ func TestChartValues(t *testing.T) {
 
 	// Test Creation
 	l.Log("level", "debug", "message", fmt.Sprintf("creating %s", cr))
-	chartValues, err := chartConfigValues.ExecuteChartValuesTemplate()
+	chartValues, err := chartconfig.ExecuteChartValuesTemplate(chartConfigValues)
 	if err != nil {
 		t.Fatalf("could not template chart values %q %v", chartValues, err)
 	}
