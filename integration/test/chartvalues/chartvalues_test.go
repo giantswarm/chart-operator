@@ -6,9 +6,10 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/giantswarm/e2etemplates/pkg/e2etemplates"
+
 	"github.com/giantswarm/chart-operator/integration/chart"
 	"github.com/giantswarm/chart-operator/integration/chartconfig"
-	"github.com/giantswarm/e2etemplates/pkg/e2etemplates"
 )
 
 func TestChartValues(t *testing.T) {
