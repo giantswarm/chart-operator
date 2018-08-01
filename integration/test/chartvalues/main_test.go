@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/giantswarm/e2e-harness/pkg/framework"
+	"github.com/giantswarm/e2e-harness/pkg/framework/resource"
 	"github.com/giantswarm/helmclient"
 	"github.com/giantswarm/micrologger"
 
@@ -16,6 +17,7 @@ var (
 	h          *framework.Host
 	helmClient *helmclient.Client
 	l          micrologger.Logger
+	r          *resource.Resource
 )
 
 func init() {
@@ -50,6 +52,18 @@ func init() {
 			TillerNamespace: "giantswarm",
 		}
 		helmClient, err = helmclient.New(c)
+		if err != nil {
+			panic(err.Error())
+		}
+	}
+
+	{
+		c := resource.ResourceConfig{
+			Logger:     l,
+			HelmClient: helmClient,
+			Namespace:  "giantswarm",
+		}
+		r, err = resource.New(c)
 		if err != nil {
 			panic(err.Error())
 		}
