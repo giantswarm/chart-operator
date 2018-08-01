@@ -32,7 +32,7 @@ func TestChartLifecycle(t *testing.T) {
 	}
 
 	// Setup
-	err := chart.Push(f, charts)
+	err := chart.Push(h, charts)
 	if err != nil {
 		t.Fatalf("could not push inital charts to cnr %v", err)
 	}
