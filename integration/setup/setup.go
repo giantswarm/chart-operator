@@ -19,7 +19,7 @@ import (
 	"github.com/giantswarm/chart-operator/integration/templates"
 )
 
-func WrapTestMain(h *framework.Host, helmClient *helmclient.Client, m *testing.M) {
+func WrapTestMain(h *framework.Host, helmClient *helmclient.Client, l micrologger.Logger, m *testing.M) {
 	var v int
 	var err error
 
@@ -35,7 +35,7 @@ func WrapTestMain(h *framework.Host, helmClient *helmclient.Client, m *testing.M
 		v = 1
 	}
 
-	err = resources(h, helmClient)
+	err = resources(h, helmClient, l)
 	if err != nil {
 		log.Printf("%#v\n", err)
 		v = 1
@@ -61,8 +61,8 @@ func WrapTestMain(h *framework.Host, helmClient *helmclient.Client, m *testing.M
 	os.Exit(v)
 }
 
-func resources(h *framework.Host, helmClient *helmclient.Client) error {
-	err := initializeCNR(h, helmClient)
+func resources(h *framework.Host, helmClient *helmclient.Client, l micrologger.Logger) error {
+	err := initializeCNR(h, helmClient, l)
 	if err != nil {
 		return microerror.Mask(err)
 	}
@@ -76,8 +76,8 @@ func resources(h *framework.Host, helmClient *helmclient.Client) error {
 	return nil
 }
 
-func initializeCNR(h *framework.Host, helmClient *helmclient.Client) error {
-	err := installCNR(h, helmClient)
+func initializeCNR(h *framework.Host, helmClient *helmclient.Client, l micrologger.Logger) error {
+	err := installCNR(h, helmClient, l)
 	if err != nil {
 		return microerror.Mask(err)
 	}
@@ -85,12 +85,7 @@ func initializeCNR(h *framework.Host, helmClient *helmclient.Client) error {
 	return nil
 }
 
-func installCNR(h *framework.Host, helmClient *helmclient.Client) error {
-	l, err := micrologger.New(micrologger.Config{})
-	if err != nil {
-		return microerror.Mask(err)
-	}
-
+func installCNR(h *framework.Host, helmClient *helmclient.Client, l micrologger.Logger) error {
 	c := apprclient.Config{
 		Fs:     afero.NewOsFs(),
 		Logger: l,
