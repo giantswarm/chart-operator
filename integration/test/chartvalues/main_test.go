@@ -18,9 +18,7 @@ var (
 	l          micrologger.Logger
 )
 
-// TestMain allows us to have common setup and teardown steps that are run
-// once for all the tests https://golang.org/pkg/testing/#hdr-Main.
-func TestMain(m *testing.M) {
+func init() {
 	var err error
 
 	{
@@ -56,6 +54,10 @@ func TestMain(m *testing.M) {
 			panic(err.Error())
 		}
 	}
+}
 
-	setup.WrapTestMain(h, helmClient, m)
+// TestMain allows us to have common setup and teardown steps that are run
+// once for all the tests https://golang.org/pkg/testing/#hdr-Main.
+func TestMain(m *testing.M) {
+	setup.WrapTestMain(h, helmClient, l, m)
 }

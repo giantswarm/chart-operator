@@ -20,9 +20,7 @@ var (
 	r          *resource.Resource
 )
 
-// TestMain allows us to have common setup and teardown steps that are run
-// once for all the tests https://golang.org/pkg/testing/#hdr-Main.
-func TestMain(m *testing.M) {
+func init() {
 	var err error
 
 	{
@@ -68,6 +66,10 @@ func TestMain(m *testing.M) {
 	if err != nil {
 		panic(err.Error())
 	}
+}
 
-	setup.WrapTestMain(h, helmClient, m)
+// TestMain allows us to have common setup and teardown steps that are run
+// once for all the tests https://golang.org/pkg/testing/#hdr-Main.
+func TestMain(m *testing.M) {
+	setup.WrapTestMain(h, helmClient, l, m)
 }
