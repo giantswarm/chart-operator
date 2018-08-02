@@ -44,21 +44,25 @@ jobs:
   e2eTestBasicPR:
     environment:
       TEST_DIR: "integration/test/basic"
+      TESTED_VERSION: "wip"
     <<: *e2eTest
 
   e2eTestBasicMaster:
     environment:
       TEST_DIR: "integration/test/basic"
+      TESTED_VERSION: "wip"
     <<: *e2eTest
 
   e2eTestChartValuesPR:
     environment:
       TEST_DIR: "integration/test/chartvalues"
+      TESTED_VERSION: "wip"
     <<: *e2eTest
 
   e2eTestChartValuesMaster:
     environment:
       TEST_DIR: "integration/test/chartvalues"
+      TESTED_VERSION: "wip"
     <<: *e2eTest
 
   deploy:

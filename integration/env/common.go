@@ -47,7 +47,7 @@ func init() {
 	var err error
 	token := os.Getenv(EnvVarGithubBotToken)
 	params := &framework.VBVParams{
-		Component: "aws-operator",
+		Component: "chart-operator",
 		Provider:  "aws",
 		Token:     token,
 		VType:     TestedVersion(),
