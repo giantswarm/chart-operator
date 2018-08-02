@@ -10,6 +10,7 @@ import (
 
 	"github.com/giantswarm/chart-operator/integration/chart"
 	"github.com/giantswarm/chart-operator/integration/chartconfig"
+	"github.com/giantswarm/chart-operator/integration/env"
 	"github.com/giantswarm/e2etemplates/pkg/e2etemplates"
 )
 
@@ -38,7 +39,7 @@ func TestChartLifecycle(t *testing.T) {
 		Namespace: "giantswarm",
 		Release:   "tb-release",
 		//TODO: fix this static VersionBundleVersion
-		VersionBundleVersion: "0.2.0",
+		VersionBundleVersion: env.VersionBundleVersion(),
 	}
 
 	// Setup
