@@ -59,6 +59,12 @@ func TestChartLifecycle(t *testing.T) {
 		t.Fatalf("could not install %q %v", cr, err)
 	}
 
+	err = r.WaitForStatus(cr, "DEPLOYED")
+	if err != nil {
+		t.Fatalf("could not get release status of %q %v", cr, err)
+	}
+	l.Log("level", "debug", "message", fmt.Sprintf("%s succesfully deployed", testRelease))
+
 	err = r.WaitForStatus(testRelease, "DEPLOYED")
 	if err != nil {
 		t.Fatalf("could not get release status of %q %v", testRelease, err)
