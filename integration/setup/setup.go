@@ -3,6 +3,7 @@
 package setup
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"testing"
@@ -68,8 +69,8 @@ func resources(h *framework.Host, helmClient *helmclient.Client, l micrologger.L
 		return microerror.Mask(err)
 	}
 
-	err = h.InstallOperator("chart-operator", "chartconfig", templates.ChartOperatorValues, env.CircleSHA())
-
+	version := fmt.Sprintf(":%s", env.CircleSHA())
+	err = h.InstallOperator("chart-operator", "chartconfig", templates.ChartOperatorValues, version)
 	if err != nil {
 		return microerror.Mask(err)
 	}
