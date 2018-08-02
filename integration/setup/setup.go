@@ -68,7 +68,7 @@ func resources(h *framework.Host, helmClient *helmclient.Client, l micrologger.L
 		return microerror.Mask(err)
 	}
 
-	err = h.InstallOperator("chart-operator", "chartconfig", templates.ChartOperatorValues, ":${CIRCLE_SHA1}")
+	err = h.InstallOperator("chart-operator", "chartconfig", templates.ChartOperatorValues, env.CircleSHA())
 
 	if err != nil {
 		return microerror.Mask(err)
