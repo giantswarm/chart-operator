@@ -34,11 +34,10 @@ func TestChartLifecycle(t *testing.T) {
 	}
 
 	chartConfigValues := e2etemplates.ApiextensionsChartConfigValues{
-		Channel:   "5-5-beta",
-		Name:      "tb-chart",
-		Namespace: "giantswarm",
-		Release:   "tb-release",
-		//TODO: fix this static VersionBundleVersion
+		Channel:              "5-5-beta",
+		Name:                 "tb-chart",
+		Namespace:            "giantswarm",
+		Release:              "tb-release",
 		VersionBundleVersion: env.VersionBundleVersion(),
 	}
 

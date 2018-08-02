@@ -119,22 +119,44 @@ workflows:
     jobs:
       - build
 
-      - e2eTestBasicPR:
+      - e2eTestCurBasicPR:
           requires:
           - build
 
-      - e2eTestBasicMaster:
+      - e2eTestCurBasicMaster:
           filters:
             branches:
               only: master
           requires:
           - build
 
-      - e2eTestChartValuesPR:
+      - e2eTestWIPBasicPR:
           requires:
           - build
 
-      - e2eTestChartValuesMaster:
+      - e2eTestWIPBasicMaster:
+          filters:
+            branches:
+              only: master
+          requires:
+          - build
+
+      - e2eTestCurChartValuesPR:
+          requires:
+          - build
+
+      - e2eTestCurChartValuesMaster:
+          filters:
+            branches:
+              only: master
+          requires:
+          - build
+
+      - e2eTestWIPChartValuesPR:
+          requires:
+          - build
+
+      - e2eTestWIPChartValuesMaster:
           filters:
             branches:
               only: master
@@ -146,8 +168,10 @@ workflows:
             branches:
               only: master
           requires:
-          - e2eTestBasicMaster
-          - e2eTestChartValuesMaster
+          - e2eTestCurBasicMaster
+          - e2eTestWIPBasicMaster
+          - e2eTestCurChartValuesMaster
+          - e2eTestWIPChartValuesMaster
 
       - publish_to_stable:
           filters:
