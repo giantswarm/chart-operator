@@ -32,6 +32,7 @@ var (
 	circleSHA            string
 	keepResources        string
 	testedVersion        string
+	token                string
 	versionBundleVersion string
 )
 
@@ -43,9 +44,16 @@ func init() {
 	if circleSHA == "" {
 		panic(fmt.Sprintf("env var '%s' must not be empty", EnvVarCircleSHA))
 	}
+	testedVersion = os.Getenv(EnvVarTestedVersion)
+	if testedVersion == "" {
+		panic(fmt.Sprintf("env var '%s' must not be empty", EnvVarTestedVersion))
+	}
+	token = os.Getenv(EnvVarGithubBotToken)
+	if token == "" {
+		panic(fmt.Sprintf("env var '%s' must not be empty", EnvVarGithubBotToken))
+	}
 
 	var err error
-	token := os.Getenv(EnvVarGithubBotToken)
 	params := &framework.VBVParams{
 		Component: "chart-operator",
 		Provider:  "aws",
