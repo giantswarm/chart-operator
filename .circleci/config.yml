@@ -41,52 +41,24 @@ jobs:
         - ./chart-operator
         - ./architect
 
-  e2eTestCurBasicPR:
+  e2eTestBasicPR:
     environment:
       TEST_DIR: "integration/test/basic"
-      TESTED_VERSION: "current"
     <<: *e2eTest
 
-  e2eTestCurBasicMaster:
+  e2eTestBasicMaster:
     environment:
       TEST_DIR: "integration/test/basic"
-      TESTED_VERSION: "current"
     <<: *e2eTest
 
-  e2eTestWIPBasicPR:
-    environment:
-      TEST_DIR: "integration/test/basic"
-      TESTED_VERSION: "wip"
-    <<: *e2eTest
-
-  e2eTestWIPBasicMaster:
-    environment:
-      TEST_DIR: "integration/test/basic"
-      TESTED_VERSION: "wip"
-    <<: *e2eTest
-
-  e2eTestCurChartValuesPR:
+  e2eTestChartValuesPR:
     environment:
       TEST_DIR: "integration/test/chartvalues"
-      TESTED_VERSION: "current"
     <<: *e2eTest
 
-  e2eTestCurChartValuesMaster:
+  e2eTestChartValuesMaster:
     environment:
       TEST_DIR: "integration/test/chartvalues"
-      TESTED_VERSION: "current"
-    <<: *e2eTest
-
-  e2eTestWIPChartValuesPR:
-    environment:
-      TEST_DIR: "integration/test/chartvalues"
-      TESTED_VERSION: "wip"
-    <<: *e2eTest
-
-  e2eTestWIPChartValuesMaster:
-    environment:
-      TEST_DIR: "integration/test/chartvalues"
-      TESTED_VERSION: "wip"
     <<: *e2eTest
 
   deploy:
@@ -119,44 +91,22 @@ workflows:
     jobs:
       - build
 
-      - e2eTestCurBasicPR:
+      - e2eTestBasicPR:
           requires:
           - build
 
-      - e2eTestCurBasicMaster:
+      - e2eTestBasicMaster:
           filters:
             branches:
               only: master
           requires:
           - build
 
-      - e2eTestWIPBasicPR:
+      - e2eTestChartValuesPR:
           requires:
           - build
 
-      - e2eTestWIPBasicMaster:
-          filters:
-            branches:
-              only: master
-          requires:
-          - build
-
-      - e2eTestCurChartValuesPR:
-          requires:
-          - build
-
-      - e2eTestCurChartValuesMaster:
-          filters:
-            branches:
-              only: master
-          requires:
-          - build
-
-      - e2eTestWIPChartValuesPR:
-          requires:
-          - build
-
-      - e2eTestWIPChartValuesMaster:
+      - e2eTestChartValuesMaster:
           filters:
             branches:
               only: master
@@ -168,10 +118,8 @@ workflows:
             branches:
               only: master
           requires:
-          - e2eTestCurBasicMaster
-          - e2eTestWIPBasicMaster
-          - e2eTestCurChartValuesMaster
-          - e2eTestWIPChartValuesMaster
+          - e2eTestBasicMaster
+          - e2eTestChartValuesMaster
 
       - publish_to_stable:
           filters:
