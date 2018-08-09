@@ -14,6 +14,8 @@ const (
 	channelNameLabel           = "channel_name"
 	releaseNameLabel           = "release_name"
 	releaseStatusLabel         = "release_status"
+	namespaceLabel             = "namespace"
+	defaultNamespace           = "giantswarm"
 )
 
 type chartState struct {
@@ -32,6 +34,7 @@ var (
 			channelNameLabel,
 			releaseNameLabel,
 			releaseStatusLabel,
+			namespaceLabel,
 		},
 		nil,
 	)
@@ -54,6 +57,7 @@ func (c *Collector) collectChartConfigStatus(ch chan<- prometheus.Metric) {
 			chartConfig.channelName,
 			chartConfig.releaseName,
 			chartConfig.releaseStatus,
+			defaultNamespace,
 		)
 	}
 	c.logger.Log("level", "debug", "message", "finished collecting metrics for ChartConfigs")
@@ -61,7 +65,7 @@ func (c *Collector) collectChartConfigStatus(ch chan<- prometheus.Metric) {
 
 func (c *Collector) getChartConfigs() ([]*chartState, error) {
 	r, err := c.g8sClient.CoreV1alpha1().
-		ChartConfigs("giantswarm").
+		ChartConfigs(defaultNamespace).
 		List(metav1.ListOptions{})
 	if err != nil {
 		return nil, microerror.Mask(err)
