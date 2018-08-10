@@ -10,7 +10,14 @@ import (
 )
 
 func Teardown(f *framework.Host, helmClient *helmclient.Client) error {
-	items := []string{"cnr-server", "chart-operator", "apiextensions-chart-config-e2e"}
+	// clean host cluster components
+	err := framework.HelmCmd("delete --purge chart-operator")
+	if err != nil {
+		return microerror.Mask(err)
+	}
+
+	// clean guest cluster components
+	items := []string{"cnr-server", "apiextensions-chart-config-e2e"}
 
 	for _, item := range items {
 		err := helmClient.DeleteRelease(item, helm.DeletePurge(true))
