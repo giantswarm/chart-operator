@@ -74,10 +74,9 @@ jobs:
     - run:
         name: publish to beta
         command: ./architect publish
-
-    - run: sed -i 's/version:.*/version: 1.0.0-'"${CIRCLE_SHA1}"'/' helm/chart-operator-chart/Chart.yaml
-
-    - run: ./architect deploy
+    - run: |
+        sed -i 's/version:.*/version: 1.0.0-'"${CIRCLE_SHA1}"'/' helm/chart-operator-chart/Chart.yaml
+        ./architect deploy
 
   publish_to_stable:
     machine: true
