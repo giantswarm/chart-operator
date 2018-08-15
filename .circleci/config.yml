@@ -35,6 +35,9 @@ jobs:
         ./architect version
     - run: ./architect build
     - run: ./architect publish --pipeline=false --channels=${CIRCLE_SHA1}
+    - run: |
+        sed -i 's/version:.*/version: 1.0.0-'"${CIRCLE_SHA1}"'/' helm/chart-operator-chart/Chart.yaml
+        ./architect publish --pipeline=false --channels=${CIRCLE_SHA1}
     - persist_to_workspace:
         root: .
         paths:
@@ -76,7 +79,7 @@ jobs:
         command: ./architect publish
     - run: |
         sed -i 's/version:.*/version: 1.0.0-'"${CIRCLE_SHA1}"'/' helm/chart-operator-chart/Chart.yaml
-        ./architect deploy
+        ./architect publish
 
   publish_to_stable:
     machine: true
