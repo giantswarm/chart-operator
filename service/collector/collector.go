@@ -4,36 +4,45 @@ import (
 	"sync"
 
 	"github.com/giantswarm/apiextensions/pkg/clientset/versioned"
+	"github.com/giantswarm/helmclient"
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/micrologger"
 	"github.com/prometheus/client_golang/prometheus"
 )
 
 const (
+	gaugeValue float64 = 1
+
 	Namespace = "chart_operator"
 )
 
 type Config struct {
-	G8sClient versioned.Interface
-	Logger    micrologger.Logger
+	G8sClient  versioned.Interface
+	HelmClient *helmclient.Client
+	Logger     micrologger.Logger
 }
 
 type Collector struct {
-	g8sClient versioned.Interface
-	logger    micrologger.Logger
+	g8sClient  versioned.Interface
+	helmClient *helmclient.Client
+	logger     micrologger.Logger
 }
 
 func New(config Config) (*Collector, error) {
 	if config.G8sClient == nil {
 		return nil, microerror.Maskf(invalidConfigError, "%T.G8sClient must not be empty", config)
 	}
+	if config.HelmClient == nil {
+		return nil, microerror.Maskf(invalidConfigError, "%T.HelmClient must not be empty", config)
+	}
 	if config.Logger == nil {
 		return nil, microerror.Maskf(invalidConfigError, "%T.Logger must not be empty", config)
 	}
 
 	c := &Collector{
-		g8sClient: config.G8sClient,
-		logger:    config.Logger,
+		g8sClient:  config.G8sClient,
+		helmClient: config.HelmClient,
+		logger:     config.Logger,
 	}
 
 	return c, nil
@@ -41,6 +50,7 @@ func New(config Config) (*Collector, error) {
 
 func (c *Collector) Describe(ch chan<- *prometheus.Desc) {
 	ch <- chartConfigDesc
+	ch <- tillerUnreachableDesc
 }
 
 func (c *Collector) Collect(ch chan<- prometheus.Metric) {
@@ -48,6 +58,7 @@ func (c *Collector) Collect(ch chan<- prometheus.Metric) {
 
 	collectFuncs := []func(chan<- prometheus.Metric){
 		c.collectChartConfigStatus,
+		c.collectTillerUnreachable,
 	}
 
 	var wg sync.WaitGroup
