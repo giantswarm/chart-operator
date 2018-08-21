@@ -6,8 +6,6 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/giantswarm/helmclient"
-
 	"github.com/giantswarm/chart-operator/integration/chart"
 	"github.com/giantswarm/chart-operator/integration/chartconfig"
 	"github.com/giantswarm/chart-operator/integration/env"
@@ -67,7 +65,10 @@ func TestChartLifecycle(t *testing.T) {
 
 	err = r.WaitForStatus(testRelease, "DEPLOYED")
 	if err != nil {
-		t.Fatalf("could not get release status of %q %v", testRelease, err)
+		err = r.WaitForStatus(testRelease, "DEPLOYED")
+		if err != nil {
+			t.Fatalf("could not get release status of %q %v", testRelease, err)
+		}
 	}
 	l.Log("level", "debug", "message", fmt.Sprintf("%s succesfully deployed", testRelease))
 
@@ -97,7 +98,7 @@ func TestChartLifecycle(t *testing.T) {
 	}
 
 	err = r.WaitForStatus(testRelease, "DELETED")
-	if !helmclient.IsReleaseNotFound(err) {
+	if err != nil {
 		t.Fatalf("%q not succesfully deleted %v", testRelease, err)
 	}
 	l.Log("level", "debug", "message", fmt.Sprintf("%s succesfully deleted", testRelease))
