@@ -10,7 +10,7 @@ var (
 	tillerUnreachableDesc *prometheus.Desc = prometheus.NewDesc(
 		prometheus.BuildFQName(Namespace, "", "tiller_unreachable"),
 		"Tiller is not reachable from chart-operator.",
-		[]string{},
+		[]string{"label"},
 		nil,
 	)
 )
@@ -26,6 +26,7 @@ func (c *Collector) collectTillerUnreachable(ch chan<- prometheus.Metric) {
 			tillerUnreachableDesc,
 			prometheus.GaugeValue,
 			gaugeValue,
+			"value",
 		)
 	}
 
