@@ -11,7 +11,9 @@ import (
 )
 
 const (
-	gaugeValue float64 = 1
+	gaugeValue       float64 = 1
+	namespaceLabel           = "namespace"
+	defaultNamespace         = "giantswarm"
 
 	Namespace = "chart_operator"
 )

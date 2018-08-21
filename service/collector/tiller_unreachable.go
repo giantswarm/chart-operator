@@ -7,9 +7,7 @@ import (
 )
 
 const (
-	namespaceLabel   = "namespace"
-	errorLabel       = "error"
-	defaultNamespace = "giantswarm"
+	errorLabel = "error"
 )
 
 var (

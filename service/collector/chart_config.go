@@ -13,8 +13,6 @@ const (
 	channelNameLabel   = "channel_name"
 	releaseNameLabel   = "release_name"
 	releaseStatusLabel = "release_status"
-	namespaceLabel     = "namespace"
-	defaultNamespace   = "giantswarm"
 )
 
 type chartState struct {
