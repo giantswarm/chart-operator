@@ -10,6 +10,7 @@ import (
 
 	"github.com/giantswarm/chart-operator/integration/chart"
 	"github.com/giantswarm/chart-operator/integration/chartconfig"
+	"github.com/giantswarm/chart-operator/integration/env"
 )
 
 func TestChartValues(t *testing.T) {
@@ -25,12 +26,11 @@ func TestChartValues(t *testing.T) {
 	}
 
 	chartConfigValues := e2etemplates.ApiextensionsChartConfigValues{
-		Channel:   "1-0-beta",
-		Name:      "tb-chart",
-		Namespace: "giantswarm",
-		Release:   "tb-release",
-		//TODO: fix this static VersionBundleVersion
-		VersionBundleVersion: "0.2.0",
+		Channel:              "1-0-beta",
+		Name:                 "tb-chart",
+		Namespace:            "giantswarm",
+		Release:              "tb-release",
+		VersionBundleVersion: env.VersionBundleVersion(),
 	}
 	err := chart.Push(h, charts)
 	if err != nil {
