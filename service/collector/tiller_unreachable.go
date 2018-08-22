@@ -6,16 +6,11 @@ import (
 	"github.com/prometheus/client_golang/prometheus"
 )
 
-const (
-	errorLabel = "error"
-)
-
 var (
 	tillerUnreachableDesc *prometheus.Desc = prometheus.NewDesc(
 		prometheus.BuildFQName(Namespace, "", "tiller_unreachable"),
 		"Tiller is not reachable from chart-operator.",
 		[]string{
-			errorLabel,
 			namespaceLabel,
 		},
 		nil,
@@ -33,7 +28,6 @@ func (c *Collector) collectTillerUnreachable(ch chan<- prometheus.Metric) {
 			tillerUnreachableDesc,
 			prometheus.GaugeValue,
 			gaugeValue,
-			err.Error(),
 			defaultNamespace,
 		)
 	}
