@@ -52,7 +52,7 @@ func New(config Config) (*Collector, error) {
 
 func (c *Collector) Describe(ch chan<- *prometheus.Desc) {
 	ch <- chartConfigDesc
-	ch <- tillerUnreachableDesc
+	ch <- tillerReachableDesc
 }
 
 func (c *Collector) Collect(ch chan<- prometheus.Metric) {
@@ -60,7 +60,7 @@ func (c *Collector) Collect(ch chan<- prometheus.Metric) {
 
 	collectFuncs := []func(chan<- prometheus.Metric){
 		c.collectChartConfigStatus,
-		c.collectTillerUnreachable,
+		c.collectTillerReachable,
 	}
 
 	var wg sync.WaitGroup
