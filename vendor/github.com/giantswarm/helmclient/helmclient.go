@@ -192,6 +192,7 @@ func (c *Client) EnsureTillerInstalled() error {
 	{
 		o := &installer.Options{
 			ImageSpec:      tillerImageSpec,
+			MaxHistory:     defaultMaxHistory,
 			Namespace:      c.tillerNamespace,
 			ServiceAccount: tillerPodName,
 		}
