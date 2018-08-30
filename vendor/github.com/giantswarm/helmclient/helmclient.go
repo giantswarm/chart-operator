@@ -192,6 +192,7 @@ func (c *Client) EnsureTillerInstalled() error {
 	{
 		o := &installer.Options{
 			ImageSpec:      tillerImageSpec,
+			MaxHistory:     defaultMaxHistory,
 			Namespace:      c.tillerNamespace,
 			ServiceAccount: tillerPodName,
 		}
@@ -393,6 +394,22 @@ func (c *Client) InstallFromTarball(path, ns string, options ...helmclient.Insta
 	}
 
 	err := backoff.RetryNotify(o, b, n)
+	if err != nil {
+		return microerror.Mask(err)
+	}
+
+	return nil
+}
+
+// PingTiller proxies the underlying Helm client PingTiller method.
+func (c *Client) PingTiller() error {
+	t, err := c.newTunnel()
+	if err != nil {
+		return microerror.Mask(err)
+	}
+	defer c.closeTunnel(t)
+
+	err = c.newHelmClientFromTunnel(t).PingTiller()
 	if err != nil {
 		return microerror.Mask(err)
 	}
