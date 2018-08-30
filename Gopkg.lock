@@ -152,7 +152,7 @@
   revision = "889af437b4d98f8a1ccb66cb85b93de13d8c666e"
 
 [[projects]]
-  branch = "add-logger-to-file"
+  branch = "master"
   name = "github.com/giantswarm/e2e-harness"
   packages = [
     "pkg/framework",
@@ -160,7 +160,7 @@
     "pkg/framework/resource",
     "pkg/harness"
   ]
-  revision = "d7fdccdc1e2ecfe3093f86e0d5b1785318056880"
+  revision = "0e6c1c20224b2c43cc27484d01d85269361870f2"
 
 [[projects]]
   branch = "master"
@@ -1215,6 +1215,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "4cf6cd15c46bc67228067a4486f9ec691385af3949d7892aa2ef4776db3ff209"
+  inputs-digest = "0b7790f20ba2e81356f60b6c2184e9adb06f321fe2820f0177809e26a0c02dc4"
   solver-name = "gps-cdcl"
   solver-version = 1
