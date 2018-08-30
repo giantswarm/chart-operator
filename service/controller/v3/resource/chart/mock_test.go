@@ -73,3 +73,7 @@ func (h *helmMock) RunReleaseTest(releaseName string, options ...helm.ReleaseTes
 func (h *helmMock) UpdateReleaseFromTarball(releaseName, path string, options ...helm.UpdateOption) error {
 	return nil
 }
+
+func (h *helmMock) PingTiller() error {
+	return nil
+}

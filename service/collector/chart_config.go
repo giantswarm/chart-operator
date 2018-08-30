@@ -9,13 +9,10 @@ import (
 )
 
 const (
-	gaugeValue         float64 = 1
-	chartNameLabel             = "chart_name"
-	channelNameLabel           = "channel_name"
-	releaseNameLabel           = "release_name"
-	releaseStatusLabel         = "release_status"
-	namespaceLabel             = "namespace"
-	defaultNamespace           = "giantswarm"
+	chartNameLabel     = "chart_name"
+	channelNameLabel   = "channel_name"
+	releaseNameLabel   = "release_name"
+	releaseStatusLabel = "release_status"
 )
 
 type chartState struct {
