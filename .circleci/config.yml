@@ -38,6 +38,8 @@ jobs:
         chmod +x ./architect
         ./architect version
     - run: ./architect build
+    - store_test_results:
+        path: /tmp/results
     - run: ./architect publish --pipeline=false --channels=${CIRCLE_SHA1}
     - run: |
         sed -i 's/version:.*/version: 1.0.0-'"${CIRCLE_SHA1}"'/' helm/chart-operator-chart/Chart.yaml
