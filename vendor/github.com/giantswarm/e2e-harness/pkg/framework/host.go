@@ -30,7 +30,7 @@ import (
 )
 
 const (
-	defaultNamespace = "giantswarm"
+	defaultNamespace = "default"
 )
 
 type HostConfig struct {
@@ -464,7 +464,7 @@ func (h *Host) RestConfig() *rest.Config {
 }
 
 func (h *Host) Setup() error {
-	if err := h.CreateNamespace(h.targetNamespace); err != nil {
+	if err := h.CreateNamespace("giantswarm"); err != nil {
 		return microerror.Mask(err)
 	}
 
@@ -483,7 +483,7 @@ func (h *Host) Teardown() {
 	HelmCmd("delete vault --purge")
 	h.k8sClient.CoreV1().
 		Namespaces().
-		Delete(h.targetNamespace, &metav1.DeleteOptions{})
+		Delete("giantswarm", &metav1.DeleteOptions{})
 }
 
 func (h *Host) WaitForPodLog(namespace, needle, podName string) error {

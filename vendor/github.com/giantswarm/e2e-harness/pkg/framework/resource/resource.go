@@ -15,6 +15,10 @@ import (
 	"github.com/giantswarm/e2e-harness/pkg/framework"
 )
 
+const (
+	defaultNamespace = "default"
+)
+
 type ResourceConfig struct {
 	ApprClient *apprclient.Client
 	HelmClient *helmclient.Client
@@ -59,7 +63,7 @@ func New(config ResourceConfig) (*Resource, error) {
 		return nil, microerror.Maskf(invalidConfigError, "%T.HelmClient must not be empty", config)
 	}
 	if config.Namespace == "" {
-		config.Namespace = "giantswarm"
+		config.Namespace = defaultNamespace
 	}
 	c := &Resource{
 		apprClient: config.ApprClient,

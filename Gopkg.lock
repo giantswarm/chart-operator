@@ -160,7 +160,7 @@
     "pkg/framework/resource",
     "pkg/harness"
   ]
-  revision = "0e6c1c20224b2c43cc27484d01d85269361870f2"
+  revision = "1e8297405b2126cef7ce90813340b615a03f60ce"
 
 [[projects]]
   branch = "master"
