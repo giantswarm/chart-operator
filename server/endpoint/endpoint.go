@@ -3,7 +3,6 @@ package endpoint
 import (
 	"github.com/giantswarm/microendpoint/endpoint/healthz"
 	"github.com/giantswarm/microendpoint/endpoint/version"
-	healthzservice "github.com/giantswarm/microendpoint/service/healthz"
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/micrologger"
 
@@ -16,10 +15,14 @@ type Config struct {
 	Service *service.Service
 }
 
+// Endpoint is the endpoint collection.
+type Endpoint struct {
+	Healthz *healthz.Endpoint
+	Version *version.Endpoint
+}
+
 // New creates a new endpoint with given configuration.
 func New(config Config) (*Endpoint, error) {
-	var err error
-
 	if config.Logger == nil {
 		return nil, microerror.Maskf(invalidConfigError, "%T.Logger must not be empty", config)
 	}
@@ -27,12 +30,12 @@ func New(config Config) (*Endpoint, error) {
 		return nil, microerror.Maskf(invalidConfigError, "%T.Service or it's Healthz descendents must not be empty", config)
 	}
 
+	var err error
+
 	var healthzEndpoint *healthz.Endpoint
 	{
-		c := healthz.DefaultConfig()
-		c.Logger = config.Logger
-		c.Services = []healthzservice.Service{
-			config.Service.Healthz.K8s,
+		c := healthz.Config{
+			Logger: config.Logger,
 		}
 
 		healthzEndpoint, err = healthz.New(c)
@@ -43,10 +46,12 @@ func New(config Config) (*Endpoint, error) {
 
 	var versionEndpoint *version.Endpoint
 	{
-		versionConfig := version.DefaultConfig()
-		versionConfig.Logger = config.Logger
-		versionConfig.Service = config.Service.Version
-		versionEndpoint, err = version.New(versionConfig)
+		c := version.Config{
+			Logger:  config.Logger,
+			Service: config.Service.Version,
+		}
+
+		versionEndpoint, err = version.New(c)
 		if err != nil {
 			return nil, microerror.Mask(err)
 		}
@@ -58,10 +63,4 @@ func New(config Config) (*Endpoint, error) {
 	}
 
 	return endpoint, nil
-}
-
-// Endpoint is the endpoint collection.
-type Endpoint struct {
-	Healthz *healthz.Endpoint
-	Version *version.Endpoint
 }
