@@ -518,7 +518,7 @@ func (c *Client) newHelmClientFromTunnel(t *k8sportforward.Tunnel) helmclient.In
 	}
 
 	return helmclient.NewClient(
-		helmclient.Host(newTunnelAddress(t)),
+		helmclient.Host(t.LocalAddress()),
 		helmclient.ConnectTimeout(5),
 	)
 }
@@ -537,10 +537,11 @@ func (c *Client) newTunnel() (*k8sportforward.Tunnel, error) {
 
 	var forwarder *k8sportforward.Forwarder
 	{
-		c := k8sportforward.Config{
+		c := k8sportforward.ForwarderConfig{
 			RestConfig: c.restConfig,
 		}
-		forwarder, err = k8sportforward.New(c)
+
+		forwarder, err = k8sportforward.NewForwarder(c)
 		if err != nil {
 			return nil, microerror.Mask(err)
 		}
@@ -548,13 +549,7 @@ func (c *Client) newTunnel() (*k8sportforward.Tunnel, error) {
 
 	var tunnel *k8sportforward.Tunnel
 	{
-		c := k8sportforward.TunnelConfig{
-			Remote:    tillerPort,
-			Namespace: c.tillerNamespace,
-			PodName:   podName,
-		}
-
-		tunnel, err = forwarder.ForwardPort(c)
+		tunnel, err = forwarder.ForwardPort(c.tillerNamespace, podName, tillerPort)
 		if err != nil {
 			return nil, microerror.Mask(err)
 		}
@@ -581,9 +576,4 @@ func getPodName(client kubernetes.Interface, labelSelector, namespace string) (s
 	pod := pods.Items[0]
 
 	return pod.Name, nil
-}
-
-// TODO remove when k8sportforward.Tunnel.Address() got implemented.
-func newTunnelAddress(t *k8sportforward.Tunnel) string {
-	return fmt.Sprintf("127.0.0.1:%d", t.Local)
 }

@@ -3,10 +3,8 @@
 package chart
 
 import (
-	"fmt"
 	"log"
 	"net/http"
-	"strconv"
 	"time"
 
 	"github.com/cenkalti/backoff"
@@ -25,34 +23,34 @@ type Chart struct {
 	Name    string
 }
 
-func Push(f *framework.Host, charts []Chart) error {
-	fwc := k8sportforward.Config{
-		RestConfig: f.RestConfig(),
+func Push(h *framework.Host, charts []Chart) error {
+	var err error
+
+	var forwarder *k8sportforward.Forwarder
+	{
+		c := k8sportforward.ForwarderConfig{
+			RestConfig: h.RestConfig(),
+		}
+
+		forwarder, err = k8sportforward.NewForwarder(c)
+		if err != nil {
+			return microerror.Mask(err)
+		}
 	}
 
-	fw, err := k8sportforward.New(fwc)
+	podName, err := waitForPod(h, "giantswarm", "app=cnr-server")
 	if err != nil {
 		return microerror.Mask(err)
 	}
 
-	podName, err := waitForPod(f, "giantswarm", "app=cnr-server")
-	if err != nil {
-		return microerror.Mask(err)
-	}
-	tc := k8sportforward.TunnelConfig{
-		Remote:    5000,
-		Namespace: "giantswarm",
-		PodName:   podName,
-	}
-	tunnel, err := fw.ForwardPort(tc)
+	tunnel, err := forwarder.ForwardPort("giantswarm", podName, 5000)
 	if err != nil {
 		return microerror.Mask(err)
 	}
 
-	serverAddress := "http://localhost:" + strconv.Itoa(tunnel.Local)
-	err = waitForServer(f, serverAddress+"/cnr/api/v1/packages")
+	err = waitForServer(h, "http://"+tunnel.LocalAddress()+"/cnr/api/v1/packages")
 	if err != nil {
-		return microerror.Mask(fmt.Errorf("server didn't come up on time"))
+		return microerror.Mask(err)
 	}
 
 	l, err := micrologger.New(micrologger.Config{})
@@ -64,7 +62,7 @@ func Push(f *framework.Host, charts []Chart) error {
 		Fs:     afero.NewOsFs(),
 		Logger: l,
 
-		Address:      serverAddress,
+		Address:      "http://" + tunnel.LocalAddress(),
 		Organization: "giantswarm",
 	}
 
@@ -87,14 +85,15 @@ func Push(f *framework.Host, charts []Chart) error {
 	return nil
 }
 
-func waitForServer(f *framework.Host, url string) error {
+func waitForServer(h *framework.Host, url string) error {
 	var err error
 
 	operation := func() error {
 		_, err := http.Get(url)
 		if err != nil {
-			return fmt.Errorf("could not retrieve %s: %v", url, err)
+			return microerror.Mask(err)
 		}
+
 		return nil
 	}
 
@@ -109,14 +108,15 @@ func waitForServer(f *framework.Host, url string) error {
 	return nil
 }
 
-func waitForPod(f *framework.Host, ns, selector string) (string, error) {
+func waitForPod(h *framework.Host, ns, selector string) (string, error) {
 	var err error
 	var podName string
 	operation := func() error {
-		podName, err = f.GetPodName(ns, selector)
+		podName, err = h.GetPodName(ns, selector)
 		if err != nil {
-			return fmt.Errorf("could not retrieve pod %q on %q: %v", selector, ns, err)
+			return microerror.Mask(err)
 		}
+
 		return nil
 	}
 
@@ -128,5 +128,6 @@ func waitForPod(f *framework.Host, ns, selector string) (string, error) {
 	if err != nil {
 		return "", microerror.Mask(err)
 	}
+
 	return podName, nil
 }
