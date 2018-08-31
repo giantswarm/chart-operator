@@ -3,7 +3,6 @@
 package chart
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 	"time"
@@ -49,10 +48,9 @@ func Push(h *framework.Host, charts []Chart) error {
 		return microerror.Mask(err)
 	}
 
-	serverAddress := "http://" + tunnel.LocalAddress() + "/cnr/api/v1/packages"
-	err = waitForServer(h, serverAddress)
+	err = waitForServer(h, "http://"+tunnel.LocalAddress()+"/cnr/api/v1/packages")
 	if err != nil {
-		return microerror.Mask(fmt.Errorf("server didn't come up on time"))
+		return microerror.Mask(err)
 	}
 
 	l, err := micrologger.New(micrologger.Config{})
@@ -64,7 +62,7 @@ func Push(h *framework.Host, charts []Chart) error {
 		Fs:     afero.NewOsFs(),
 		Logger: l,
 
-		Address:      serverAddress,
+		Address:      "http://" + tunnel.LocalAddress(),
 		Organization: "giantswarm",
 	}
 
@@ -93,8 +91,9 @@ func waitForServer(h *framework.Host, url string) error {
 	operation := func() error {
 		_, err := http.Get(url)
 		if err != nil {
-			return fmt.Errorf("could not retrieve %s: %v", url, err)
+			return microerror.Mask(err)
 		}
+
 		return nil
 	}
 
@@ -115,8 +114,9 @@ func waitForPod(h *framework.Host, ns, selector string) (string, error) {
 	operation := func() error {
 		podName, err = h.GetPodName(ns, selector)
 		if err != nil {
-			return fmt.Errorf("could not retrieve pod %q on %q: %v", selector, ns, err)
+			return microerror.Mask(err)
 		}
+
 		return nil
 	}
 
@@ -128,5 +128,6 @@ func waitForPod(h *framework.Host, ns, selector string) (string, error) {
 	if err != nil {
 		return "", microerror.Mask(err)
 	}
+
 	return podName, nil
 }

@@ -11,7 +11,7 @@ import (
 
 func Teardown(f *framework.Host, helmClient *helmclient.Client) error {
 	// clean host cluster components
-	err := framework.HelmCmd("delete --purge chart-operator")
+	err := framework.HelmCmd("delete --purge giantswarm-chart-operator")
 	if err != nil {
 		return microerror.Mask(err)
 	}
