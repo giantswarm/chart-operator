@@ -53,7 +53,7 @@ required = [
   name = "github.com/giantswarm/apprclient"
 
 [[constraint]]
-  branch = "align-namespace"
+  branch = "master"
   name = "github.com/giantswarm/e2e-harness"
 
 [[constraint]]
