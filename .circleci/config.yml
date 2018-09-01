@@ -17,6 +17,10 @@ e2eTest: &e2eTest
 
     - run: ./e2e-harness test --test-dir=${TEST_DIR}
 
+    - store_artifacts:
+        path: .e2e-harness/workdir/logs
+        destination: logs
+
     - run:
         name: Finish with cleanup, no matter if the test succeeded or not
         command: ./e2e-harness teardown

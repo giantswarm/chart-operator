@@ -197,11 +197,16 @@
   name = "github.com/giantswarm/e2e-harness"
   packages = [
     "pkg/framework",
+    "pkg/framework/filelogger",
     "pkg/framework/resource",
     "pkg/harness",
   ]
-  pruneopts = "UT"
-  revision = "356ee815b2f63562157d4f30149f7e8b19ae2a74"
+<<<<<<< HEAD
+  revision = "b8f538cd46acde7bd3570348948080de2b07b8ae"
+=======
+
+  revision = "0ab361fab5e732e0cc782be4b17c2e11cfb8137d"
+>>>>>>> 3ad2135b4ede1a754d962a71f158722edd9d11d1
 
 [[projects]]
   branch = "master"
