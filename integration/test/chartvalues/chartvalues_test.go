@@ -26,8 +26,8 @@ func TestChartValues(t *testing.T) {
 		{
 			Channel: "1-0-beta",
 			Release: "1.0.0",
-			Tarball: "/e2e/fixtures/tb-configmap-1.0.0.tgz",
-			Name:    "tb-configmap",
+			Tarball: "/e2e/fixtures/tb-configmap-chart-1.0.0.tgz",
+			Name:    "tb-configmap-chart",
 		},
 	}
 
@@ -53,7 +53,7 @@ func TestChartValues(t *testing.T) {
 	// Install ValuesConfigMaps
 	err = r.InstallResource("tb-configmap", "", "1-0-beta")
 	if err != nil {
-		t.Fatalf("could not install %q %v", cr, err)
+		t.Fatalf("could not install %q %v", "tb-configmap-chart", err)
 	}
 
 	// Install Chartconfig
