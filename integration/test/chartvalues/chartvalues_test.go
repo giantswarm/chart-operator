@@ -49,6 +49,14 @@ func TestChartValues(t *testing.T) {
 	}
 
 	// Test Creation
+
+	// Install ValuesConfigMaps
+	err = r.InstallResource("tb-configmap", "", "1-0-beta")
+	if err != nil {
+		t.Fatalf("could not install %q %v", cr, err)
+	}
+
+	// Install Chartconfig
 	l.Log("level", "debug", "message", fmt.Sprintf("creating %s", cr))
 	chartValues, err := chartconfig.ExecuteChartValuesTemplate(chartConfigValues)
 	if err != nil {
