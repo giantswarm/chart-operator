@@ -24,7 +24,7 @@ type Chart struct {
 	Name    string
 }
 
-func Push(h *framework.Host, charts []Chart) error {
+func Push(l micrologger.Logger, h *framework.Host, charts []Chart) error {
 	var err error
 
 	var forwarder *k8sportforward.Forwarder
