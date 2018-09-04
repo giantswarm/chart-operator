@@ -33,7 +33,7 @@ func TestChartValues(t *testing.T) {
 
 	chartConfigValues := e2etemplates.ApiextensionsChartConfigValues{
 		Channel: "1-0-beta",
-		Configmap: {
+		ConfigMap: e2etemplates.ApiextensionsChartConfigConfigMap{
 			Name:            "tb-configmap",
 			Namespace:       "giantswarm",
 			ResourceVersion: "1",
