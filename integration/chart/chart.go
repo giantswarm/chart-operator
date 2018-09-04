@@ -54,11 +54,6 @@ func Push(l micrologger.Logger, h *framework.Host, charts []Chart) error {
 		return microerror.Mask(err)
 	}
 
-	l, err := micrologger.New(micrologger.Config{})
-	if err != nil {
-		return microerror.Mask(err)
-	}
-
 	c := apprclient.Config{
 		Fs:     afero.NewOsFs(),
 		Logger: l,
