@@ -45,7 +45,7 @@ required = [
   name = "github.com/docker/distribution"
 
 [[constraint]]
-  branch = "master"
+  branch = "add-custom-configmap"
   name = "github.com/giantswarm/apiextensions"
 
 [[constraint]]
@@ -131,5 +131,4 @@ required = [
 
 
 [prune]
-  go-tests = true
-  unused-packages = true
+  go-tests = true  unused-packages = true

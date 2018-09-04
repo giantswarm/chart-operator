@@ -609,6 +609,7 @@ func (in *ChartConfigSpec) DeepCopy() *ChartConfigSpec {
 func (in *ChartConfigSpecChart) DeepCopyInto(out *ChartConfigSpecChart) {
 	*out = *in
 	out.ConfigMap = in.ConfigMap
+	out.CustomConfigMap = in.CustomConfigMap
 	out.Secret = in.Secret
 	return
 }
