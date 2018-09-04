@@ -21,6 +21,14 @@ func ConfigMapNamespace(customObject v1alpha1.ChartConfig) string {
 	return customObject.Spec.Chart.ConfigMap.Namespace
 }
 
+func CustomConfigMapName(customObject v1alpha1.ChartConfig) string {
+	return customObject.Spec.Chart.CustomConfigMap.Name
+}
+
+func CustomConfigMapNamespace(customObject v1alpha1.ChartConfig) string {
+	return customObject.Spec.Chart.CustomConfigMap.Namespace
+}
+
 func Namespace(customObject v1alpha1.ChartConfig) string {
 	return customObject.Spec.Chart.Namespace
 }
