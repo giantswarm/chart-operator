@@ -23,10 +23,21 @@ func TestChartValues(t *testing.T) {
 			Tarball: "/e2e/fixtures/tb-chart-1.0.0.tgz",
 			Name:    "tb-chart",
 		},
+		{
+			Channel: "1-0-beta",
+			Release: "1.0.0",
+			Tarball: "/e2e/fixtures/tb-configmap-1.0.0.tgz",
+			Name:    "tb-configmap",
+		},
 	}
 
 	chartConfigValues := e2etemplates.ApiextensionsChartConfigValues{
-		Channel:              "1-0-beta",
+		Channel: "1-0-beta",
+		Configmap: {
+			Name:            "tb-configmap",
+			Namespace:       "giantswarm",
+			ResourceVersion: "1",
+		},
 		Name:                 "tb-chart",
 		Namespace:            "giantswarm",
 		Release:              "tb-release",
