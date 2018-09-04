@@ -3,6 +3,7 @@
 package chart
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"time"
@@ -80,6 +81,8 @@ func Push(h *framework.Host, charts []Chart) error {
 		if err != nil {
 			return microerror.Mask(err)
 		}
+
+		l.Log("level", "debug", "message", fmt.Sprintf("pushed chart %s to channel %s", chart.Name, chart.Channel))
 	}
 
 	return nil
