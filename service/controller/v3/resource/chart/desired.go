@@ -118,6 +118,7 @@ func (r *Resource) getSecretValues(ctx context.Context, customObject v1alpha1.Ch
 	return secretValues, nil
 }
 
+// merge merges maps a and b and overrides map a with values in map b.
 func merge(a, b map[string]interface{}) (map[string]interface{}, error) {
 	if a == nil {
 		return b, nil
@@ -130,6 +131,7 @@ func merge(a, b map[string]interface{}) (map[string]interface{}, error) {
 	return a, nil
 }
 
+// union performs a union of maps a and b and errors if a key is present in both.
 func union(a, b map[string]interface{}) (map[string]interface{}, error) {
 	if a == nil {
 		return b, nil

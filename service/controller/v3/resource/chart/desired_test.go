@@ -350,6 +350,93 @@ func Test_DesiredState(t *testing.T) {
 
 }
 
+func Test_merge(t *testing.T) {
+	testCases := []struct {
+		name         string
+		inputA       map[string]interface{}
+		inputB       map[string]interface{}
+		expectedMap  map[string]interface{}
+		errorMatcher func(error) bool
+	}{
+		{
+			name: "case 0: both maps with exclusive entries",
+			inputA: map[string]interface{}{
+				"config": "config",
+			},
+			inputB: map[string]interface{}{
+				"custom": "custom",
+			},
+			expectedMap: map[string]interface{}{
+				"config": "config",
+				"custom": "custom",
+			},
+		},
+		{
+			name: "case 1: both maps with identical entries use custom",
+			inputA: map[string]interface{}{
+				"config": "config",
+			},
+			inputB: map[string]interface{}{
+				"config": "custom",
+			},
+			expectedMap: map[string]interface{}{
+				"config": "custom",
+			},
+		},
+		{
+			name: "case 2: both maps contain different values",
+			inputA: map[string]interface{}{
+				"a": "a",
+				"b": "b",
+			},
+			inputB: map[string]interface{}{
+				"c": "c",
+			},
+			expectedMap: map[string]interface{}{
+				"a": "a",
+				"b": "b",
+				"c": "c",
+			},
+		},
+		{
+			name: "case 3: both maps contain intersecting values, overrides are used",
+			inputA: map[string]interface{}{
+				"a": "a",
+				"b": "b",
+				"c": "c",
+			},
+			inputB: map[string]interface{}{
+				"c": "custom",
+				"d": "d",
+			},
+			expectedMap: map[string]interface{}{
+				"a": "a",
+				"b": "b",
+				"c": "custom",
+				"d": "d",
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			result, err := merge(tc.inputA, tc.inputB)
+			switch {
+			case err != nil && tc.errorMatcher == nil:
+				t.Fatalf("error == %#v, want nil", err)
+			case err == nil && tc.errorMatcher != nil:
+				t.Fatalf("error == nil, want non-nil")
+			case err != nil && !tc.errorMatcher(err):
+				t.Fatalf("error == %#v, want matching", err)
+			}
+
+			if !reflect.DeepEqual(result, tc.expectedMap) {
+				t.Fatalf("Map == %q, want %q", result, tc.expectedMap)
+			}
+		})
+	}
+}
+
 func Test_union(t *testing.T) {
 	testCases := []struct {
 		name         string
