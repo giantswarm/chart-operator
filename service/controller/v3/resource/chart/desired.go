@@ -32,7 +32,14 @@ func (r *Resource) GetDesiredState(ctx context.Context, obj interface{}) (interf
 	// Custom configmap contains settings overridden by the user.
 	customConfigmapName := key.CustomConfigMapName(customObject)
 	customConfigmapNamespace := key.CustomConfigMapNamespace(customObject)
-	_, err = r.getConfigMapValues(ctx, customConfigmapName, customConfigmapNamespace)
+	customConfigmapValues, err := r.getConfigMapValues(ctx, customConfigmapName, customConfigmapNamespace)
+	if err != nil {
+		return nil, microerror.Mask(err)
+	}
+
+	// Merge configmap values. Custom values from the user override values
+	// managed by the controlling operator.
+	chartConfigmapValues, err = merge(chartConfigmapValues, customConfigmapValues)
 	if err != nil {
 		return nil, microerror.Mask(err)
 	}
@@ -109,6 +116,18 @@ func (r *Resource) getSecretValues(ctx context.Context, customObject v1alpha1.Ch
 	}
 
 	return secretValues, nil
+}
+
+func merge(a, b map[string]interface{}) (map[string]interface{}, error) {
+	if a == nil {
+		return b, nil
+	}
+
+	for k, v := range b {
+		a[k] = v
+	}
+
+	return a, nil
 }
 
 func union(a, b map[string]interface{}) (map[string]interface{}, error) {
