@@ -16,12 +16,13 @@ import (
 
 func Test_DesiredState(t *testing.T) {
 	testCases := []struct {
-		name          string
-		obj           *v1alpha1.ChartConfig
-		configMap     *apiv1.ConfigMap
-		secret        *apiv1.Secret
-		expectedState ChartState
-		errorMatcher  func(error) bool
+		name            string
+		obj             *v1alpha1.ChartConfig
+		configMap       *apiv1.ConfigMap
+		customConfigMap *apiv1.ConfigMap
+		secret          *apiv1.Secret
+		expectedState   ChartState
+		errorMatcher    func(error) bool
 	}{
 		{
 			name: "case 0: basic match",
@@ -296,6 +297,57 @@ func Test_DesiredState(t *testing.T) {
 			},
 			errorMatcher: IsInvalidConfig,
 		},
+		{
+			name: "case 9: custom configmap overrides values",
+			obj: &v1alpha1.ChartConfig{
+				Spec: v1alpha1.ChartConfigSpec{
+					Chart: v1alpha1.ChartConfigSpecChart{
+						Name: "chart-operator-chart",
+						ConfigMap: v1alpha1.ChartConfigSpecConfigMap{
+							Name:      "values-configmap",
+							Namespace: "kube-system",
+						},
+						CustomConfigMap: v1alpha1.ChartConfigSpecConfigMap{
+							Name:      "custom-configmap",
+							Namespace: "kube-system",
+						},
+						Channel: "0-1-beta",
+						Release: "custom-chart",
+					},
+				},
+			},
+			configMap: &apiv1.ConfigMap{
+				ObjectMeta: metav1.ObjectMeta{
+					Name:      "values-configmap",
+					Namespace: "kube-system",
+				},
+				Data: map[string]string{
+					"values.json": `{ "values-key-1": "test-value", "values-key-2": 2 }`,
+				},
+			},
+			customConfigMap: &apiv1.ConfigMap{
+				ObjectMeta: metav1.ObjectMeta{
+					Name:      "custom-configmap",
+					Namespace: "kube-system",
+				},
+				Data: map[string]string{
+					"custom-key":   "test-value",
+					"custom-key-2": "test-value-2",
+				},
+			},
+			expectedState: ChartState{
+				ChartName: "chart-operator-chart",
+				ChartValues: map[string]interface{}{
+					"values-key-1": "test-value",
+					"values-key-2": float64(2),
+					"custom-key":   "test-value",
+					"custom-key-2": "test-value-2",
+				},
+				ChannelName:    "0-1-beta",
+				ReleaseName:    "chart-operator",
+				ReleaseVersion: "0.1.2",
+			},
+		},
 	}
 
 	apprClient := &apprMock{
@@ -310,6 +362,9 @@ func Test_DesiredState(t *testing.T) {
 			objs := make([]runtime.Object, 0, 0)
 			if tc.configMap != nil {
 				objs = append(objs, tc.configMap)
+			}
+			if tc.customConfigMap != nil {
+				objs = append(objs, tc.customConfigMap)
 			}
 			if tc.secret != nil {
 				objs = append(objs, tc.secret)
@@ -342,8 +397,12 @@ func Test_DesiredState(t *testing.T) {
 				t.Fatalf("error == %#v, want nil", err)
 			}
 
-			if !reflect.DeepEqual(chartState, tc.expectedState) {
-				t.Fatalf("ChartState == %#v, want %#v", chartState, tc.expectedState)
+			if len(chartState.ChartValues) != len(tc.expectedState.ChartValues) {
+				t.Fatalf("ChartState.ChartValues == %d, want %d", len(chartState.ChartValues), len(tc.expectedState.ChartValues))
+			}
+
+			if !reflect.DeepEqual(chartState.ChartValues, tc.expectedState.ChartValues) {
+				t.Fatalf("ChartState == %#v, want %#v", chartState.ChartValues, tc.expectedState.ChartValues)
 			}
 		})
 	}
