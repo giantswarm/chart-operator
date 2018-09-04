@@ -20,10 +20,23 @@ func (r *Resource) GetDesiredState(ctx context.Context, obj interface{}) (interf
 
 	name := key.ChartName(customObject)
 	channel := key.ChannelName(customObject)
-	chartConfigmapValues, err := r.getConfigMapValues(ctx, customObject)
+
+	// Values configmap contains settings managed by the controlling operator.
+	configmapName := key.ConfigMapName(customObject)
+	configmapNamespace := key.ConfigMapNamespace(customObject)
+	chartConfigmapValues, err := r.getConfigMapValues(ctx, configmapName, configmapNamespace)
 	if err != nil {
 		return nil, microerror.Mask(err)
 	}
+
+	// Custom configmap contains settings overridden by the user.
+	customConfigmapName := key.CustomConfigMapName(customObject)
+	customConfigmapNamespace := key.CustomConfigMapNamespace(customObject)
+	_, err = r.getConfigMapValues(ctx, customConfigmapName, customConfigmapNamespace)
+	if err != nil {
+		return nil, microerror.Mask(err)
+	}
+
 	chartSecretValues, err := r.getSecretValues(ctx, customObject)
 	if err != nil {
 		return nil, microerror.Mask(err)
@@ -48,13 +61,10 @@ func (r *Resource) GetDesiredState(ctx context.Context, obj interface{}) (interf
 	return chartState, nil
 }
 
-func (r *Resource) getConfigMapValues(ctx context.Context, customObject v1alpha1.ChartConfig) (map[string]interface{}, error) {
+func (r *Resource) getConfigMapValues(ctx context.Context, configMapName, configMapNamespace string) (map[string]interface{}, error) {
 	chartValues := make(map[string]interface{})
 
-	if key.ConfigMapName(customObject) != "" {
-		configMapName := key.ConfigMapName(customObject)
-		configMapNamespace := key.ConfigMapNamespace(customObject)
-
+	if configMapName != "" {
 		configMap, err := r.k8sClient.CoreV1().ConfigMaps(configMapNamespace).Get(configMapName, metav1.GetOptions{})
 		if apierrors.IsNotFound(err) {
 			return chartValues, microerror.Maskf(notFoundError, "config map '%s' in namespace '%s' not found", configMapName, configMapNamespace)
