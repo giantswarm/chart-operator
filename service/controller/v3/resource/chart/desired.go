@@ -6,7 +6,6 @@ import (
 
 	"github.com/giantswarm/apiextensions/pkg/apis/core/v1alpha1"
 	"github.com/giantswarm/microerror"
-	yaml "gopkg.in/yaml.v2"
 	corev1 "k8s.io/api/core/v1"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -102,12 +101,10 @@ func (r *Resource) getCustomConfigMapValues(ctx context.Context, customObject v1
 			return customValues, microerror.Mask(err)
 		}
 
-		yamlData := configMap.Data["values.yaml"]
-		if yamlData != "" {
-			err = yaml.Unmarshal([]byte(yamlData), &customValues)
-			if err != nil {
-				return customValues, microerror.Mask(err)
-			}
+		keys := configMap.Data
+
+		for k, v := range keys {
+			customValues[k] = v
 		}
 	}
 
