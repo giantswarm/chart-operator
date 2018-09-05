@@ -36,7 +36,7 @@ func TestChartLifecycle(t *testing.T) {
 			},
 		}
 
-		err := chart.Push(h, charts)
+		err := chart.Push(l, h, charts)
 		if err != nil {
 			t.Fatalf("expected %#v got %#v", nil, err)
 		}
