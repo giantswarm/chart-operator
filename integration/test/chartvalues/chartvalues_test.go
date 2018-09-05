@@ -14,9 +14,14 @@ import (
 	"github.com/giantswarm/chart-operator/integration/env"
 )
 
-func TestChartValues(t *testing.T) {
-	const cr = "apiextensions-chart-config-e2e"
+const (
+	cr                   = "apiextensions-chart-config-e2e"
+	namespace            = "giantswarm"
+	testChartRelease     = "tb-release"
+	testConfigMapRelease = "tb-configmap"
+)
 
+func TestChartValues(t *testing.T) {
 	charts := []chart.Chart{
 		{
 			Channel: "1-0-beta",
@@ -29,13 +34,13 @@ func TestChartValues(t *testing.T) {
 	chartConfigValues := e2etemplates.ApiextensionsChartConfigValues{
 		Channel: "1-0-beta",
 		ConfigMap: e2etemplates.ApiextensionsChartConfigConfigMap{
-			Name:            "tb-configmap",
-			Namespace:       "giantswarm",
+			Name:            testChartRelease,
+			Namespace:       namespace,
 			ResourceVersion: "1",
 		},
 		Name:                 "tb-chart",
-		Namespace:            "giantswarm",
-		Release:              "tb-release",
+		Namespace:            namespace,
+		Release:              testChartRelease,
 		VersionBundleVersion: env.VersionBundleVersion(),
 	}
 	err := chart.Push(l, h, charts)
@@ -46,10 +51,15 @@ func TestChartValues(t *testing.T) {
 	// Test Creation
 
 	// Install Values ConfigMap
-	err = helmClient.InstallFromTarball("/e2e/fixtures/tb-configmap-chart-1.0.0.tgz", "giantswarm", helm.ValueOverrides([]byte("")), helm.InstallWait(true))
+	err = helmClient.InstallFromTarball("/e2e/fixtures/tb-configmap-chart-1.0.0.tgz", namespace, helm.ReleaseName(testConfigMapRelease), helm.ValueOverrides([]byte("")), helm.InstallWait(true))
 	if err != nil {
 		t.Fatalf("could not install values configmap %v", err)
 	}
+	err = r.WaitForStatus(testConfigMapRelease, "DEPLOYED")
+	if err != nil {
+		t.Fatalf("expected %#v got %#v", nil, err)
+	}
+	l.Log("level", "debug", "message", fmt.Sprintf("%s succesfully deployed", cr))
 
 	// Install Chartconfig
 	l.Log("level", "debug", "message", fmt.Sprintf("creating %s", cr))
@@ -61,4 +71,16 @@ func TestChartValues(t *testing.T) {
 	if err != nil {
 		t.Fatalf("could not install %q %v", cr, err)
 	}
+
+	err = r.WaitForStatus(cr, "DEPLOYED")
+	if err != nil {
+		t.Fatalf("expected %#v got %#v", nil, err)
+	}
+	l.Log("level", "debug", "message", fmt.Sprintf("%s succesfully deployed", cr))
+
+	err = r.WaitForStatus(testChartRelease, "DEPLOYED")
+	if err != nil {
+		t.Fatalf("expected %#v got %#v", nil, err)
+	}
+	l.Log("level", "debug", "message", fmt.Sprintf("%s succesfully deployed", testChartRelease))
 }
