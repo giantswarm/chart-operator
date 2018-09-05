@@ -84,4 +84,14 @@ func TestChartValues(t *testing.T) {
 		t.Fatalf("expected %#v got %#v", nil, err)
 	}
 	l.Log("level", "debug", "message", fmt.Sprintf("%s succesfully deployed", testChartRelease))
+
+	// Check if values are applied
+	rc, err := helmClient.GetReleaseContent(testChartRelease)
+	if err != nil {
+		t.Fatalf("could not get release content of %s %v", testChartRelease, err)
+	}
+	l.Log("level", "debug", "message", fmt.Sprintf("chart %s has values %#v", testChartRelease, rc))
+	if rc.Values["config"] == "config" {
+		t.Fatalf("expected %#v got %#v", "config", rc.Values["config"])
+	}
 }
