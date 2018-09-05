@@ -51,7 +51,8 @@ func TestChartValues(t *testing.T) {
 
 	// Install configmap containing the values
 	err = helmClient.InstallFromTarball("/e2e/fixtures/tb-configmap-chart-1.0.0.tgz",
-		namespace, helm.ReleaseName(testConfigMapRelease), helm.ValueOverrides([]byte("")), helm.InstallWait(true))
+		namespace, helm.ReleaseName(testConfigMapRelease),
+		helm.ValueOverrides([]byte(templates.ChartConfigMapValues)), helm.InstallWait(true))
 	if err != nil {
 		t.Fatalf("could not install values configmap %v", err)
 	}
