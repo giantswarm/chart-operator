@@ -18,6 +18,7 @@ const (
 	cr                   = "apiextensions-chart-config-e2e"
 	namespace            = "giantswarm"
 	testChartRelease     = "tb-release"
+	testConfigMapName    = "values-configmap"
 	testConfigMapRelease = "tb-configmap"
 )
 
@@ -34,7 +35,7 @@ func TestChartValues(t *testing.T) {
 	chartConfigValues := e2etemplates.ApiextensionsChartConfigValues{
 		Channel: "1-0-beta",
 		ConfigMap: e2etemplates.ApiextensionsChartConfigConfigMap{
-			Name:            testChartRelease,
+			Name:            testConfigMapName,
 			Namespace:       namespace,
 			ResourceVersion: "1",
 		},
