@@ -49,10 +49,9 @@ func TestChartValues(t *testing.T) {
 		t.Fatalf("could not push inital charts to cnr %v", err)
 	}
 
-	// Test Creation
-
-	// Install Values ConfigMap
-	err = helmClient.InstallFromTarball("/e2e/fixtures/tb-configmap-chart-1.0.0.tgz", namespace, helm.ReleaseName(testConfigMapRelease), helm.ValueOverrides([]byte("")), helm.InstallWait(true))
+	// Install configmap containing the values
+	err = helmClient.InstallFromTarball("/e2e/fixtures/tb-configmap-chart-1.0.0.tgz",
+		namespace, helm.ReleaseName(testConfigMapRelease), helm.ValueOverrides([]byte("")), helm.InstallWait(true))
 	if err != nil {
 		t.Fatalf("could not install values configmap %v", err)
 	}
@@ -62,7 +61,7 @@ func TestChartValues(t *testing.T) {
 	}
 	l.Log("level", "debug", "message", fmt.Sprintf("%s succesfully deployed", cr))
 
-	// Install Chartconfig
+	// Install chartconfig cr
 	l.Log("level", "debug", "message", fmt.Sprintf("creating %s", cr))
 	chartValues, err := chartconfig.ExecuteChartValuesTemplate(chartConfigValues)
 	if err != nil {
@@ -91,6 +90,7 @@ func TestChartValues(t *testing.T) {
 		t.Fatalf("could not get release content of %s %v", testChartRelease, err)
 	}
 	l.Log("level", "debug", "message", fmt.Sprintf("chart %s has values %#v", testChartRelease, rc.Values))
+
 	if rc.Values["config"] != "config" {
 		t.Fatalf("expected %#v got %#v", "config", rc.Values["config"])
 	}
