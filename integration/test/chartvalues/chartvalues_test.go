@@ -12,6 +12,7 @@ import (
 	"github.com/giantswarm/chart-operator/integration/chart"
 	"github.com/giantswarm/chart-operator/integration/chartconfig"
 	"github.com/giantswarm/chart-operator/integration/env"
+	"github.com/giantswarm/chart-operator/integration/templates"
 )
 
 const (
