@@ -192,8 +192,8 @@
   revision = "889af437b4d98f8a1ccb66cb85b93de13d8c666e"
 
 [[projects]]
-  branch = "master"
-  digest = "1:6b4c6a27f8bbaad35c4eba41c7dce3e3db72e578e8bfe7f216bb85c41c3a9264"
+  branch = "longer-wait-for-release-status"
+  digest = "1:885cf2250df3dceff314ed95ea019611fdda11bdb58043aa7dc22baf1bca8122"
   name = "github.com/giantswarm/e2e-harness"
   packages = [
     "pkg/framework",
@@ -201,12 +201,8 @@
     "pkg/framework/resource",
     "pkg/harness",
   ]
-<<<<<<< HEAD
-  revision = "b8f538cd46acde7bd3570348948080de2b07b8ae"
-=======
-
-  revision = "0ab361fab5e732e0cc782be4b17c2e11cfb8137d"
->>>>>>> 3ad2135b4ede1a754d962a71f158722edd9d11d1
+  pruneopts = "UT"
+  revision = "4312998f126227719cef0b45d6a2183b28ae154a"
 
 [[projects]]
   branch = "master"
