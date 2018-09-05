@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"github.com/giantswarm/e2etemplates/pkg/e2etemplates"
+	"k8s.io/helm/pkg/helm"
 
 	"github.com/giantswarm/chart-operator/integration/chart"
 	"github.com/giantswarm/chart-operator/integration/chartconfig"
@@ -22,12 +23,6 @@ func TestChartValues(t *testing.T) {
 			Release: "1.0.0",
 			Tarball: "/e2e/fixtures/tb-chart-1.0.0.tgz",
 			Name:    "tb-chart",
-		},
-		{
-			Channel: "1-0-beta",
-			Release: "1.0.0",
-			Tarball: "/e2e/fixtures/tb-configmap-chart-1.0.0.tgz",
-			Name:    "tb-configmap-chart",
 		},
 	}
 
@@ -50,10 +45,10 @@ func TestChartValues(t *testing.T) {
 
 	// Test Creation
 
-	// Install ValuesConfigMaps
-	err = r.InstallResource("tb-configmap", "", "1-0-beta")
+	// Install Values ConfigMap
+	err = helmClient.InstallFromTarball("/e2e/fixtures/tb-configmap-chart-1.0.0.tgz", "giantswarm", helm.ValueOverrides([]byte("")), helm.InstallWait(true))
 	if err != nil {
-		t.Fatalf("could not install %q %v", "tb-configmap-chart", err)
+		t.Fatalf("could not install values configmap %v", err)
 	}
 
 	// Install Chartconfig
