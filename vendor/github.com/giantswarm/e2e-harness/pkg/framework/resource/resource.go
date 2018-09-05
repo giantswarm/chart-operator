@@ -157,7 +157,7 @@ func (r *Resource) WaitForVersion(release string, version string) error {
 		r.logger.Log("level", "debug", "message", fmt.Sprintf("failed to get release version '%s': retrying in %s", version, t), "stack", fmt.Sprintf("%v", err))
 	}
 
-	b := backoff.NewExponential(framework.MaxWait, framework.LongMaxInterval)
+	b := backoff.NewExponential(framework.ShortMaxWait, framework.LongMaxInterval)
 	err := backoff.RetryNotify(operation, b, notify)
 	if err != nil {
 		return microerror.Mask(err)
