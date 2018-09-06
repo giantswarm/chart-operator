@@ -3,7 +3,6 @@ package chart
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 
 	"github.com/giantswarm/apiextensions/pkg/apis/core/v1alpha1"
 	"github.com/giantswarm/microerror"
@@ -64,7 +63,6 @@ func (r *Resource) getConfigMapValues(ctx context.Context, customObject v1alpha1
 		}
 
 		jsonData := configMap.Data["values.json"]
-		r.logger.Log("level", "debug", "message", fmt.Sprintf("values %s", jsonData))
 		if jsonData != "" {
 			err = json.Unmarshal([]byte(jsonData), &chartValues)
 			if err != nil {
