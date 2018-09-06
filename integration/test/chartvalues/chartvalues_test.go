@@ -93,7 +93,7 @@ func TestChartValues(t *testing.T) {
 	}
 	l.Log("level", "debug", "message", fmt.Sprintf("chart %s has values %#v", testChartRelease, rc.Values))
 
-	expectedConfigValue := "test-config"
+	expectedConfigValue := "test-value"
 	if rc.Values["config"] != expectedConfigValue {
 		t.Fatalf("expected %#v got %#v", expectedConfigValue, rc.Values["config"])
 	}
