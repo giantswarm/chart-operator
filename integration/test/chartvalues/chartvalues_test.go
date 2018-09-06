@@ -12,6 +12,7 @@ import (
 	"github.com/giantswarm/chart-operator/integration/chart"
 	"github.com/giantswarm/chart-operator/integration/chartconfig"
 	"github.com/giantswarm/chart-operator/integration/env"
+	"github.com/giantswarm/chart-operator/integration/templates"
 )
 
 const (
@@ -52,7 +53,7 @@ func TestChartValues(t *testing.T) {
 	// Install configmap containing the values
 	err = helmClient.InstallFromTarball("/e2e/fixtures/tb-resource-chart-1.0.0.tgz",
 		namespace, helm.ReleaseName(testConfigMapRelease),
-		helm.ValueOverrides([]byte("")), helm.InstallWait(true))
+		helm.ValueOverrides([]byte(templates.ResourceChartValues)), helm.InstallWait(true))
 	if err != nil {
 		t.Fatalf("could not install values configmap %v", err)
 	}
@@ -95,10 +96,5 @@ func TestChartValues(t *testing.T) {
 	expectedConfigValue := "test-config"
 	if rc.Values["config"] != expectedConfigValue {
 		t.Fatalf("expected %#v got %#v", expectedConfigValue, rc.Values["config"])
-	}
-
-	expectedSecretValue := "test-secret"
-	if rc.Values["secret"] != expectedSecretValue {
-		t.Fatalf("expected %#v got %#v", expectedSecretValue, rc.Values["secret"])
 	}
 }
