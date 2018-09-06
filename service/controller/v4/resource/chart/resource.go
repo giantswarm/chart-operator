@@ -13,7 +13,7 @@ import (
 
 const (
 	// Name is the identifier of the resource.
-	Name = "chartv3"
+	Name = "chartv4"
 )
 
 // Config represents the configuration used to create a new chart resource.

@@ -7,7 +7,7 @@ import (
 	"github.com/giantswarm/helmclient"
 	"github.com/giantswarm/microerror"
 
-	"github.com/giantswarm/chart-operator/service/controller/v3/key"
+	"github.com/giantswarm/chart-operator/service/controller/v4/key"
 )
 
 func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
