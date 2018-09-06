@@ -1,0 +1,8 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: configuration-test
+  namespace: giantswarm
+data:
+  secret-value: {{ .Values.secret }}
+  config-value: {{ .Values.config }}

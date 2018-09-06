@@ -1,0 +1,9 @@
+{{- if .Values.valuesJson }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: values-configmap
+  namespace: giantswarm
+data:
+  values.json: '{{ .Values.valuesJson }}'
+{{- end }}

@@ -95,11 +95,11 @@ func TestChartValues(t *testing.T) {
 
 	expectedConfigValue := "test-config"
 	if rc.Values["config"] != expectedConfigValue {
-		t.Fatalf("expected %#v got %#v", expectedValue, rc.Values["config"])
+		t.Fatalf("expected %#v got %#v", expectedConfigValue, rc.Values["config"])
 	}
 
 	expectedSecretValue := "test-secret"
 	if rc.Values["secret"] != expectedSecretValue {
-		t.Fatalf("expected %#v got %#v", expectedValue, rc.Values["secret"])
+		t.Fatalf("expected %#v got %#v", expectedSecretValue, rc.Values["secret"])
 	}
 }
