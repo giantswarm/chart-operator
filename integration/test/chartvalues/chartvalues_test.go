@@ -73,13 +73,13 @@ func TestChartValues(t *testing.T) {
 	if err != nil {
 		t.Fatalf("could not install %q %v", cr, err)
 	}
-
 	err = r.WaitForStatus(cr, "DEPLOYED")
 	if err != nil {
 		t.Fatalf("expected %#v got %#v", nil, err)
 	}
 	l.Log("level", "debug", "message", fmt.Sprintf("%s succesfully deployed", cr))
 
+	// Check if chart got created by chart-operator
 	err = r.WaitForStatus(testChartRelease, "DEPLOYED")
 	if err != nil {
 		t.Fatalf("expected %#v got %#v", nil, err)
