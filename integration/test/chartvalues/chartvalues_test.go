@@ -51,7 +51,7 @@ func TestChartValues(t *testing.T) {
 	}
 
 	// Install configmap containing the values
-	err = helmClient.InstallFromTarball("/e2e/fixtures/tb-configmap-chart-1.0.0.tgz",
+	err = helmClient.InstallFromTarball("/e2e/fixtures/tb-resource-chart-1.0.0.tgz",
 		namespace, helm.ReleaseName(testConfigMapRelease),
 		helm.ValueOverrides([]byte(templates.ChartConfigMapValues)), helm.InstallWait(true))
 	if err != nil {
@@ -93,8 +93,13 @@ func TestChartValues(t *testing.T) {
 	}
 	l.Log("level", "debug", "message", fmt.Sprintf("chart %s has values %#v", testChartRelease, rc.Values))
 
-	expectedValue := "values-config"
-	if rc.Values["config"] != expectedValue {
+	expectedConfigValue := "test-config"
+	if rc.Values["config"] != expectedConfigValue {
 		t.Fatalf("expected %#v got %#v", expectedValue, rc.Values["config"])
+	}
+
+	expectedSecretValue := "test-secret"
+	if rc.Values["secret"] != expectedSecretValue {
+		t.Fatalf("expected %#v got %#v", expectedValue, rc.Values["secret"])
 	}
 }

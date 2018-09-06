@@ -3,7 +3,7 @@
 package templates
 
 // ChartConfigMapValues values required by the chart values configmap
-const ChartConfigMapValues = `config: values-config
+const ChartConfigMapValues = `valuesJson: '{"config":"test-value"}'
 
-secret: values-secret
+secretJson: '{"secret":"test-secret"}'
 `
