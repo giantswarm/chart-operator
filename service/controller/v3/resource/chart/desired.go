@@ -92,8 +92,8 @@ func (r *Resource) getConfigMapValues(ctx context.Context, customObject v1alpha1
 func (r *Resource) getUserConfigMapValues(ctx context.Context, customObject v1alpha1.ChartConfig) (map[string]interface{}, error) {
 	userValues := make(map[string]interface{})
 
-	configMapName := key.CustomConfigMapName(customObject)
-	configMapNamespace := key.CustomConfigMapNamespace(customObject)
+	configMapName := key.UserConfigMapName(customObject)
+	configMapNamespace := key.UserConfigMapNamespace(customObject)
 
 	if configMapName != "" {
 		configMap, err := r.getConfigMap(ctx, configMapName, configMapNamespace)

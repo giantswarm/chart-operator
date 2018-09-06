@@ -16,13 +16,13 @@ import (
 
 func Test_DesiredState(t *testing.T) {
 	testCases := []struct {
-		name            string
-		obj             *v1alpha1.ChartConfig
-		configMap       *apiv1.ConfigMap
-		customConfigMap *apiv1.ConfigMap
-		secret          *apiv1.Secret
-		expectedState   ChartState
-		errorMatcher    func(error) bool
+		name          string
+		obj           *v1alpha1.ChartConfig
+		configMap     *apiv1.ConfigMap
+		userConfigMap *apiv1.ConfigMap
+		secret        *apiv1.Secret
+		expectedState ChartState
+		errorMatcher  func(error) bool
 	}{
 		{
 			name: "case 0: basic match",
@@ -307,7 +307,7 @@ func Test_DesiredState(t *testing.T) {
 							Name:      "values-configmap",
 							Namespace: "kube-system",
 						},
-						CustomConfigMap: v1alpha1.ChartConfigSpecConfigMap{
+						UserConfigMap: v1alpha1.ChartConfigSpecConfigMap{
 							Name:      "user-configmap",
 							Namespace: "kube-system",
 						},
@@ -325,7 +325,7 @@ func Test_DesiredState(t *testing.T) {
 					"values.json": `{ "values-key-1": "test-value", "values-key-2": 2 }`,
 				},
 			},
-			customConfigMap: &apiv1.ConfigMap{
+			userConfigMap: &apiv1.ConfigMap{
 				ObjectMeta: metav1.ObjectMeta{
 					Name:      "user-configmap",
 					Namespace: "kube-system",
@@ -365,8 +365,8 @@ func Test_DesiredState(t *testing.T) {
 			if tc.configMap != nil {
 				objs = append(objs, tc.configMap)
 			}
-			if tc.customConfigMap != nil {
-				objs = append(objs, tc.customConfigMap)
+			if tc.userConfigMap != nil {
+				objs = append(objs, tc.userConfigMap)
 			}
 			if tc.secret != nil {
 				objs = append(objs, tc.secret)
