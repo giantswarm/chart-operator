@@ -19,6 +19,7 @@ func Test_DesiredState(t *testing.T) {
 		name          string
 		obj           *v1alpha1.ChartConfig
 		configMap     *apiv1.ConfigMap
+		userConfigMap *apiv1.ConfigMap
 		secret        *apiv1.Secret
 		expectedState ChartState
 		errorMatcher  func(error) bool
@@ -296,6 +297,59 @@ func Test_DesiredState(t *testing.T) {
 			},
 			errorMatcher: IsInvalidConfig,
 		},
+		{
+			name: "case 9: user configmap overrides values",
+			obj: &v1alpha1.ChartConfig{
+				Spec: v1alpha1.ChartConfigSpec{
+					Chart: v1alpha1.ChartConfigSpecChart{
+						Name: "chart-operator-chart",
+						ConfigMap: v1alpha1.ChartConfigSpecConfigMap{
+							Name:      "values-configmap",
+							Namespace: "kube-system",
+						},
+						UserConfigMap: v1alpha1.ChartConfigSpecConfigMap{
+							Name:      "user-configmap",
+							Namespace: "kube-system",
+						},
+						Channel: "0-1-beta",
+						Release: "custom-chart",
+					},
+				},
+			},
+			configMap: &apiv1.ConfigMap{
+				ObjectMeta: metav1.ObjectMeta{
+					Name:      "values-configmap",
+					Namespace: "kube-system",
+				},
+				Data: map[string]string{
+					"values.json": `{ "values-key-1": "test-value", "values-key-2": 2 }`,
+				},
+			},
+			userConfigMap: &apiv1.ConfigMap{
+				ObjectMeta: metav1.ObjectMeta{
+					Name:      "user-configmap",
+					Namespace: "kube-system",
+				},
+				Data: map[string]string{
+					"user-key":   "test-value",
+					"user-key-2": "test-value-2",
+				},
+			},
+			expectedState: ChartState{
+				ChartName: "chart-operator-chart",
+				ChartValues: map[string]interface{}{
+					"values-key-1": "test-value",
+					"values-key-2": float64(2),
+					"configmap": map[string]interface{}{
+						"user-key":   "test-value",
+						"user-key-2": "test-value-2",
+					},
+				},
+				ChannelName:    "0-1-beta",
+				ReleaseName:    "chart-operator",
+				ReleaseVersion: "0.1.2",
+			},
+		},
 	}
 
 	apprClient := &apprMock{
@@ -310,6 +364,9 @@ func Test_DesiredState(t *testing.T) {
 			objs := make([]runtime.Object, 0, 0)
 			if tc.configMap != nil {
 				objs = append(objs, tc.configMap)
+			}
+			if tc.userConfigMap != nil {
+				objs = append(objs, tc.userConfigMap)
 			}
 			if tc.secret != nil {
 				objs = append(objs, tc.secret)
@@ -342,12 +399,147 @@ func Test_DesiredState(t *testing.T) {
 				t.Fatalf("error == %#v, want nil", err)
 			}
 
-			if !reflect.DeepEqual(chartState, tc.expectedState) {
-				t.Fatalf("ChartState == %#v, want %#v", chartState, tc.expectedState)
+			if len(chartState.ChartValues) != len(tc.expectedState.ChartValues) {
+				t.Fatalf("ChartState.ChartValues == %d, want %d", len(chartState.ChartValues), len(tc.expectedState.ChartValues))
+			}
+
+			if !reflect.DeepEqual(chartState.ChartValues, tc.expectedState.ChartValues) {
+				t.Fatalf("ChartState == %#v, want %#v", chartState.ChartValues, tc.expectedState.ChartValues)
 			}
 		})
 	}
 
+}
+
+func Test_mergeValuesConfigMaps(t *testing.T) {
+	testCases := []struct {
+		name           string
+		values         map[string]interface{}
+		userValues     map[string]interface{}
+		expectedValues map[string]interface{}
+		errorMatcher   func(error) bool
+	}{
+		{
+			name:           "case 0: both values empty",
+			values:         map[string]interface{}{},
+			userValues:     map[string]interface{}{},
+			expectedValues: map[string]interface{}{},
+		},
+		{
+			name: "case 1: values non-empty, user values empty",
+			values: map[string]interface{}{
+				"val-1": "val1",
+				"val-2": "val2",
+			},
+			userValues: map[string]interface{}{},
+			expectedValues: map[string]interface{}{
+				"val-1": "val1",
+				"val-2": "val2",
+			},
+		},
+		{
+			name: "case 2: values non-empty, user values non-empty",
+			values: map[string]interface{}{
+				"val-1": "val1",
+				"val-2": "val2",
+			},
+			userValues: map[string]interface{}{
+				"user-val-1": "userval1",
+				"user-val-2": "userval2",
+			},
+			expectedValues: map[string]interface{}{
+				"val-1": "val1",
+				"val-2": "val2",
+				"configmap": map[string]interface{}{
+					"user-val-1": "userval1",
+					"user-val-2": "userval2",
+				},
+			},
+		},
+		{
+			name: "case 3: both non-empty but not intersecting",
+			values: map[string]interface{}{
+				"configmap": map[string]interface{}{
+					"val-1": "val1",
+					"val-2": "val2",
+				},
+			},
+			userValues: map[string]interface{}{
+				"user-val-1": "userval1",
+				"user-val-2": "userval2",
+			},
+			expectedValues: map[string]interface{}{
+				"configmap": map[string]interface{}{
+					"val-1":      "val1",
+					"val-2":      "val2",
+					"user-val-1": "userval1",
+					"user-val-2": "userval2",
+				},
+			},
+		},
+		{
+			name: "case 4: user values override generated values",
+			values: map[string]interface{}{
+				"configmap": map[string]interface{}{
+					"val-1": "val1",
+					"val-2": "val2",
+				},
+			},
+			userValues: map[string]interface{}{
+				"val-1": "custom-val",
+				"val-2": "custom-val",
+			},
+			expectedValues: map[string]interface{}{
+				"configmap": map[string]interface{}{
+					"val-1": "custom-val",
+					"val-2": "custom-val",
+				},
+			},
+		},
+		{
+			name: "case 5: both values with some user overrides",
+			values: map[string]interface{}{
+				"other-val-1": "val1",
+				"other-val-2": "val2",
+				"configmap": map[string]interface{}{
+					"val-1": "val1",
+					"val-2": "val2",
+					"val-3": "val-3",
+				},
+			},
+			userValues: map[string]interface{}{
+				"val-1": "custom-val",
+				"val-2": "custom-val",
+			},
+			expectedValues: map[string]interface{}{
+				"other-val-1": "val1",
+				"other-val-2": "val2",
+				"configmap": map[string]interface{}{
+					"val-1": "custom-val",
+					"val-2": "custom-val",
+					"val-3": "val-3",
+				},
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			result, err := mergeValuesConfigMaps(tc.values, tc.userValues)
+			switch {
+			case err != nil && tc.errorMatcher == nil:
+				t.Fatalf("error == %#v, want nil", err)
+			case err == nil && tc.errorMatcher != nil:
+				t.Fatalf("error == nil, want non-nil")
+			case err != nil && !tc.errorMatcher(err):
+				t.Fatalf("error == %#v, want matching", err)
+			}
+
+			if !reflect.DeepEqual(result, tc.expectedValues) {
+				t.Fatalf("Map == %q, want %q", result, tc.expectedValues)
+			}
+		})
+	}
 }
 
 func Test_union(t *testing.T) {
