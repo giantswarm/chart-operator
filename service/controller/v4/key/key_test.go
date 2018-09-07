@@ -240,3 +240,55 @@ func Test_ToCustomObject(t *testing.T) {
 		})
 	}
 }
+
+func Test_UserConfigMapName(t *testing.T) {
+	expectedConfigMapName := "chart-operator-user-values"
+
+	obj := v1alpha1.ChartConfig{
+		Spec: v1alpha1.ChartConfigSpec{
+			Chart: v1alpha1.ChartConfigSpecChart{
+				Name:    "chart-operator-chart",
+				Channel: "0.1-beta",
+				ConfigMap: v1alpha1.ChartConfigSpecConfigMap{
+					Name:      "chart-operator-chart-values",
+					Namespace: "giantswarm",
+				},
+				Release: "chart-operator",
+				UserConfigMap: v1alpha1.ChartConfigSpecConfigMap{
+					Name:      "chart-operator-user-values",
+					Namespace: "giantswarm",
+				},
+			},
+		},
+	}
+
+	if UserConfigMapName(obj) != expectedConfigMapName {
+		t.Fatalf("user config map name %s, want %s", UserConfigMapName(obj), expectedConfigMapName)
+	}
+}
+
+func Test_UserConfigMapNamespace(t *testing.T) {
+	expectedConfigMapNamespace := "default"
+
+	obj := v1alpha1.ChartConfig{
+		Spec: v1alpha1.ChartConfigSpec{
+			Chart: v1alpha1.ChartConfigSpecChart{
+				Name:    "chart-operator-chart",
+				Channel: "0.1-beta",
+				ConfigMap: v1alpha1.ChartConfigSpecConfigMap{
+					Name:      "chart-operator-chart-values",
+					Namespace: "giantswarm",
+				},
+				Release: "chart-operator",
+				UserConfigMap: v1alpha1.ChartConfigSpecConfigMap{
+					Name:      "chart-operator-custom-values",
+					Namespace: "default",
+				},
+			},
+		},
+	}
+
+	if UserConfigMapNamespace(obj) != expectedConfigMapNamespace {
+		t.Fatalf("user config map namespace %s, want %s", UserConfigMapNamespace(obj), expectedConfigMapNamespace)
+	}
+}
