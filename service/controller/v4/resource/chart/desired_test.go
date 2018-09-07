@@ -19,6 +19,7 @@ func Test_DesiredState(t *testing.T) {
 		name          string
 		obj           *v1alpha1.ChartConfig
 		configMap     *apiv1.ConfigMap
+		userConfigMap *apiv1.ConfigMap
 		secret        *apiv1.Secret
 		expectedState ChartState
 		errorMatcher  func(error) bool
@@ -296,6 +297,59 @@ func Test_DesiredState(t *testing.T) {
 			},
 			errorMatcher: IsInvalidConfig,
 		},
+		{
+			name: "case 9: user configmap overrides values",
+			obj: &v1alpha1.ChartConfig{
+				Spec: v1alpha1.ChartConfigSpec{
+					Chart: v1alpha1.ChartConfigSpecChart{
+						Name: "chart-operator-chart",
+						ConfigMap: v1alpha1.ChartConfigSpecConfigMap{
+							Name:      "values-configmap",
+							Namespace: "kube-system",
+						},
+						UserConfigMap: v1alpha1.ChartConfigSpecConfigMap{
+							Name:      "user-configmap",
+							Namespace: "kube-system",
+						},
+						Channel: "0-1-beta",
+						Release: "chart-operator",
+					},
+				},
+			},
+			configMap: &apiv1.ConfigMap{
+				ObjectMeta: metav1.ObjectMeta{
+					Name:      "values-configmap",
+					Namespace: "kube-system",
+				},
+				Data: map[string]string{
+					"values.json": `{ "values-key-1": "test-value", "values-key-2": 2 }`,
+				},
+			},
+			userConfigMap: &apiv1.ConfigMap{
+				ObjectMeta: metav1.ObjectMeta{
+					Name:      "user-configmap",
+					Namespace: "kube-system",
+				},
+				Data: map[string]string{
+					"user-key":   "test-value",
+					"user-key-2": "test-value-2",
+				},
+			},
+			expectedState: ChartState{
+				ChartName: "chart-operator-chart",
+				ChartValues: map[string]interface{}{
+					"values-key-1": "test-value",
+					"values-key-2": float64(2),
+					"configmap": map[string]interface{}{
+						"user-key":   "test-value",
+						"user-key-2": "test-value-2",
+					},
+				},
+				ChannelName:    "0-1-beta",
+				ReleaseName:    "chart-operator",
+				ReleaseVersion: "0.1.2",
+			},
+		},
 	}
 
 	apprClient := &apprMock{
@@ -310,6 +364,9 @@ func Test_DesiredState(t *testing.T) {
 			objs := make([]runtime.Object, 0, 0)
 			if tc.configMap != nil {
 				objs = append(objs, tc.configMap)
+			}
+			if tc.userConfigMap != nil {
+				objs = append(objs, tc.userConfigMap)
 			}
 			if tc.secret != nil {
 				objs = append(objs, tc.secret)

@@ -6,6 +6,7 @@ import (
 
 	"github.com/giantswarm/apiextensions/pkg/apis/core/v1alpha1"
 	"github.com/giantswarm/microerror"
+	corev1 "k8s.io/api/core/v1"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
@@ -20,10 +21,26 @@ func (r *Resource) GetDesiredState(ctx context.Context, obj interface{}) (interf
 
 	name := key.ChartName(customObject)
 	channel := key.ChannelName(customObject)
+
+	// Values configmap contains settings managed by the controlling operator.
 	chartConfigmapValues, err := r.getConfigMapValues(ctx, customObject)
 	if err != nil {
 		return nil, microerror.Mask(err)
 	}
+
+	// User configmap contains settings overridden by the user.
+	userConfigmapValues, err := r.getUserConfigMapValues(ctx, customObject)
+	if err != nil {
+		return nil, microerror.Mask(err)
+	}
+
+	// Merge configmap values. Custom values from the user override values
+	// managed by the controlling operator.
+	chartConfigmapValues, err = mergeValuesConfigMaps(chartConfigmapValues, userConfigmapValues)
+	if err != nil {
+		return nil, microerror.Mask(err)
+	}
+
 	chartSecretValues, err := r.getSecretValues(ctx, customObject)
 	if err != nil {
 		return nil, microerror.Mask(err)
@@ -51,14 +68,12 @@ func (r *Resource) GetDesiredState(ctx context.Context, obj interface{}) (interf
 func (r *Resource) getConfigMapValues(ctx context.Context, customObject v1alpha1.ChartConfig) (map[string]interface{}, error) {
 	chartValues := make(map[string]interface{})
 
-	if key.ConfigMapName(customObject) != "" {
-		configMapName := key.ConfigMapName(customObject)
-		configMapNamespace := key.ConfigMapNamespace(customObject)
+	configMapName := key.ConfigMapName(customObject)
+	configMapNamespace := key.ConfigMapNamespace(customObject)
 
-		configMap, err := r.k8sClient.CoreV1().ConfigMaps(configMapNamespace).Get(configMapName, metav1.GetOptions{})
-		if apierrors.IsNotFound(err) {
-			return chartValues, microerror.Maskf(notFoundError, "config map '%s' in namespace '%s' not found", configMapName, configMapNamespace)
-		} else if err != nil {
+	if configMapName != "" {
+		configMap, err := r.getConfigMap(ctx, configMapName, configMapNamespace)
+		if err != nil {
 			return chartValues, microerror.Mask(err)
 		}
 
@@ -72,6 +87,37 @@ func (r *Resource) getConfigMapValues(ctx context.Context, customObject v1alpha1
 	}
 
 	return chartValues, nil
+}
+
+func (r *Resource) getUserConfigMapValues(ctx context.Context, customObject v1alpha1.ChartConfig) (map[string]interface{}, error) {
+	userValues := make(map[string]interface{})
+
+	configMapName := key.UserConfigMapName(customObject)
+	configMapNamespace := key.UserConfigMapNamespace(customObject)
+
+	if configMapName != "" {
+		configMap, err := r.getConfigMap(ctx, configMapName, configMapNamespace)
+		if err != nil {
+			return userValues, microerror.Mask(err)
+		}
+
+		for k, v := range configMap.Data {
+			userValues[k] = v
+		}
+	}
+
+	return userValues, nil
+}
+
+func (r *Resource) getConfigMap(ctx context.Context, configMapName, configMapNamespace string) (*corev1.ConfigMap, error) {
+	configMap, err := r.k8sClient.CoreV1().ConfigMaps(configMapNamespace).Get(configMapName, metav1.GetOptions{})
+	if apierrors.IsNotFound(err) {
+		return nil, microerror.Maskf(notFoundError, "config map '%s' in namespace '%s' not found", configMapName, configMapNamespace)
+	} else if err != nil {
+		return nil, microerror.Mask(err)
+	}
+
+	return configMap, nil
 }
 
 func (r *Resource) getSecretValues(ctx context.Context, customObject v1alpha1.ChartConfig) (map[string]interface{}, error) {
