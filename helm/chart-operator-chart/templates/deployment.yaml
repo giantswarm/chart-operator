@@ -27,6 +27,7 @@ spec:
           - key: config.yaml
             path: config.yaml
       serviceAccountName: {{ .Values.name }}
+      priorityClassName: system-cluster-critical
       containers:
       - name: {{ .Values.name }}
         image: "quay.io/{{ .Values.image.repository }}:{{ .Values.image.tag }}"
