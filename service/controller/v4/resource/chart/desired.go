@@ -90,6 +90,7 @@ func (r *Resource) getConfigMapValues(ctx context.Context, customObject v1alpha1
 }
 
 func (r *Resource) getUserConfigMapValues(ctx context.Context, customObject v1alpha1.ChartConfig) (map[string]interface{}, error) {
+	values := make(map[string]interface{})
 	userValues := make(map[string]interface{})
 
 	configMapName := key.UserConfigMapName(customObject)
@@ -106,7 +107,11 @@ func (r *Resource) getUserConfigMapValues(ctx context.Context, customObject v1al
 		}
 	}
 
-	return userValues, nil
+	if len(userValues) > 0 {
+		values["configmap"] = userValues
+	}
+
+	return values, nil
 }
 
 func (r *Resource) getConfigMap(ctx context.Context, configMapName, configMapNamespace string) (*corev1.ConfigMap, error) {
