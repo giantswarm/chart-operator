@@ -56,6 +56,14 @@ func ToCustomObject(v interface{}) (v1alpha1.ChartConfig, error) {
 	return *customObjectPointer, nil
 }
 
+func UserConfigMapName(customObject v1alpha1.ChartConfig) string {
+	return customObject.Spec.Chart.UserConfigMap.Name
+}
+
+func UserConfigMapNamespace(customObject v1alpha1.ChartConfig) string {
+	return customObject.Spec.Chart.UserConfigMap.Namespace
+}
+
 func VersionBundleVersion(customObject v1alpha1.ChartConfig) string {
 	return customObject.Spec.VersionBundle.Version
 }
