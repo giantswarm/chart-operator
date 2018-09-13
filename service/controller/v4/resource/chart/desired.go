@@ -156,8 +156,6 @@ func (r *Resource) getSecretValues(ctx context.Context, customObject v1alpha1.Ch
 // with userValues overriden by the user. Only values under the configmap key
 // can be overriden.
 func mergeValuesConfigMaps(values, userValues map[string]interface{}) (map[string]interface{}, error) {
-	key := "configmap"
-
 	if values == nil || len(values) == 0 {
 		return userValues, nil
 	}
@@ -165,23 +163,40 @@ func mergeValuesConfigMaps(values, userValues map[string]interface{}) (map[strin
 		return values, nil
 	}
 
-	raw, ok := values[key]
-	if !ok {
-		values[key] = userValues
-		return values, nil
+	// Add any top level user values not present in generated values.
+	for userKey, userVals := range userValues {
+		_, ok := values[userKey]
+		if !ok {
+			values[userKey] = userVals
+		}
 	}
 
-	vals, ok := raw.(map[string]interface{})
-	if !ok {
-		values[key] = userValues
-		return values, nil
-	}
+	for key, raw := range values {
+		vals, ok := raw.(map[string]interface{})
+		if !ok {
+			// Not a map. Nothing to merge.
+			continue
+		}
 
-	for k, v := range userValues {
-		vals[k] = v
-	}
+		userRaw, ok := userValues[key]
+		if !ok {
+			// No user values. Nothing to merge.
+			continue
+		}
 
-	values[key] = vals
+		userVals, ok := userRaw.(map[string]interface{})
+		if !ok {
+			// User values should always be a map.
+			return values, microerror.Maskf(invalidTypeError, "expected %T got %T", map[string]interface{}{}, userVals)
+		}
+
+		// Override with user value if there is a matching generated value.
+		for k, v := range userVals {
+			vals[k] = v
+		}
+
+		values[key] = vals
+	}
 
 	return values, nil
 }

@@ -440,8 +440,10 @@ func Test_mergeValuesConfigMaps(t *testing.T) {
 				"val-2": "val2",
 			},
 			userValues: map[string]interface{}{
-				"user-val-1": "userval1",
-				"user-val-2": "userval2",
+				"configmap": map[string]interface{}{
+					"user-val-1": "userval1",
+					"user-val-2": "userval2",
+				},
 			},
 			expectedValues: map[string]interface{}{
 				"val-1": "val1",
@@ -461,8 +463,10 @@ func Test_mergeValuesConfigMaps(t *testing.T) {
 				},
 			},
 			userValues: map[string]interface{}{
-				"user-val-1": "userval1",
-				"user-val-2": "userval2",
+				"configmap": map[string]interface{}{
+					"user-val-1": "userval1",
+					"user-val-2": "userval2",
+				},
 			},
 			expectedValues: map[string]interface{}{
 				"configmap": map[string]interface{}{
@@ -482,13 +486,15 @@ func Test_mergeValuesConfigMaps(t *testing.T) {
 				},
 			},
 			userValues: map[string]interface{}{
-				"val-1": "custom-val",
-				"val-2": "custom-val",
+				"configmap": map[string]interface{}{
+					"val-1": "custom-val-1",
+					"val-2": "custom-val-2",
+				},
 			},
 			expectedValues: map[string]interface{}{
 				"configmap": map[string]interface{}{
-					"val-1": "custom-val",
-					"val-2": "custom-val",
+					"val-1": "custom-val-1",
+					"val-2": "custom-val-2",
 				},
 			},
 		},
@@ -504,15 +510,17 @@ func Test_mergeValuesConfigMaps(t *testing.T) {
 				},
 			},
 			userValues: map[string]interface{}{
-				"val-1": "custom-val",
-				"val-2": "custom-val",
+				"configmap": map[string]interface{}{
+					"val-1": "custom-val-1",
+					"val-2": "custom-val-2",
+				},
 			},
 			expectedValues: map[string]interface{}{
 				"other-val-1": "val1",
 				"other-val-2": "val2",
 				"configmap": map[string]interface{}{
-					"val-1": "custom-val",
-					"val-2": "custom-val",
+					"val-1": "custom-val-1",
+					"val-2": "custom-val-2",
 					"val-3": "val-3",
 				},
 			},
