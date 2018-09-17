@@ -59,7 +59,7 @@ func init() {
 	}
 
 	{
-		c := resource.ResourceConfig{
+		c := resource.Config{
 			Logger:     l,
 			HelmClient: helmClient,
 			Namespace:  "giantswarm",
