@@ -59,7 +59,7 @@ func TestChartLifecycle(t *testing.T) {
 			t.Fatalf("expected %#v got %#v", nil, err)
 		}
 
-		err = r.InstallResource(cr, chartValues, "stable")
+		err = r.Install(cr, chartValues, "stable")
 		if err != nil {
 			t.Fatalf("expected %#v got %#v", nil, err)
 		}
@@ -88,7 +88,7 @@ func TestChartLifecycle(t *testing.T) {
 		if err != nil {
 			t.Fatalf("expected %#v got %#v", nil, err)
 		}
-		err = r.UpdateResource(cr, chartValues, "stable")
+		err = r.Update(cr, chartValues, "stable")
 		if err != nil {
 			t.Fatalf("expected %#v got %#v", nil, err)
 		}
@@ -103,7 +103,7 @@ func TestChartLifecycle(t *testing.T) {
 	// Test Deletion
 	{
 		l.Log("level", "debug", "message", fmt.Sprintf("deleting %s", cr))
-		err := helmClient.DeleteRelease(cr)
+		err := r.Delete(cr)
 		if err != nil {
 			t.Fatalf("expected %#v got %#v", nil, err)
 		}

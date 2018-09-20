@@ -33,9 +33,10 @@ func init() {
 
 	{
 		c := framework.HostConfig{
-			Logger:          l,
-			ClusterID:       "someval",
-			VaultToken:      "someval",
+			Logger: l,
+
+			ClusterID:       "n/a",
+			VaultToken:      "n/a",
 			TargetNamespace: "giantswarm",
 		}
 
@@ -59,7 +60,7 @@ func init() {
 	}
 
 	{
-		c := resource.ResourceConfig{
+		c := resource.Config{
 			Logger:     l,
 			HelmClient: helmClient,
 			Namespace:  "giantswarm",
