@@ -28,6 +28,10 @@ spec:
             path: config.yaml
       serviceAccountName: {{ .Values.name }}
       priorityClassName: system-cluster-critical
+      dnsPolicy: None
+      dnsConfig:
+        - {{ .Values.clusterDNSIP }}
+        - 8.8.8.8
       containers:
       - name: {{ .Values.name }}
         image: "quay.io/{{ .Values.image.repository }}:{{ .Values.image.tag }}"

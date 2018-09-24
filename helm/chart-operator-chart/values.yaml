@@ -8,6 +8,8 @@ port: 8000
 
 replicas: 1
 
+clusterDNSIP: 172.31.0.10
+
 image:
   registry: quay.io
   repository: giantswarm/chart-operator
