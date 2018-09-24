@@ -30,6 +30,7 @@ spec:
       priorityClassName: system-cluster-critical
       dnsPolicy: None
       dnsConfig:
+        nameservers:
         - {{ .Values.clusterDNSIP }}
         - 8.8.8.8
       containers:
