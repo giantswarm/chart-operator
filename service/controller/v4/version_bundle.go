@@ -9,7 +9,7 @@ func VersionBundle() versionbundle.Bundle {
 		Changelogs: []versionbundle.Changelog{
 			{
 				Component:   "chart-operator",
-				Description: "Add your changes here.",
+				Description: "Added support for user configmaps.",
 				Kind:        versionbundle.KindAdded,
 			},
 		},
