@@ -27,6 +27,18 @@ spec:
           - key: config.yaml
             path: config.yaml
       serviceAccountName: {{ .Values.name }}
+      dnsPolicy: None
+      dnsConfig:
+        nameservers:
+        - {{ .Values.clusterDNSIP }}
+        - 8.8.8.8
+        searches:
+        - giantswarm.svc.cluster.local
+        - svc.cluster.local
+        - cluster.local
+        options:
+        - name: ndots
+          value: "5"
       containers:
       - name: {{ .Values.name }}
         image: "quay.io/{{ .Values.image.repository }}:{{ .Values.image.tag }}"
