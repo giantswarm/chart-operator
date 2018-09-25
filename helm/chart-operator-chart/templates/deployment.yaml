@@ -27,7 +27,6 @@ spec:
           - key: config.yaml
             path: config.yaml
       serviceAccountName: {{ .Values.name }}
-      priorityClassName: system-cluster-critical
       dnsPolicy: None
       dnsConfig:
         nameservers:
