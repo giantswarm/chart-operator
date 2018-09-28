@@ -166,7 +166,7 @@ func (r *Resource) WaitForStatus(release string, status string) error {
 		r.logger.Log("level", "debug", "message", fmt.Sprintf("failed to get release status '%s': retrying in %s", status, t), "stack", fmt.Sprintf("%v", err))
 	}
 
-	b := backoff.NewExponential(framework.ShortMaxWait, framework.LongMaxInterval)
+	b := backoff.NewExponential(framework.MediumMaxWait, framework.LongMaxInterval)
 	err := backoff.RetryNotify(operation, b, notify)
 	if err != nil {
 		return microerror.Mask(err)
