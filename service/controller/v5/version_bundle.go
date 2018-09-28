@@ -15,6 +15,6 @@ func VersionBundle() versionbundle.Bundle {
 		},
 		Components: []versionbundle.Component{},
 		Name:       "chart-operator",
-		Version:    "0.4.0",
+		Version:    "0.5.0",
 	}
 }
