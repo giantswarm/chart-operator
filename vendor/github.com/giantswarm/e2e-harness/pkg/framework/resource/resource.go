@@ -1,6 +1,7 @@
 package resource
 
 import (
+	"context"
 	"fmt"
 	"time"
 
@@ -78,9 +79,32 @@ func New(config Config) (*Resource, error) {
 
 func (r *Resource) Delete(name string) error {
 	err := r.helmClient.DeleteRelease(name, helm.DeletePurge(true))
-	if err != nil {
+	if helmclient.IsReleaseNotFound(err) {
+		return microerror.Maskf(releaseNotFoundError, name)
+	} else if helmclient.IsTillerNotFound(err) {
+		return microerror.Mask(tillerNotFoundError)
+	} else if err != nil {
 		return microerror.Mask(err)
 	}
+
+	return nil
+}
+
+func (r *Resource) EnsureDeleted(ctx context.Context, name string) error {
+	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("ensuring deletion of release %#q", name))
+
+	err := r.helmClient.DeleteRelease(name, helm.DeletePurge(true))
+	if helmclient.IsReleaseNotFound(err) {
+		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("release %#q does not exist", name))
+	} else if helmclient.IsTillerNotFound(err) {
+		r.logger.LogCtx(ctx, "level", "warning", "message", "tiller is not found/installed")
+	} else if err != nil {
+		return microerror.Mask(err)
+	} else {
+		r.logger.LogCtx(ctx, "level", "info", "message", fmt.Sprintf("deleted release %#q", name))
+	}
+
+	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("ensured deletion of release %#q", name))
 
 	return nil
 }
@@ -142,7 +166,7 @@ func (r *Resource) WaitForStatus(release string, status string) error {
 		r.logger.Log("level", "debug", "message", fmt.Sprintf("failed to get release status '%s': retrying in %s", status, t), "stack", fmt.Sprintf("%v", err))
 	}
 
-	b := backoff.NewExponential(framework.ShortMaxWait, framework.LongMaxInterval)
+	b := backoff.NewExponential(framework.MediumMaxWait, framework.LongMaxInterval)
 	err := backoff.RetryNotify(operation, b, notify)
 	if err != nil {
 		return microerror.Mask(err)
