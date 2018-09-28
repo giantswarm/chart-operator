@@ -222,11 +222,11 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:6d69831daa85788b0daceda0f13e3fb10d4a39885c706555355e5109f613af4a"
+  digest = "1:a7c5636a10a5693ab1df9c432704696085df0ef00fdc06fafbe6fff315ffffa5"
   name = "github.com/giantswarm/helmclient"
   packages = ["."]
   pruneopts = "UT"
-  revision = "ec20d46eb68e6fd0cda0a6c0132df4a3fc1a8318"
+  revision = "8c3425d2c09be34df48ee947302b34bd76f75804"
 
 [[projects]]
   branch = "master"
@@ -1202,7 +1202,7 @@
   version = "kubernetes-1.10.4"
 
 [[projects]]
-  digest = "1:a2c3338806a62acde6ada59059dfd2c2beeabf418d0b4f9ae5c5b80e94bb1b61"
+  digest = "1:4031c05a29b43a6ca2f8a278395f8307560eb0e3782789f518cf536b38c6985a"
   name = "k8s.io/helm"
   packages = [
     "cmd/helm/installer",
@@ -1213,14 +1213,13 @@
     "pkg/proto/hapi/release",
     "pkg/proto/hapi/services",
     "pkg/proto/hapi/version",
-    "pkg/storage/driver",
     "pkg/strvals",
     "pkg/sympath",
     "pkg/version",
   ]
   pruneopts = "UT"
-  revision = "9ad53aac42165a5fadc6c87be0dea6b115f93090"
-  version = "v2.10.0"
+  revision = "a80231648a1473929271764b920a8e346f6de844"
+  version = "v2.8.2"
 
 [[projects]]
   digest = "1:2af67bd2524aa5fce3cb4bd6e20fbf773b8cf5a9dfc0d1bea7441d98d55f37b5"
