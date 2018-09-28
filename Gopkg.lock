@@ -193,7 +193,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:ac4e96883823184ac00e38db63aa3b6e48cccecc0756adafb76225a90fe380a1"
+  digest = "1:4745da3e682f516f2a682d469be4d3ab8e8e7a71d7d40ff6ea8c8489dce0cda0"
   name = "github.com/giantswarm/e2e-harness"
   packages = [
     "pkg/framework",
@@ -202,7 +202,7 @@
     "pkg/harness",
   ]
   pruneopts = "UT"
-  revision = "7d4199c1b499743a910ec0fca8eff7fe9ca69247"
+  revision = "403620aa641c24772e883babe9857b6d10afabec"
 
 [[projects]]
   branch = "master"
@@ -1221,6 +1221,22 @@
   pruneopts = "UT"
   revision = "9ad53aac42165a5fadc6c87be0dea6b115f93090"
   version = "v2.10.0"
+
+[[projects]]
+  digest = "1:2af67bd2524aa5fce3cb4bd6e20fbf773b8cf5a9dfc0d1bea7441d98d55f37b5"
+  name = "k8s.io/kube-aggregator"
+  packages = [
+    "pkg/apis/apiregistration",
+    "pkg/apis/apiregistration/v1",
+    "pkg/apis/apiregistration/v1beta1",
+    "pkg/client/clientset_generated/clientset",
+    "pkg/client/clientset_generated/clientset/scheme",
+    "pkg/client/clientset_generated/clientset/typed/apiregistration/v1",
+    "pkg/client/clientset_generated/clientset/typed/apiregistration/v1beta1",
+  ]
+  pruneopts = "UT"
+  revision = "239337b3ca87b9f2ce4d2f03b7a5ed985ffa8206"
+  version = "kubernetes-1.10.4"
 
 [[projects]]
   branch = "master"
