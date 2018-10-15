@@ -235,7 +235,7 @@ func Test_ToCustomObject(t *testing.T) {
 			}
 
 			if !reflect.DeepEqual(result, tc.expectedObject) {
-				t.Fatalf("Custom Object == %q, want %q", result, tc.expectedObject)
+				t.Fatalf("Custom Object == %#v, want %#v", result, tc.expectedObject)
 			}
 		})
 	}
