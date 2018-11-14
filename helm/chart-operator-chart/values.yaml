@@ -4,6 +4,7 @@
 
 name: chart-operator
 namespace: giantswarm
+tillerNamespace: kube-system
 port: 8000
 
 replicas: 1
