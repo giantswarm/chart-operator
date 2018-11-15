@@ -6,5 +6,4 @@ package templates
 const ChartOperatorValues = `cnr:
   address: http://cnr-server:5000
 clusterDNSIP: 10.96.0.10
-tillerNamespace: giantswarm
 `
