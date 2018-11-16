@@ -1,6 +1,10 @@
 package helmclient
 
-import "k8s.io/helm/pkg/helm"
+import (
+	"context"
+
+	"k8s.io/helm/pkg/helm"
+)
 
 const (
 	// defaultMaxHistory is the maximum number of release versions stored per
@@ -33,6 +37,8 @@ type Interface interface {
 	GetReleaseHistory(releaseName string) (*ReleaseHistory, error)
 	// InstallFromTarball installs a Helm Chart packaged in the given tarball.
 	InstallFromTarball(path, ns string, options ...helm.InstallOption) error
+	// ListReleaseContents gets the current status of all Helm Releases.
+	ListReleaseContents(ctx context.Context) ([]*ReleaseContent, error)
 	// PingTiller proxies the underlying Helm client PingTiller method.
 	PingTiller() error
 	// RunReleaseTest runs the tests for a Helm Release. This is the same

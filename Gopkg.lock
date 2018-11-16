@@ -192,17 +192,16 @@
   revision = "ae0aa12120a391889540e6c67d0d0e65b73580b9"
 
 [[projects]]
-  branch = "master"
-  digest = "1:b2f0961fc6fae0100ac7421a968f50aa97cf745522f4b1baaca614cb5dffd0a5"
+  digest = "1:8a9aed2fa12cfcb852cc3ee53841d52203b70d0764676f8f3949fbe9b224db0c"
   name = "github.com/giantswarm/e2e-harness"
   packages = [
     "pkg/framework",
-    "pkg/framework/filelogger",
     "pkg/framework/resource",
     "pkg/harness",
   ]
   pruneopts = "UT"
-  revision = "022462abab6f106d3b535b39122f74e5ba76bf1e"
+  revision = "9218541e7e6b23dbac5bca8478a34043173196f6"
+  version = "9218541"
 
 [[projects]]
   branch = "master"
@@ -221,12 +220,12 @@
   revision = "d4c171b8af43355ae5cb35bfd63a24aae3fbcc16"
 
 [[projects]]
-  branch = "master"
-  digest = "1:3228a56c6d429de153928f005709174e3606fc5d97ecfea612cf33413aa5ded6"
+  branch = "list-releases"
+  digest = "1:9b1b3ce9acafc51a8ee7b9a19735e590ed054c52b5896d6d49d5b400a7d546b0"
   name = "github.com/giantswarm/helmclient"
   packages = ["."]
   pruneopts = "UT"
-  revision = "cc5508a1d97cba484638bba1081a86a6f5a02ffa"
+  revision = "4bf6e1fc99228505db8d967b3d8980f957cfb411"
 
 [[projects]]
   branch = "master"
@@ -1229,22 +1228,6 @@
   pruneopts = "UT"
   revision = "a80231648a1473929271764b920a8e346f6de844"
   version = "v2.8.2"
-
-[[projects]]
-  digest = "1:2af67bd2524aa5fce3cb4bd6e20fbf773b8cf5a9dfc0d1bea7441d98d55f37b5"
-  name = "k8s.io/kube-aggregator"
-  packages = [
-    "pkg/apis/apiregistration",
-    "pkg/apis/apiregistration/v1",
-    "pkg/apis/apiregistration/v1beta1",
-    "pkg/client/clientset_generated/clientset",
-    "pkg/client/clientset_generated/clientset/scheme",
-    "pkg/client/clientset_generated/clientset/typed/apiregistration/v1",
-    "pkg/client/clientset_generated/clientset/typed/apiregistration/v1beta1",
-  ]
-  pruneopts = "UT"
-  revision = "239337b3ca87b9f2ce4d2f03b7a5ed985ffa8206"
-  version = "kubernetes-1.10.4"
 
 [[projects]]
   branch = "master"

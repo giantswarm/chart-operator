@@ -137,7 +137,6 @@ func New(config Config) (*Service, error) {
 	var metricsCollector *collector.Collector
 	{
 		c := collector.Config{
-			G8sClient:  g8sClient,
 			HelmClient: helmClient,
 			Logger:     config.Logger,
 		}

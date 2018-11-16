@@ -1,6 +1,7 @@
 package chart
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/giantswarm/helmclient"
@@ -64,6 +65,10 @@ func (h *helmMock) GetReleaseHistory(releaseName string) (*helmclient.ReleaseHis
 
 func (h *helmMock) InstallFromTarball(path, ns string, options ...helm.InstallOption) error {
 	return nil
+}
+
+func (h *helmMock) ListReleaseContents(ctx context.Context) ([]*helmclient.ReleaseContent, error) {
+	return nil, nil
 }
 
 func (h *helmMock) RunReleaseTest(releaseName string, options ...helm.ReleaseTestOption) error {

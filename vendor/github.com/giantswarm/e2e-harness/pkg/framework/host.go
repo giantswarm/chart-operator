@@ -18,16 +18,12 @@ import (
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/micrologger"
 	"k8s.io/api/core/v1"
-	apiextensionsclient "k8s.io/apiextensions-apiserver/pkg/client/clientset/clientset"
-	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
-	aggregationclient "k8s.io/kube-aggregator/pkg/client/clientset_generated/clientset"
 
-	"github.com/giantswarm/e2e-harness/pkg/framework/filelogger"
 	"github.com/giantswarm/e2e-harness/pkg/harness"
 )
 
@@ -45,15 +41,12 @@ type HostConfig struct {
 }
 
 type Host struct {
-	backoff    backoff.Interface
-	logger     micrologger.Logger
-	filelogger *filelogger.FileLogger
+	backoff backoff.Interface
+	logger  micrologger.Logger
 
-	extClient            *apiextensionsclient.Clientset
-	g8sClient            *versioned.Clientset
-	k8sClient            *kubernetes.Clientset
-	k8sAggregationClient *aggregationclient.Clientset
-	restConfig           *rest.Config
+	g8sClient  *versioned.Clientset
+	k8sClient  kubernetes.Interface
+	restConfig *rest.Config
 
 	clusterID       string
 	targetNamespace string
@@ -62,7 +55,7 @@ type Host struct {
 
 func NewHost(c HostConfig) (*Host, error) {
 	if c.Backoff == nil {
-		c.Backoff = backoff.NewExponential(backoff.ShortMaxWait, backoff.LongMaxInterval)
+		c.Backoff = backoff.NewExponential(ShortMaxWait, 60*time.Second)
 	}
 	if c.Logger == nil {
 		return nil, microerror.Maskf(invalidConfigError, "%T.Logger must not be empty", c)
@@ -82,10 +75,6 @@ func NewHost(c HostConfig) (*Host, error) {
 	if err != nil {
 		return nil, microerror.Mask(err)
 	}
-	extClient, err := apiextensionsclient.NewForConfig(restConfig)
-	if err != nil {
-		return nil, microerror.Mask(err)
-	}
 	g8sClient, err := versioned.NewForConfig(restConfig)
 	if err != nil {
 		return nil, microerror.Mask(err)
@@ -94,33 +83,14 @@ func NewHost(c HostConfig) (*Host, error) {
 	if err != nil {
 		return nil, microerror.Mask(err)
 	}
-	k8sAggregationClient, err := aggregationclient.NewForConfig(restConfig)
-	if err != nil {
-		return nil, microerror.Mask(err)
-	}
-	var fileLogger *filelogger.FileLogger
-	{
-		fc := filelogger.Config{
-			Backoff:   c.Backoff,
-			K8sClient: k8sClient,
-			Logger:    c.Logger,
-		}
-		fileLogger, err = filelogger.New(fc)
-		if err != nil {
-			return nil, microerror.Mask(err)
-		}
-	}
 
 	h := &Host{
-		backoff:    c.Backoff,
-		logger:     c.Logger,
-		filelogger: fileLogger,
+		backoff: c.Backoff,
+		logger:  c.Logger,
 
-		extClient:            extClient,
-		g8sClient:            g8sClient,
-		k8sClient:            k8sClient,
-		k8sAggregationClient: k8sAggregationClient,
-		restConfig:           restConfig,
+		g8sClient:  g8sClient,
+		k8sClient:  k8sClient,
+		restConfig: restConfig,
 
 		clusterID:       c.ClusterID,
 		targetNamespace: c.TargetNamespace,
@@ -207,85 +177,17 @@ func (h *Host) CreateNamespace(ns string) error {
 	return nil
 }
 
-func (h *Host) DeleteGuestCluster(ctx context.Context, provider string) error {
-	{
-		h.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("triggering deletion of CR for guest cluster %#q", h.clusterID))
-
-		o := func() error {
-			var err error
-
-			switch provider {
-			case "aws":
-				err = h.g8sClient.ProviderV1alpha1().AWSConfigs("default").Delete(h.clusterID, &metav1.DeleteOptions{})
-			case "azure":
-				err = h.g8sClient.ProviderV1alpha1().AzureConfigs("default").Delete(h.clusterID, &metav1.DeleteOptions{})
-			case "kvm":
-				err = h.g8sClient.ProviderV1alpha1().KVMConfigs("default").Delete(h.clusterID, &metav1.DeleteOptions{})
-			default:
-				return microerror.Maskf(unknownProviderError, "%#q not recognized", provider)
-			}
-
-			if err != nil {
-				return microerror.Mask(err)
-			}
-			return nil
-		}
-
-		n := backoff.NewNotifier(h.logger, context.Background())
-		err := backoff.RetryNotify(o, h.backoff, n)
-		if apierrors.IsNotFound(err) {
-			h.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("did not trigger deletion of CR for guest cluster %#q", h.clusterID))
-			h.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("CR for guest cluster %#q does not exist", h.clusterID))
-		} else if err != nil {
-			h.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("did not trigger deletion of CR for guest cluster %#q", h.clusterID))
-			return microerror.Mask(err)
-		}
-
-		h.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("triggered deletion of CR for guest cluster %#q", h.clusterID))
+func (h *Host) DeleteGuestCluster(name, cr, logEntry string) error {
+	if err := runCmd(fmt.Sprintf("kubectl delete %s %s", cr, h.clusterID)); err != nil {
+		return microerror.Mask(err)
 	}
 
-	{
-		h.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("ensuring deletion of CR for guest cluster %#q", h.clusterID))
-
-		o := func() error {
-			var err error
-
-			switch provider {
-			case "aws":
-				_, err = h.g8sClient.ProviderV1alpha1().AWSConfigs("default").Get(h.clusterID, metav1.GetOptions{})
-			case "azure":
-				_, err = h.g8sClient.ProviderV1alpha1().AzureConfigs("default").Get(h.clusterID, metav1.GetOptions{})
-			case "kvm":
-				_, err = h.g8sClient.ProviderV1alpha1().KVMConfigs("default").Get(h.clusterID, metav1.GetOptions{})
-			default:
-				return microerror.Maskf(unknownProviderError, "%#q not recognized", provider)
-			}
-
-			if apierrors.IsNotFound(err) {
-				return nil
-			} else if err != nil {
-				return microerror.Mask(err)
-			} else {
-				return microerror.Maskf(clusterDeletionError, "guest cluster %#q CR still exists", h.clusterID)
-			}
-		}
-
-		b := backoff.NewExponential(backoff.LongMaxWait, backoff.LongMaxInterval)
-		n := backoff.NewNotifier(h.logger, context.Background())
-		err := backoff.RetryNotify(o, b, n)
-		if err != nil {
-			h.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("did not ensure deletion of CR for guest cluster %#q", h.clusterID))
-			return microerror.Mask(err)
-		}
-
-		h.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("ensured deletion of CR for guest cluster %#q", h.clusterID))
+	operatorPodName, err := h.PodName("giantswarm", fmt.Sprintf("app=%s", name))
+	if err != nil {
+		return microerror.Mask(err)
 	}
 
-	return nil
-}
-
-func (h *Host) ExtClient() apiextensionsclient.Interface {
-	return h.extClient
+	return h.WaitForPodLog("giantswarm", logEntry, operatorPodName)
 }
 
 // G8sClient returns the host cluster framework's Giant Swarm client.
@@ -330,47 +232,7 @@ func (h *Host) InstallBranchOperator(name, cr, values string) error {
 }
 
 func (h *Host) InstallOperator(name, cr, values, version string) error {
-	err := h.InstallResource(name, values, version, h.crd(cr))
-	if err != nil {
-		return microerror.Mask(err)
-	}
-	// TODO introduced: https://github.com/giantswarm/e2e-harness/pull/121
-	// This fallback from h.targetNamespace was introduced because not all our
-	// operators accept and apply configured namespaces.
-	//
-	// Tracking issue: https://github.com/giantswarm/giantswarm/issues/4123
-	//
-	// Final version of the code:
-	//
-	//	podName, err := h.PodName(h.targetNamespace, fmt.Sprintf("app=%s", name))
-	//	if err != nil {
-	//		return microerror.Mask(err)
-	//	}
-	//	err = h.filelogger.StartLoggingPod(h.targetNamespace, podName)
-	//	if err != nil {
-	//		return microerror.Mask(err)
-	//	}
-	//
-	podNamespace := h.targetNamespace
-
-	podName, err := h.PodName(podNamespace, fmt.Sprintf("app=%s", name))
-	if IsNotFound(err) {
-		podNamespace = "giantswarm"
-		podName, err = h.PodName(podNamespace, fmt.Sprintf("app=%s", name))
-		if err != nil {
-			return microerror.Mask(err)
-		}
-	} else if err != nil {
-		return microerror.Mask(err)
-	}
-
-	err = h.filelogger.StartLoggingPod(podNamespace, podName)
-	if err != nil {
-		return microerror.Mask(err)
-	}
-	// TODO end
-
-	return nil
+	return h.InstallResource(name, values, version, h.crd(cr))
 }
 
 func (h *Host) InstallResource(name, values, version string, conditions ...func() error) error {
@@ -438,7 +300,7 @@ func (h *Host) InstallCertResource() error {
 
 			return nil
 		}
-		b := backoff.NewExponential(backoff.ShortMaxWait, backoff.ShortMaxInterval)
+		b := backoff.NewExponential(ShortMaxWait, ShortMaxInterval)
 		n := backoff.NewNotifier(h.logger, context.Background())
 		err := backoff.RetryNotify(o, b, n)
 		if err != nil {
@@ -462,7 +324,7 @@ func (h *Host) InstallCertResource() error {
 
 			return nil
 		}
-		b := backoff.NewExponential(backoff.ShortMaxWait, backoff.ShortMaxInterval)
+		b := backoff.NewExponential(ShortMaxWait, ShortMaxInterval)
 		n := func(err error, delay time.Duration) {
 			h.logger.Log("level", "debug", "message", err.Error())
 		}
@@ -481,11 +343,6 @@ func (h *Host) InstallCertResource() error {
 // K8sClient returns the host cluster framework's Kubernetes client.
 func (h *Host) K8sClient() kubernetes.Interface {
 	return h.k8sClient
-}
-
-// K8sAggregationClient returns the host cluster framework's Kubernetes aggregation client.
-func (h *Host) K8sAggregationClient() *aggregationclient.Clientset {
-	return h.k8sAggregationClient
 }
 
 func (h *Host) PodName(namespace, labelSelector string) (string, error) {
@@ -538,7 +395,7 @@ func (h *Host) Teardown() {
 func (h *Host) WaitForPodLog(namespace, needle, podName string) error {
 	needle = os.ExpandEnv(needle)
 
-	timeout := time.After(backoff.LongMaxWait)
+	timeout := time.After(LongMaxWait)
 
 	req := h.k8sClient.CoreV1().
 		RESTClient().
@@ -635,7 +492,7 @@ func (h *Host) runningPod(namespace, labelSelector string) func() error {
 		pod := pods.Items[0]
 		phase := pod.Status.Phase
 		if phase != v1.PodRunning {
-			return microerror.Maskf(unexpectedStatusPhaseError, "pod selected with %q is in phase %q instead of %q", labelSelector, string(phase), string(v1.PodRunning))
+			return microerror.Maskf(unexpectedStatusPhaseError, "current status: %s", string(phase))
 		}
 		return nil
 	}
