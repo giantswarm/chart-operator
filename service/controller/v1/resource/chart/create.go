@@ -4,10 +4,9 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/giantswarm/chart-operator/service/controller/v1/key"
 	"github.com/giantswarm/microerror"
 	"k8s.io/helm/pkg/helm"
-
-	"github.com/giantswarm/chart-operator/service/controller/v1/key"
 )
 
 func (r *Resource) ApplyCreateChange(ctx context.Context, obj, createChange interface{}) error {
@@ -37,7 +36,7 @@ func (r *Resource) ApplyCreateChange(ctx context.Context, obj, createChange inte
 			}
 		}()
 
-		err = r.helmClient.EnsureTillerInstalled()
+		err = r.helmClient.EnsureTillerInstalled(ctx)
 		if err != nil {
 			return microerror.Mask(err)
 		}
@@ -51,10 +50,7 @@ func (r *Resource) ApplyCreateChange(ctx context.Context, obj, createChange inte
 		//      executing "cnr-server-chart/templates/deployment.yaml" at <.Values.image.reposi...>: can't evaluate field repository in type interface {}
 		//     }
 		//
-		err = r.helmClient.InstallFromTarball(tarballPath, ns,
-			helm.ReleaseName(chartState.ReleaseName),
-			helm.ValueOverrides([]byte("{}")),
-			helm.InstallWait(true))
+		err = r.helmClient.InstallReleaseFromTarball(ctx, tarballPath, ns, helm.ReleaseName(chartState.ReleaseName), helm.ValueOverrides([]byte("{}")), helm.InstallWait(true))
 		if err != nil {
 			return microerror.Mask(err)
 		}

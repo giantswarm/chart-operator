@@ -1,6 +1,7 @@
 package collector
 
 import (
+	"context"
 	"sync"
 
 	"github.com/giantswarm/apiextensions/pkg/clientset/versioned"
@@ -56,9 +57,11 @@ func (c *Collector) Describe(ch chan<- *prometheus.Desc) {
 }
 
 func (c *Collector) Collect(ch chan<- prometheus.Metric) {
-	c.logger.Log("level", "debug", "message", "collecting metrics")
+	ctx := context.Background()
 
-	collectFuncs := []func(chan<- prometheus.Metric){
+	c.logger.LogCtx(ctx, "level", "debug", "message", "collecting metrics")
+
+	collectFuncs := []func(context.Context, chan<- prometheus.Metric){
 		c.collectChartConfigStatus,
 		c.collectTillerReachable,
 	}
@@ -68,13 +71,13 @@ func (c *Collector) Collect(ch chan<- prometheus.Metric) {
 	for _, collectFunc := range collectFuncs {
 		wg.Add(1)
 
-		go func(collectFunc func(ch chan<- prometheus.Metric)) {
+		go func(collectFunc func(ctx context.Context, ch chan<- prometheus.Metric)) {
 			defer wg.Done()
-			collectFunc(ch)
+			collectFunc(ctx, ch)
 		}(collectFunc)
 	}
 
 	wg.Wait()
 
-	c.logger.Log("level", "debug", "message", "finished collecting metrics")
+	c.logger.LogCtx(ctx, "level", "debug", "message", "finished collecting metrics")
 }

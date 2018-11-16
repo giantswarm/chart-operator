@@ -5,6 +5,10 @@ import (
 
 	"github.com/giantswarm/apiextensions/pkg/clientset/versioned"
 	"github.com/giantswarm/apprclient"
+	"github.com/giantswarm/chart-operator/flag"
+	"github.com/giantswarm/chart-operator/service/collector"
+	"github.com/giantswarm/chart-operator/service/controller"
+	"github.com/giantswarm/chart-operator/service/healthz"
 	"github.com/giantswarm/helmclient"
 	"github.com/giantswarm/microendpoint/service/version"
 	"github.com/giantswarm/microerror"
@@ -16,11 +20,6 @@ import (
 	apiextensionsclient "k8s.io/apiextensions-apiserver/pkg/client/clientset/clientset"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
-
-	"github.com/giantswarm/chart-operator/flag"
-	"github.com/giantswarm/chart-operator/service/collector"
-	"github.com/giantswarm/chart-operator/service/controller"
-	"github.com/giantswarm/chart-operator/service/healthz"
 )
 
 // Config represents the configuration used to create a new service.

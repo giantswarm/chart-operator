@@ -1,6 +1,7 @@
 package collector
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/giantswarm/microerror"
@@ -37,12 +38,12 @@ var (
 	)
 )
 
-func (c *Collector) collectChartConfigStatus(ch chan<- prometheus.Metric) {
-	c.logger.Log("level", "debug", "message", "collecting metrics for ChartConfigs")
+func (c *Collector) collectChartConfigStatus(ctx context.Context, ch chan<- prometheus.Metric) {
+	c.logger.LogCtx(ctx, "level", "debug", "message", "collecting metrics for ChartConfigs")
 
 	chartConfigs, err := c.getChartConfigs()
 	if err != nil {
-		c.logger.Log("level", "error", "message", fmt.Sprintf("could not get ChartConfigs"), "stack", fmt.Sprintf("%#v", err))
+		c.logger.LogCtx(ctx, "level", "error", "message", fmt.Sprintf("could not get ChartConfigs"), "stack", fmt.Sprintf("%#v", err))
 	}
 
 	for _, chartConfig := range chartConfigs {
@@ -57,13 +58,11 @@ func (c *Collector) collectChartConfigStatus(ch chan<- prometheus.Metric) {
 			defaultNamespace,
 		)
 	}
-	c.logger.Log("level", "debug", "message", "finished collecting metrics for ChartConfigs")
+	c.logger.LogCtx(ctx, "level", "debug", "message", "finished collecting metrics for ChartConfigs")
 }
 
 func (c *Collector) getChartConfigs() ([]*chartState, error) {
-	r, err := c.g8sClient.CoreV1alpha1().
-		ChartConfigs(defaultNamespace).
-		List(metav1.ListOptions{})
+	r, err := c.g8sClient.CoreV1alpha1().ChartConfigs(defaultNamespace).List(metav1.ListOptions{})
 	if err != nil {
 		return nil, microerror.Mask(err)
 	}

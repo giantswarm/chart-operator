@@ -4,10 +4,9 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/giantswarm/chart-operator/service/controller/v1/key"
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/operatorkit/controller"
-
-	"github.com/giantswarm/chart-operator/service/controller/v1/key"
 )
 
 func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange interface{}) error {
@@ -39,12 +38,12 @@ func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange inte
 			}
 		}()
 
-		err = r.helmClient.EnsureTillerInstalled()
+		err = r.helmClient.EnsureTillerInstalled(ctx)
 		if err != nil {
 			return microerror.Mask(err)
 		}
 
-		err = r.helmClient.UpdateReleaseFromTarball(releaseName, tarballPath)
+		err = r.helmClient.UpdateReleaseFromTarball(ctx, releaseName, tarballPath)
 		if err != nil {
 			return microerror.Mask(err)
 		}

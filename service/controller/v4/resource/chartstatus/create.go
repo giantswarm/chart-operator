@@ -4,10 +4,9 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/giantswarm/chart-operator/service/controller/v4/key"
 	"github.com/giantswarm/helmclient"
 	"github.com/giantswarm/microerror"
-
-	"github.com/giantswarm/chart-operator/service/controller/v4/key"
 )
 
 func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
@@ -19,7 +18,7 @@ func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
 	releaseName := key.ReleaseName(customObject)
 	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("getting status for release '%s'", releaseName))
 
-	releaseContent, err := r.helmClient.GetReleaseContent(releaseName)
+	releaseContent, err := r.helmClient.GetReleaseContent(ctx, releaseName)
 	if helmclient.IsReleaseNotFound(err) {
 		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("release '%s' not found", releaseName))
 

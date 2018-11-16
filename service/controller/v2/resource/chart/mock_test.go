@@ -1,6 +1,7 @@
 package chart
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/giantswarm/helmclient"
@@ -34,7 +35,7 @@ type helmMock struct {
 	defaultError          error
 }
 
-func (h *helmMock) DeleteRelease(releaseName string, options ...helm.DeleteOption) error {
+func (h *helmMock) DeleteRelease(ctx context.Context, releaseName string, options ...helm.DeleteOption) error {
 	if h.defaultError != nil {
 		return h.defaultError
 	}
@@ -42,11 +43,11 @@ func (h *helmMock) DeleteRelease(releaseName string, options ...helm.DeleteOptio
 	return nil
 }
 
-func (h *helmMock) EnsureTillerInstalled() error {
+func (h *helmMock) EnsureTillerInstalled(ctx context.Context) error {
 	return nil
 }
 
-func (h *helmMock) GetReleaseContent(releaseName string) (*helmclient.ReleaseContent, error) {
+func (h *helmMock) GetReleaseContent(ctx context.Context, releaseName string) (*helmclient.ReleaseContent, error) {
 	if h.defaultError != nil {
 		return nil, h.defaultError
 	}
@@ -54,7 +55,7 @@ func (h *helmMock) GetReleaseContent(releaseName string) (*helmclient.ReleaseCon
 	return h.defaultReleaseContent, nil
 }
 
-func (h *helmMock) GetReleaseHistory(releaseName string) (*helmclient.ReleaseHistory, error) {
+func (h *helmMock) GetReleaseHistory(ctx context.Context, releaseName string) (*helmclient.ReleaseHistory, error) {
 	if h.defaultError != nil {
 		return nil, h.defaultError
 	}
@@ -62,18 +63,18 @@ func (h *helmMock) GetReleaseHistory(releaseName string) (*helmclient.ReleaseHis
 	return h.defaultReleaseHistory, nil
 }
 
-func (h *helmMock) InstallFromTarball(path, ns string, options ...helm.InstallOption) error {
+func (h *helmMock) InstallReleaseFromTarball(ctx context.Context, path, ns string, options ...helm.InstallOption) error {
 	return nil
 }
 
-func (h *helmMock) RunReleaseTest(releaseName string, options ...helm.ReleaseTestOption) error {
+func (h *helmMock) RunReleaseTest(ctx context.Context, releaseName string, options ...helm.ReleaseTestOption) error {
 	return nil
 }
 
-func (h *helmMock) UpdateReleaseFromTarball(releaseName, path string, options ...helm.UpdateOption) error {
+func (h *helmMock) UpdateReleaseFromTarball(ctx context.Context, releaseName, path string, options ...helm.UpdateOption) error {
 	return nil
 }
 
-func (h *helmMock) PingTiller() error {
+func (h *helmMock) PingTiller(ctx context.Context) error {
 	return nil
 }
