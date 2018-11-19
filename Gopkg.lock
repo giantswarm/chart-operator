@@ -192,8 +192,8 @@
   revision = "9922087c8f77cf4aff19bb8cf4c488a9dc4206f8"
 
 [[projects]]
-  branch = "master"
-  digest = "1:7ecaf2646318a76998606a0e448f3b36e0cbc81e95bc1cbbbdd74cae82762f7c"
+  branch = "vendor"
+  digest = "1:6c4ba2eddd856e9d2bf1e4283675902b9a2ba67cc44d7c57029dee705e85e1d4"
   name = "github.com/giantswarm/e2e-harness"
   packages = [
     "pkg/framework",
@@ -202,7 +202,7 @@
     "pkg/internal/filelogger",
   ]
   pruneopts = "UT"
-  revision = "2e1fc33b664015e1800b66081a9cb92e28a5b4eb"
+  revision = "2114ff9c0d4692dfcd79265a302312e7476ccdf0"
 
 [[projects]]
   branch = "master"
@@ -313,7 +313,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:3614027e7e1fb1140238d2dba6b38c63d73c9a22f2bebd438290ce9a1831660c"
+  digest = "1:46f580fee5ac5193c89740ce0a9e750ecc660e9598bae7da142a469be1be3841"
   name = "github.com/giantswarm/operatorkit"
   packages = [
     "client/k8scrdclient",
@@ -330,7 +330,7 @@
     "informer/collector",
   ]
   pruneopts = "UT"
-  revision = "8872796deae125330b8c39ed6031e2f783be04a2"
+  revision = "88d54701abd368b5a67142a00e7cc993f58b5794"
 
 [[projects]]
   branch = "master"
@@ -646,7 +646,7 @@
     "prometheus/promhttp",
   ]
   pruneopts = "UT"
-  revision = "7e9098b20fb8e103a7a5691878272d7e3d703663"
+  revision = "3fb53dff765f8a3e0f9d8b1d5b86d4f8c4eb3a09"
 
 [[projects]]
   branch = "master"
@@ -784,14 +784,14 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:6a875550c3b582f6c2d7e2ce44aba792511f00016d7c46b0a4fb26f730ef3058"
+  digest = "1:a089387bbfcfa884e5aafeebb85929993195bb8959766b1d20102841d47e0b0e"
   name = "golang.org/x/sys"
   packages = [
     "unix",
     "windows",
   ]
   pruneopts = "UT"
-  revision = "66b7b1311ac80bbafcd2daeef9a5e6e2cd1e2399"
+  revision = "93218def8b18e66adbdab3eca8ec334700329f1f"
 
 [[projects]]
   digest = "1:e5a8511f063c38c51ab9ab80e718e9149f692652aeb4e393a8c020dd1bf38ca2"
