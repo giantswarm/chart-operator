@@ -4,9 +4,10 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/giantswarm/chart-operator/service/controller/v5/key"
 	"github.com/giantswarm/helmclient"
 	"github.com/giantswarm/microerror"
+
+	"github.com/giantswarm/chart-operator/service/controller/v5/key"
 )
 
 func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {

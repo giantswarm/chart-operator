@@ -10,15 +10,16 @@ import (
 	"testing"
 
 	"github.com/giantswarm/apprclient"
-	"github.com/giantswarm/chart-operator/integration/env"
-	"github.com/giantswarm/chart-operator/integration/teardown"
-	"github.com/giantswarm/chart-operator/integration/templates"
 	"github.com/giantswarm/e2e-harness/pkg/framework"
 	"github.com/giantswarm/helmclient"
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/micrologger"
 	"github.com/spf13/afero"
 	"k8s.io/helm/pkg/helm"
+
+	"github.com/giantswarm/chart-operator/integration/env"
+	"github.com/giantswarm/chart-operator/integration/teardown"
+	"github.com/giantswarm/chart-operator/integration/templates"
 )
 
 func WrapTestMain(h *framework.Host, helmClient *helmclient.Client, l micrologger.Logger, m *testing.M) {

@@ -5,10 +5,11 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/giantswarm/chart-operator/service/controller/v3/key"
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/operatorkit/controller"
 	"k8s.io/helm/pkg/helm"
+
+	"github.com/giantswarm/chart-operator/service/controller/v3/key"
 )
 
 func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange interface{}) error {

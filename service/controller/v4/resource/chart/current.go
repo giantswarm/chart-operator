@@ -3,9 +3,10 @@ package chart
 import (
 	"context"
 
-	"github.com/giantswarm/chart-operator/service/controller/v4/key"
 	"github.com/giantswarm/helmclient"
 	"github.com/giantswarm/microerror"
+
+	"github.com/giantswarm/chart-operator/service/controller/v4/key"
 )
 
 func (r *Resource) GetCurrentState(ctx context.Context, obj interface{}) (interface{}, error) {

@@ -4,9 +4,10 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/giantswarm/chart-operator/service/controller/v1/key"
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/operatorkit/controller"
+
+	"github.com/giantswarm/chart-operator/service/controller/v1/key"
 )
 
 func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange interface{}) error {
