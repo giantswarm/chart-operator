@@ -52,16 +52,16 @@ required = [
   branch = "master"
   name = "github.com/giantswarm/apprclient"
 
-[[override]]
-  branch = "vendor"
+[[constraint]]
+  branch = "master"
   name = "github.com/giantswarm/e2e-harness"
 
 [[constraint]]
   branch = "master"
   name = "github.com/giantswarm/e2etemplates"
 
-[[override]]
-  branch = "ctx"
+[[constraint]]
+  branch = "master"
   name = "github.com/giantswarm/helmclient"
 
 [[constraint]]
