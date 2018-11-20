@@ -233,11 +233,11 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:0b8a68a96c3f9e62b96e1d06157aa2759d3ba326a14aa11d81afc8502643a215"
+  digest = "1:505f0e28eb921ead97e2510a4ed935acab575357491b393a696dcef18b820864"
   name = "github.com/giantswarm/helmclient"
   packages = ["."]
   pruneopts = "UT"
-  revision = "000e2420cd2989b91bc540606d829582b3f75685"
+  revision = "5e333423d29cfa3d44a157678acd70b6b9c7b9d2"
 
 [[projects]]
   branch = "master"
@@ -638,7 +638,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:26663fafdea73a38075b07e8e9d82fc0056379d2be8bb4e13899e8fda7c7dd23"
+  digest = "1:4c21e6726c584222cb4f697bad4eb2934cc86f5efe4b0a23f5886f88283b22da"
   name = "github.com/prometheus/client_golang"
   packages = [
     "prometheus",
@@ -646,7 +646,7 @@
     "prometheus/promhttp",
   ]
   pruneopts = "UT"
-  revision = "3fb53dff765f8a3e0f9d8b1d5b86d4f8c4eb3a09"
+  revision = "8d9c21f0cf5f73718ee86bb3a8e6432b88e9291d"
 
 [[projects]]
   branch = "master"
@@ -666,7 +666,7 @@
     "model",
   ]
   pruneopts = "UT"
-  revision = "b36ad289a3eaecdc52470a19591146a2c0ffb532"
+  revision = "aeab699e26f4d4089dba5e522e5d9babd2adbaf7"
 
 [[projects]]
   branch = "master"
