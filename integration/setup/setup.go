@@ -3,6 +3,7 @@
 package setup
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"os"
@@ -31,7 +32,7 @@ func WrapTestMain(h *framework.Host, helmClient *helmclient.Client, l micrologge
 		v = 1
 	}
 
-	err = helmClient.EnsureTillerInstalled()
+	err = helmClient.EnsureTillerInstalled(context.TODO())
 	if err != nil {
 		log.Printf("%#v\n", err)
 		v = 1
@@ -106,10 +107,7 @@ func installCNR(h *framework.Host, helmClient *helmclient.Client, l micrologger.
 		return microerror.Mask(err)
 	}
 
-	err = helmClient.InstallFromTarball(tarball, "giantswarm",
-		helm.ReleaseName("cnr-server"),
-		helm.ValueOverrides([]byte("{}")),
-		helm.InstallWait(true))
+	err = helmClient.InstallReleaseFromTarball(context.TODO(), tarball, "giantswarm", helm.ReleaseName("cnr-server"), helm.ValueOverrides([]byte("{}")), helm.InstallWait(true))
 	if err != nil {
 		return microerror.Mask(err)
 	}

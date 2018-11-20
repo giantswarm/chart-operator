@@ -38,7 +38,7 @@ func (r *Resource) ApplyCreateChange(ctx context.Context, obj, createChange inte
 			}
 		}()
 
-		err = r.helmClient.EnsureTillerInstalled()
+		err = r.helmClient.EnsureTillerInstalled(ctx)
 		if err != nil {
 			return microerror.Mask(err)
 		}
@@ -57,9 +57,7 @@ func (r *Resource) ApplyCreateChange(ctx context.Context, obj, createChange inte
 		//      executing "cnr-server-chart/templates/deployment.yaml" at <.Values.image.reposi...>: can't evaluate field repository in type interface {}
 		//     }
 		//
-		err = r.helmClient.InstallFromTarball(tarballPath, ns,
-			helm.ReleaseName(chartState.ReleaseName),
-			helm.ValueOverrides(values))
+		err = r.helmClient.InstallReleaseFromTarball(ctx, tarballPath, ns, helm.ReleaseName(chartState.ReleaseName), helm.ValueOverrides(values))
 		if err != nil {
 			return microerror.Mask(err)
 		}

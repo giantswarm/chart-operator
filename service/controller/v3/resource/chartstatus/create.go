@@ -19,7 +19,7 @@ func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
 	releaseName := key.ReleaseName(customObject)
 	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("getting status for release '%s'", releaseName))
 
-	releaseContent, err := r.helmClient.GetReleaseContent(releaseName)
+	releaseContent, err := r.helmClient.GetReleaseContent(ctx, releaseName)
 	if helmclient.IsReleaseNotFound(err) {
 		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("release '%s' not found", releaseName))
 

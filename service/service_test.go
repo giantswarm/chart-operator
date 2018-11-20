@@ -7,11 +7,12 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/giantswarm/chart-operator/flag"
 	"github.com/giantswarm/micrologger/microloggertest"
 	"github.com/spf13/viper"
 	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+
+	"github.com/giantswarm/chart-operator/flag"
 )
 
 func Test_Service_New(t *testing.T) {

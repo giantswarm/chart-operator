@@ -41,7 +41,7 @@ func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange inte
 			}
 		}()
 
-		err = r.helmClient.EnsureTillerInstalled()
+		err = r.helmClient.EnsureTillerInstalled(ctx)
 		if err != nil {
 			return microerror.Mask(err)
 		}
@@ -51,8 +51,7 @@ func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange inte
 			return microerror.Mask(err)
 		}
 
-		err = r.helmClient.UpdateReleaseFromTarball(releaseName, tarballPath,
-			helm.UpdateValueOverrides(values))
+		err = r.helmClient.UpdateReleaseFromTarball(ctx, releaseName, tarballPath, helm.UpdateValueOverrides(values))
 		if err != nil {
 			return microerror.Mask(err)
 		}

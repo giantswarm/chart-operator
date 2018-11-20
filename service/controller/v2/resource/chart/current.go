@@ -15,13 +15,13 @@ func (r *Resource) GetCurrentState(ctx context.Context, obj interface{}) (interf
 		return nil, microerror.Mask(err)
 	}
 
-	err = r.helmClient.EnsureTillerInstalled()
+	err = r.helmClient.EnsureTillerInstalled(ctx)
 	if err != nil {
 		return nil, microerror.Mask(err)
 	}
 
 	releaseName := key.ReleaseName(customObject)
-	releaseContent, err := r.helmClient.GetReleaseContent(releaseName)
+	releaseContent, err := r.helmClient.GetReleaseContent(ctx, releaseName)
 	if helmclient.IsReleaseNotFound(err) {
 		// Return early as release is not installed.
 		return nil, nil
@@ -29,7 +29,7 @@ func (r *Resource) GetCurrentState(ctx context.Context, obj interface{}) (interf
 		return nil, microerror.Mask(err)
 	}
 
-	releaseHistory, err := r.helmClient.GetReleaseHistory(releaseName)
+	releaseHistory, err := r.helmClient.GetReleaseHistory(ctx, releaseName)
 	if err != nil {
 		return nil, microerror.Mask(err)
 	}

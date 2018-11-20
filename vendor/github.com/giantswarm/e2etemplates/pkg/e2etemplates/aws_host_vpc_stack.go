@@ -1,5 +1,10 @@
 package e2etemplates
 
+// TODO AWSHostVPCStack is deprecated. See awsHostPeerStackTemplate instead. We
+// track the cleanup in a roadmap story.
+//
+//     https://github.com/giantswarm/giantswarm/pull/2202
+//
 const AWSHostVPCStack = `AWSTemplateFormatVersion: 2010-09-09
 Description: CI Host Stack with Peering VPC and route tables
 Resources:

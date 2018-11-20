@@ -1,6 +1,7 @@
 package collector
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/prometheus/client_golang/prometheus"
@@ -17,10 +18,10 @@ var (
 	)
 )
 
-func (c *Collector) collectTillerReachable(ch chan<- prometheus.Metric) {
-	c.logger.Log("level", "debug", "message", "collecting Tiller reachability")
+func (c *Collector) collectTillerReachable(ctx context.Context, ch chan<- prometheus.Metric) {
+	c.logger.LogCtx(ctx, "level", "debug", "message", "collecting Tiller reachability")
 
-	err := c.helmClient.PingTiller()
+	err := c.helmClient.PingTiller(ctx)
 	var value float64
 	if err != nil {
 		c.logger.Log("level", "error", "message", "could not ping Tiller", "stack", fmt.Sprintf("%#v", err))
@@ -37,5 +38,5 @@ func (c *Collector) collectTillerReachable(ch chan<- prometheus.Metric) {
 		defaultNamespace,
 	)
 
-	c.logger.Log("level", "debug", "message", "finished collecting Tiller reachability")
+	c.logger.LogCtx(ctx, "level", "debug", "message", "finished collecting Tiller reachability")
 }
