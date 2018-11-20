@@ -160,7 +160,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:91fd894ce3397aeda2b003d1bf586d93343107f706cfcc3302269484519cec01"
+  digest = "1:bc029e131b9f7a73ab8d917b45b351fd9d751af9f1b9dfcb514f20bbcb4b7c4c"
   name = "github.com/giantswarm/apiextensions"
   packages = [
     "pkg/apis/core/v1alpha1",
@@ -173,7 +173,7 @@
     "pkg/clientset/versioned/typed/provider/v1alpha1",
   ]
   pruneopts = "UT"
-  revision = "43104fd82934c7052d41ac2cee5eca0397896e79"
+  revision = "fa2fbedf46454ca0d7ee7957f39754cde392aa70"
 
 [[projects]]
   branch = "master"
@@ -313,7 +313,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:46f580fee5ac5193c89740ce0a9e750ecc660e9598bae7da142a469be1be3841"
+  digest = "1:615927903599229992cdb7ed7d784967fcf41fda45c6d7a30529701c4c3d3554"
   name = "github.com/giantswarm/operatorkit"
   packages = [
     "client/k8scrdclient",
@@ -330,7 +330,7 @@
     "informer/collector",
   ]
   pruneopts = "UT"
-  revision = "88d54701abd368b5a67142a00e7cc993f58b5794"
+  revision = "671a2454163f995264229dc58af40ee852baf2a1"
 
 [[projects]]
   branch = "master"
@@ -459,12 +459,12 @@
   revision = "24818f796faf91cd76ec7bddd72458fbced7a6c1"
 
 [[projects]]
-  digest = "1:3a26588bc48b96825977c1b3df964f8fd842cd6860cc26370588d3563433cf11"
+  digest = "1:236d7e1bdb50d8f68559af37dbcf9d142d56b431c9b2176d41e2a009b664cda8"
   name = "github.com/google/uuid"
   packages = ["."]
   pruneopts = "UT"
-  revision = "d460ce9f8df2e77fb1ba55ca87fafed96c607494"
-  version = "v1.0.0"
+  revision = "9b3b1e0f5f99ae461456d768e7d301a7acdaa2d8"
+  version = "v1.1.0"
 
 [[projects]]
   digest = "1:65c4414eeb350c47b8de71110150d0ea8a281835b1f386eacaa3ad7325929c21"
@@ -666,7 +666,7 @@
     "model",
   ]
   pruneopts = "UT"
-  revision = "1f2c4f3cd6db5fd6f68f36af6b6d5d936fd93c4e"
+  revision = "b36ad289a3eaecdc52470a19591146a2c0ffb532"
 
 [[projects]]
   branch = "master"
@@ -784,14 +784,14 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:a089387bbfcfa884e5aafeebb85929993195bb8959766b1d20102841d47e0b0e"
+  digest = "1:48b757e61d662021f49a6a0afc67dacae27ee0c3a8f858d927126bcdf49222d3"
   name = "golang.org/x/sys"
   packages = [
     "unix",
     "windows",
   ]
   pruneopts = "UT"
-  revision = "93218def8b18e66adbdab3eca8ec334700329f1f"
+  revision = "ec83556a53fe16b65c452a104ea9d1e86a671852"
 
 [[projects]]
   digest = "1:e5a8511f063c38c51ab9ab80e718e9149f692652aeb4e393a8c020dd1bf38ca2"
