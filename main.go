@@ -55,7 +55,7 @@ func mainWithError() (err error) {
 				Viper:  v,
 
 				Description: description,
-				GitCommit:   notAvailable,
+				GitCommit:   gitCommit,
 				ProjectName: name,
 				Source:      source,
 			}
@@ -94,7 +94,7 @@ func mainWithError() (err error) {
 			ServerFactory: newServerFactory,
 
 			Description: description,
-			GitCommit:   notAvailable,
+			GitCommit:   gitCommit,
 			Name:        name,
 			Source:      source,
 		}
