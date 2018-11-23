@@ -14,6 +14,8 @@ import (
 const (
 	// Name is the identifier of the resource.
 	Name = "chartv5"
+
+	releaseStatusDeployed = "DEPLOYED"
 )
 
 // Config represents the configuration used to create a new chart resource.
@@ -81,6 +83,11 @@ func isChartModified(a, b ChartState) bool {
 	// ChartValues have changed so we need to update the values for the current
 	// Helm Release.
 	if !reflect.DeepEqual(a.ChartValues, b.ChartValues) {
+		return true
+	}
+
+	// ReleaseStatus do not match so we need to update the Helm Release.
+	if a.ReleaseStatus != b.ReleaseStatus {
 		return true
 	}
 
