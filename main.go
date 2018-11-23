@@ -15,15 +15,11 @@ import (
 	"github.com/giantswarm/chart-operator/service"
 )
 
-const (
-	notAvailable = "n/a"
-)
-
 var (
 	description = "The chart-operator deploys Helm charts by reconciling against a CNR repository."
 	f           = flag.New()
 	name        = "chart-operator"
-	gitCommit   = notAvailable
+	gitCommit   = "n/a"
 	source      = "https://github.com/giantswarm/chart-operator"
 )
 
@@ -59,7 +55,7 @@ func mainWithError() (err error) {
 				Viper:  v,
 
 				Description: description,
-				GitCommit:   notAvailable,
+				GitCommit:   gitCommit,
 				ProjectName: name,
 				Source:      source,
 			}
@@ -98,7 +94,7 @@ func mainWithError() (err error) {
 			ServerFactory: newServerFactory,
 
 			Description: description,
-			GitCommit:   notAvailable,
+			GitCommit:   gitCommit,
 			Name:        name,
 			Source:      source,
 		}
