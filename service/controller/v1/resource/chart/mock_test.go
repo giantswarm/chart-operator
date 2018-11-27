@@ -67,6 +67,10 @@ func (h *helmMock) InstallReleaseFromTarball(ctx context.Context, path, ns strin
 	return nil
 }
 
+func (h *helmMock) ListReleaseContents(ctx context.Context) ([]*helmclient.ReleaseContent, error) {
+	return nil, nil
+}
+
 func (h *helmMock) RunReleaseTest(ctx context.Context, releaseName string, options ...helm.ReleaseTestOption) error {
 	return nil
 }
