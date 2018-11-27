@@ -29,6 +29,20 @@ const (
 	runReleaseTestTimout = 300
 )
 
+var (
+	helmStatuses = []hapirelease.Status_Code{
+		hapirelease.Status_UNKNOWN,
+		hapirelease.Status_DEPLOYED,
+		hapirelease.Status_DELETED,
+		hapirelease.Status_SUPERSEDED,
+		hapirelease.Status_FAILED,
+		hapirelease.Status_DELETING,
+		hapirelease.Status_PENDING_INSTALL,
+		hapirelease.Status_PENDING_UPGRADE,
+		hapirelease.Status_PENDING_ROLLBACK,
+	}
+)
+
 // Config represents the configuration used to create a helm client.
 type Config struct {
 	// HelmClient sets a helm client used for all operations of the initiated
@@ -324,21 +338,9 @@ func (c *Client) GetReleaseContent(ctx context.Context, releaseName string) (*Re
 		}
 	}
 
-	// If parameterizable values were passed at release creation time, raw values
-	// are returned by the Tiller API and we convert these to a map. First we need
-	// to check if there are values actually passed.
-	var values chartutil.Values
-	if resp.Release.Config != nil {
-		raw := []byte(resp.Release.Config.Raw)
-		values, err = chartutil.ReadValues(raw)
-		if err != nil {
-			return nil, microerror.Mask(err)
-		}
-	}
-	content := &ReleaseContent{
-		Name:   resp.Release.Name,
-		Status: resp.Release.Info.Status.Code.String(),
-		Values: values.AsMap(),
+	content, err := releaseToReleaseContent(resp.Release)
+	if err != nil {
+		return nil, microerror.Mask(err)
 	}
 
 	return content, nil
@@ -440,6 +442,67 @@ func (c *Client) InstallReleaseFromTarball(ctx context.Context, path, ns string,
 	}
 
 	return nil
+}
+
+func (c *Client) ListReleaseContents(ctx context.Context) ([]*ReleaseContent, error) {
+	var releases []*hapirelease.Release
+	{
+		o := func() error {
+			t, err := c.newTunnel()
+			if IsTillerNotFound(err) {
+				return backoff.Permanent(microerror.Mask(err))
+			} else if err != nil {
+				return microerror.Mask(err)
+			}
+			defer c.closeTunnel(ctx, t)
+
+			next := ""
+			for {
+				// Note: We explicitly ask for all release statuses,
+				// otherwise Helm will only return successfully deployed releases.
+				resp, err := c.newHelmClientFromTunnel(t).ListReleases(
+					helmclient.ReleaseListStatuses(helmStatuses),
+					helmclient.ReleaseListOffset(next),
+				)
+				if err != nil {
+					return microerror.Mask(err)
+				}
+
+				releases = append(releases, resp.GetReleases()...)
+
+				next = resp.GetNext()
+				if next == "" {
+					break
+				}
+			}
+
+			return nil
+		}
+		b := backoff.NewExponential(backoff.ShortMaxWait, backoff.ShortMaxInterval)
+		n := backoff.NewNotifier(c.logger, ctx)
+
+		err := backoff.RetryNotify(o, b, n)
+		if err != nil {
+			return nil, microerror.Mask(err)
+		}
+	}
+
+	// The Helm API considers each version of a release as a separate release,
+	// so will return multiple versions of what a sane person would call a 'release'.
+	// So, we filter out everything apart from the latest version.
+	releases = filterList(releases)
+
+	contents := []*ReleaseContent{}
+	for _, release := range releases {
+		content, err := releaseToReleaseContent(release)
+		if err != nil {
+			return nil, microerror.Mask(err)
+		}
+
+		contents = append(contents, content)
+	}
+
+	return contents, nil
 }
 
 // PingTiller proxies the underlying Helm client PingTiller method.
@@ -619,4 +682,53 @@ func getPodName(client kubernetes.Interface, labelSelector, namespace string) (s
 	pod := pods.Items[0]
 
 	return pod.Name, nil
+}
+
+func releaseToReleaseContent(release *hapirelease.Release) (*ReleaseContent, error) {
+	var err error
+
+	// If parameterizable values were passed at release creation time, raw values
+	// are returned by the Tiller API and we convert these to a map. First we need
+	// to check if there are values actually passed.
+	var values chartutil.Values
+	if release.Config != nil {
+		raw := []byte(release.Config.Raw)
+		values, err = chartutil.ReadValues(raw)
+		if err != nil {
+			return nil, microerror.Mask(err)
+		}
+	}
+
+	content := &ReleaseContent{
+		Name:   release.Name,
+		Status: release.Info.Status.Code.String(),
+		Values: values.AsMap(),
+	}
+
+	return content, nil
+}
+
+// filterList returns a list scrubbed of old releases.
+// See https://github.com/helm/helm/blob/3a8a797eab0e1d02456c7944bf41631546ee2e47/cmd/helm/list.go#L197.
+func filterList(rels []*hapirelease.Release) []*hapirelease.Release {
+	idx := map[string]int32{}
+
+	for _, r := range rels {
+		name, version := r.GetName(), r.GetVersion()
+		if max, ok := idx[name]; ok {
+			// check if we have a greater version already
+			if max > version {
+				continue
+			}
+		}
+		idx[name] = version
+	}
+
+	uniq := make([]*hapirelease.Release, 0, len(idx))
+	for _, r := range rels {
+		if idx[r.GetName()] == r.GetVersion() {
+			uniq = append(uniq, r)
+		}
+	}
+	return uniq
 }
