@@ -36,7 +36,7 @@ func (c *Collector) collectTillerReachable(ctx context.Context, ch chan<- promet
 	} else {
 		err := c.helmClient.PingTiller(ctx)
 		if err != nil {
-			c.logger.Log("level", "error", "message", "could not ping Tiller", "stack", fmt.Sprintf("%#v", err))
+			c.logger.Log("level", "error", "message", "failed to collect Tiller reachability", "stack", fmt.Sprintf("%#v", err))
 
 			value = 0
 		} else {
