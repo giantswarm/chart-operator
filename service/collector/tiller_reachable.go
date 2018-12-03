@@ -25,8 +25,10 @@ func (c *Collector) collectTillerReachable(ctx context.Context, ch chan<- promet
 	chartConfigs, err := c.getChartConfigs()
 	if err != nil {
 		c.logger.LogCtx(ctx, "level", "error", "message", fmt.Sprintf("could not get ChartConfigs"), "stack", fmt.Sprintf("%#v", err))
+		return
 	}
-	if err == nil && len(chartConfigs) == 0 {
+
+	if len(chartConfigs) == 0 {
 		// Skip pinging tiller when there is no ChartConfig,
 		// as tiller is only installed when there is at least one ChartConfig to reconcile.
 		c.logger.Log("level", "error", "message", "did not collect Tiller reachability")
