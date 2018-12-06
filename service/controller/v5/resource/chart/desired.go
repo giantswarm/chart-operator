@@ -59,7 +59,6 @@ func (r *Resource) GetDesiredState(ctx context.Context, obj interface{}) (interf
 		ChartName:      key.ChartName(customObject),
 		ChartValues:    chartValues,
 		ReleaseName:    key.ReleaseName(customObject),
-		ReleaseStatus:  releaseStatusDeployed,
 		ReleaseVersion: releaseVersion,
 	}
 
