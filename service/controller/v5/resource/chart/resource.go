@@ -18,6 +18,15 @@ const (
 	releaseStatusDeployed = "DEPLOYED"
 )
 
+var (
+	chartTransitionStatuses = []string{
+		"DELETING",
+		"PENDING_INSTALL",
+		"PENDING_UPGRADE",
+		"PENDING_ROLLBACK",
+	}
+)
+
 // Config represents the configuration used to create a new chart resource.
 type Config struct {
 	// Dependencies.
@@ -93,6 +102,16 @@ func isChartModified(a, b ChartState) bool {
 
 	return false
 
+}
+
+func isChartInTransitionState(c ChartState) bool {
+	for _, status := range chartTransitionStatuses {
+		if c.ReleaseStatus == status {
+			return true
+		}
+	}
+
+	return false
 }
 
 func toChartState(v interface{}) (ChartState, error) {
