@@ -51,7 +51,7 @@ func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange inte
 			return microerror.Mask(err)
 		}
 
-		err = r.helmClient.UpdateReleaseFromTarball(ctx, releaseName, tarballPath, helm.UpdateValueOverrides(values))
+		err = r.helmClient.UpdateReleaseFromTarball(ctx, releaseName, tarballPath, helm.UpdateValueOverrides(values), helm.UpgradeForce(true))
 		if err != nil {
 			return microerror.Mask(err)
 		}
