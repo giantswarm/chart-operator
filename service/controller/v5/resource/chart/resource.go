@@ -95,13 +95,7 @@ func isChartModified(a, b ChartState) bool {
 		return true
 	}
 
-	// ReleaseStatus do not match so we need to update the Helm Release.
-	if a.ReleaseStatus != b.ReleaseStatus {
-		return true
-	}
-
 	return false
-
 }
 
 func isChartInTransitionState(c ChartState) bool {
