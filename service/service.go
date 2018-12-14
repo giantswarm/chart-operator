@@ -148,19 +148,6 @@ func New(config Config) (*Service, error) {
 		}
 	}
 
-	var healthzService *healthz.Service
-	{
-		c := healthz.Config{
-			K8sClient: k8sClient,
-			Logger:    config.Logger,
-		}
-
-		healthzService, err = healthz.New(c)
-		if err != nil {
-			return nil, microerror.Mask(err)
-		}
-	}
-
 	var chartController *controller.Chart
 	{
 		c := controller.ChartConfig{
@@ -199,7 +186,6 @@ func New(config Config) (*Service, error) {
 	}
 
 	s := &Service{
-		Healthz: healthzService,
 		Version: versionService,
 
 		bootOnce:         sync.Once{},
