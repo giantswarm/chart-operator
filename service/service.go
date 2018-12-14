@@ -20,7 +20,6 @@ import (
 	"github.com/giantswarm/chart-operator/flag"
 	"github.com/giantswarm/chart-operator/service/collector"
 	"github.com/giantswarm/chart-operator/service/controller"
-	"github.com/giantswarm/chart-operator/service/healthz"
 )
 
 // Config represents the configuration used to create a new service.
@@ -40,7 +39,6 @@ type Config struct {
 
 // Service is a type providing implementation of microkit service interface.
 type Service struct {
-	Healthz *healthz.Service
 	Version *version.Service
 
 	// Internals
