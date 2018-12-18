@@ -20,7 +20,6 @@ import (
 	"github.com/giantswarm/chart-operator/flag"
 	"github.com/giantswarm/chart-operator/service/collector"
 	"github.com/giantswarm/chart-operator/service/controller"
-	"github.com/giantswarm/chart-operator/service/healthz"
 )
 
 // Config represents the configuration used to create a new service.
@@ -40,7 +39,6 @@ type Config struct {
 
 // Service is a type providing implementation of microkit service interface.
 type Service struct {
-	Healthz *healthz.Service
 	Version *version.Service
 
 	// Internals
@@ -148,19 +146,6 @@ func New(config Config) (*Service, error) {
 		}
 	}
 
-	var healthzService *healthz.Service
-	{
-		c := healthz.Config{
-			K8sClient: k8sClient,
-			Logger:    config.Logger,
-		}
-
-		healthzService, err = healthz.New(c)
-		if err != nil {
-			return nil, microerror.Mask(err)
-		}
-	}
-
 	var chartController *controller.Chart
 	{
 		c := controller.ChartConfig{
@@ -199,7 +184,6 @@ func New(config Config) (*Service, error) {
 	}
 
 	s := &Service{
-		Healthz: healthzService,
 		Version: versionService,
 
 		bootOnce:         sync.Once{},
