@@ -25,7 +25,8 @@ import (
 // Config represents the configuration used to create a new service.
 type Config struct {
 	// Dependencies.
-	Logger micrologger.Logger
+	HelmClient helmclient.Interface
+	Logger     micrologger.Logger
 
 	// Settings.
 	Flag  *flag.Flag
@@ -116,7 +117,7 @@ func New(config Config) (*Service, error) {
 		}
 	}
 
-	var helmClient *helmclient.Client
+	var helmClient helmclient.Interface
 	{
 		c := helmclient.Config{
 			K8sClient: k8sClient,

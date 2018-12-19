@@ -21,13 +21,13 @@ const (
 
 type Config struct {
 	G8sClient  versioned.Interface
-	HelmClient *helmclient.Client
+	HelmClient helmclient.Interface
 	Logger     micrologger.Logger
 }
 
 type Collector struct {
 	g8sClient  versioned.Interface
-	helmClient *helmclient.Client
+	helmClient helmclient.Interface
 	logger     micrologger.Logger
 }
 
