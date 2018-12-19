@@ -3,11 +3,11 @@ package service
 import (
 	"github.com/giantswarm/versionbundle"
 
-	"github.com/giantswarm/chart-operator/service/controller/v1"
-	"github.com/giantswarm/chart-operator/service/controller/v2"
-	"github.com/giantswarm/chart-operator/service/controller/v3"
-	"github.com/giantswarm/chart-operator/service/controller/v4"
-	"github.com/giantswarm/chart-operator/service/controller/v5"
+	"github.com/giantswarm/chart-operator/service/controller/chartconfig/v1"
+	"github.com/giantswarm/chart-operator/service/controller/chartconfig/v2"
+	"github.com/giantswarm/chart-operator/service/controller/chartconfig/v3"
+	"github.com/giantswarm/chart-operator/service/controller/chartconfig/v4"
+	"github.com/giantswarm/chart-operator/service/controller/chartconfig/v5"
 )
 
 func NewVersionBundles() []versionbundle.Bundle {

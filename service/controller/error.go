@@ -1,4 +1,4 @@
-package controller
+package chartconfig
 
 import (
 	"github.com/giantswarm/microerror"
