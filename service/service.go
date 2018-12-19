@@ -1,6 +1,7 @@
 package service
 
 import (
+	"context"
 	"sync"
 
 	"github.com/giantswarm/apiextensions/pkg/clientset/versioned"
@@ -45,6 +46,7 @@ type Service struct {
 	// Internals
 	bootOnce         sync.Once
 	chartController  *controller.Chart
+	helmClient       helmclient.Interface
 	metricsCollector *collector.Collector
 }
 
@@ -189,6 +191,7 @@ func New(config Config) (*Service, error) {
 
 		bootOnce:         sync.Once{},
 		chartController:  chartController,
+		helmClient:       helmClient,
 		metricsCollector: metricsCollector,
 	}
 
@@ -196,9 +199,10 @@ func New(config Config) (*Service, error) {
 }
 
 // Boot starts top level service implementation.
-func (s *Service) Boot() {
+func (s *Service) Boot(ctx context.Context) {
 	s.bootOnce.Do(func() {
 		prometheus.MustRegister(s.metricsCollector)
+		s.helmClient.EnsureTillerInstalled(ctx)
 
 		// Start the controller.
 		go s.chartController.Boot()

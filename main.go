@@ -1,8 +1,8 @@
 package main
 
 import (
+	"context"
 	"fmt"
-	"os"
 
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/microkit/command"
@@ -24,23 +24,19 @@ var (
 )
 
 func main() {
-	err := mainWithError()
+	err := mainError()
 	if err != nil {
 		panic(fmt.Sprintf("%#v\n", err))
 	}
 }
 
-func mainWithError() (err error) {
-	// Create a new logger that is used by all packages.
-	var newLogger micrologger.Logger
-	{
-		c := micrologger.Config{
-			IOWriter: os.Stdout,
-		}
-		newLogger, err = micrologger.New(c)
-		if err != nil {
-			return microerror.Maskf(err, "micrologger.New")
-		}
+func mainError() error {
+	var err error
+
+	ctx := context.Background()
+	newLogger, err := micrologger.New(micrologger.Config{})
+	if err != nil {
+		return microerror.Mask(err)
 	}
 
 	// Define server factory to create the custom server once all command line
@@ -64,7 +60,7 @@ func mainWithError() (err error) {
 				panic(fmt.Sprintf("%#v\n", microerror.Maskf(err, "service.New")))
 			}
 
-			go newService.Boot()
+			go newService.Boot(ctx)
 		}
 
 		// New custom server that bundles microkit endpoints.
