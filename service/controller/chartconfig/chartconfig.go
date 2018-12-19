@@ -1,4 +1,4 @@
-package controller
+package chartconfig
 
 import (
 	"github.com/giantswarm/apiextensions/pkg/apis/core/v1alpha1"
@@ -14,16 +14,16 @@ import (
 	apiextensionsclient "k8s.io/apiextensions-apiserver/pkg/client/clientset/clientset"
 	"k8s.io/client-go/kubernetes"
 
-	"github.com/giantswarm/chart-operator/service/controller/v1"
-	"github.com/giantswarm/chart-operator/service/controller/v2"
-	"github.com/giantswarm/chart-operator/service/controller/v3"
-	"github.com/giantswarm/chart-operator/service/controller/v4"
-	"github.com/giantswarm/chart-operator/service/controller/v5"
+	v1 "github.com/giantswarm/chart-operator/service/controller/chartconfig/v1"
+	v2 "github.com/giantswarm/chart-operator/service/controller/chartconfig/v2"
+	v3 "github.com/giantswarm/chart-operator/service/controller/chartconfig/v3"
+	v4 "github.com/giantswarm/chart-operator/service/controller/chartconfig/v4"
+	v5 "github.com/giantswarm/chart-operator/service/controller/chartconfig/v5"
 )
 
 const chartControllerSuffix = "-chart"
 
-type ChartConfig struct {
+type Config struct {
 	ApprClient   apprclient.Interface
 	Fs           afero.Fs
 	G8sClient    versioned.Interface
@@ -36,28 +36,28 @@ type ChartConfig struct {
 	WatchNamespace string
 }
 
-type Chart struct {
+type ChartConfig struct {
 	*controller.Controller
 }
 
-func NewChart(config ChartConfig) (*Chart, error) {
+func NewChartConfig(config Config) (*ChartConfig, error) {
 	var err error
 
 	if config.G8sClient == nil {
-		return nil, microerror.Maskf(invalidConfigError, "config.G8sClient must not be empty")
+		return nil, microerror.Maskf(invalidConfigError, "%T.G8sClient must not be empty", config)
 	}
 	if config.K8sClient == nil {
-		return nil, microerror.Maskf(invalidConfigError, "config.K8sClient must not be empty")
+		return nil, microerror.Maskf(invalidConfigError, "%T.K8sClient must not be empty", config)
 	}
 	if config.K8sExtClient == nil {
-		return nil, microerror.Maskf(invalidConfigError, "config.K8sExtClient must not be empty")
+		return nil, microerror.Maskf(invalidConfigError, "%T.K8sExtClient must not be empty", config)
 	}
 	if config.Logger == nil {
-		return nil, microerror.Maskf(invalidConfigError, "config.Logger must not be empty")
+		return nil, microerror.Maskf(invalidConfigError, "%T.Logger must not be empty", config)
 	}
 
 	if config.ProjectName == "" {
-		return nil, microerror.Maskf(invalidConfigError, "config.ProjectName must not be empty")
+		return nil, microerror.Maskf(invalidConfigError, "%T.ProjectName must not be empty", config)
 	}
 
 	var crdClient *k8scrdclient.CRDClient
@@ -177,7 +177,7 @@ func NewChart(config ChartConfig) (*Chart, error) {
 		}
 	}
 
-	var chartController *controller.Controller
+	var chartConfigController *controller.Controller
 	{
 		c := controller.Config{
 			CRD:       v1alpha1.NewChartConfigCRD(),
@@ -196,14 +196,14 @@ func NewChart(config ChartConfig) (*Chart, error) {
 			Name: config.ProjectName + chartControllerSuffix,
 		}
 
-		chartController, err = controller.New(c)
+		chartConfigController, err = controller.New(c)
 		if err != nil {
 			return nil, microerror.Mask(err)
 		}
 	}
 
-	c := &Chart{
-		Controller: chartController,
+	c := &ChartConfig{
+		Controller: chartConfigController,
 	}
 
 	return c, nil

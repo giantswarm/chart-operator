@@ -20,7 +20,7 @@ import (
 
 	"github.com/giantswarm/chart-operator/flag"
 	"github.com/giantswarm/chart-operator/service/collector"
-	"github.com/giantswarm/chart-operator/service/controller"
+	"github.com/giantswarm/chart-operator/service/controller/chartconfig"
 )
 
 // Config represents the configuration used to create a new service.
@@ -44,10 +44,10 @@ type Service struct {
 	Version *version.Service
 
 	// Internals
-	bootOnce         sync.Once
-	chartController  *controller.Chart
-	helmClient       helmclient.Interface
-	metricsCollector *collector.Collector
+	bootOnce              sync.Once
+	chartConfigController *chartconfig.ChartConfig
+	helmClient            helmclient.Interface
+	metricsCollector      *collector.Collector
 }
 
 // New creates a new service with given configuration.
@@ -149,9 +149,9 @@ func New(config Config) (*Service, error) {
 		}
 	}
 
-	var chartController *controller.Chart
+	var chartConfigController *chartconfig.ChartConfig
 	{
-		c := controller.ChartConfig{
+		c := chartconfig.Config{
 			ApprClient:   apprClient,
 			Fs:           fs,
 			HelmClient:   helmClient,
@@ -164,7 +164,7 @@ func New(config Config) (*Service, error) {
 			WatchNamespace: config.Viper.GetString(config.Flag.Service.Kubernetes.Watch.Namespace),
 		}
 
-		chartController, err = controller.NewChart(c)
+		chartConfigController, err = chartconfig.NewChartConfig(c)
 		if err != nil {
 			return nil, microerror.Mask(err)
 		}
@@ -189,10 +189,10 @@ func New(config Config) (*Service, error) {
 	s := &Service{
 		Version: versionService,
 
-		bootOnce:         sync.Once{},
-		chartController:  chartController,
-		helmClient:       helmClient,
-		metricsCollector: metricsCollector,
+		bootOnce:              sync.Once{},
+		chartConfigController: chartConfigController,
+		helmClient:            helmClient,
+		metricsCollector:      metricsCollector,
 	}
 
 	return s, nil
@@ -205,6 +205,6 @@ func (s *Service) Boot(ctx context.Context) {
 		s.helmClient.EnsureTillerInstalled(ctx)
 
 		// Start the controller.
-		go s.chartController.Boot()
+		go s.chartConfigController.Boot()
 	})
 }
