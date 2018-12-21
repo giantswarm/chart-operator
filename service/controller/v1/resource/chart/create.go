@@ -26,7 +26,7 @@ func (r *Resource) ApplyCreateChange(ctx context.Context, obj, createChange inte
 		channel := key.ChannelName(customObject)
 		ns := key.Namespace(customObject)
 
-		tarballPath, err := r.apprClient.PullChartTarball(name, channel)
+		tarballPath, err := r.apprClient.PullChartTarball(ctx, name, channel)
 		if err != nil {
 			return microerror.Mask(err)
 		}

@@ -3,6 +3,7 @@
 package chart
 
 import (
+	"context"
 	"log"
 	"net/http"
 	"time"
@@ -23,7 +24,7 @@ type Chart struct {
 	Name    string
 }
 
-func Push(h *framework.Host, charts []Chart) error {
+func Push(ctx context.Context, h *framework.Host, charts []Chart) error {
 	var err error
 
 	var forwarder *k8sportforward.Forwarder
@@ -71,12 +72,12 @@ func Push(h *framework.Host, charts []Chart) error {
 		return microerror.Mask(err)
 	}
 	for _, chart := range charts {
-		err = a.PushChartTarball(chart.Name, chart.Release, chart.Tarball)
+		err = a.PushChartTarball(ctx, chart.Name, chart.Release, chart.Tarball)
 		if err != nil {
 			return microerror.Mask(err)
 		}
 
-		err = a.PromoteChart(chart.Name, chart.Release, chart.Channel)
+		err = a.PromoteChart(ctx, chart.Name, chart.Release, chart.Channel)
 		if err != nil {
 			return microerror.Mask(err)
 		}

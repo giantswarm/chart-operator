@@ -3,6 +3,7 @@
 package basic
 
 import (
+	"context"
 	"fmt"
 	"testing"
 
@@ -19,6 +20,8 @@ const (
 )
 
 func TestChartLifecycle(t *testing.T) {
+	ctx := context.Background()
+
 	// Setup
 	{
 		charts := []chart.Chart{
@@ -36,7 +39,7 @@ func TestChartLifecycle(t *testing.T) {
 			},
 		}
 
-		err := chart.Push(h, charts)
+		err := chart.Push(ctx, h, charts)
 		if err != nil {
 			t.Fatalf("expected %#v got %#v", nil, err)
 		}

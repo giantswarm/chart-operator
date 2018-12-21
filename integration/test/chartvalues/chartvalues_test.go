@@ -3,6 +3,7 @@
 package chartvalues
 
 import (
+	"context"
 	"fmt"
 	"testing"
 
@@ -15,6 +16,8 @@ import (
 
 func TestChartValues(t *testing.T) {
 	const cr = "apiextensions-chart-config-e2e"
+
+	ctx := context.Background()
 
 	charts := []chart.Chart{
 		{
@@ -32,7 +35,7 @@ func TestChartValues(t *testing.T) {
 		Release:              "tb-release",
 		VersionBundleVersion: env.VersionBundleVersion(),
 	}
-	err := chart.Push(h, charts)
+	err := chart.Push(ctx, h, charts)
 	if err != nil {
 		t.Fatalf("could not push inital charts to cnr %v", err)
 	}

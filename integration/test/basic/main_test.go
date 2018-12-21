@@ -3,6 +3,7 @@
 package basic
 
 import (
+	"context"
 	"testing"
 
 	"github.com/giantswarm/e2e-harness/pkg/framework"
@@ -75,5 +76,6 @@ func init() {
 // TestMain allows us to have common setup and teardown steps that are run
 // once for all the tests https://golang.org/pkg/testing/#hdr-Main.
 func TestMain(m *testing.M) {
-	setup.WrapTestMain(h, helmClient, l, m)
+	ctx := context.Background()
+	setup.WrapTestMain(ctx, h, helmClient, l, m)
 }
