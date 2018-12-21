@@ -143,12 +143,12 @@
   revision = "d938fdf2412efa6aee9f3c7f0eaa9cc9b357efca"
 
 [[projects]]
-  branch = "master"
-  digest = "1:10814cf6ca92ca47529e7d70f278cdfd9bbaf5347c4b0c87d820732b4ceb1323"
+  branch = "ctx"
+  digest = "1:8baf1f453d348927190be2b02b3cbb39955e4df3c9ffbe8b88679192110b19c4"
   name = "github.com/giantswarm/apprclient"
   packages = ["."]
   pruneopts = "UT"
-  revision = "6711a8d7dfe9123bce7724036d879918b3c726a0"
+  revision = "004c7225cb478c69c686a374f0d3508ec53666ca"
 
 [[projects]]
   branch = "master"
@@ -159,8 +159,8 @@
   revision = "9922087c8f77cf4aff19bb8cf4c488a9dc4206f8"
 
 [[projects]]
-  branch = "master"
-  digest = "1:18a981a246abb422a0c0f78b9ae1e4984d4ee8a86dcb3cadb65787a6a3df33dd"
+  branch = "ctx"
+  digest = "1:6131764fade79740526eaded582068ae1d858334f9d2c2a93cb389e311cad854"
   name = "github.com/giantswarm/e2e-harness"
   packages = [
     "internal/filelogger",
@@ -169,7 +169,7 @@
     "pkg/harness",
   ]
   pruneopts = "UT"
-  revision = "203d60b7faf213bb040f53568716024341a3ff25"
+  revision = "d8efd4894ef382015e39e332efbce34ae10863bd"
 
 [[projects]]
   branch = "master"

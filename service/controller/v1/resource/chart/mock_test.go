@@ -13,7 +13,7 @@ type apprMock struct {
 	defaultError          bool
 }
 
-func (a *apprMock) GetReleaseVersion(name, channel string) (string, error) {
+func (a *apprMock) GetReleaseVersion(ctx context.Context, name, channel string) (string, error) {
 	if a.defaultError {
 		return "", fmt.Errorf("error getting default release")
 	}
@@ -21,11 +21,11 @@ func (a *apprMock) GetReleaseVersion(name, channel string) (string, error) {
 	return a.defaultReleaseVersion, nil
 }
 
-func (a *apprMock) PullChartTarball(name, channel string) (string, error) {
+func (a *apprMock) PullChartTarball(ctx context.Context, name, channel string) (string, error) {
 	return "", nil
 }
 
-func (a *apprMock) PullChartTarballFromRelease(name, release string) (string, error) {
+func (a *apprMock) PullChartTarballFromRelease(ctx context.Context, name, release string) (string, error) {
 	return "", nil
 }
 

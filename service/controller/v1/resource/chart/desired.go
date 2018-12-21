@@ -16,7 +16,7 @@ func (r *Resource) GetDesiredState(ctx context.Context, obj interface{}) (interf
 
 	name := key.ChartName(customObject)
 	channel := key.ChannelName(customObject)
-	releaseVersion, err := r.apprClient.GetReleaseVersion(name, channel)
+	releaseVersion, err := r.apprClient.GetReleaseVersion(ctx, name, channel)
 	if err != nil {
 		return nil, microerror.Mask(err)
 	}
