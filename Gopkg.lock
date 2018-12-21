@@ -125,30 +125,30 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:cbec3900f852456bb7696f57e98da1479d795f7a49c2a6109b158430b47b12ab"
+  digest = "1:881c38b6a7ad922ec4060d22dcf109436ca9293beeb004076a7d057b507a32fa"
   name = "github.com/giantswarm/apiextensions"
   packages = [
-    "pkg/apis/app/v1alpha1",
+    "pkg/apis/application/v1alpha1",
     "pkg/apis/core/v1alpha1",
     "pkg/apis/example/v1alpha1",
     "pkg/apis/provider/v1alpha1",
     "pkg/clientset/versioned",
     "pkg/clientset/versioned/scheme",
-    "pkg/clientset/versioned/typed/app/v1alpha1",
+    "pkg/clientset/versioned/typed/application/v1alpha1",
     "pkg/clientset/versioned/typed/core/v1alpha1",
     "pkg/clientset/versioned/typed/example/v1alpha1",
     "pkg/clientset/versioned/typed/provider/v1alpha1",
   ]
   pruneopts = "UT"
-  revision = "111e3c8bf5b33f0ba733d33bc721e5bab29da0a3"
+  revision = "d938fdf2412efa6aee9f3c7f0eaa9cc9b357efca"
 
 [[projects]]
   branch = "master"
-  digest = "1:cb9e0c807ef811f4739c14dd4ce51c858938215a9e7bbb5bb25e1e439f303308"
+  digest = "1:10814cf6ca92ca47529e7d70f278cdfd9bbaf5347c4b0c87d820732b4ceb1323"
   name = "github.com/giantswarm/apprclient"
   packages = ["."]
   pruneopts = "UT"
-  revision = "875ffc3f0ea820360b967d69a1a1e88c26cd7480"
+  revision = "6711a8d7dfe9123bce7724036d879918b3c726a0"
 
 [[projects]]
   branch = "master"
@@ -169,7 +169,7 @@
     "pkg/harness",
   ]
   pruneopts = "UT"
-  revision = "377e40fd69b43251b0527f37a8c4c6ab1f5b3aa2"
+  revision = "203d60b7faf213bb040f53568716024341a3ff25"
 
 [[projects]]
   branch = "master"
@@ -697,7 +697,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:b7f6f8c60a350a16765044cfb22544a40718936c3a9096f11161c90a62acd131"
+  digest = "1:5c5bfdd46bd5b13439240c6d39086a8b1b77684c4cbbd5524b2b561ae14239c4"
   name = "golang.org/x/net"
   packages = [
     "context",
@@ -711,7 +711,7 @@
     "trace",
   ]
   pruneopts = "UT"
-  revision = "e147a9138326bc0e9d4e179541ffd8af41cff8a9"
+  revision = "927f97764cc334a6575f4b7a1584a147864d5723"
 
 [[projects]]
   branch = "master"
@@ -734,14 +734,14 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:ba8cbf57cfd92d5f8592b4aca1a35d92c162363d32aeabd5b12555f8896635e7"
+  digest = "1:ba2c0719b7ca1fb531afa5aae9bda558846438a075f0e0282d3dffcd887de90d"
   name = "golang.org/x/sys"
   packages = [
     "unix",
     "windows",
   ]
   pruneopts = "UT"
-  revision = "074acd46bca67915925527c07849494d115e7c43"
+  revision = "b00e65af1da0681cde6c8227839a0ca53bbf16bb"
 
 [[projects]]
   digest = "1:a2ab62866c75542dd18d2b069fec854577a20211d7c0ea6ae746072a1dccdd18"
@@ -775,7 +775,7 @@
   revision = "85acf8d2951cb2a3bde7632f9ff273ef0379bcbd"
 
 [[projects]]
-  digest = "1:08206298775e5b462e6c0333f4471b44e63f1a70e42952b6ede4ecc9572281eb"
+  digest = "1:6f3bd49ddf2e104e52062774d797714371fac1b8bddfd8e124ce78e6b2264a10"
   name = "google.golang.org/appengine"
   packages = [
     "internal",
@@ -787,8 +787,8 @@
     "urlfetch",
   ]
   pruneopts = "UT"
-  revision = "4a4468ece617fc8205e99368fa2200e9d1fad421"
-  version = "v1.3.0"
+  revision = "e9657d882bb81064595ca3b56cbe2546bbabf7b1"
+  version = "v1.4.0"
 
 [[projects]]
   branch = "master"
@@ -796,7 +796,7 @@
   name = "google.golang.org/genproto"
   packages = ["googleapis/rpc/status"]
   pruneopts = "UT"
-  revision = "5a97ab628bfb2f65f6befec18f4bc7bc7f382b77"
+  revision = "a1fde740824669f161e97af4237fb80b8734444d"
 
 [[projects]]
   digest = "1:8f56475624fb72854d06ca16c2f7032e3cea14a63074e9c199ba8d46431c1127"
