@@ -49,11 +49,11 @@ required = [
   name = "github.com/giantswarm/apiextensions"
 
 [[constraint]]
-  branch = "ctx"
+  branch = "master"
   name = "github.com/giantswarm/apprclient"
 
 [[constraint]]
-  branch = "ctx"
+  branch = "master"
   name = "github.com/giantswarm/e2e-harness"
 
 [[constraint]]
