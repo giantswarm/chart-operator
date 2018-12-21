@@ -8,7 +8,7 @@ import (
 	"github.com/giantswarm/microerror"
 	"k8s.io/helm/pkg/helm"
 
-	"github.com/giantswarm/chart-operator/service/controller/v3/key"
+	"github.com/giantswarm/chart-operator/service/controller/chartconfig/v3/key"
 )
 
 func (r *Resource) ApplyCreateChange(ctx context.Context, obj, createChange interface{}) error {

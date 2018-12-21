@@ -13,8 +13,8 @@ import (
 	"github.com/spf13/afero"
 	"k8s.io/client-go/kubernetes"
 
-	"github.com/giantswarm/chart-operator/service/controller/v1/key"
-	"github.com/giantswarm/chart-operator/service/controller/v1/resource/chart"
+	"github.com/giantswarm/chart-operator/service/controller/chartconfig/v1/key"
+	"github.com/giantswarm/chart-operator/service/controller/chartconfig/v1/resource/chart"
 )
 
 const (
