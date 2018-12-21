@@ -21,7 +21,7 @@ import (
 	v5 "github.com/giantswarm/chart-operator/service/controller/chartconfig/v5"
 )
 
-const chartControllerSuffix = "-chart"
+const chartConfigControllerSuffix = "-chartconfig"
 
 type Config struct {
 	ApprClient   apprclient.Interface
@@ -193,7 +193,7 @@ func NewChartConfig(config Config) (*ChartConfig, error) {
 			},
 			RESTClient: config.G8sClient.CoreV1alpha1().RESTClient(),
 
-			Name: config.ProjectName + chartControllerSuffix,
+			Name: config.ProjectName + chartConfigControllerSuffix,
 		}
 
 		chartConfigController, err = controller.New(c)
