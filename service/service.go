@@ -19,6 +19,7 @@ import (
 
 	"github.com/giantswarm/chart-operator/flag"
 	"github.com/giantswarm/chart-operator/service/collector"
+	"github.com/giantswarm/chart-operator/service/controller/chart"
 	"github.com/giantswarm/chart-operator/service/controller/chartconfig"
 )
 
@@ -43,6 +44,7 @@ type Service struct {
 
 	// Internals
 	bootOnce              sync.Once
+	chartController       *chart.Chart
 	chartConfigController *chartconfig.ChartConfig
 	metricsCollector      *collector.Collector
 }
@@ -146,6 +148,25 @@ func New(config Config) (*Service, error) {
 		}
 	}
 
+	var chartController *chart.Chart
+	{
+		c := chart.Config{
+			HelmClient:   helmClient,
+			G8sClient:    g8sClient,
+			Logger:       config.Logger,
+			K8sClient:    k8sClient,
+			K8sExtClient: k8sExtClient,
+
+			ProjectName:    config.ProjectName,
+			WatchNamespace: config.Viper.GetString(config.Flag.Service.Kubernetes.Watch.Namespace),
+		}
+
+		chartController, err = chart.NewChart(c)
+		if err != nil {
+			return nil, microerror.Mask(err)
+		}
+	}
+
 	var chartConfigController *chartconfig.ChartConfig
 	{
 		c := chartconfig.Config{
@@ -187,6 +208,7 @@ func New(config Config) (*Service, error) {
 		Version: versionService,
 
 		bootOnce:              sync.Once{},
+		chartController:       chartController,
 		chartConfigController: chartConfigController,
 		metricsCollector:      metricsCollector,
 	}
@@ -199,7 +221,8 @@ func (s *Service) Boot() {
 	s.bootOnce.Do(func() {
 		prometheus.MustRegister(s.metricsCollector)
 
-		// Start the controller.
+		// Start the controllers
+		go s.chartController.Boot()
 		go s.chartConfigController.Boot()
 	})
 }
