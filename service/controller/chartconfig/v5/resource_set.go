@@ -19,12 +19,6 @@ import (
 	"github.com/giantswarm/chart-operator/service/controller/chartconfig/v5/resource/chartstatus"
 )
 
-const (
-	// ResourceRetries presents number of retries for failed Resource
-	// operation before giving up.
-	ResourceRetries uint64 = 3
-)
-
 // ResourceSetConfig contains necessary dependencies and settings for
 // ChartConfig controller ResourceSet configuration.
 type ResourceSetConfig struct {
