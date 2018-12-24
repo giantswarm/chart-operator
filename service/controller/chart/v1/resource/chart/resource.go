@@ -31,10 +31,6 @@ type Resource struct {
 	logger     micrologger.Logger
 }
 
-func (r *Resource) GetCurrentState(ctx context.Context, obj interface{}) (interface{}, error) {
-	return nil, nil
-}
-
 func (r *Resource) GetDesiredState(ctx context.Context, obj interface{}) (interface{}, error) {
 	return nil, nil
 }
@@ -84,4 +80,17 @@ func New(config Config) (*Resource, error) {
 
 func (r *Resource) Name() string {
 	return Name
+}
+
+func toChartState(v interface{}) (ChartState, error) {
+	if v == nil {
+		return ChartState{}, nil
+	}
+
+	chartState, ok := v.(*ChartState)
+	if !ok {
+		return ChartState{}, microerror.Maskf(wrongTypeError, "expected '%T', got '%T'", chartState, v)
+	}
+
+	return *chartState, nil
 }
