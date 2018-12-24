@@ -29,6 +29,7 @@ type ApplicationV1alpha1Interface interface {
 	RESTClient() rest.Interface
 	AppsGetter
 	AppCatalogsGetter
+	ChartsGetter
 }
 
 // ApplicationV1alpha1Client is used to interact with features provided by the application.giantswarm.io group.
@@ -42,6 +43,10 @@ func (c *ApplicationV1alpha1Client) Apps(namespace string) AppInterface {
 
 func (c *ApplicationV1alpha1Client) AppCatalogs(namespace string) AppCatalogInterface {
 	return newAppCatalogs(c, namespace)
+}
+
+func (c *ApplicationV1alpha1Client) Charts(namespace string) ChartInterface {
+	return newCharts(c, namespace)
 }
 
 // NewForConfig creates a new ApplicationV1alpha1Client for the given config.
