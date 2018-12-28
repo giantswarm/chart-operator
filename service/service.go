@@ -151,6 +151,7 @@ func New(config Config) (*Service, error) {
 	var chartController *chart.Chart
 	{
 		c := chart.Config{
+			Fs:           fs,
 			HelmClient:   helmClient,
 			G8sClient:    g8sClient,
 			Logger:       config.Logger,

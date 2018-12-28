@@ -9,6 +9,7 @@ import (
 	"github.com/giantswarm/operatorkit/controller"
 	"github.com/giantswarm/operatorkit/controller/resource/metricsresource"
 	"github.com/giantswarm/operatorkit/controller/resource/retryresource"
+	"github.com/spf13/afero"
 	"k8s.io/client-go/kubernetes"
 
 	"github.com/giantswarm/chart-operator/service/controller/chart/v1/key"
@@ -19,6 +20,7 @@ import (
 // Chart controller ResourceSet configuration.
 type ResourceSetConfig struct {
 	// Dependencies.
+	Fs         afero.Fs
 	HelmClient helmclient.Interface
 	K8sClient  kubernetes.Interface
 	Logger     micrologger.Logger
@@ -33,6 +35,9 @@ func NewResourceSet(config ResourceSetConfig) (*controller.ResourceSet, error) {
 	var err error
 
 	// Dependencies.
+	if config.Fs == nil {
+		return nil, microerror.Maskf(invalidConfigError, "%T.Fs must not be empty", config)
+	}
 	if config.HelmClient == nil {
 		return nil, microerror.Maskf(invalidConfigError, "%T.HelmClient must not be empty", config)
 	}
@@ -51,6 +56,7 @@ func NewResourceSet(config ResourceSetConfig) (*controller.ResourceSet, error) {
 	var releaseResource controller.Resource
 	{
 		c := release.Config{
+			Fs:         config.Fs,
 			HelmClient: config.HelmClient,
 			K8sClient:  config.K8sClient,
 			Logger:     config.Logger,
