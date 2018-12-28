@@ -9,6 +9,7 @@ import (
 	"github.com/giantswarm/operatorkit/client/k8scrdclient"
 	"github.com/giantswarm/operatorkit/controller"
 	"github.com/giantswarm/operatorkit/informer"
+	"github.com/spf13/afero"
 	apiextensionsclient "k8s.io/apiextensions-apiserver/pkg/client/clientset/clientset"
 	"k8s.io/client-go/kubernetes"
 
@@ -18,6 +19,7 @@ import (
 const chartConfigControllerSuffix = "-chart"
 
 type Config struct {
+	Fs           afero.Fs
 	G8sClient    versioned.Interface
 	HelmClient   helmclient.Interface
 	K8sClient    kubernetes.Interface
@@ -84,6 +86,7 @@ func NewChart(config Config) (*Chart, error) {
 	var resourceSetV1 *controller.ResourceSet
 	{
 		c := v1.ResourceSetConfig{
+			Fs:          config.Fs,
 			HelmClient:  config.HelmClient,
 			K8sClient:   config.K8sClient,
 			Logger:      config.Logger,
