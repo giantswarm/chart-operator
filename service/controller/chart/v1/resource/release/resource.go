@@ -1,4 +1,4 @@
-package chart
+package release
 
 import (
 	"context"
@@ -7,17 +7,19 @@ import (
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/micrologger"
 	"github.com/giantswarm/operatorkit/controller"
+	"github.com/spf13/afero"
 	"k8s.io/client-go/kubernetes"
 )
 
 const (
 	// Name is the identifier of the resource.
-	Name = "chartv1"
+	Name = "releasev1"
 )
 
-// Config represents the configuration used to create a new chart resource.
+// Config represents the configuration used to create a new release resource.
 type Config struct {
 	// Dependencies.
+	Fs         afero.Fs
 	HelmClient helmclient.Interface
 	K8sClient  kubernetes.Interface
 	Logger     micrologger.Logger
@@ -26,6 +28,7 @@ type Config struct {
 // Resource implements the chart resource.
 type Resource struct {
 	// Dependencies.
+	fs         afero.Fs
 	helmClient helmclient.Interface
 	k8sClient  kubernetes.Interface
 	logger     micrologger.Logger
@@ -62,6 +65,9 @@ func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange inte
 // New creates a new configured chart resource.
 func New(config Config) (*Resource, error) {
 	// Dependencies.
+	if config.Fs == nil {
+		return nil, microerror.Maskf(invalidConfigError, "%T.Fs must not be empty", config)
+	}
 	if config.HelmClient == nil {
 		return nil, microerror.Maskf(invalidConfigError, "%T.HelmClient must not be empty", config)
 	}
@@ -74,6 +80,7 @@ func New(config Config) (*Resource, error) {
 
 	r := &Resource{
 		// Dependencies.
+		fs:         config.Fs,
 		helmClient: config.HelmClient,
 		k8sClient:  config.K8sClient,
 		logger:     config.Logger,

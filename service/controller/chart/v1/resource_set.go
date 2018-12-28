@@ -12,7 +12,7 @@ import (
 	"k8s.io/client-go/kubernetes"
 
 	"github.com/giantswarm/chart-operator/service/controller/chart/v1/key"
-	"github.com/giantswarm/chart-operator/service/controller/chart/v1/resource/chart"
+	"github.com/giantswarm/chart-operator/service/controller/chart/v1/resource/release"
 )
 
 // ResourceSetConfig contains necessary dependencies and settings for
@@ -48,27 +48,27 @@ func NewResourceSet(config ResourceSetConfig) (*controller.ResourceSet, error) {
 		return nil, microerror.Maskf(invalidConfigError, "%T.ProjectName must not be empty", config)
 	}
 
-	var chartResource controller.Resource
+	var releaseResource controller.Resource
 	{
-		c := chart.Config{
+		c := release.Config{
 			HelmClient: config.HelmClient,
 			K8sClient:  config.K8sClient,
 			Logger:     config.Logger,
 		}
 
-		ops, err := chart.New(c)
+		ops, err := release.New(c)
 		if err != nil {
 			return nil, microerror.Mask(err)
 		}
 
-		chartResource, err = toCRUDResource(config.Logger, ops)
+		releaseResource, err = toCRUDResource(config.Logger, ops)
 		if err != nil {
 			return nil, microerror.Mask(err)
 		}
 	}
 
 	resources := []controller.Resource{
-		chartResource,
+		releaseResource,
 	}
 
 	{
