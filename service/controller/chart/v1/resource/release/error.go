@@ -1,4 +1,4 @@
-package chart
+package release
 
 import "github.com/giantswarm/microerror"
 
