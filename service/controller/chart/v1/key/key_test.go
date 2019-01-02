@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/giantswarm/apiextensions/pkg/apis/application/v1alpha1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 func Test_ToCustomObject(t *testing.T) {
@@ -52,6 +53,63 @@ func Test_ToCustomObject(t *testing.T) {
 
 			if !reflect.DeepEqual(result, tc.expectedObject) {
 				t.Fatalf("Custom Object == %#v, want %#v", result, tc.expectedObject)
+			}
+		})
+	}
+}
+
+func Test_VersionBundleVersion(t *testing.T) {
+	testCases := []struct {
+		name            string
+		obj             v1alpha1.Chart
+		expectedVersion string
+	}{
+		{
+			name: "case 0: basic match",
+			obj: v1alpha1.Chart{
+				ObjectMeta: metav1.ObjectMeta{
+					Annotations: map[string]string{
+						"giantswarm.io/version-bundle": "1.0.0",
+					},
+				},
+			},
+			expectedVersion: "1.0.0",
+		},
+		{
+			name: "case 1: different version",
+			obj: v1alpha1.Chart{
+				ObjectMeta: metav1.ObjectMeta{
+					Annotations: map[string]string{
+						"giantswarm.io/version-bundle": "2.0.0",
+					},
+				},
+			},
+			expectedVersion: "2.0.0",
+		},
+		{
+			name: "case 2: missing version",
+			obj: v1alpha1.Chart{
+				ObjectMeta: metav1.ObjectMeta{
+					Annotations: map[string]string{
+						"test": "test",
+					},
+				},
+			},
+			expectedVersion: "",
+		},
+		{
+			name:            "case 3: no annotations",
+			obj:             v1alpha1.Chart{},
+			expectedVersion: "",
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			result := VersionBundleVersion(tc.obj)
+
+			if result != tc.expectedVersion {
+				t.Fatalf("VersionBundleVersion == %#q, want %#q", result, tc.expectedVersion)
 			}
 		})
 	}
