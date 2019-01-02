@@ -8,6 +8,20 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
+func Test_ReleaseName(t *testing.T) {
+	expectedRelease := "my-prometheus"
+
+	obj := v1alpha1.Chart{
+		Spec: v1alpha1.ChartSpec{
+			Name: "my-prometheus",
+		},
+	}
+
+	if ReleaseName(obj) != expectedRelease {
+		t.Fatalf("release name %s, want %s", ReleaseName(obj), expectedRelease)
+	}
+}
+
 func Test_ToCustomObject(t *testing.T) {
 	testCases := []struct {
 		name           string

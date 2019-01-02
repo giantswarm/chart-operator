@@ -9,6 +9,10 @@ const (
 	versionBundleAnnotation = "giantswarm.io/version-bundle"
 )
 
+func ReleaseName(customObject v1alpha1.Chart) string {
+	return customObject.Spec.Name
+}
+
 // ToCustomObject converts value to v1alpha1.ChartConfig and returns it or error
 // if type does not match.
 func ToCustomObject(v interface{}) (v1alpha1.Chart, error) {
