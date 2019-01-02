@@ -21,3 +21,5 @@ package v1alpha1
 type AppExpansion interface{}
 
 type AppCatalogExpansion interface{}
+
+type ChartExpansion interface{}
