@@ -37,6 +37,9 @@ type Chart struct {
 func NewChart(config Config) (*Chart, error) {
 	var err error
 
+	if config.Fs == nil {
+		return nil, microerror.Maskf(invalidConfigError, "%T.Fs must not be empty", config)
+	}
 	if config.G8sClient == nil {
 		return nil, microerror.Maskf(invalidConfigError, "%T.G8sClient must not be empty", config)
 	}

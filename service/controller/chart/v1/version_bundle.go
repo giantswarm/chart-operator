@@ -15,7 +15,6 @@ func VersionBundle() versionbundle.Bundle {
 		},
 		Components: []versionbundle.Component{},
 		Name:       "chart-operator",
-		// TODO Handling exposing chart and chartconfig version bundles.
-		Version: "1.0.0",
+		Version:    "1.0.0",
 	}
 }
