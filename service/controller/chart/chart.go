@@ -112,7 +112,7 @@ func NewChart(config Config) (*Chart, error) {
 			ResourceSets: []*controller.ResourceSet{
 				resourceSetV1,
 			},
-			RESTClient: config.G8sClient.CoreV1alpha1().RESTClient(),
+			RESTClient: config.G8sClient.ApplicationV1alpha1().RESTClient(),
 
 			Name: config.ProjectName + chartConfigControllerSuffix,
 		}
