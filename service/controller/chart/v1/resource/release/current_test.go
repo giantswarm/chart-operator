@@ -43,11 +43,11 @@ func Test_CurrentState(t *testing.T) {
 				Version: "0.1.2",
 			},
 			expectedState: ReleaseState{
+				Name:   "prometheus",
+				Status: "DEPLOYED",
 				Values: map[string]interface{}{
 					"key": "value",
 				},
-				Name:    "prometheus",
-				Status:  "DEPLOYED",
 				Version: "0.1.2",
 			},
 		},
