@@ -19,12 +19,6 @@ import (
 	"github.com/giantswarm/chart-operator/service/controller/chartconfig/v5/resource/chartstatus"
 )
 
-const (
-	// ResourceRetries presents number of retries for failed Resource
-	// operation before giving up.
-	ResourceRetries uint64 = 3
-)
-
 // ResourceSetConfig contains necessary dependencies and settings for
 // ChartConfig controller ResourceSet configuration.
 type ResourceSetConfig struct {
@@ -46,6 +40,9 @@ func NewResourceSet(config ResourceSetConfig) (*controller.ResourceSet, error) {
 	var err error
 
 	// Dependencies.
+	if config.Fs == nil {
+		return nil, microerror.Maskf(invalidConfigError, "%T.Fs must not be empty", config)
+	}
 	if config.G8sClient == nil {
 		return nil, microerror.Maskf(invalidConfigError, "%T.G8sClient must not be empty", config)
 	}
