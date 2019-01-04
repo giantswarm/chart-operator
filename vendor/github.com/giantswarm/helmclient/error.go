@@ -51,6 +51,15 @@ func IsInvalidConfig(err error) bool {
 	return microerror.Cause(err) == invalidConfigError
 }
 
+var invalidStatusCodeError = &microerror.Error{
+	Kind: "invalidStatusCodeError",
+}
+
+// IsInvalidStatusCode asserts invalidStatusCodeError.
+func IsInvalidStatusCode(err error) bool {
+	return microerror.Cause(err) == invalidStatusCodeError
+}
+
 const (
 	invalidGZipHeaderErrorPrefix = "gzip: invalid header"
 )

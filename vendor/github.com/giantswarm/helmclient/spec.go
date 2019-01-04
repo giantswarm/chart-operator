@@ -39,14 +39,25 @@ type Interface interface {
 	InstallReleaseFromTarball(ctx context.Context, path, ns string, options ...helm.InstallOption) error
 	// ListReleaseContents gets the current status of all Helm Releases.
 	ListReleaseContents(ctx context.Context) ([]*ReleaseContent, error)
+	// LoadChart loads a Helm Chart and returns relevant metadata.
+	LoadChart(ctx context.Context, chartPath string) (*Chart, error)
 	// PingTiller proxies the underlying Helm client PingTiller method.
 	PingTiller(ctx context.Context) error
+	// PullChartTarball downloads a tarball from the provided tarball URL,
+	// returning the file path.
+	PullChartTarball(ctx context.Context, tarballURL string) (string, error)
 	// RunReleaseTest runs the tests for a Helm Release. This is the same
 	// action as running the helm test command.
 	RunReleaseTest(ctx context.Context, releaseName string, options ...helm.ReleaseTestOption) error
 	// UpdateReleaseFromTarball updates the given release using the chart packaged
 	// in the tarball.
 	UpdateReleaseFromTarball(ctx context.Context, releaseName, path string, options ...helm.UpdateOption) error
+}
+
+// Chart returns relevant metadata about a Helm Chart.
+type Chart struct {
+	// Version is the version of the Helm Chart.
+	Version string
 }
 
 // ReleaseContent returns status information about a Helm Release.
