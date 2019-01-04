@@ -159,7 +159,10 @@
 [[projects]]
   branch = "pull-chart-tarball"
   name = "github.com/giantswarm/helmclient"
-  packages = ["."]
+  packages = [
+    ".",
+    "helmclienttest"
+  ]
   revision = "f4227b393429580af3fcf7186404903fe43521d1"
 
 [[projects]]
@@ -929,6 +932,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "8e3e0d524fd2a2b49416335e2ce56cfda48c1f985fd91057815281dc204571f5"
+  inputs-digest = "9d679ca6aa90bd48043f2b85d6bf659583e4338b0d3f518195d09cca74f69859"
   solver-name = "gps-cdcl"
   solver-version = 1
