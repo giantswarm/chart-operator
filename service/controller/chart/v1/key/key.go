@@ -9,8 +9,32 @@ const (
 	versionBundleAnnotation = "giantswarm.io/version-bundle"
 )
 
+func ConfigMapName(customObject v1alpha1.Chart) string {
+	return customObject.Spec.Config.ConfigMap.Name
+}
+
+func ConfigMapNamespace(customObject v1alpha1.Chart) string {
+	return customObject.Spec.Config.ConfigMap.Namespace
+}
+
+func Namespace(customObject v1alpha1.Chart) string {
+	return customObject.Spec.Namespace
+}
+
 func ReleaseName(customObject v1alpha1.Chart) string {
 	return customObject.Spec.Name
+}
+
+func SecretName(customObject v1alpha1.Chart) string {
+	return customObject.Spec.Config.Secret.Name
+}
+
+func SecretNamespace(customObject v1alpha1.Chart) string {
+	return customObject.Spec.Config.Secret.Namespace
+}
+
+func TarballURL(customObject v1alpha1.Chart) string {
+	return customObject.Spec.TarballURL
 }
 
 // ToCustomObject converts value to v1alpha1.ChartConfig and returns it or error
