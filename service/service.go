@@ -19,7 +19,8 @@ import (
 
 	"github.com/giantswarm/chart-operator/flag"
 	"github.com/giantswarm/chart-operator/service/collector"
-	"github.com/giantswarm/chart-operator/service/controller"
+	"github.com/giantswarm/chart-operator/service/controller/chart"
+	"github.com/giantswarm/chart-operator/service/controller/chartconfig"
 )
 
 // Config represents the configuration used to create a new service.
@@ -42,9 +43,10 @@ type Service struct {
 	Version *version.Service
 
 	// Internals
-	bootOnce         sync.Once
-	chartController  *controller.Chart
-	metricsCollector *collector.Collector
+	bootOnce              sync.Once
+	chartController       *chart.Chart
+	chartConfigController *chartconfig.ChartConfig
+	metricsCollector      *collector.Collector
 }
 
 // New creates a new service with given configuration.
@@ -146,9 +148,29 @@ func New(config Config) (*Service, error) {
 		}
 	}
 
-	var chartController *controller.Chart
+	var chartController *chart.Chart
 	{
-		c := controller.ChartConfig{
+		c := chart.Config{
+			Fs:           fs,
+			HelmClient:   helmClient,
+			G8sClient:    g8sClient,
+			Logger:       config.Logger,
+			K8sClient:    k8sClient,
+			K8sExtClient: k8sExtClient,
+
+			ProjectName:    config.ProjectName,
+			WatchNamespace: config.Viper.GetString(config.Flag.Service.Kubernetes.Watch.Namespace),
+		}
+
+		chartController, err = chart.NewChart(c)
+		if err != nil {
+			return nil, microerror.Mask(err)
+		}
+	}
+
+	var chartConfigController *chartconfig.ChartConfig
+	{
+		c := chartconfig.Config{
 			ApprClient:   apprClient,
 			Fs:           fs,
 			HelmClient:   helmClient,
@@ -161,7 +183,7 @@ func New(config Config) (*Service, error) {
 			WatchNamespace: config.Viper.GetString(config.Flag.Service.Kubernetes.Watch.Namespace),
 		}
 
-		chartController, err = controller.NewChart(c)
+		chartConfigController, err = chartconfig.NewChartConfig(c)
 		if err != nil {
 			return nil, microerror.Mask(err)
 		}
@@ -186,9 +208,10 @@ func New(config Config) (*Service, error) {
 	s := &Service{
 		Version: versionService,
 
-		bootOnce:         sync.Once{},
-		chartController:  chartController,
-		metricsCollector: metricsCollector,
+		bootOnce:              sync.Once{},
+		chartController:       chartController,
+		chartConfigController: chartConfigController,
+		metricsCollector:      metricsCollector,
 	}
 
 	return s, nil
@@ -199,7 +222,8 @@ func (s *Service) Boot() {
 	s.bootOnce.Do(func() {
 		prometheus.MustRegister(s.metricsCollector)
 
-		// Start the controller.
+		// Start the controllers
 		go s.chartController.Boot()
+		go s.chartConfigController.Boot()
 	})
 }
