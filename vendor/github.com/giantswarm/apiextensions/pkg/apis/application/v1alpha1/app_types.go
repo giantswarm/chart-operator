@@ -72,7 +72,7 @@ type AppSpec struct {
 	// e.g. giantswarm
 	Catalog string `json:"catalog" yaml:"catalog"`
 	// Config is the config to be applied when the app is deployed.
-	Config ChartSpecConfig `json:"config" yaml:"config"`
+	Config AppSpecConfig `json:"config" yaml:"config"`
 	// KubeConfig is the kubeconfig to connect to the cluster when deploying
 	// the app.
 	KubeConfig AppSpecKubeConfig `json:"kubeConfig" yaml:"kubeConfig"`
@@ -86,7 +86,7 @@ type AppSpec struct {
 	// e.g. 1.0.0
 	Release string `json:"release" yaml:"release"`
 	// UserConfig is the user config to be applied when the app is deployed.
-	UserConfig ChartSpecConfig `json:"userConfig" yaml:"userConfig"`
+	UserConfig AppSpecConfig `json:"userConfig" yaml:"userConfig"`
 }
 
 type AppSpecConfig struct {

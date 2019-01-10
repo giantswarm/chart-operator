@@ -5,6 +5,8 @@ import (
 	"testing"
 
 	"github.com/giantswarm/apiextensions/pkg/apis/core/v1alpha1"
+	"github.com/giantswarm/apprclient/apprclienttest"
+	"github.com/giantswarm/helmclient/helmclienttest"
 	"github.com/giantswarm/micrologger/microloggertest"
 	"github.com/spf13/afero"
 	"k8s.io/client-go/kubernetes/fake"
@@ -167,12 +169,13 @@ func Test_Resource_Chart_newUpdateChange(t *testing.T) {
 	var newResource *Resource
 	var err error
 	{
-		c := Config{}
-		c.ApprClient = &apprMock{}
-		c.Fs = afero.NewMemMapFs()
-		c.HelmClient = &helmMock{}
-		c.K8sClient = fake.NewSimpleClientset()
-		c.Logger = microloggertest.New()
+		c := Config{
+			ApprClient: apprclienttest.New(apprclienttest.Config{}),
+			Fs:         afero.NewMemMapFs(),
+			HelmClient: helmclienttest.New(helmclienttest.Config{}),
+			K8sClient:  fake.NewSimpleClientset(),
+			Logger:     microloggertest.New(),
+		}
 
 		newResource, err = New(c)
 		if err != nil {
