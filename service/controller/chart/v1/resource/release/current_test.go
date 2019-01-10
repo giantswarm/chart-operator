@@ -106,22 +106,16 @@ func Test_CurrentState(t *testing.T) {
 		},
 	}
 
-	var err error
-
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			var helmClient helmclient.Interface
 			{
 				c := helmclienttest.Config{
-					DefaultError:          tc.returnedError,
 					DefaultReleaseContent: tc.releaseContent,
 					DefaultReleaseHistory: tc.releaseHistory,
+					DefaultError:          tc.returnedError,
 				}
-
-				helmClient, err = helmclienttest.New(c)
-				if err != nil {
-					t.Fatalf("error == %#v, want nil", err)
-				}
+				helmClient = helmclienttest.New(c)
 			}
 
 			c := Config{
