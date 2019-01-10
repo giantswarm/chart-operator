@@ -6,11 +6,11 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/spf13/afero"
-
 	"github.com/giantswarm/apiextensions/pkg/apis/application/v1alpha1"
 	"github.com/giantswarm/helmclient"
+	"github.com/giantswarm/helmclient/helmclienttest"
 	"github.com/giantswarm/micrologger/microloggertest"
+	"github.com/spf13/afero"
 	"k8s.io/client-go/kubernetes/fake"
 )
 
@@ -108,10 +108,14 @@ func Test_CurrentState(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			helmClient := &helmMock{
-				defaultReleaseContent: tc.releaseContent,
-				defaultReleaseHistory: tc.releaseHistory,
-				defaultError:          tc.returnedError,
+			var helmClient helmclient.Interface
+			{
+				c := helmclienttest.Config{
+					DefaultReleaseContent: tc.releaseContent,
+					DefaultReleaseHistory: tc.releaseHistory,
+					DefaultError:          tc.returnedError,
+				}
+				helmClient = helmclienttest.New(c)
 			}
 
 			c := Config{
