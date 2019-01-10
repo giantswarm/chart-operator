@@ -5,6 +5,10 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/giantswarm/apprclient"
+	"github.com/giantswarm/apprclient/apprclienttest"
+	"github.com/giantswarm/helmclient/helmclienttest"
+
 	"github.com/giantswarm/apiextensions/pkg/apis/core/v1alpha1"
 	"github.com/giantswarm/micrologger/microloggertest"
 	"github.com/spf13/afero"
@@ -352,11 +356,12 @@ func Test_DesiredState(t *testing.T) {
 		},
 	}
 
-	apprClient := &apprMock{
-		defaultReleaseVersion: "0.1.2",
-	}
-	helmClient := &helmMock{
-		defaultError: nil,
+	var apprClient apprclient.Interface
+	{
+		c := apprclienttest.Config{
+			DefaultReleaseVersion: "0.1.2",
+		}
+		apprClient = apprclienttest.New(c)
 	}
 
 	for _, tc := range testCases {
@@ -375,7 +380,7 @@ func Test_DesiredState(t *testing.T) {
 			c := Config{
 				ApprClient: apprClient,
 				Fs:         afero.NewMemMapFs(),
-				HelmClient: helmClient,
+				HelmClient: helmclienttest.New(helmclienttest.Config{}),
 				K8sClient:  fake.NewSimpleClientset(objs...),
 				Logger:     microloggertest.New(),
 			}
