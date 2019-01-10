@@ -57,7 +57,7 @@ func (r *Resource) GetDesiredState(ctx context.Context, obj interface{}) (interf
 
 	releaseState := &ReleaseState{
 		Name:    releaseName,
-		Status:  "DEPLOYED",
+		Status:  helmDeployedStatus,
 		Values:  values,
 		Version: chart.Version,
 	}
@@ -79,10 +79,12 @@ func (r *Resource) getConfigMapValues(ctx context.Context, customObject v1alpha1
 			return nil, microerror.Mask(err)
 		}
 
-		configMapData := configMap.Data[controller.ConfigMapValuesKey]
-		err = json.Unmarshal([]byte(configMapData), &configMapValues)
-		if err != nil {
-			return nil, microerror.Mask(err)
+		jsonData := configMap.Data[controller.ConfigMapValuesKey]
+		if jsonData != "" {
+			err = json.Unmarshal([]byte(jsonData), &configMapValues)
+			if err != nil {
+				return nil, microerror.Mask(err)
+			}
 		}
 	}
 
@@ -103,9 +105,9 @@ func (r *Resource) getSecretValues(ctx context.Context, customObject v1alpha1.Ch
 			return nil, microerror.Mask(err)
 		}
 
-		secretData := secret.Data[controller.SecretValuesKey]
-		if secretData != nil {
-			err = json.Unmarshal(secretData, &secretValues)
+		jsonData := secret.Data[controller.SecretValuesKey]
+		if jsonData != nil {
+			err = json.Unmarshal(jsonData, &secretValues)
 			if err != nil {
 				return nil, microerror.Mask(err)
 			}
