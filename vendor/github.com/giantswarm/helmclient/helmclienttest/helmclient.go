@@ -28,7 +28,7 @@ type Client struct {
 	pullChartTarballPath  string
 }
 
-func New(config Config) (helmclient.Interface, error) {
+func New(config Config) helmclient.Interface {
 	c := &Client{
 		defaultError:          config.DefaultError,
 		defaultReleaseContent: config.DefaultReleaseContent,
@@ -39,7 +39,7 @@ func New(config Config) (helmclient.Interface, error) {
 		pullChartTarballPath:  config.PullChartTarballPath,
 	}
 
-	return c, nil
+	return c
 }
 
 func (c *Client) DeleteRelease(ctx context.Context, releaseName string, options ...helm.DeleteOption) error {
