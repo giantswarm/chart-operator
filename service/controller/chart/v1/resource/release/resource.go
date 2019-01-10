@@ -2,6 +2,7 @@ package release
 
 import (
 	"context"
+	"reflect"
 
 	"github.com/giantswarm/helmclient"
 	"github.com/giantswarm/microerror"
@@ -37,16 +38,8 @@ type Resource struct {
 	logger     micrologger.Logger
 }
 
-func (r *Resource) NewUpdatePatch(ctx context.Context, obj, currentState, desiredState interface{}) (*controller.Patch, error) {
-	return nil, nil
-}
-
 func (r *Resource) NewDeletePatch(ctx context.Context, obj, currentState, desiredState interface{}) (*controller.Patch, error) {
 	return nil, nil
-}
-
-func (r *Resource) ApplyCreateChange(ctx context.Context, obj, createChange interface{}) error {
-	return nil
 }
 
 func (r *Resource) ApplyDeleteChange(ctx context.Context, obj, deleteChange interface{}) error {
@@ -86,6 +79,28 @@ func New(config Config) (*Resource, error) {
 
 func (r *Resource) Name() string {
 	return Name
+}
+
+// Equals asseses the equality of ReleaseStates with regards to distinguishing fields.
+func (a *ReleaseState) Equals(b ReleaseState) bool {
+	if a.Name != b.Name {
+		return false
+	}
+	if a.Status != b.Status {
+		return false
+	}
+	if !reflect.DeepEqual(a.Values, b.Values) {
+		return false
+	}
+	if a.Version != b.Version {
+		return false
+	}
+	return true
+}
+
+// IsEmpty checks if a ReleaseState is empty.
+func (c *ReleaseState) IsEmpty() bool {
+	return c.Equals(ReleaseState{})
 }
 
 func toReleaseState(v interface{}) (ReleaseState, error) {
