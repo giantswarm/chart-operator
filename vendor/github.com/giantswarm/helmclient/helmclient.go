@@ -24,15 +24,9 @@ import (
 	"k8s.io/helm/cmd/helm/installer"
 	"k8s.io/helm/pkg/chartutil"
 	helmclient "k8s.io/helm/pkg/helm"
+	hapichart "k8s.io/helm/pkg/proto/hapi/chart"
 	hapirelease "k8s.io/helm/pkg/proto/hapi/release"
 	hapiservices "k8s.io/helm/pkg/proto/hapi/services"
-)
-
-const (
-	// httpClientTimeout is the timeout when pulling tarballs.
-	httpClientTimeout = 5
-	// runReleaseTestTimeout is the timeout in seconds when running tests.
-	runReleaseTestTimout = 300
 )
 
 var (
@@ -57,8 +51,8 @@ type Config struct {
 	// operation via proper port forwarding. Setting the helm client here manually
 	// might only be sufficient for testing or whenever you know what you do.
 	HelmClient helmclient.Interface
-	Logger     micrologger.Logger
 	K8sClient  kubernetes.Interface
+	Logger     micrologger.Logger
 
 	RestConfig      *rest.Config
 	TillerImage     string
@@ -68,8 +62,8 @@ type Config struct {
 // Client knows how to talk with a Helm Tiller server.
 type Client struct {
 	fs         afero.Fs
-	httpClient *http.Client
 	helmClient helmclient.Interface
+	httpClient *http.Client
 	k8sClient  kubernetes.Interface
 	logger     micrologger.Logger
 
@@ -101,7 +95,7 @@ func New(config Config) (*Client, error) {
 		config.TillerNamespace = defaultTillerNamespace
 	}
 
-	// set client timeout to prevent leakages.
+	// Set client timeout to prevent leakages.
 	httpClient := &http.Client{
 		Timeout: time.Second * httpClientTimeout,
 	}
@@ -558,19 +552,16 @@ func (c *Client) ListReleaseContents(ctx context.Context) ([]*ReleaseContent, er
 	return contents, nil
 }
 
-// LoadChart loads a Helm Chart and returns relevant metadata.
-func (c *Client) LoadChart(ctx context.Context, chartPath string) (*Chart, error) {
+// LoadChart loads a Helm Chart and returns relevant parts of its structure.
+func (c *Client) LoadChart(ctx context.Context, chartPath string) (Chart, error) {
 	helmChart, err := chartutil.Load(chartPath)
 	if err != nil {
-		return nil, microerror.Mask(err)
+		return Chart{}, microerror.Mask(err)
 	}
 
-	if helmChart.Metadata == nil || helmChart.Metadata.Version == "" {
-		return nil, microerror.Maskf(notFoundError, ".Metadata.Version is empty")
-	}
-
-	chart := &Chart{
-		Version: helmChart.Metadata.Version,
+	chart, err := newChart(helmChart)
+	if err != nil {
+		return Chart{}, microerror.Mask(err)
 	}
 
 	return chart, nil
@@ -711,6 +702,18 @@ func (c *Client) installTiller(ctx context.Context, installerOptions *installer.
 	}
 
 	return nil
+}
+
+func newChart(helmChart *hapichart.Chart) (Chart, error) {
+	if helmChart == nil || helmChart.Metadata == nil {
+		return Chart{}, microerror.Maskf(executionFailedError, "expected non nil argument but got %#v", helmChart)
+	}
+
+	chart := Chart{
+		Version: helmChart.Metadata.Version,
+	}
+
+	return chart, nil
 }
 
 func (c *Client) newHelmClientFromTunnel(t *k8sportforward.Tunnel) helmclient.Interface {

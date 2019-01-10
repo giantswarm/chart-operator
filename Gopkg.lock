@@ -66,13 +66,13 @@
   version = "v3.2.0"
 
 [[projects]]
+  branch = "master"
   name = "github.com/docker/distribution"
   packages = [
     "digestset",
     "reference"
   ]
-  revision = "40b7b5830a2337bb07627617740c0e39eb92800c"
-  version = "v2.7.0"
+  revision = "91b0f0559eb6710c574451049f8c71eb9c3952a7"
 
 [[projects]]
   branch = "master"
@@ -125,7 +125,7 @@
   revision = "4763148864dc4815b691a69b4f60b4f4a8f88dad"
 
 [[projects]]
-  branch = "helmclient-pull-chart"
+  branch = "master"
   name = "github.com/giantswarm/e2e-harness"
   packages = [
     "internal/filelogger",
@@ -133,7 +133,7 @@
     "pkg/framework/resource",
     "pkg/harness"
   ]
-  revision = "50c03480e893905d77b1b9735d4dd6a5aaeaa71d"
+  revision = "4a94ba016067a6192f9885361c9ece6ee9a593c8"
 
 [[projects]]
   branch = "master"
@@ -157,13 +157,13 @@
   revision = "3509191efc7b4714c1dc57ab47df71a52148493f"
 
 [[projects]]
-  branch = "pull-chart-tarball"
+  branch = "master"
   name = "github.com/giantswarm/helmclient"
   packages = [
     ".",
     "helmclienttest"
   ]
-  revision = "f4227b393429580af3fcf7186404903fe43521d1"
+  revision = "ea647bff6f4bc56a50a0ec447892564bc15f4319"
 
 [[projects]]
   branch = "master"
@@ -932,6 +932,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "9d679ca6aa90bd48043f2b85d6bf659583e4338b0d3f518195d09cca74f69859"
+  inputs-digest = "a30091fbe9d06b6e82189c3b13c620c6f382412c1bb3e3d978989ecb16ab2a41"
   solver-name = "gps-cdcl"
   solver-version = 1

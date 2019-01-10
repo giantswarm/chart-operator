@@ -46,7 +46,7 @@ func (c *Client) doFile(ctx context.Context, req *http.Request) (string, error) 
 			if err != nil {
 				return microerror.Mask(err)
 			}
-			return microerror.Maskf(invalidStatusCodeError, fmt.Sprintf("got StatusCode %d with body %s", resp.StatusCode, buf.String()))
+			return microerror.Maskf(executionFailedError, fmt.Sprintf("got StatusCode %d with body %s", resp.StatusCode, buf.String()))
 		}
 
 		tmpfile, err := afero.TempFile(c.fs, "", "chart-tarball")
@@ -64,6 +64,7 @@ func (c *Client) doFile(ctx context.Context, req *http.Request) (string, error) 
 
 		return nil
 	}
+
 	b := backoff.NewExponential(backoff.ShortMaxWait, backoff.ShortMaxInterval)
 	n := backoff.NewNotifier(c.logger, ctx)
 
