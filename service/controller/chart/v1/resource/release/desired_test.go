@@ -296,7 +296,7 @@ func Test_DesiredState(t *testing.T) {
 					"secret.json": []byte(`{ "username": "admin", "secretnumber": 2 }`),
 				},
 			},
-			errorMatcher: IsInvalidConfig,
+			errorMatcher: IsInvalidExecution,
 		},
 	}
 

@@ -125,9 +125,9 @@ func union(a, b map[string]interface{}) (map[string]interface{}, error) {
 	for k, v := range b {
 		_, ok := a[k]
 		if ok {
-			// The secret and config map we use have at least one shared key. We can not
-			// decide which value is supposed to be applied.
-			return nil, microerror.Maskf(invalidConfigError, "secret and config map share the same key %s", k)
+			// The configmap and secret have at least one shared key. We cannot
+			// decide which value should be applied.
+			return nil, microerror.Maskf(invalidExecutionError, "configmap and secret share the same key %#q", k)
 		}
 		a[k] = v
 	}
