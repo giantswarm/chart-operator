@@ -1,6 +1,7 @@
 package service
 
 import (
+	"context"
 	"sync"
 
 	"github.com/giantswarm/apiextensions/pkg/clientset/versioned"
@@ -223,7 +224,7 @@ func (s *Service) Boot() {
 		prometheus.MustRegister(s.metricsCollector)
 
 		// Start the controllers
-		go s.chartController.Boot()
-		go s.chartConfigController.Boot()
+		go s.chartController.Boot(context.Background())
+		go s.chartConfigController.Boot(context.Background())
 	})
 }
