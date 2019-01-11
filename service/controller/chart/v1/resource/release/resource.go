@@ -14,6 +14,9 @@ import (
 const (
 	// Name is the identifier of the resource.
 	Name = "releasev1"
+
+	// helmDeployedStatus is the deployed status for Helm Releases.
+	helmDeployedStatus = "DEPLOYED"
 )
 
 // Config represents the configuration used to create a new release resource.
@@ -32,10 +35,6 @@ type Resource struct {
 	helmClient helmclient.Interface
 	k8sClient  kubernetes.Interface
 	logger     micrologger.Logger
-}
-
-func (r *Resource) GetDesiredState(ctx context.Context, obj interface{}) (interface{}, error) {
-	return nil, nil
 }
 
 func (r *Resource) NewUpdatePatch(ctx context.Context, obj, currentState, desiredState interface{}) (*controller.Patch, error) {

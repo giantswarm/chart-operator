@@ -8,6 +8,43 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
+func Test_ConfigMapName(t *testing.T) {
+	expectedConfigMapName := "prometheus-values"
+
+	obj := v1alpha1.Chart{
+		Spec: v1alpha1.ChartSpec{
+			Config: v1alpha1.ChartSpecConfig{
+				ConfigMap: v1alpha1.ChartSpecConfigConfigMap{
+					Name:      "prometheus-values",
+					Namespace: "monitoring",
+				},
+			},
+		},
+	}
+
+	if ConfigMapName(obj) != expectedConfigMapName {
+		t.Fatalf("config map name %#q, want %#q", ConfigMapName(obj), expectedConfigMapName)
+	}
+}
+
+func Test_ConfigMapNamespace(t *testing.T) {
+	expectedConfigMapNamespace := "monitoring"
+
+	obj := v1alpha1.Chart{
+		Spec: v1alpha1.ChartSpec{
+			Config: v1alpha1.ChartSpecConfig{
+				ConfigMap: v1alpha1.ChartSpecConfigConfigMap{
+					Name:      "prometheus-values",
+					Namespace: "monitoring",
+				},
+			},
+		},
+	}
+
+	if ConfigMapNamespace(obj) != expectedConfigMapNamespace {
+		t.Fatalf("config map namespace %#q, want %#q", ConfigMapNamespace(obj), expectedConfigMapNamespace)
+	}
+}
 func Test_ReleaseName(t *testing.T) {
 	expectedRelease := "my-prometheus"
 
@@ -19,6 +56,58 @@ func Test_ReleaseName(t *testing.T) {
 
 	if ReleaseName(obj) != expectedRelease {
 		t.Fatalf("release name %s, want %s", ReleaseName(obj), expectedRelease)
+	}
+}
+
+func Test_SecretName(t *testing.T) {
+	expectedSecretName := "prometheus-secret-values"
+
+	obj := v1alpha1.Chart{
+		Spec: v1alpha1.ChartSpec{
+			Config: v1alpha1.ChartSpecConfig{
+				Secret: v1alpha1.ChartSpecConfigSecret{
+					Name:      "prometheus-secret-values",
+					Namespace: "monitoring",
+				},
+			},
+		},
+	}
+
+	if SecretName(obj) != expectedSecretName {
+		t.Fatalf("secret name %#q, want %#q", SecretName(obj), expectedSecretName)
+	}
+}
+
+func Test_SecretNamespace(t *testing.T) {
+	expectedSecretNamespace := "monitoring"
+
+	obj := v1alpha1.Chart{
+		Spec: v1alpha1.ChartSpec{
+			Config: v1alpha1.ChartSpecConfig{
+				Secret: v1alpha1.ChartSpecConfigSecret{
+					Name:      "prometheus-values",
+					Namespace: "monitoring",
+				},
+			},
+		},
+	}
+
+	if SecretNamespace(obj) != expectedSecretNamespace {
+		t.Fatalf("secret namespace %#q, want %#q", SecretNamespace(obj), expectedSecretNamespace)
+	}
+}
+
+func Test_TarballURL(t *testing.T) {
+	expectedTarballURL := "https://path.to/chart-1.0.0.tgz"
+
+	obj := v1alpha1.Chart{
+		Spec: v1alpha1.ChartSpec{
+			TarballURL: "https://path.to/chart-1.0.0.tgz",
+		},
+	}
+
+	if TarballURL(obj) != expectedTarballURL {
+		t.Fatalf("tarball url %#q, want %#q", SecretNamespace(obj), expectedTarballURL)
 	}
 }
 
