@@ -408,7 +408,7 @@ func Test_union(t *testing.T) {
 				"config": "config",
 				"secret": "config",
 			},
-			errorMatcher: IsInvalidConfig,
+			errorMatcher: IsInvalidExecution,
 		},
 	}
 
