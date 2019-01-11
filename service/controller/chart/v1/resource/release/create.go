@@ -57,7 +57,7 @@ func (r *Resource) ApplyCreateChange(ctx context.Context, obj, createChange inte
 		}
 		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("created release %#q", releaseState.Name))
 	} else {
-		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("not creating release %#q", releaseState.Name))
+		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("did not create release %#q", releaseState.Name))
 	}
 
 	return nil
