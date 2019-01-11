@@ -93,7 +93,9 @@ func (r *Resource) newUpdateChange(ctx context.Context, obj, currentState, desir
 
 	r.logger.LogCtx(ctx, "level", "debug", "message", "finding out if the chart has to be updated")
 
-	if !currentChartState.IsEmpty() && isChartModified(currentChartState, desiredChartState) {
+	isModified := !currentChartState.IsEmpty() && isChartModified(currentChartState, desiredChartState)
+	isWrongStatus := currentChartState.ReleaseStatus != desiredChartState.ReleaseStatus && !isChartInTransitionState(currentChartState)
+	if isModified || isWrongStatus {
 		r.logger.LogCtx(ctx, "level", "debug", "message", "the chart has to be updated")
 
 		return &desiredChartState, nil

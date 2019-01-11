@@ -14,6 +14,17 @@ import (
 const (
 	// Name is the identifier of the resource.
 	Name = "chartv5"
+
+	releaseStatusDeployed = "DEPLOYED"
+)
+
+var (
+	chartTransitionStatuses = []string{
+		"DELETING",
+		"PENDING_INSTALL",
+		"PENDING_UPGRADE",
+		"PENDING_ROLLBACK",
+	}
 )
 
 // Config represents the configuration used to create a new chart resource.
@@ -85,7 +96,16 @@ func isChartModified(a, b ChartState) bool {
 	}
 
 	return false
+}
 
+func isChartInTransitionState(c ChartState) bool {
+	for _, status := range chartTransitionStatuses {
+		if c.ReleaseStatus == status {
+			return true
+		}
+	}
+
+	return false
 }
 
 func toChartState(v interface{}) (ChartState, error) {
