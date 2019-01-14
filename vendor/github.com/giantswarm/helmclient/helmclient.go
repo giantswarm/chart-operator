@@ -203,13 +203,10 @@ func (c *Client) EnsureTillerInstalled(ctx context.Context) error {
 
 	// Create the cluster role binding for tiller so it is allowed to do its job.
 	{
-		// TODO this seems to be broken. We create ClusterRoleBinding
-		// with the same name for all ServiceAccounts in different
-		// namespace in different namespaces. We should append subjects
-		// in that case.
-		name := tillerPodName
 		serviceAccountName := tillerPodName
 		serviceAccountNamespace := c.tillerNamespace
+
+		name := fmt.Sprintf("%s-%s", roleBindingNamePrefix, serviceAccountNamespace)
 
 		c.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("creating clusterrolebinding %#q", name))
 
