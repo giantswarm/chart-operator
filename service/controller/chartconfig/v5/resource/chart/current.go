@@ -39,6 +39,7 @@ func (r *Resource) GetCurrentState(ctx context.Context, obj interface{}) (interf
 		ChartName:      key.ChartName(customObject),
 		ChartValues:    releaseContent.Values,
 		ReleaseName:    releaseName,
+		ReleaseStatus:  releaseContent.Status,
 		ReleaseVersion: releaseHistory.Version,
 	}
 
