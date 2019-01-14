@@ -40,11 +40,13 @@ func Test_Resource_Chart_newUpdateChange(t *testing.T) {
 			currentState: &ChartState{
 				ReleaseName:    "release-name",
 				ChannelName:    "channel-name",
+				ReleaseStatus:  "release-status",
 				ReleaseVersion: "release-version",
 			},
 			desiredState: &ChartState{
 				ReleaseName:    "release-name",
 				ChannelName:    "channel-name",
+				ReleaseStatus:  "release-status",
 				ReleaseVersion: "release-version",
 			},
 			expectedUpdateState: nil,
@@ -161,6 +163,27 @@ func Test_Resource_Chart_newUpdateChange(t *testing.T) {
 				ReleaseVersion: "new-release-version",
 			},
 		},
+		{
+			description: "case 7: nonempty current state, desired state has different status, expected desired state",
+			currentState: &ChartState{
+				ReleaseName:    "release-name",
+				ChannelName:    "channel-name",
+				ReleaseStatus:  "release-status",
+				ReleaseVersion: "release-version",
+			},
+			desiredState: &ChartState{
+				ReleaseName:    "release-name",
+				ChannelName:    "channel-name",
+				ReleaseStatus:  "desired-status",
+				ReleaseVersion: "release-version",
+			},
+			expectedUpdateState: &ChartState{
+				ReleaseName:    "release-name",
+				ChannelName:    "channel-name",
+				ReleaseStatus:  "desired-status",
+				ReleaseVersion: "release-version",
+			},
+		},
 	}
 	var newResource *Resource
 	var err error
@@ -199,6 +222,10 @@ func Test_Resource_Chart_newUpdateChange(t *testing.T) {
 				if updateChange.ChannelName != tc.expectedUpdateState.ChannelName {
 					t.Fatalf("expected ChannelName %q, got %q", tc.expectedUpdateState.ChannelName, updateChange.ChannelName)
 				}
+				if updateChange.ReleaseStatus != tc.expectedUpdateState.ReleaseStatus {
+					t.Fatalf("expected ReleaseStatus %q, got %q", tc.expectedUpdateState.ReleaseStatus, updateChange.ReleaseStatus)
+				}
+
 			}
 		})
 	}
