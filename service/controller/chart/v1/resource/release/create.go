@@ -12,7 +12,7 @@ import (
 )
 
 func (r *Resource) ApplyCreateChange(ctx context.Context, obj, createChange interface{}) error {
-	customObject, err := key.ToCustomResource(obj)
+	customResource, err := key.ToCustomResource(obj)
 	if err != nil {
 		return microerror.Mask(err)
 	}
@@ -24,8 +24,8 @@ func (r *Resource) ApplyCreateChange(ctx context.Context, obj, createChange inte
 	if releaseState.Name != "" {
 		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("creating release %#q", releaseState.Name))
 
-		ns := key.Namespace(customObject)
-		tarballURL := key.TarballURL(customObject)
+		ns := key.Namespace(customResource)
+		tarballURL := key.TarballURL(customResource)
 
 		tarballPath, err := r.helmClient.PullChartTarball(ctx, tarballURL)
 		if err != nil {

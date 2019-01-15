@@ -9,32 +9,32 @@ const (
 	versionBundleAnnotation = "giantswarm.io/version-bundle"
 )
 
-func ConfigMapName(customObject v1alpha1.Chart) string {
-	return customObject.Spec.Config.ConfigMap.Name
+func ConfigMapName(customResource v1alpha1.Chart) string {
+	return customResource.Spec.Config.ConfigMap.Name
 }
 
-func ConfigMapNamespace(customObject v1alpha1.Chart) string {
-	return customObject.Spec.Config.ConfigMap.Namespace
+func ConfigMapNamespace(customResource v1alpha1.Chart) string {
+	return customResource.Spec.Config.ConfigMap.Namespace
 }
 
-func Namespace(customObject v1alpha1.Chart) string {
-	return customObject.Spec.Namespace
+func Namespace(customResource v1alpha1.Chart) string {
+	return customResource.Spec.Namespace
 }
 
-func ReleaseName(customObject v1alpha1.Chart) string {
-	return customObject.Spec.Name
+func ReleaseName(customResource v1alpha1.Chart) string {
+	return customResource.Spec.Name
 }
 
-func SecretName(customObject v1alpha1.Chart) string {
-	return customObject.Spec.Config.Secret.Name
+func SecretName(customResource v1alpha1.Chart) string {
+	return customResource.Spec.Config.Secret.Name
 }
 
-func SecretNamespace(customObject v1alpha1.Chart) string {
-	return customObject.Spec.Config.Secret.Namespace
+func SecretNamespace(customResource v1alpha1.Chart) string {
+	return customResource.Spec.Config.Secret.Namespace
 }
 
-func TarballURL(customObject v1alpha1.Chart) string {
-	return customObject.Spec.TarballURL
+func TarballURL(customResource v1alpha1.Chart) string {
+	return customResource.Spec.TarballURL
 }
 
 // ToCustomResource converts value to v1alpha1.ChartConfig and returns it or error
@@ -46,14 +46,14 @@ func ToCustomResource(v interface{}) (v1alpha1.Chart, error) {
 	}
 
 	if customResourcePointer == nil {
-		return v1alpha1.Chart{}, microerror.Maskf(emptyValueError, "empty value cannot be converted to CustomObject")
+		return v1alpha1.Chart{}, microerror.Maskf(emptyValueError, "empty value cannot be converted to customResource")
 	}
 
 	return *customResourcePointer, nil
 }
 
-func VersionBundleVersion(customObject v1alpha1.Chart) string {
-	if val, ok := customObject.ObjectMeta.Annotations[versionBundleAnnotation]; ok {
+func VersionBundleVersion(customResource v1alpha1.Chart) string {
+	if val, ok := customResource.ObjectMeta.Annotations[versionBundleAnnotation]; ok {
 		return val
 	} else {
 		return ""
