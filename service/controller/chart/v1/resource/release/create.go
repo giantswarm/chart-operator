@@ -12,7 +12,7 @@ import (
 )
 
 func (r *Resource) ApplyCreateChange(ctx context.Context, obj, createChange interface{}) error {
-	customObject, err := key.ToCustomObject(obj)
+	customObject, err := key.ToCustomResource(obj)
 	if err != nil {
 		return microerror.Mask(err)
 	}

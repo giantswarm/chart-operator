@@ -15,7 +15,7 @@ import (
 )
 
 func (r *Resource) GetDesiredState(ctx context.Context, obj interface{}) (interface{}, error) {
-	customObject, err := key.ToCustomObject(obj)
+	customObject, err := key.ToCustomResource(obj)
 	if err != nil {
 		return nil, microerror.Mask(err)
 	}

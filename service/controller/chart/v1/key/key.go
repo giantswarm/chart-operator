@@ -37,19 +37,19 @@ func TarballURL(customObject v1alpha1.Chart) string {
 	return customObject.Spec.TarballURL
 }
 
-// ToCustomObject converts value to v1alpha1.ChartConfig and returns it or error
+// ToCustomResource converts value to v1alpha1.ChartConfig and returns it or error
 // if type does not match.
-func ToCustomObject(v interface{}) (v1alpha1.Chart, error) {
-	customObjectPointer, ok := v.(*v1alpha1.Chart)
+func ToCustomResource(v interface{}) (v1alpha1.Chart, error) {
+	customResourcePointer, ok := v.(*v1alpha1.Chart)
 	if !ok {
 		return v1alpha1.Chart{}, microerror.Maskf(wrongTypeError, "expected '%T', got '%T'", &v1alpha1.Chart{}, v)
 	}
 
-	if customObjectPointer == nil {
+	if customResourcePointer == nil {
 		return v1alpha1.Chart{}, microerror.Maskf(emptyValueError, "empty value cannot be converted to CustomObject")
 	}
 
-	return *customObjectPointer, nil
+	return *customResourcePointer, nil
 }
 
 func VersionBundleVersion(customObject v1alpha1.Chart) string {

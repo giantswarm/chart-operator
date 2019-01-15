@@ -104,7 +104,7 @@ func NewResourceSet(config ResourceSetConfig) (*controller.ResourceSet, error) {
 	}
 
 	handlesFunc := func(obj interface{}) bool {
-		chart, err := key.ToCustomObject(obj)
+		chart, err := key.ToCustomResource(obj)
 		if err != nil {
 			return false
 		}
