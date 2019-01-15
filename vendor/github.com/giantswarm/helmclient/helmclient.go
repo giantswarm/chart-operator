@@ -880,13 +880,26 @@ func validateTillerVersion(pod *corev1.Pod, desiredImage string) error {
 }
 
 func parseTillerVersion(tillerImage string) (*semver.Version, error) {
+	defaultVersion, err := semver.NewVersion("0.0.0")
+	if err != nil {
+		return nil, microerror.Mask(err)
+	}
+
 	// Tiller image tag has the version.
 	imageParts := strings.Split(tillerImage, ":")
-	if len(imageParts) != 2 {
+	if len(imageParts) == 1 {
+		// No image tag so we upgrade to set the correct version.
+		return defaultVersion, nil
+	} else if len(imageParts) != 2 {
 		return nil, microerror.Maskf(executionFailedError, "tiller image %#q is invalid", tillerImage)
 	}
 
 	tag := imageParts[1]
+	if tag == "latest" {
+		// Uses latest tag so we upgrade to set the correct version.
+		return defaultVersion, nil
+	}
+
 	version, err := semver.NewVersion(tag)
 	if err != nil {
 		return nil, microerror.Maskf(executionFailedError, "parsing version %#q failed with error %#q", tag, err)

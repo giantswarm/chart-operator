@@ -72,7 +72,7 @@
     "digestset",
     "reference"
   ]
-  revision = "91b0f0559eb6710c574451049f8c71eb9c3952a7"
+  revision = "b1fd12d0c173a11f402cdf3ed725fc7e7b2a2553"
 
 [[projects]]
   branch = "master"
@@ -136,7 +136,7 @@
     "pkg/framework/resource",
     "pkg/harness"
   ]
-  revision = "4a94ba016067a6192f9885361c9ece6ee9a593c8"
+  revision = "a462aefc0b47e0a1641a0cf6c8c4f1b8587ff004"
 
 [[projects]]
   branch = "master"
@@ -160,13 +160,13 @@
   revision = "3509191efc7b4714c1dc57ab47df71a52148493f"
 
 [[projects]]
-  branch = "fix-cluster-role"
+  branch = "master"
   name = "github.com/giantswarm/helmclient"
   packages = [
     ".",
     "helmclienttest"
   ]
-  revision = "15ca845d3813a3932e1537b6a2ba0247d59844dc"
+  revision = "d3a2f6ea23b4bb0e11503fde0f72b03aac726515"
 
 [[projects]]
   branch = "master"
@@ -941,6 +941,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "59333dfee21b5839bd8367edaabadb8d39098a0787670cd8d6a619beddf51c2d"
+  inputs-digest = "05e52a2a23953aa2a6b3c26f670f28d67d9fba6cfbef4be4d15dd35a38e39257"
   solver-name = "gps-cdcl"
   solver-version = 1
