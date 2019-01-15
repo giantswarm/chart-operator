@@ -21,11 +21,11 @@ const (
 var (
 	// releaseTransitionStatuses is used to determine if the Helm Release is
 	// currently being updated.
-	releaseTransitionStatuses = []string{
-		"DELETING",
-		"PENDING_INSTALL",
-		"PENDING_UPGRADE",
-		"PENDING_ROLLBACK",
+	releaseTransitionStatuses = map[string]bool{
+		"DELETING":         true,
+		"PENDING_INSTALL":  true,
+		"PENDING_UPGRADE":  true,
+		"PENDING_ROLLBACK": true,
 	}
 )
 
@@ -100,6 +100,10 @@ func (c *ReleaseState) IsEmpty() bool {
 	return c.Equals(ReleaseState{})
 }
 
+func isReleaseInTransitionState(r ReleaseState) bool {
+	return releaseTransitionStatuses[r.Status]
+}
+
 func isReleaseModified(a, b ReleaseState) bool {
 	// Version has changed so we need to update the Helm Release.
 	if a.Version != b.Version {
@@ -110,16 +114,6 @@ func isReleaseModified(a, b ReleaseState) bool {
 	// Helm Release.
 	if !reflect.DeepEqual(a.Values, b.Values) {
 		return true
-	}
-
-	return false
-}
-
-func isReleaseInTransitionState(c ReleaseState) bool {
-	for _, status := range releaseTransitionStatuses {
-		if c.Status == status {
-			return true
-		}
 	}
 
 	return false

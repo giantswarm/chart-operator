@@ -19,11 +19,11 @@ const (
 )
 
 var (
-	chartTransitionStatuses = []string{
-		"DELETING",
-		"PENDING_INSTALL",
-		"PENDING_UPGRADE",
-		"PENDING_ROLLBACK",
+	chartTransitionStatuses = map[string]bool{
+		"DELETING":         true,
+		"PENDING_INSTALL":  true,
+		"PENDING_UPGRADE":  true,
+		"PENDING_ROLLBACK": true,
 	}
 )
 
@@ -82,6 +82,10 @@ func (r *Resource) Name() string {
 	return Name
 }
 
+func isChartInTransitionState(c ChartState) bool {
+	return chartTransitionStatuses[c.ReleaseStatus]
+}
+
 func isChartModified(a, b ChartState) bool {
 	// ReleaseVersion has changed for the channel so we need to update the Helm
 	// Release.
@@ -93,16 +97,6 @@ func isChartModified(a, b ChartState) bool {
 	// Helm Release.
 	if !reflect.DeepEqual(a.ChartValues, b.ChartValues) {
 		return true
-	}
-
-	return false
-}
-
-func isChartInTransitionState(c ChartState) bool {
-	for _, status := range chartTransitionStatuses {
-		if c.ReleaseStatus == status {
-			return true
-		}
 	}
 
 	return false

@@ -90,8 +90,13 @@ func (r *Resource) newUpdateChange(ctx context.Context, obj, currentState, desir
 
 	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("finding out if the %#q release has to be updated", desiredReleaseState.Name))
 
+	if isReleaseInTransitionState(currentReleaseState) {
+		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("the %#q release is in status %#q and cannot be updated", desiredReleaseState.Name, currentReleaseState.Status))
+		return nil, nil
+	}
+
 	isModified := !currentReleaseState.IsEmpty() && isReleaseModified(currentReleaseState, desiredReleaseState)
-	isWrongStatus := currentReleaseState.Status != desiredReleaseState.Status && !isReleaseInTransitionState(currentReleaseState)
+	isWrongStatus := currentReleaseState.Status != desiredReleaseState.Status
 	if isModified || isWrongStatus {
 		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("the %#q release has to be updated", desiredReleaseState.Name))
 
