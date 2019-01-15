@@ -14,6 +14,7 @@ import (
 
 	"github.com/giantswarm/chart-operator/service/controller/chart/v1/key"
 	"github.com/giantswarm/chart-operator/service/controller/chart/v1/resource/release"
+	"github.com/giantswarm/chart-operator/service/controller/chart/v1/resource/status"
 )
 
 // ResourceSetConfig contains necessary dependencies and settings for
@@ -73,8 +74,23 @@ func NewResourceSet(config ResourceSetConfig) (*controller.ResourceSet, error) {
 		}
 	}
 
+	var statusResource controller.Resource
+	{
+		c := status.Config{
+			G8sClient:  config.G8sClient,
+			HelmClient: config.HelmClient,
+			Logger:     config.Logger,
+		}
+
+		statusResource, err = status.New(c)
+		if err != nil {
+			return nil, microerror.Mask(err)
+		}
+	}
+
 	resources := []controller.Resource{
 		releaseResource,
+		statusResource,
 	}
 
 	{
