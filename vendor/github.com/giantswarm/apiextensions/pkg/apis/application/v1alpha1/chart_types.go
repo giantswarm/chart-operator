@@ -132,9 +132,17 @@ type ChartSpecKubeConfigSecret struct {
 }
 
 type ChartStatus struct {
+	// AppVersion is the app version of the deployed chart,
+	// e.g. 0.21.0.
+	AppVersion string `json:"appVersion" yaml:"appVersion"`
+	// LastUpdated is the time when the deployed chart was last updated.
+	LastUpdated DeepCopyTime `json:"lastUpdated" yaml:"lastUpdated"`
 	// Status is the status of the deployed chart,
 	// e.g. DEPLOYED.
 	Status string `json:"status" yaml:"status"`
+	// Version is the version of the deployed chart,
+	// e.g. 1.0.0.
+	Version string `json:"version" yaml:"version"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
