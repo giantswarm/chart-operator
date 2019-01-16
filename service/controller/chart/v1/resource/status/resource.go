@@ -1,6 +1,7 @@
 package status
 
 import (
+	"github.com/giantswarm/apiextensions/pkg/apis/application/v1alpha1"
 	"github.com/giantswarm/apiextensions/pkg/clientset/versioned"
 	"github.com/giantswarm/helmclient"
 	"github.com/giantswarm/microerror"
@@ -48,4 +49,28 @@ func New(config Config) (*Resource, error) {
 
 func (r *Resource) Name() string {
 	return Name
+}
+
+// Equals asseses the equality of ChartStatuses with regards to distinguishing
+// fields.
+func Equals(a, b v1alpha1.ChartStatus) bool {
+	if a.AppVersion != b.AppVersion {
+		return false
+	}
+	if a.LastUpdated != b.LastUpdated {
+		return false
+	}
+	if a.Status != b.Status {
+		return false
+	}
+	if a.Version != b.Version {
+		return false
+	}
+
+	return true
+}
+
+// IsEmpty checks if a ChartStatus is empty.
+func IsEmpty(c v1alpha1.ChartStatus) bool {
+	return Equals(c, v1alpha1.ChartStatus{})
 }

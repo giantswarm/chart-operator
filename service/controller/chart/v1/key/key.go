@@ -9,51 +9,55 @@ const (
 	versionBundleAnnotation = "giantswarm.io/version-bundle"
 )
 
-func ConfigMapName(customObject v1alpha1.Chart) string {
-	return customObject.Spec.Config.ConfigMap.Name
+func ChartStatus(customResource v1alpha1.Chart) v1alpha1.ChartStatus {
+	return customResource.Status
 }
 
-func ConfigMapNamespace(customObject v1alpha1.Chart) string {
-	return customObject.Spec.Config.ConfigMap.Namespace
+func ConfigMapName(customResource v1alpha1.Chart) string {
+	return customResource.Spec.Config.ConfigMap.Name
 }
 
-func Namespace(customObject v1alpha1.Chart) string {
-	return customObject.Spec.Namespace
+func ConfigMapNamespace(customResource v1alpha1.Chart) string {
+	return customResource.Spec.Config.ConfigMap.Namespace
 }
 
-func ReleaseName(customObject v1alpha1.Chart) string {
-	return customObject.Spec.Name
+func Namespace(customResource v1alpha1.Chart) string {
+	return customResource.Spec.Namespace
 }
 
-func SecretName(customObject v1alpha1.Chart) string {
-	return customObject.Spec.Config.Secret.Name
+func ReleaseName(customResource v1alpha1.Chart) string {
+	return customResource.Spec.Name
 }
 
-func SecretNamespace(customObject v1alpha1.Chart) string {
-	return customObject.Spec.Config.Secret.Namespace
+func SecretName(customResource v1alpha1.Chart) string {
+	return customResource.Spec.Config.Secret.Name
 }
 
-func TarballURL(customObject v1alpha1.Chart) string {
-	return customObject.Spec.TarballURL
+func SecretNamespace(customResource v1alpha1.Chart) string {
+	return customResource.Spec.Config.Secret.Namespace
 }
 
-// ToCustomObject converts value to v1alpha1.ChartConfig and returns it or error
+func TarballURL(customResource v1alpha1.Chart) string {
+	return customResource.Spec.TarballURL
+}
+
+// ToCustomResource converts value to v1alpha1.ChartConfig and returns it or error
 // if type does not match.
-func ToCustomObject(v interface{}) (v1alpha1.Chart, error) {
-	customObjectPointer, ok := v.(*v1alpha1.Chart)
+func ToCustomResource(v interface{}) (v1alpha1.Chart, error) {
+	customResourcePointer, ok := v.(*v1alpha1.Chart)
 	if !ok {
 		return v1alpha1.Chart{}, microerror.Maskf(wrongTypeError, "expected '%T', got '%T'", &v1alpha1.Chart{}, v)
 	}
 
-	if customObjectPointer == nil {
-		return v1alpha1.Chart{}, microerror.Maskf(emptyValueError, "empty value cannot be converted to CustomObject")
+	if customResourcePointer == nil {
+		return v1alpha1.Chart{}, microerror.Maskf(emptyValueError, "empty value cannot be converted to customResource")
 	}
 
-	return *customObjectPointer, nil
+	return *customResourcePointer, nil
 }
 
-func VersionBundleVersion(customObject v1alpha1.Chart) string {
-	if val, ok := customObject.ObjectMeta.Annotations[versionBundleAnnotation]; ok {
+func VersionBundleVersion(customResource v1alpha1.Chart) string {
+	if val, ok := customResource.ObjectMeta.Annotations[versionBundleAnnotation]; ok {
 		return val
 	} else {
 		return ""

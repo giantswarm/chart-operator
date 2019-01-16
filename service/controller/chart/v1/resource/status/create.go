@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/giantswarm/apiextensions/pkg/apis/application/v1alpha1"
 	"github.com/giantswarm/helmclient"
 	"github.com/giantswarm/microerror"
 
@@ -29,22 +30,37 @@ func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
 		return microerror.Mask(err)
 	}
 
-	/*
-		if key.Status(customResource) != releaseContent.Status {
-			r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("setting status for release %#q status to %#q", releaseName, releaseContent.Status))
+	releaseHistory, err := r.helmClient.GetReleaseHistory(ctx, releaseName)
+	if helmclient.IsReleaseNotFound(err) {
+		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("release %#q not found", releaseName))
 
-			customResourceCopy := customResource.DeepCopy()
-			customResourceCopy.Status.Status = releaseContent.Status
-			_, err := r.g8sClient.CoreV1alpha1().ChartConfigs(customResource.Namespace).UpdateStatus(customResourceCopy)
-			if err != nil {
-				return microerror.Mask(err)
-			}
+		// Return early. We will retry on the next execution.
+		return nil
+	} else if err != nil {
+		return microerror.Mask(err)
+	}
 
-			r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("status set for release %#q", releaseName))
-		} else {
-			r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("status for release %#q already set to %#q", releaseName, releaseContent.Status))
+	currentStatus := v1alpha1.ChartStatus{
+		AppVersion:  releaseHistory.AppVersion,
+		Status:      releaseContent.Status,
+		LastUpdated: releaseHistory.LastUpdated,
+		Version:     releaseHistory.Version,
+	}
+
+	if !Equals(currentStatus, key.ChartStatus(customResource)) {
+		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("setting status for release %#q status to %#q", releaseName, releaseContent.Status))
+
+		customResourceCopy := customResource.DeepCopy()
+		customResourceCopy.Status = currentStatus
+		_, err := r.g8sClient.CoreV1alpha1().ChartConfigs(customResource.Namespace).UpdateStatus(customResourceCopy)
+		if err != nil {
+			return microerror.Mask(err)
 		}
-	*/
+
+		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("status set for release %#q", releaseName))
+	} else {
+		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("status for release %#q already set to %#q", releaseName, releaseContent.Status))
+	}
 
 	return nil
 }
