@@ -41,10 +41,10 @@ func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
 	}
 
 	currentStatus := v1alpha1.ChartStatus{
-		AppVersion: releaseHistory.AppVersion,
-		Status:     releaseContent.Status,
-		// LastUpdated: releaseHistory.LastUpdated,
-		Version: releaseHistory.Version,
+		AppVersion:   releaseHistory.AppVersion,
+		Status:       releaseContent.Status,
+		LastDeployed: v1alpha1.DeepCopyTime{releaseHistory.LastDeployed},
+		Version:      releaseHistory.Version,
 	}
 
 	if !Equals(currentStatus, key.ChartStatus(cr)) {
@@ -52,7 +52,7 @@ func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
 
 		crCopy := cr.DeepCopy()
 		crCopy.Status = currentStatus
-		_, err := r.g8sClient.CoreV1alpha1().ChartConfigs(cr.Namespace).UpdateStatus(crCopy)
+		_, err := r.g8sClient.ApplicationV1alpha1().Charts(cr.Namespace).UpdateStatus(crCopy)
 		if err != nil {
 			return microerror.Mask(err)
 		}
