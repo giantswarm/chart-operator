@@ -1,7 +1,6 @@
 package release
 
 import (
-	"context"
 	"reflect"
 
 	"github.com/giantswarm/helmclient"
@@ -17,6 +16,17 @@ const (
 
 	// helmDeployedStatus is the deployed status for Helm Releases.
 	helmDeployedStatus = "DEPLOYED"
+)
+
+var (
+	// releaseTransitionStatuses is used to determine if the Helm Release is
+	// currently being updated.
+	releaseTransitionStatuses = map[string]bool{
+		"DELETING":         true,
+		"PENDING_INSTALL":  true,
+		"PENDING_UPGRADE":  true,
+		"PENDING_ROLLBACK": true,
+	}
 )
 
 // Config represents the configuration used to create a new release resource.
@@ -35,10 +45,6 @@ type Resource struct {
 	helmClient helmclient.Interface
 	k8sClient  kubernetes.Interface
 	logger     micrologger.Logger
-}
-
-func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange interface{}) error {
-	return nil
 }
 
 // New creates a new configured chart resource.
@@ -92,6 +98,25 @@ func (a *ReleaseState) Equals(b ReleaseState) bool {
 // IsEmpty checks if a ReleaseState is empty.
 func (c *ReleaseState) IsEmpty() bool {
 	return c.Equals(ReleaseState{})
+}
+
+func isReleaseInTransitionState(r ReleaseState) bool {
+	return releaseTransitionStatuses[r.Status]
+}
+
+func isReleaseModified(a, b ReleaseState) bool {
+	// Version has changed so we need to update the Helm Release.
+	if a.Version != b.Version {
+		return true
+	}
+
+	// Values have changed so we need to update the values for the current
+	// Helm Release.
+	if !reflect.DeepEqual(a.Values, b.Values) {
+		return true
+	}
+
+	return false
 }
 
 func toReleaseState(v interface{}) (ReleaseState, error) {

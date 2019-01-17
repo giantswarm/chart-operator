@@ -111,7 +111,7 @@ func Test_TarballURL(t *testing.T) {
 	}
 }
 
-func Test_ToCustomObject(t *testing.T) {
+func Test_ToCustomResource(t *testing.T) {
 	testCases := []struct {
 		name           string
 		input          interface{}
@@ -144,7 +144,7 @@ func Test_ToCustomObject(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			result, err := ToCustomObject(tc.input)
+			result, err := ToCustomResource(tc.input)
 			switch {
 			case err != nil && tc.errorMatcher == nil:
 				t.Fatalf("error == %#v, want nil", err)

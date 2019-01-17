@@ -60,7 +60,7 @@ required = [
   branch = "master"
   name = "github.com/giantswarm/e2etemplates"
 
-[[override]]
+[[constraint]]
   branch = "app-version"
   name = "github.com/giantswarm/helmclient"
 
