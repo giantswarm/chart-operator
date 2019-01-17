@@ -12,7 +12,7 @@ import (
 )
 
 func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange interface{}) error {
-	customResource, err := key.ToCustomResource(obj)
+	cr, err := key.ToCustomResource(obj)
 	if err != nil {
 		return microerror.Mask(err)
 	}
@@ -24,7 +24,7 @@ func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange inte
 	if releaseState.Name != "" {
 		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("updating release %#q", releaseState.Name))
 
-		tarballURL := key.TarballURL(customResource)
+		tarballURL := key.TarballURL(cr)
 		tarballPath, err := r.helmClient.PullChartTarball(ctx, tarballURL)
 		if err != nil {
 			return microerror.Mask(err)

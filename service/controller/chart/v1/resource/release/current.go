@@ -10,7 +10,7 @@ import (
 )
 
 func (r *Resource) GetCurrentState(ctx context.Context, obj interface{}) (interface{}, error) {
-	customResource, err := key.ToCustomResource(obj)
+	cr, err := key.ToCustomResource(obj)
 	if err != nil {
 		return nil, microerror.Mask(err)
 	}
@@ -20,7 +20,7 @@ func (r *Resource) GetCurrentState(ctx context.Context, obj interface{}) (interf
 		return nil, microerror.Mask(err)
 	}
 
-	releaseName := key.ReleaseName(customResource)
+	releaseName := key.ReleaseName(cr)
 	releaseContent, err := r.helmClient.GetReleaseContent(ctx, releaseName)
 	if helmclient.IsReleaseNotFound(err) {
 		// Return early as release is not installed.
