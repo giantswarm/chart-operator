@@ -15,13 +15,13 @@ import (
 )
 
 func (r *Resource) GetDesiredState(ctx context.Context, obj interface{}) (interface{}, error) {
-	customObject, err := key.ToCustomObject(obj)
+	cr, err := key.ToCustomResource(obj)
 	if err != nil {
 		return nil, microerror.Mask(err)
 	}
 
-	releaseName := key.ReleaseName(customObject)
-	tarballURL := key.TarballURL(customObject)
+	releaseName := key.ReleaseName(cr)
+	tarballURL := key.TarballURL(cr)
 
 	tarballPath, err := r.helmClient.PullChartTarball(ctx, tarballURL)
 	if err != nil {
@@ -40,12 +40,12 @@ func (r *Resource) GetDesiredState(ctx context.Context, obj interface{}) (interf
 		return nil, microerror.Mask(err)
 	}
 
-	configMapValues, err := r.getConfigMapValues(ctx, customObject)
+	configMapValues, err := r.getConfigMapValues(ctx, cr)
 	if err != nil {
 		return nil, microerror.Mask(err)
 	}
 
-	secretValues, err := r.getSecretValues(ctx, customObject)
+	secretValues, err := r.getSecretValues(ctx, cr)
 	if err != nil {
 		return nil, microerror.Mask(err)
 	}
@@ -65,12 +65,12 @@ func (r *Resource) GetDesiredState(ctx context.Context, obj interface{}) (interf
 	return releaseState, nil
 }
 
-func (r *Resource) getConfigMapValues(ctx context.Context, customObject v1alpha1.Chart) (map[string]interface{}, error) {
+func (r *Resource) getConfigMapValues(ctx context.Context, cr v1alpha1.Chart) (map[string]interface{}, error) {
 	configMapValues := make(map[string]interface{})
 
-	if key.ConfigMapName(customObject) != "" {
-		configMapName := key.ConfigMapName(customObject)
-		configMapNamespace := key.ConfigMapNamespace(customObject)
+	if key.ConfigMapName(cr) != "" {
+		configMapName := key.ConfigMapName(cr)
+		configMapNamespace := key.ConfigMapNamespace(cr)
 
 		configMap, err := r.k8sClient.CoreV1().ConfigMaps(configMapNamespace).Get(configMapName, metav1.GetOptions{})
 		if apierrors.IsNotFound(err) {
@@ -91,12 +91,12 @@ func (r *Resource) getConfigMapValues(ctx context.Context, customObject v1alpha1
 	return configMapValues, nil
 }
 
-func (r *Resource) getSecretValues(ctx context.Context, customObject v1alpha1.Chart) (map[string]interface{}, error) {
+func (r *Resource) getSecretValues(ctx context.Context, cr v1alpha1.Chart) (map[string]interface{}, error) {
 	secretValues := make(map[string]interface{})
 
-	if key.SecretName(customObject) != "" {
-		secretName := key.SecretName(customObject)
-		secretNamespace := key.SecretNamespace(customObject)
+	if key.SecretName(cr) != "" {
+		secretName := key.SecretName(cr)
+		secretNamespace := key.SecretNamespace(cr)
 
 		secret, err := r.k8sClient.CoreV1().Secrets(secretNamespace).Get(secretName, metav1.GetOptions{})
 		if apierrors.IsNotFound(err) {
