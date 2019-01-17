@@ -44,7 +44,7 @@ required = [
   branch = "master"
   name = "github.com/docker/distribution"
 
-[[constraint]]
+[[override]]
   branch = "app-and-chart-status"
   name = "github.com/giantswarm/apiextensions"
 
@@ -60,7 +60,7 @@ required = [
   branch = "master"
   name = "github.com/giantswarm/e2etemplates"
 
-[[constraint]]
+[[override]]
   branch = "app-version"
   name = "github.com/giantswarm/helmclient"
 
@@ -102,23 +102,23 @@ required = [
 
 [[constraint]]
   name = "k8s.io/api"
-  version = "kubernetes-1.10.4"
+  version = "kubernetes-1.13.2"
 
 [[constraint]]
   name = "k8s.io/apiextensions-apiserver"
-  version = "kubernetes-1.10.4"
+  version = "kubernetes-1.13.2"
 
 [[constraint]]
   name = "k8s.io/apimachinery"
-  version = "kubernetes-1.10.4"
+  version = "kubernetes-1.13.2"
 
 [[constraint]]
   name = "k8s.io/apiserver"
-  version = "kubernetes-1.10.4"
+  version = "kubernetes-1.13.2"
 
 [[constraint]]
   name = "k8s.io/client-go"
-  version = "kubernetes-1.10.4"
+  version = "kubernetes-1.13.2"
 
 
 

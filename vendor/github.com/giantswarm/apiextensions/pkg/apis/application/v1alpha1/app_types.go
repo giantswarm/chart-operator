@@ -161,8 +161,8 @@ type AppStatus struct {
 	// AppVersion is the app version of the deployed app,
 	// e.g. 0.21.0.
 	AppVersion string `json:"appVersion" yaml:"appVersion"`
-	// LastUpdated is the time when the app was last updated.
-	LastUpdated DeepCopyTime `json:"lastUpdated" yaml:"lastUpdated"`
+	// LastDeployed is the time when the app was last deployed.
+	LastDeployed DeepCopyTime `json:"lastDeployed" yaml:"lastDeployed"`
 	// Status is the status of the deployed app.
 	// e.g. DEPLOYED.
 	Status string `json:"status" yaml:"status"`
