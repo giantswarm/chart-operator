@@ -12,12 +12,12 @@ import (
 )
 
 func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
-	customResource, err := key.ToCustomResource(obj)
+	cr, err := key.ToCustomResource(obj)
 	if err != nil {
 		return microerror.Mask(err)
 	}
 
-	releaseName := key.ReleaseName(customResource)
+	releaseName := key.ReleaseName(cr)
 	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("getting status for release %#q", releaseName))
 
 	releaseContent, err := r.helmClient.GetReleaseContent(ctx, releaseName)
@@ -41,18 +41,18 @@ func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
 	}
 
 	currentStatus := v1alpha1.ChartStatus{
-		AppVersion:  releaseHistory.AppVersion,
-		Status:      releaseContent.Status,
-		LastUpdated: releaseHistory.LastUpdated,
-		Version:     releaseHistory.Version,
+		AppVersion: releaseHistory.AppVersion,
+		Status:     releaseContent.Status,
+		// LastUpdated: releaseHistory.LastUpdated,
+		Version: releaseHistory.Version,
 	}
 
-	if !Equals(currentStatus, key.ChartStatus(customResource)) {
+	if !Equals(currentStatus, key.ChartStatus(cr)) {
 		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("setting status for release %#q status to %#q", releaseName, releaseContent.Status))
 
-		customResourceCopy := customResource.DeepCopy()
-		customResourceCopy.Status = currentStatus
-		_, err := r.g8sClient.CoreV1alpha1().ChartConfigs(customResource.Namespace).UpdateStatus(customResourceCopy)
+		crCopy := cr.DeepCopy()
+		crCopy.Status = currentStatus
+		_, err := r.g8sClient.CoreV1alpha1().ChartConfigs(cr.Namespace).UpdateStatus(crCopy)
 		if err != nil {
 			return microerror.Mask(err)
 		}
