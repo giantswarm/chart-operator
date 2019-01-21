@@ -7,6 +7,7 @@ import (
 	"github.com/giantswarm/apiextensions/pkg/apis/application/v1alpha1"
 	"github.com/giantswarm/helmclient"
 	"github.com/giantswarm/microerror"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
 	"github.com/giantswarm/chart-operator/service/controller/chart/v1/key"
 )
@@ -40,19 +41,25 @@ func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
 		return microerror.Mask(err)
 	}
 
-	currentStatus := v1alpha1.ChartStatus{
+	desiredStatus := v1alpha1.ChartStatus{
 		AppVersion:   releaseHistory.AppVersion,
 		LastDeployed: v1alpha1.DeepCopyTime{releaseHistory.LastDeployed},
 		Status:       releaseContent.Status,
 		Version:      releaseHistory.Version,
 	}
 
-	if !equals(currentStatus, key.ChartStatus(cr)) {
+	if !equals(desiredStatus, key.ChartStatus(cr)) {
 		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("setting status for release %#q status to %#q", releaseName, releaseContent.Status))
 
-		crCopy := cr.DeepCopy()
-		crCopy.Status = currentStatus
-		_, err := r.g8sClient.ApplicationV1alpha1().Charts(cr.Namespace).UpdateStatus(crCopy)
+		// Get chart CR again to ensure the resource version is correct.
+		currentCR, err := r.g8sClient.ApplicationV1alpha1().Charts(cr.Namespace).Get(cr.Name, metav1.GetOptions{})
+		if err != nil {
+			return microerror.Mask(err)
+		}
+
+		currentCR.Status = desiredStatus
+
+		_, err = r.g8sClient.ApplicationV1alpha1().Charts(cr.Namespace).UpdateStatus(currentCR)
 		if err != nil {
 			return microerror.Mask(err)
 		}
