@@ -33,6 +33,7 @@ func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
 
 	releaseHistory, err := r.helmClient.GetReleaseHistory(ctx, releaseName)
 	if helmclient.IsReleaseNotFound(err) {
+		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("did not get status for release %#q", releaseName))
 		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("release %#q not found", releaseName))
 
 		// Return early. We will retry on the next execution.
@@ -64,7 +65,7 @@ func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
 			return microerror.Mask(err)
 		}
 
-		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("status set for release %#q", releaseName))
+		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("set status for release %#q", releaseName))
 	} else {
 		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("status for release %#q already set to %#q", releaseName, releaseContent.Status))
 	}
