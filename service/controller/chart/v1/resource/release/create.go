@@ -75,7 +75,7 @@ func (r *Resource) newCreateChange(ctx context.Context, obj, currentState, desir
 
 	createState := &ReleaseState{}
 
-	if currentReleaseState.IsEmpty() {
+	if currentReleaseState.isEmpty() {
 		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("the %#q release needs to be created", desiredReleaseState.Name))
 
 		createState = &desiredReleaseState
