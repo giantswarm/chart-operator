@@ -51,9 +51,9 @@ func (r *Resource) Name() string {
 	return Name
 }
 
-// Equals asseses the equality of ChartStatuses with regards to distinguishing
+// equals asseses the equality of ChartStatuses with regards to distinguishing
 // fields.
-func Equals(a, b v1alpha1.ChartStatus) bool {
+func equals(a, b v1alpha1.ChartStatus) bool {
 	if a.AppVersion != b.AppVersion {
 		return false
 	}
@@ -70,7 +70,7 @@ func Equals(a, b v1alpha1.ChartStatus) bool {
 	return true
 }
 
-// IsEmpty checks if a ChartStatus is empty.
-func IsEmpty(c v1alpha1.ChartStatus) bool {
-	return Equals(c, v1alpha1.ChartStatus{})
+// isEmpty checks if a ChartStatus is empty.
+func isEmpty(c v1alpha1.ChartStatus) bool {
+	return equals(c, v1alpha1.ChartStatus{})
 }

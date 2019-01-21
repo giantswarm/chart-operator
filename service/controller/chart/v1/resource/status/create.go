@@ -42,12 +42,12 @@ func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
 
 	currentStatus := v1alpha1.ChartStatus{
 		AppVersion:   releaseHistory.AppVersion,
-		Status:       releaseContent.Status,
 		LastDeployed: v1alpha1.DeepCopyTime{releaseHistory.LastDeployed},
+		Status:       releaseContent.Status,
 		Version:      releaseHistory.Version,
 	}
 
-	if !Equals(currentStatus, key.ChartStatus(cr)) {
+	if !equals(currentStatus, key.ChartStatus(cr)) {
 		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("setting status for release %#q status to %#q", releaseName, releaseContent.Status))
 
 		crCopy := cr.DeepCopy()

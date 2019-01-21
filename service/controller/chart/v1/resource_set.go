@@ -94,8 +94,9 @@ func NewResourceSet(config ResourceSetConfig) (*controller.ResourceSet, error) {
 	}
 
 	resources := []controller.Resource{
-		releaseResource,
+		// statusResource executed first so the status is set for existing CRs.
 		statusResource,
+		releaseResource,
 	}
 
 	{
