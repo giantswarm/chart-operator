@@ -116,7 +116,7 @@
     "pkg/clientset/versioned/typed/example/v1alpha1",
     "pkg/clientset/versioned/typed/provider/v1alpha1"
   ]
-  revision = "452d2fb9f8222ebd7a8f1777e6aee4ef4218f5b8"
+  revision = "0584389c4f82e52ba980c14dc31434d922245a46"
 
 [[projects]]
   branch = "master"
@@ -226,7 +226,7 @@
     "loggermeta",
     "microloggertest"
   ]
-  revision = "0926d9b7c5419173936b4556411a103bdf8d5966"
+  revision = "9e733616eec2897b81d28d6c41161a8f410158d6"
 
 [[projects]]
   branch = "master"
@@ -324,10 +324,10 @@
   revision = "4030bb1f1f0c35b30ca7009e9ebd06849dd45306"
 
 [[projects]]
+  branch = "master"
   name = "github.com/google/go-github"
   packages = ["github"]
-  revision = "56cb1dd99043eba2e21c91aa8417d3ba2329259a"
-  version = "v21.0.1"
+  revision = "e740a6811a5bc7a8fba64fe1594860d4f982b4c3"
 
 [[projects]]
   name = "github.com/google/go-querystring"
