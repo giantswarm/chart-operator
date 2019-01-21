@@ -102,7 +102,7 @@
   version = "v1.0.0"
 
 [[projects]]
-  branch = "app-and-chart-status"
+  branch = "master"
   name = "github.com/giantswarm/apiextensions"
   packages = [
     "pkg/apis/application/v1alpha1",
@@ -116,7 +116,7 @@
     "pkg/clientset/versioned/typed/example/v1alpha1",
     "pkg/clientset/versioned/typed/provider/v1alpha1"
   ]
-  revision = "445e36560daa3215f91c4b1892189458951f1fb8"
+  revision = "452d2fb9f8222ebd7a8f1777e6aee4ef4218f5b8"
 
 [[projects]]
   branch = "master"
@@ -166,13 +166,13 @@
   revision = "3509191efc7b4714c1dc57ab47df71a52148493f"
 
 [[projects]]
-  branch = "app-version"
+  branch = "master"
   name = "github.com/giantswarm/helmclient"
   packages = [
     ".",
     "helmclienttest"
   ]
-  revision = "93e1c60eb233957930f6424383db98be74a9bb00"
+  revision = "c93791a1e9e60a08f2ee48394d416a726c5e00f2"
 
 [[projects]]
   branch = "master"
@@ -226,7 +226,7 @@
     "loggermeta",
     "microloggertest"
   ]
-  revision = "39ed6a99d31b8962e38dfaff287125fb756e8b2a"
+  revision = "0926d9b7c5419173936b4556411a103bdf8d5966"
 
 [[projects]]
   branch = "master"
@@ -324,10 +324,10 @@
   revision = "4030bb1f1f0c35b30ca7009e9ebd06849dd45306"
 
 [[projects]]
-  branch = "master"
   name = "github.com/google/go-github"
   packages = ["github"]
-  revision = "e740a6811a5bc7a8fba64fe1594860d4f982b4c3"
+  revision = "56cb1dd99043eba2e21c91aa8417d3ba2329259a"
+  version = "v21.0.1"
 
 [[projects]]
   name = "github.com/google/go-querystring"
@@ -535,7 +535,7 @@
     "nfs",
     "xfs"
   ]
-  revision = "b1a0a9a36d7453ba0f62578b99712f3a6c5f82d1"
+  revision = "bf6a532e95b1f7a62adf0ab5050a5bb2237ad2f4"
 
 [[projects]]
   name = "github.com/spf13/afero"
@@ -600,7 +600,7 @@
     "publicsuffix",
     "trace"
   ]
-  revision = "915654e7eabcea33ae277abbecf52f0d8b7a9fdc"
+  revision = "ed066c81e75eba56dd9bd2139ade88125b855585"
 
 [[projects]]
   branch = "master"
@@ -624,7 +624,7 @@
     "unix",
     "windows"
   ]
-  revision = "11f53e03133963fb11ae0588e08b5e0b85be8be5"
+  revision = "770c60269bf0ef965e9e7ac8bedcb6bca2a1cefd"
 
 [[projects]]
   name = "golang.org/x/text"
@@ -776,7 +776,6 @@
   version = "kubernetes-1.13.2"
 
 [[projects]]
-  branch = "release-1.13"
   name = "k8s.io/apimachinery"
   packages = [
     "pkg/api/errors",
@@ -827,6 +826,7 @@
     "third_party/forked/golang/reflect"
   ]
   revision = "2b1284ed4c93a43499e781493253e2ac5959c4fd"
+  version = "kubernetes-1.13.0"
 
 [[projects]]
   name = "k8s.io/apiserver"
@@ -999,6 +999,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "8ee7e8379642bb7ef15297a6033ef2532af1a1f411d78f4eeea8e3982c8554f2"
+  inputs-digest = "a00fbf6942596b22344212468e49cd3330ad5e2b56eb1bea8eed7dca91f8bd7e"
   solver-name = "gps-cdcl"
   solver-version = 1
