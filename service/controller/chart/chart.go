@@ -90,6 +90,7 @@ func NewChart(config Config) (*Chart, error) {
 	{
 		c := v1.ResourceSetConfig{
 			Fs:          config.Fs,
+			G8sClient:   config.G8sClient,
 			HelmClient:  config.HelmClient,
 			K8sClient:   config.K8sClient,
 			Logger:      config.Logger,

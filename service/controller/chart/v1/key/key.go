@@ -9,6 +9,10 @@ const (
 	versionBundleAnnotation = "giantswarm.io/version-bundle"
 )
 
+func ChartStatus(customResource v1alpha1.Chart) v1alpha1.ChartStatus {
+	return customResource.Status
+}
+
 func ConfigMapName(customResource v1alpha1.Chart) string {
 	return customResource.Spec.Config.ConfigMap.Name
 }

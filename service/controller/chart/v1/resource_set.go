@@ -3,6 +3,7 @@ package v1
 import (
 	"context"
 
+	"github.com/giantswarm/apiextensions/pkg/clientset/versioned"
 	"github.com/giantswarm/helmclient"
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/micrologger"
@@ -14,6 +15,7 @@ import (
 
 	"github.com/giantswarm/chart-operator/service/controller/chart/v1/key"
 	"github.com/giantswarm/chart-operator/service/controller/chart/v1/resource/release"
+	"github.com/giantswarm/chart-operator/service/controller/chart/v1/resource/status"
 )
 
 // ResourceSetConfig contains necessary dependencies and settings for
@@ -21,6 +23,7 @@ import (
 type ResourceSetConfig struct {
 	// Dependencies.
 	Fs         afero.Fs
+	G8sClient  versioned.Interface
 	HelmClient helmclient.Interface
 	K8sClient  kubernetes.Interface
 	Logger     micrologger.Logger
@@ -37,6 +40,9 @@ func NewResourceSet(config ResourceSetConfig) (*controller.ResourceSet, error) {
 	// Dependencies.
 	if config.Fs == nil {
 		return nil, microerror.Maskf(invalidConfigError, "%T.Fs must not be empty", config)
+	}
+	if config.G8sClient == nil {
+		return nil, microerror.Maskf(invalidConfigError, "%T.G8sClient must not be empty", config)
 	}
 	if config.HelmClient == nil {
 		return nil, microerror.Maskf(invalidConfigError, "%T.HelmClient must not be empty", config)
@@ -73,7 +79,23 @@ func NewResourceSet(config ResourceSetConfig) (*controller.ResourceSet, error) {
 		}
 	}
 
+	var statusResource controller.Resource
+	{
+		c := status.Config{
+			G8sClient:  config.G8sClient,
+			HelmClient: config.HelmClient,
+			Logger:     config.Logger,
+		}
+
+		statusResource, err = status.New(c)
+		if err != nil {
+			return nil, microerror.Mask(err)
+		}
+	}
+
 	resources := []controller.Resource{
+		// statusResource executed first so the status is set for existing CRs.
+		statusResource,
 		releaseResource,
 	}
 

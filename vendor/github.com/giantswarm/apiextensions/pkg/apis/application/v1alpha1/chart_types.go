@@ -132,9 +132,21 @@ type ChartSpecKubeConfigSecret struct {
 }
 
 type ChartStatus struct {
+	// AppVersion is the value of the AppVersion field in the Chart.yaml of the
+	// deployed chart. This is an optional field with the version of the
+	// component being deployed.
+	// e.g. 0.21.0.
+	// https://docs.helm.sh/developing_charts/#the-chart-yaml-file
+	AppVersion string `json:"appVersion" yaml:"appVersion"`
+	// LastDeployed is the time when the deployed chart was last deployed.
+	LastDeployed DeepCopyTime `json:"lastDeployed" yaml:"lastDeployed"`
 	// Status is the status of the deployed chart,
 	// e.g. DEPLOYED.
 	Status string `json:"status" yaml:"status"`
+	// Version is the value of the Version field in the Chart.yaml of the
+	// deployed chart.
+	// e.g. 1.0.0.
+	Version string `json:"version" yaml:"version"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
