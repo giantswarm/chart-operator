@@ -95,7 +95,7 @@ func (r *Resource) newUpdateChange(ctx context.Context, obj, currentState, desir
 		return nil, nil
 	}
 
-	isModified := !currentReleaseState.isEmpty() && isReleaseModified(currentReleaseState, desiredReleaseState)
+	isModified := !isEmpty(currentReleaseState) && isReleaseModified(currentReleaseState, desiredReleaseState)
 	isWrongStatus := currentReleaseState.Status != desiredReleaseState.Status
 	if isModified || isWrongStatus {
 		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("the %#q release has to be updated", desiredReleaseState.Name))

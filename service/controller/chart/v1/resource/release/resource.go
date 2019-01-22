@@ -79,7 +79,7 @@ func (r *Resource) Name() string {
 }
 
 // equals asseses the equality of ReleaseStates with regards to distinguishing fields.
-func (a *ReleaseState) equals(b ReleaseState) bool {
+func equals(a, b ReleaseState) bool {
 	if a.Name != b.Name {
 		return false
 	}
@@ -96,8 +96,8 @@ func (a *ReleaseState) equals(b ReleaseState) bool {
 }
 
 // isEmpty checks if a ReleaseState is empty.
-func (c *ReleaseState) isEmpty() bool {
-	return c.equals(ReleaseState{})
+func isEmpty(c ReleaseState) bool {
+	return equals(c, ReleaseState{})
 }
 
 func isReleaseInTransitionState(r ReleaseState) bool {
