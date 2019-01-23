@@ -6,7 +6,7 @@ import (
 )
 
 const (
-	versionBundleAnnotation = "giantswarm.io/version-bundle"
+	versionLabel = "chart-operator.giantswarm.io/version"
 )
 
 func ChartStatus(customResource v1alpha1.Chart) v1alpha1.ChartStatus {
@@ -56,8 +56,10 @@ func ToCustomResource(v interface{}) (v1alpha1.Chart, error) {
 	return *customResourcePointer, nil
 }
 
-func VersionBundleVersion(customResource v1alpha1.Chart) string {
-	if val, ok := customResource.ObjectMeta.Annotations[versionBundleAnnotation]; ok {
+// VersionLabel returns the label value to determine if the custom resource is
+// supported by this version of the operatorkit resource.
+func VersionLabel(customResource v1alpha1.Chart) string {
+	if val, ok := customResource.ObjectMeta.Labels[versionLabel]; ok {
 		return val
 	} else {
 		return ""

@@ -123,12 +123,12 @@ func NewResourceSet(config ResourceSetConfig) (*controller.ResourceSet, error) {
 	}
 
 	handlesFunc := func(obj interface{}) bool {
-		chart, err := key.ToCustomResource(obj)
+		cr, err := key.ToCustomResource(obj)
 		if err != nil {
 			return false
 		}
 
-		if key.VersionBundleVersion(chart) == VersionBundle().Version {
+		if key.VersionLabel(cr) == VersionBundle().Version {
 			return true
 		}
 
