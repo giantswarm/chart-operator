@@ -205,11 +205,6 @@ func Test_VersionLabel(t *testing.T) {
 			obj:             v1alpha1.Chart{},
 			expectedVersion: "",
 		},
-		{
-			name:            "case 3: no annotations",
-			obj:             v1alpha1.Chart{},
-			expectedVersion: "",
-		},
 	}
 
 	for _, tc := range testCases {
