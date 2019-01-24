@@ -355,6 +355,7 @@ func Test_DesiredState(t *testing.T) {
 
 }
 
+/*
 func Test_union(t *testing.T) {
 	testCases := []struct {
 		name         string
@@ -433,3 +434,4 @@ func Test_union(t *testing.T) {
 		})
 	}
 }
+*/
