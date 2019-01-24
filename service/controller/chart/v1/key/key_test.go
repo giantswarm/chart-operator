@@ -161,7 +161,7 @@ func Test_ToCustomResource(t *testing.T) {
 	}
 }
 
-func Test_VersionBundleVersion(t *testing.T) {
+func Test_VersionLabel(t *testing.T) {
 	testCases := []struct {
 		name            string
 		obj             v1alpha1.Chart
@@ -171,8 +171,8 @@ func Test_VersionBundleVersion(t *testing.T) {
 			name: "case 0: basic match",
 			obj: v1alpha1.Chart{
 				ObjectMeta: metav1.ObjectMeta{
-					Annotations: map[string]string{
-						"giantswarm.io/version-bundle": "1.0.0",
+					Labels: map[string]string{
+						"chart-operator.giantswarm.io/version": "1.0.0",
 					},
 				},
 			},
@@ -182,26 +182,26 @@ func Test_VersionBundleVersion(t *testing.T) {
 			name: "case 1: different version",
 			obj: v1alpha1.Chart{
 				ObjectMeta: metav1.ObjectMeta{
-					Annotations: map[string]string{
-						"giantswarm.io/version-bundle": "2.0.0",
+					Labels: map[string]string{
+						"chart-operator.giantswarm.io/version": "2.0.0",
 					},
 				},
 			},
 			expectedVersion: "2.0.0",
 		},
 		{
-			name: "case 2: missing version",
+			name: "case 2: incorrect label",
 			obj: v1alpha1.Chart{
 				ObjectMeta: metav1.ObjectMeta{
-					Annotations: map[string]string{
-						"test": "test",
+					Labels: map[string]string{
+						"app-operator.giantswarm.io/version": "1.0.0",
 					},
 				},
 			},
 			expectedVersion: "",
 		},
 		{
-			name:            "case 3: no annotations",
+			name:            "case 3: missing label",
 			obj:             v1alpha1.Chart{},
 			expectedVersion: "",
 		},
@@ -209,10 +209,10 @@ func Test_VersionBundleVersion(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			result := VersionBundleVersion(tc.obj)
+			result := VersionLabel(tc.obj)
 
 			if result != tc.expectedVersion {
-				t.Fatalf("VersionBundleVersion == %#q, want %#q", result, tc.expectedVersion)
+				t.Fatalf("Version label == %#q, want %#q", result, tc.expectedVersion)
 			}
 		})
 	}
