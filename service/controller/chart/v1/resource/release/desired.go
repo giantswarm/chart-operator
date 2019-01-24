@@ -3,9 +3,11 @@ package release
 import (
 	"context"
 	"fmt"
+	"reflect"
 
 	"github.com/giantswarm/apiextensions/pkg/apis/application/v1alpha1"
 	"github.com/giantswarm/microerror"
+	"github.com/imdario/mergo"
 	yaml "gopkg.in/yaml.v2"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -49,9 +51,14 @@ func (r *Resource) GetDesiredState(ctx context.Context, obj interface{}) (interf
 		return nil, microerror.Mask(err)
 	}
 
-	values, err := union(configMapValues, secretValues)
-	if err != nil {
-		return nil, microerror.Mask(err)
+	// Merge configmap and secret values to generate a single set of values to
+	// pass to Tiller.
+	values := configMapValues
+	if !reflect.DeepEqual(secretValues, map[string]interface{}{}) {
+		err = mergo.Merge(values, secretValues)
+		if err != nil {
+			return nil, microerror.Mask(err)
+		}
 	}
 
 	releaseState := &ReleaseState{
@@ -114,21 +121,4 @@ func (r *Resource) getSecretValues(ctx context.Context, cr v1alpha1.Chart) (map[
 	}
 
 	return values, nil
-}
-
-func union(a, b map[string]interface{}) (map[string]interface{}, error) {
-	if a == nil {
-		return b, nil
-	}
-
-	for k, v := range b {
-		_, ok := a[k]
-		if ok {
-			// The configmap and secret have at least one shared key. We cannot
-			// decide which value should be applied.
-			return nil, microerror.Maskf(invalidExecutionError, "configmap and secret share the same key %#q", k)
-		}
-		a[k] = v
-	}
-	return a, nil
 }
