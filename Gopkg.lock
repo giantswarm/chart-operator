@@ -245,7 +245,7 @@
     "informer",
     "informer/collector"
   ]
-  revision = "7a8289f8ae8a079bc178aa8f520cb6cbb4b48034"
+  revision = "a1aa0b72cce3bb752ca8e5097dc84f97cf4cbbf7"
 
 [[projects]]
   branch = "master"
@@ -413,8 +413,8 @@
 [[projects]]
   name = "github.com/imdario/mergo"
   packages = ["."]
-  revision = "9f23e2d6bd2a77f959b2bf6acdbefd708a83a4a4"
-  version = "v0.3.6"
+  revision = "7c29201646fa3de8506f701213473dd407f19646"
+  version = "v0.3.7"
 
 [[projects]]
   name = "github.com/inconshreveable/mousetrap"
@@ -624,7 +624,7 @@
     "unix",
     "windows"
   ]
-  revision = "c6b37f3e92850b723493d63fd35aad34e19e048d"
+  revision = "b90733256f2e882e81d52f9126de08df5615afd9"
 
 [[projects]]
   name = "golang.org/x/text"
@@ -722,7 +722,6 @@
   name = "gopkg.in/yaml.v2"
   packages = ["."]
   revision = "51d6538a90f86fe93ac480b35f37b2be17fef232"
-  version = "v2.2.2"
 
 [[projects]]
   name = "k8s.io/api"
@@ -999,6 +998,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "85e5d9ce73dc8ba9e21eb22941b7e4f96203af86882c5003281848f4f084a96c"
+  inputs-digest = "60e044a1097516c35c3b72c9dc48de18e25fa0472849913858e2f34bf930be6f"
   solver-name = "gps-cdcl"
   solver-version = 1
