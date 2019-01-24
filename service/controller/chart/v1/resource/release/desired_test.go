@@ -11,6 +11,7 @@ import (
 	"github.com/giantswarm/micrologger/microloggertest"
 	"github.com/spf13/afero"
 	apiv1 "k8s.io/api/core/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/client-go/kubernetes/fake"
 )
@@ -42,71 +43,71 @@ func Test_DesiredState(t *testing.T) {
 				Version: "0.1.2",
 			},
 		},
+		{
+			name: "case 1: basic match with empty config map",
+			obj: &v1alpha1.Chart{
+				Spec: v1alpha1.ChartSpec{
+					Name: "chart-operator-chart",
+					Config: v1alpha1.ChartSpecConfig{
+						ConfigMap: v1alpha1.ChartSpecConfigConfigMap{
+							Name:      "chart-operator-values-configmap",
+							Namespace: "giantswarm",
+						},
+					},
+				},
+			},
+			configMap: &apiv1.ConfigMap{
+				ObjectMeta: metav1.ObjectMeta{
+					Name:      "chart-operator-values-configmap",
+					Namespace: "giantswarm",
+				},
+				Data: map[string]string{},
+			},
+			helmChart: helmclient.Chart{
+				Version: "1.2.3",
+			},
+			expectedState: ReleaseState{
+				Name:    "chart-operator-chart",
+				Status:  helmDeployedStatus,
+				Values:  map[string]interface{}{},
+				Version: "1.2.3",
+			},
+		},
+		{
+			name: "case 2: basic match with config map value",
+			obj: &v1alpha1.Chart{
+				Spec: v1alpha1.ChartSpec{
+					Name: "chart-operator-chart",
+					Config: v1alpha1.ChartSpecConfig{
+						ConfigMap: v1alpha1.ChartSpecConfigConfigMap{
+							Name:      "chart-operator-values-configmap",
+							Namespace: "giantswarm",
+						},
+					},
+				},
+			},
+			configMap: &apiv1.ConfigMap{
+				ObjectMeta: metav1.ObjectMeta{
+					Name:      "chart-operator-values-configmap",
+					Namespace: "giantswarm",
+				},
+				Data: map[string]string{
+					"values": `"test": "test"`,
+				},
+			},
+			helmChart: helmclient.Chart{
+				Version: "0.1.2",
+			},
+			expectedState: ReleaseState{
+				Name:   "chart-operator-chart",
+				Status: helmDeployedStatus,
+				Values: map[string]interface{}{
+					"test": "test",
+				},
+				Version: "0.1.2",
+			},
+		},
 		/*
-			{
-				name: "case 1: basic match with empty config map",
-				obj: &v1alpha1.Chart{
-					Spec: v1alpha1.ChartSpec{
-						Name: "chart-operator-chart",
-						Config: v1alpha1.ChartSpecConfig{
-							ConfigMap: v1alpha1.ChartSpecConfigConfigMap{
-								Name:      "chart-operator-values-configmap",
-								Namespace: "giantswarm",
-							},
-						},
-					},
-				},
-				configMap: &apiv1.ConfigMap{
-					ObjectMeta: metav1.ObjectMeta{
-						Name:      "chart-operator-values-configmap",
-						Namespace: "giantswarm",
-					},
-					Data: map[string]string{},
-				},
-				helmChart: helmclient.Chart{
-					Version: "1.2.3",
-				},
-				expectedState: ReleaseState{
-					Name:    "chart-operator-chart",
-					Status:  helmDeployedStatus,
-					Values:  map[string]interface{}{},
-					Version: "1.2.3",
-				},
-			},
-			{
-				name: "case 2: basic match with config map value",
-				obj: &v1alpha1.Chart{
-					Spec: v1alpha1.ChartSpec{
-						Name: "chart-operator-chart",
-						Config: v1alpha1.ChartSpecConfig{
-							ConfigMap: v1alpha1.ChartSpecConfigConfigMap{
-								Name:      "chart-operator-values-configmap",
-								Namespace: "giantswarm",
-							},
-						},
-					},
-				},
-				configMap: &apiv1.ConfigMap{
-					ObjectMeta: metav1.ObjectMeta{
-						Name:      "chart-operator-values-configmap",
-						Namespace: "giantswarm",
-					},
-					Data: map[string]string{
-						"values.json": `{ "test": "test" }`,
-					},
-				},
-				helmChart: helmclient.Chart{
-					Version: "0.1.2",
-				},
-				expectedState: ReleaseState{
-					Name:   "chart-operator-chart",
-					Status: helmDeployedStatus,
-					Values: map[string]interface{}{
-						"test": "test",
-					},
-					Version: "0.1.2",
-				},
-			},
 			{
 				name: "case 3: config map with multiple values",
 				obj: &v1alpha1.Chart{
@@ -126,7 +127,8 @@ func Test_DesiredState(t *testing.T) {
 						Namespace: "giantswarm",
 					},
 					Data: map[string]string{
-						"values.json": `{ "provider": "azure", "replicas": 2 }`,
+						"values": `"provider": "azure"
+									"replicas": 2`,
 					},
 				},
 				helmChart: helmclient.Chart{
@@ -167,136 +169,137 @@ func Test_DesiredState(t *testing.T) {
 				},
 				errorMatcher: IsNotFound,
 			},
-			{
-				name: "case 5: basic match with secret value",
-				obj: &v1alpha1.Chart{
-					Spec: v1alpha1.ChartSpec{
-						Name: "chart-operator-chart",
-						Config: v1alpha1.ChartSpecConfig{
-							Secret: v1alpha1.ChartSpecConfigSecret{
-								Name:      "chart-operator-values-secret",
-								Namespace: "giantswarm",
+			/*
+				{
+					name: "case 5: basic match with secret value",
+					obj: &v1alpha1.Chart{
+						Spec: v1alpha1.ChartSpec{
+							Name: "chart-operator-chart",
+							Config: v1alpha1.ChartSpecConfig{
+								Secret: v1alpha1.ChartSpecConfigSecret{
+									Name:      "chart-operator-values-secret",
+									Namespace: "giantswarm",
+								},
 							},
 						},
 					},
-				},
-				helmChart: helmclient.Chart{
-					Version: "0.1.2",
-				},
-				secret: &apiv1.Secret{
-					ObjectMeta: metav1.ObjectMeta{
-						Name:      "chart-operator-values-secret",
-						Namespace: "giantswarm",
+					helmChart: helmclient.Chart{
+						Version: "0.1.2",
 					},
-					Data: map[string][]byte{
-						"secret.json": []byte(`{ "test": "test" }`),
+					secret: &apiv1.Secret{
+						ObjectMeta: metav1.ObjectMeta{
+							Name:      "chart-operator-values-secret",
+							Namespace: "giantswarm",
+						},
+						Data: map[string][]byte{
+							"secret.json": []byte(`{ "test": "test" }`),
+						},
+					},
+					expectedState: ReleaseState{
+						Name:   "chart-operator-chart",
+						Status: helmDeployedStatus,
+						Values: map[string]interface{}{
+							"test": "test",
+						},
+						Version: "0.1.2",
 					},
 				},
-				expectedState: ReleaseState{
-					Name:   "chart-operator-chart",
-					Status: helmDeployedStatus,
-					Values: map[string]interface{}{
-						"test": "test",
-					},
-					Version: "0.1.2",
-				},
-			},
-			{
-				name: "case 6: secret with multiple values",
-				obj: &v1alpha1.Chart{
-					Spec: v1alpha1.ChartSpec{
-						Name: "chart-operator-chart",
-						Config: v1alpha1.ChartSpecConfig{
-							Secret: v1alpha1.ChartSpecConfigSecret{
-								Name:      "chart-operator-values-secret",
-								Namespace: "giantswarm",
+				{
+					name: "case 6: secret with multiple values",
+					obj: &v1alpha1.Chart{
+						Spec: v1alpha1.ChartSpec{
+							Name: "chart-operator-chart",
+							Config: v1alpha1.ChartSpecConfig{
+								Secret: v1alpha1.ChartSpecConfigSecret{
+									Name:      "chart-operator-values-secret",
+									Namespace: "giantswarm",
+								},
 							},
 						},
 					},
-				},
-				helmChart: helmclient.Chart{
-					Version: "0.1.2",
-				},
-				secret: &apiv1.Secret{
-					ObjectMeta: metav1.ObjectMeta{
-						Name:      "chart-operator-values-secret",
-						Namespace: "giantswarm",
+					helmChart: helmclient.Chart{
+						Version: "0.1.2",
 					},
-					Data: map[string][]byte{
-						"secret.json": []byte(`{ "secretpassword": "admin", "secretnumber": 2 }`),
+					secret: &apiv1.Secret{
+						ObjectMeta: metav1.ObjectMeta{
+							Name:      "chart-operator-values-secret",
+							Namespace: "giantswarm",
+						},
+						Data: map[string][]byte{
+							"secret.json": []byte(`{ "secretpassword": "admin", "secretnumber": 2 }`),
+						},
+					},
+					expectedState: ReleaseState{
+						Name:   "chart-operator-chart",
+						Status: helmDeployedStatus,
+						Values: map[string]interface{}{
+							"secretpassword": "admin",
+							"secretnumber":   float64(2),
+						},
+						Version: "0.1.2",
 					},
 				},
-				expectedState: ReleaseState{
-					Name:   "chart-operator-chart",
-					Status: helmDeployedStatus,
-					Values: map[string]interface{}{
-						"secretpassword": "admin",
-						"secretnumber":   float64(2),
-					},
-					Version: "0.1.2",
-				},
-			},
-			{
-				name: "case 7: secret not found",
-				obj: &v1alpha1.Chart{
-					Spec: v1alpha1.ChartSpec{
-						Name: "chart-operator-chart",
-						Config: v1alpha1.ChartSpecConfig{
-							Secret: v1alpha1.ChartSpecConfigSecret{
-								Name:      "chart-operator-values-secret",
-								Namespace: "giantswarm",
+				{
+					name: "case 7: secret not found",
+					obj: &v1alpha1.Chart{
+						Spec: v1alpha1.ChartSpec{
+							Name: "chart-operator-chart",
+							Config: v1alpha1.ChartSpecConfig{
+								Secret: v1alpha1.ChartSpecConfigSecret{
+									Name:      "chart-operator-values-secret",
+									Namespace: "giantswarm",
+								},
 							},
 						},
 					},
-				},
-				helmChart: helmclient.Chart{
-					Version: "0.1.2",
-				},
-				secret: &apiv1.Secret{
-					ObjectMeta: metav1.ObjectMeta{
-						Name:      "missing-values-secret",
-						Namespace: "giantswarm",
+					helmChart: helmclient.Chart{
+						Version: "0.1.2",
 					},
+					secret: &apiv1.Secret{
+						ObjectMeta: metav1.ObjectMeta{
+							Name:      "missing-values-secret",
+							Namespace: "giantswarm",
+						},
+					},
+					errorMatcher: IsNotFound,
 				},
-				errorMatcher: IsNotFound,
-			},
-			{
-				name: "case 8: secret and configmap clash",
-				obj: &v1alpha1.Chart{
-					Spec: v1alpha1.ChartSpec{
-						Name: "chart-operator-chart",
-						Config: v1alpha1.ChartSpecConfig{
-							ConfigMap: v1alpha1.ChartSpecConfigConfigMap{
-								Name:      "chart-operator-values-configmap",
-								Namespace: "giantswarm",
-							},
-							Secret: v1alpha1.ChartSpecConfigSecret{
-								Name:      "chart-operator-values-secret",
-								Namespace: "giantswarm",
+				{
+					name: "case 8: secret and configmap clash",
+					obj: &v1alpha1.Chart{
+						Spec: v1alpha1.ChartSpec{
+							Name: "chart-operator-chart",
+							Config: v1alpha1.ChartSpecConfig{
+								ConfigMap: v1alpha1.ChartSpecConfigConfigMap{
+									Name:      "chart-operator-values-configmap",
+									Namespace: "giantswarm",
+								},
+								Secret: v1alpha1.ChartSpecConfigSecret{
+									Name:      "chart-operator-values-secret",
+									Namespace: "giantswarm",
+								},
 							},
 						},
 					},
+					configMap: &apiv1.ConfigMap{
+						ObjectMeta: metav1.ObjectMeta{
+							Name:      "chart-operator-values-configmap",
+							Namespace: "giantswarm",
+						},
+						Data: map[string]string{
+							"values.json": `{ "username": "admin", "replicas": 2 }`,
+						},
+					},
+					secret: &apiv1.Secret{
+						ObjectMeta: metav1.ObjectMeta{
+							Name:      "chart-operator-values-secret",
+							Namespace: "giantswarm",
+						},
+						Data: map[string][]byte{
+							"secret.json": []byte(`{ "username": "admin", "secretnumber": 2 }`),
+						},
+					},
+					errorMatcher: IsInvalidExecution,
 				},
-				configMap: &apiv1.ConfigMap{
-					ObjectMeta: metav1.ObjectMeta{
-						Name:      "chart-operator-values-configmap",
-						Namespace: "giantswarm",
-					},
-					Data: map[string]string{
-						"values.json": `{ "username": "admin", "replicas": 2 }`,
-					},
-				},
-				secret: &apiv1.Secret{
-					ObjectMeta: metav1.ObjectMeta{
-						Name:      "chart-operator-values-secret",
-						Namespace: "giantswarm",
-					},
-					Data: map[string][]byte{
-						"secret.json": []byte(`{ "username": "admin", "secretnumber": 2 }`),
-					},
-				},
-				errorMatcher: IsInvalidExecution,
-			},
 		*/
 	}
 
