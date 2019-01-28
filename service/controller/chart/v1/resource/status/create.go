@@ -18,6 +18,11 @@ func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
 		return microerror.Mask(err)
 	}
 
+	err = r.helmClient.EnsureTillerInstalled(ctx)
+	if err != nil {
+		return microerror.Mask(err)
+	}
+
 	releaseName := key.ReleaseName(cr)
 	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("getting status for release %#q", releaseName))
 
