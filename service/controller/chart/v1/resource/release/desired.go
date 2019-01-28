@@ -51,14 +51,9 @@ func (r *Resource) GetDesiredState(ctx context.Context, obj interface{}) (interf
 		return nil, microerror.Mask(err)
 	}
 
-	// Merge configmap and secret values to generate a single set of values to
-	// pass to Tiller.
-	values := configMapValues
-	if !reflect.DeepEqual(secretValues, map[string]interface{}{}) {
-		err = mergo.Merge(values, secretValues)
-		if err != nil {
-			return nil, microerror.Mask(err)
-		}
+	values, err := r.mergeValues(ctx, configMapValues, secretValues)
+	if err != nil {
+		return nil, microerror.Mask(err)
 	}
 
 	releaseState := &ReleaseState{
@@ -69,6 +64,8 @@ func (r *Resource) GetDesiredState(ctx context.Context, obj interface{}) (interf
 	}
 
 	return releaseState, nil
+
+	return nil, nil
 }
 
 func (r *Resource) getConfigMapValues(ctx context.Context, cr v1alpha1.Chart) (map[string]interface{}, error) {
@@ -121,4 +118,40 @@ func (r *Resource) getSecretValues(ctx context.Context, cr v1alpha1.Chart) (map[
 	}
 
 	return values, nil
+}
+
+// mergeValues takes in the configmap and secret values and returns a single
+// set of values to be passed to Tiller. If both contain data the values are
+// merged.
+func (r *Resource) mergeValues(ctx context.Context, configMapValues, secretValues map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+
+	if !emptyValues(configMapValues) && emptyValues(secretValues) {
+		// Return early.
+		r.logger.LogCtx(ctx, "level", "debug", "message", "using configmap values")
+		return configMapValues, nil
+	}
+
+	if emptyValues(configMapValues) && !emptyValues(secretValues) {
+		// Return early.
+		r.logger.LogCtx(ctx, "level", "debug", "message", "using secret values")
+		return secretValues, nil
+	}
+
+	r.logger.LogCtx(ctx, "level", "debug", "message", "merging configmap and secret values")
+
+	// Both maps contain values so merge them using mergo.
+	values := configMapValues
+	err = mergo.Merge(&values, secretValues)
+	if err != nil {
+		return map[string]interface{}{}, microerror.Mask(err)
+	}
+
+	r.logger.LogCtx(ctx, "level", "debug", "message", "merged configmap and secret values")
+
+	return values, nil
+}
+
+func emptyValues(values map[string]interface{}) bool {
+	return reflect.DeepEqual(values, map[string]interface{}{})
 }
