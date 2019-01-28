@@ -32,7 +32,7 @@ func WrapTestMain(ctx context.Context, h *framework.Host, helmClient *helmclient
 		v = 1
 	}
 
-	err = helmClient.EnsureTillerInstalled(context.TODO())
+	err = helmClient.EnsureTillerInstalled(ctx)
 	if err != nil {
 		log.Printf("%#v\n", err)
 		v = 1
