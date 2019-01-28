@@ -60,6 +60,29 @@ func NewChartTypeMeta() metav1.TypeMeta {
 // +genclient
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 
+// Chart CRs might look something like the following.
+//
+//    apiVersion: application.giantswarm.io/v1alpha1
+//    kind: Chart
+//    metadata:
+//      name: "prometheus"
+//      labels:
+//        chart-operator.giantswarm.io/version: "1.0.0"
+//
+//    spec:
+//      name: "prometheus"
+//      namespace: "monitoring"
+//      config:
+//        configMap:
+//        name: "prometheus-values"
+//        namespace: "monitoring"
+//        resourceVersion: ""
+//      secret:
+//        name: "promrtheus-secrets"
+//        namespace: "monitoring"
+//        resourceVersion: ""
+//      tarballURL: "https://giantswarm.github.com/app-catalog/prometheus-1-0-0.tgz"
+//
 type Chart struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata"`

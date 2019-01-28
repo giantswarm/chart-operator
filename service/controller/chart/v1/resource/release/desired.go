@@ -2,15 +2,14 @@ package release
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 
 	"github.com/giantswarm/apiextensions/pkg/apis/application/v1alpha1"
 	"github.com/giantswarm/microerror"
+	yaml "gopkg.in/yaml.v2"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
-	"github.com/giantswarm/chart-operator/service/controller"
 	"github.com/giantswarm/chart-operator/service/controller/chart/v1/key"
 )
 
@@ -79,9 +78,9 @@ func (r *Resource) getConfigMapValues(ctx context.Context, cr v1alpha1.Chart) (m
 			return nil, microerror.Mask(err)
 		}
 
-		jsonData := configMap.Data[controller.ConfigMapValuesKey]
-		if jsonData != "" {
-			err = json.Unmarshal([]byte(jsonData), &configMapValues)
+		yamlData := configMap.Data[valuesKey]
+		if yamlData != "" {
+			err = yaml.Unmarshal([]byte(yamlData), &configMapValues)
 			if err != nil {
 				return nil, microerror.Mask(err)
 			}
@@ -105,9 +104,9 @@ func (r *Resource) getSecretValues(ctx context.Context, cr v1alpha1.Chart) (map[
 			return nil, microerror.Mask(err)
 		}
 
-		jsonData := secret.Data[controller.SecretValuesKey]
-		if jsonData != nil {
-			err = json.Unmarshal(jsonData, &secretValues)
+		yamlData := secret.Data[valuesKey]
+		if yamlData != nil {
+			err = yaml.Unmarshal(yamlData, &secretValues)
 			if err != nil {
 				return nil, microerror.Mask(err)
 			}
