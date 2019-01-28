@@ -5,9 +5,8 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/giantswarm/helmclient"
-
 	"github.com/giantswarm/apiextensions/pkg/apis/application/v1alpha1"
+	"github.com/giantswarm/helmclient"
 	"github.com/giantswarm/helmclient/helmclienttest"
 	"github.com/giantswarm/micrologger/microloggertest"
 	"github.com/spf13/afero"
@@ -93,7 +92,7 @@ func Test_DesiredState(t *testing.T) {
 					Namespace: "giantswarm",
 				},
 				Data: map[string]string{
-					"values.json": `{ "test": "test" }`,
+					"values": `"test": "test"`,
 				},
 			},
 			helmChart: helmclient.Chart{
@@ -127,8 +126,8 @@ func Test_DesiredState(t *testing.T) {
 					Namespace: "giantswarm",
 				},
 				Data: map[string]string{
-					"values.json": `{ "provider": "azure", "replicas": 2 }`,
-				},
+					"values": `"provider": "azure"
+"replicas": 2`},
 			},
 			helmChart: helmclient.Chart{
 				Version: "0.1.2",
@@ -138,8 +137,7 @@ func Test_DesiredState(t *testing.T) {
 				Status: helmDeployedStatus,
 				Values: map[string]interface{}{
 					"provider": "azure",
-					// Numeric values in JSON will be deserialized to a float64.
-					"replicas": float64(2),
+					"replicas": 2,
 				},
 				Version: "0.1.2",
 			},
@@ -190,7 +188,7 @@ func Test_DesiredState(t *testing.T) {
 					Namespace: "giantswarm",
 				},
 				Data: map[string][]byte{
-					"secret.json": []byte(`{ "test": "test" }`),
+					"values": []byte(`"test": "test"`),
 				},
 			},
 			expectedState: ReleaseState{
@@ -224,7 +222,8 @@ func Test_DesiredState(t *testing.T) {
 					Namespace: "giantswarm",
 				},
 				Data: map[string][]byte{
-					"secret.json": []byte(`{ "secretpassword": "admin", "secretnumber": 2 }`),
+					"values": []byte(`"secretpassword": "admin"
+"secretnumber": 2`),
 				},
 			},
 			expectedState: ReleaseState{
@@ -232,7 +231,7 @@ func Test_DesiredState(t *testing.T) {
 				Status: helmDeployedStatus,
 				Values: map[string]interface{}{
 					"secretpassword": "admin",
-					"secretnumber":   float64(2),
+					"secretnumber":   2,
 				},
 				Version: "0.1.2",
 			},
@@ -284,7 +283,8 @@ func Test_DesiredState(t *testing.T) {
 					Namespace: "giantswarm",
 				},
 				Data: map[string]string{
-					"values.json": `{ "username": "admin", "replicas": 2 }`,
+					"values": `"username": "admin"
+"replicas": 2`,
 				},
 			},
 			secret: &apiv1.Secret{
@@ -293,7 +293,8 @@ func Test_DesiredState(t *testing.T) {
 					Namespace: "giantswarm",
 				},
 				Data: map[string][]byte{
-					"secret.json": []byte(`{ "username": "admin", "secretnumber": 2 }`),
+					"values": []byte(`"username": "admin"
+"secretnumber": 2`),
 				},
 			},
 			errorMatcher: IsInvalidExecution,
