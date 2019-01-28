@@ -116,7 +116,7 @@
     "pkg/clientset/versioned/typed/example/v1alpha1",
     "pkg/clientset/versioned/typed/provider/v1alpha1"
   ]
-  revision = "452d2fb9f8222ebd7a8f1777e6aee4ef4218f5b8"
+  revision = "1f1e998db676f6bfc5698286fd697f5b4c0a55e5"
 
 [[projects]]
   branch = "master"
@@ -245,7 +245,7 @@
     "informer",
     "informer/collector"
   ]
-  revision = "204721021837676ee3e6ee110ae58ec2e2b0d0c0"
+  revision = "a1aa0b72cce3bb752ca8e5097dc84f97cf4cbbf7"
 
 [[projects]]
   branch = "master"
@@ -324,10 +324,10 @@
   revision = "4030bb1f1f0c35b30ca7009e9ebd06849dd45306"
 
 [[projects]]
+  branch = "master"
   name = "github.com/google/go-github"
   packages = ["github"]
-  revision = "56cb1dd99043eba2e21c91aa8417d3ba2329259a"
-  version = "v21.0.1"
+  revision = "2406bfd7f32dea4608923b39352fce69e647e1e1"
 
 [[projects]]
   name = "github.com/google/go-querystring"
@@ -358,16 +358,10 @@
   version = "v0.2.0"
 
 [[projects]]
-  name = "github.com/gorilla/context"
-  packages = ["."]
-  revision = "08b5f424b9271eedf6f9f0ce86cb9396ed337a42"
-  version = "v1.1.1"
-
-[[projects]]
   name = "github.com/gorilla/mux"
   packages = ["."]
-  revision = "e3702bed27f0d39777b0b37b664b6280e8ef8fbf"
-  version = "v1.6.2"
+  revision = "a7962380ca08b5a188038c69871b8d3fbdf31e89"
+  version = "v1.7"
 
 [[projects]]
   branch = "master"
@@ -413,8 +407,8 @@
 [[projects]]
   name = "github.com/imdario/mergo"
   packages = ["."]
-  revision = "9f23e2d6bd2a77f959b2bf6acdbefd708a83a4a4"
-  version = "v0.3.6"
+  revision = "7c29201646fa3de8506f701213473dd407f19646"
+  version = "v0.3.7"
 
 [[projects]]
   name = "github.com/inconshreveable/mousetrap"
@@ -508,7 +502,7 @@
     "prometheus/internal",
     "prometheus/promhttp"
   ]
-  revision = "26e258bb9c9a94c26d4a46ff302ec7e855b82e10"
+  revision = "12af604cf208d3105ced825c65231b4ecf00a8cc"
 
 [[projects]]
   branch = "master"
@@ -517,14 +511,14 @@
   revision = "56726106282f1985ea77d5305743db7231b0c0a8"
 
 [[projects]]
-  branch = "master"
   name = "github.com/prometheus/common"
   packages = [
     "expfmt",
     "internal/bitbucket.org/ww/goautoneg",
     "model"
   ]
-  revision = "2998b132700a7d019ff618c06a234b47c1f3f681"
+  revision = "cfeb6f9992ffa54aaa4f2170ade4067ee478b250"
+  version = "v0.2.0"
 
 [[projects]]
   branch = "master"
@@ -584,7 +578,7 @@
     "scrypt",
     "ssh/terminal"
   ]
-  revision = "ff983b9c42bc9fbf91556e191cc8efb585c16908"
+  revision = "057139ce5d2bdbe6fe73c53679e24e9cf007f637"
 
 [[projects]]
   branch = "master"
@@ -600,7 +594,7 @@
     "publicsuffix",
     "trace"
   ]
-  revision = "ed066c81e75eba56dd9bd2139ade88125b855585"
+  revision = "d26f9f9a57f3fab6a695bec0d84433c2c50f8bbf"
 
 [[projects]]
   branch = "master"
@@ -624,7 +618,7 @@
     "unix",
     "windows"
   ]
-  revision = "770c60269bf0ef965e9e7ac8bedcb6bca2a1cefd"
+  revision = "b90733256f2e882e81d52f9126de08df5615afd9"
 
 [[projects]]
   name = "golang.org/x/text"
@@ -671,7 +665,7 @@
   branch = "master"
   name = "google.golang.org/genproto"
   packages = ["googleapis/rpc/status"]
-  revision = "db91494dd46c1fdcbbde05e5ff5eb56df8f7d79a"
+  revision = "aa24cbd621fe1e2867110ea8c673d99a1a92efdc"
 
 [[projects]]
   name = "google.golang.org/grpc"
@@ -722,7 +716,6 @@
   name = "gopkg.in/yaml.v2"
   packages = ["."]
   revision = "51d6538a90f86fe93ac480b35f37b2be17fef232"
-  version = "v2.2.2"
 
 [[projects]]
   name = "k8s.io/api"
@@ -999,6 +992,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "a00fbf6942596b22344212468e49cd3330ad5e2b56eb1bea8eed7dca91f8bd7e"
+  inputs-digest = "85e5d9ce73dc8ba9e21eb22941b7e4f96203af86882c5003281848f4f084a96c"
   solver-name = "gps-cdcl"
   solver-version = 1
