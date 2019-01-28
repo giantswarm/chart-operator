@@ -2,13 +2,14 @@ package release
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 
-	"github.com/giantswarm/chart-operator/service/controller/chart/v1/key"
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/operatorkit/controller"
+	yaml "gopkg.in/yaml.v2"
 	"k8s.io/helm/pkg/helm"
+
+	"github.com/giantswarm/chart-operator/service/controller/chart/v1/key"
 )
 
 func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange interface{}) error {
@@ -42,14 +43,14 @@ func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange inte
 			return microerror.Mask(err)
 		}
 
-		values, err := json.Marshal(releaseState.Values)
+		yamlValues, err := yaml.Marshal(releaseState.Values)
 		if err != nil {
 			return microerror.Mask(err)
 		}
 
 		// We need to pass the ValueOverrides option to make the update process
 		// use the default values and prevent errors on nested values.
-		err = r.helmClient.UpdateReleaseFromTarball(ctx, releaseState.Name, tarballPath, helm.UpdateValueOverrides(values))
+		err = r.helmClient.UpdateReleaseFromTarball(ctx, releaseState.Name, tarballPath, helm.UpdateValueOverrides(yamlValues))
 		if err != nil {
 			return microerror.Mask(err)
 		}

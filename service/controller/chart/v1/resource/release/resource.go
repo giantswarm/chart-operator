@@ -16,6 +16,9 @@ const (
 
 	// helmDeployedStatus is the deployed status for Helm Releases.
 	helmDeployedStatus = "DEPLOYED"
+
+	// valuesKey is the data key when getting values from a configmap or secret.
+	valuesKey = "values"
 )
 
 var (
