@@ -9,8 +9,8 @@ import (
 
 	"github.com/giantswarm/e2etemplates/pkg/e2etemplates"
 
-	"github.com/giantswarm/chart-operator/integration/chart"
 	"github.com/giantswarm/chart-operator/integration/chartconfig"
+	"github.com/giantswarm/chart-operator/integration/cnr"
 	"github.com/giantswarm/chart-operator/integration/env"
 )
 
@@ -24,7 +24,7 @@ func TestChartLifecycle(t *testing.T) {
 
 	// Setup
 	{
-		charts := []chart.Chart{
+		charts := []cnr.Chart{
 			{
 				Channel: "5-5-beta",
 				Release: "5.5.5",
@@ -39,7 +39,7 @@ func TestChartLifecycle(t *testing.T) {
 			},
 		}
 
-		err := chart.Push(ctx, h, charts)
+		err := cnr.Push(ctx, h, charts)
 		if err != nil {
 			t.Fatalf("expected %#v got %#v", nil, err)
 		}

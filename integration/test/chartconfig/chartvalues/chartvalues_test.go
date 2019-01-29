@@ -9,8 +9,8 @@ import (
 
 	"github.com/giantswarm/e2etemplates/pkg/e2etemplates"
 
-	"github.com/giantswarm/chart-operator/integration/chart"
 	"github.com/giantswarm/chart-operator/integration/chartconfig"
+	"github.com/giantswarm/chart-operator/integration/cnr"
 	"github.com/giantswarm/chart-operator/integration/env"
 )
 
@@ -19,7 +19,7 @@ func TestChartValues(t *testing.T) {
 
 	ctx := context.Background()
 
-	charts := []chart.Chart{
+	charts := []cnr.Chart{
 		{
 			Channel: "1-0-beta",
 			Release: "1.0.0",
@@ -35,7 +35,7 @@ func TestChartValues(t *testing.T) {
 		Release:              "tb-release",
 		VersionBundleVersion: env.VersionBundleVersion(),
 	}
-	err := chart.Push(ctx, h, charts)
+	err := cnr.Push(ctx, h, charts)
 	if err != nil {
 		t.Fatalf("could not push inital charts to cnr %v", err)
 	}
