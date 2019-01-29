@@ -9,8 +9,8 @@ import (
 
 	"github.com/giantswarm/e2etemplates/pkg/e2etemplates"
 
-	"github.com/giantswarm/chart-operator/integration/chartconfig"
 	"github.com/giantswarm/chart-operator/integration/cnr"
+	"github.com/giantswarm/chart-operator/integration/customresource"
 	"github.com/giantswarm/chart-operator/integration/env"
 )
 
@@ -42,7 +42,7 @@ func TestChartValues(t *testing.T) {
 
 	// Test Creation
 	l.Log("level", "debug", "message", fmt.Sprintf("creating %s", cr))
-	chartValues, err := chartconfig.ExecuteChartValuesTemplate(chartConfigValues)
+	chartValues, err := customresource.ExecuteChartConfigValuesTemplate(chartConfigValues)
 	if err != nil {
 		t.Fatalf("could not template chart values %q %v", chartValues, err)
 	}
