@@ -10,6 +10,12 @@ import (
 )
 
 const (
+	// ChartCustomResource is the value of EnvVarTestedCustomResource
+	// and triggers setup and teardown logic needed only by chart CRs.
+	ChartCustomResource = "chart"
+	// ChartConfigCustomResource is the value of EnvVarTestedCustomResource
+	// and triggers setup and teardown logic needed only by chartconfig CRs.
+	ChartConfigCustomResource = "chartconfig"
 	// EnvVarCircleCI is the process environment variable representing the
 	// CIRCLECI env var.
 	EnvVarCircleCI = "CIRCLECI"
@@ -22,6 +28,9 @@ const (
 	// EnvVarKeepResources is the process environment variable representing the
 	// KEEP_RESOURCES env var.
 	EnvVarKeepResources = "KEEP_RESOURCES"
+	// EnvVarTestedCustomResource is the process environment variable
+	// representing the TESTED_CUSTOM_RESOURCE env var.
+	EnvVarTestedCustomResource = "TESTED_CUSTOM_RESOURCE"
 	// EnvVarTestedVersion is the process environment variable representing the
 	// TESTED_VERSION env var.
 	EnvVarTestedVersion = "TESTED_VERSION"
@@ -31,6 +40,7 @@ var (
 	circleCI             string
 	circleSHA            string
 	keepResources        string
+	testedCustomResource string
 	testedVersion        string
 	token                string
 	versionBundleVersion string
@@ -44,33 +54,41 @@ func init() {
 	if circleSHA == "" {
 		panic(fmt.Sprintf("env var '%s' must not be empty", EnvVarCircleSHA))
 	}
-	testedVersion = os.Getenv(EnvVarTestedVersion)
-	if testedVersion == "" {
-		panic(fmt.Sprintf("env var '%s' must not be empty", EnvVarTestedVersion))
-	}
-	token = os.Getenv(EnvVarGithubBotToken)
-	if token == "" {
-		panic(fmt.Sprintf("env var '%s' must not be empty", EnvVarGithubBotToken))
+
+	testedCustomResource = os.Getenv(EnvVarTestedCustomResource)
+	if testedCustomResource == "" {
+		panic(fmt.Sprintf("env var '%s' must not be empty", EnvVarTestedCustomResource))
 	}
 
-	var err error
-	params := &framework.VBVParams{
-		Component: "chart-operator",
-		Provider:  "aws",
-		Token:     token,
-		VType:     TestedVersion(),
-	}
-	versionBundleVersion, err = framework.GetVersionBundleVersion(params)
-	if err != nil {
-		panic(err.Error())
-	}
-
-	if VersionBundleVersion() == "" {
-		if strings.ToLower(TestedVersion()) == "wip" {
-			log.Println("WIP version bundle version not present, exiting.")
-			os.Exit(0)
+	if testedCustomResource == ChartConfigCustomResource {
+		testedVersion = os.Getenv(EnvVarTestedVersion)
+		if testedVersion == "" {
+			panic(fmt.Sprintf("env var '%s' must not be empty", EnvVarTestedVersion))
 		}
-		panic("version bundle version  must not be empty")
+		token = os.Getenv(EnvVarGithubBotToken)
+		if token == "" {
+			panic(fmt.Sprintf("env var '%s' must not be empty", EnvVarGithubBotToken))
+		}
+
+		var err error
+		params := &framework.VBVParams{
+			Component: "chart-operator",
+			Provider:  "aws",
+			Token:     token,
+			VType:     TestedVersion(),
+		}
+		versionBundleVersion, err = framework.GetVersionBundleVersion(params)
+		if err != nil {
+			panic(err.Error())
+		}
+
+		if VersionBundleVersion() == "" {
+			if strings.ToLower(TestedVersion()) == "wip" {
+				log.Println("WIP version bundle version not present, exiting.")
+				os.Exit(0)
+			}
+			panic("version bundle version  must not be empty")
+		}
 	}
 }
 
@@ -84,6 +102,10 @@ func CircleSHA() string {
 
 func KeepResources() string {
 	return keepResources
+}
+
+func TestedCustomResource() string {
+	return testedCustomResource
 }
 
 func TestedVersion() string {

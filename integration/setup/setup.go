@@ -38,10 +38,12 @@ func WrapTestMain(ctx context.Context, h *framework.Host, helmClient *helmclient
 		v = 1
 	}
 
-	err = resources(ctx, h, helmClient, l)
-	if err != nil {
-		log.Printf("%#v\n", err)
-		v = 1
+	if env.TestedCustomResource() == env.ChartConfigCustomResource {
+		err = chartConfigResources(ctx, h, helmClient, l)
+		if err != nil {
+			log.Printf("%#v\n", err)
+			v = 1
+		}
 	}
 
 	if v == 0 {
@@ -64,7 +66,7 @@ func WrapTestMain(ctx context.Context, h *framework.Host, helmClient *helmclient
 	os.Exit(v)
 }
 
-func resources(ctx context.Context, h *framework.Host, helmClient *helmclient.Client, l micrologger.Logger) error {
+func chartConfigResources(ctx context.Context, h *framework.Host, helmClient *helmclient.Client, l micrologger.Logger) error {
 	err := initializeCNR(ctx, h, helmClient, l)
 	if err != nil {
 		return microerror.Mask(err)
