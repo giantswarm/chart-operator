@@ -23,7 +23,7 @@ func TestChartLifecycle(t *testing.T) {
 	ctx := context.Background()
 
 	// Setup
-	err = chartconfig.InstallResources(ctx, h, helmClient, l)
+	err := chartconfig.InstallResources(ctx, h, helmClient, l)
 	if err != nil {
 		t.Fatalf("could not install resources %v", err)
 	}
@@ -67,7 +67,7 @@ func TestChartLifecycle(t *testing.T) {
 		}
 
 		l.Log("level", "debug", "message", fmt.Sprintf("creating %s", cr))
-		chartValues, err := chartconfig.ExecuteChartConfigValuesTemplate(chartConfigValues)
+		chartValues, err := chartconfig.ExecuteValuesTemplate(chartConfigValues)
 		if err != nil {
 			t.Fatalf("expected %#v got %#v", nil, err)
 		}
@@ -97,7 +97,7 @@ func TestChartLifecycle(t *testing.T) {
 	{
 		l.Log("level", "debug", "message", fmt.Sprintf("updating %s", cr))
 		chartConfigValues.Channel = "5-6-beta"
-		chartValues, err := chartconfig.ExecuteChartConfigValuesTemplate(chartConfigValues)
+		chartValues, err := chartconfig.ExecuteValuesTemplate(chartConfigValues)
 		if err != nil {
 			t.Fatalf("expected %#v got %#v", nil, err)
 		}
