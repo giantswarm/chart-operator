@@ -2,11 +2,7 @@ package env
 
 import (
 	"fmt"
-	"log"
 	"os"
-	"strings"
-
-	"github.com/giantswarm/e2e-harness/pkg/framework"
 )
 
 const (
@@ -39,11 +35,10 @@ const (
 var (
 	circleCI             string
 	circleSHA            string
+	githubToken          string
 	keepResources        string
 	testedCustomResource string
 	testedVersion        string
-	token                string
-	versionBundleVersion string
 )
 
 func init() {
@@ -60,36 +55,9 @@ func init() {
 		panic(fmt.Sprintf("env var '%s' must not be empty", EnvVarTestedCustomResource))
 	}
 
-	if testedCustomResource == ChartConfigCustomResource {
-		testedVersion = os.Getenv(EnvVarTestedVersion)
-		if testedVersion == "" {
-			panic(fmt.Sprintf("env var '%s' must not be empty", EnvVarTestedVersion))
-		}
-		token = os.Getenv(EnvVarGithubBotToken)
-		if token == "" {
-			panic(fmt.Sprintf("env var '%s' must not be empty", EnvVarGithubBotToken))
-		}
-
-		var err error
-		params := &framework.VBVParams{
-			Component: "chart-operator",
-			Provider:  "aws",
-			Token:     token,
-			VType:     TestedVersion(),
-		}
-		versionBundleVersion, err = framework.GetVersionBundleVersion(params)
-		if err != nil {
-			panic(err.Error())
-		}
-
-		if VersionBundleVersion() == "" {
-			if strings.ToLower(TestedVersion()) == "wip" {
-				log.Println("WIP version bundle version not present, exiting.")
-				os.Exit(0)
-			}
-			panic("version bundle version  must not be empty")
-		}
-	}
+	// Optional environment variables only needed for chartconfig tests.
+	githubToken = os.Getenv(EnvVarGithubBotToken)
+	testedVersion = os.Getenv(EnvVarTestedVersion)
 }
 
 func CircleCI() string {
@@ -98,6 +66,10 @@ func CircleCI() string {
 
 func CircleSHA() string {
 	return circleSHA
+}
+
+func GithubToken() string {
+	return githubToken
 }
 
 func KeepResources() string {
@@ -110,8 +82,4 @@ func TestedCustomResource() string {
 
 func TestedVersion() string {
 	return testedVersion
-}
-
-func VersionBundleVersion() string {
-	return versionBundleVersion
 }

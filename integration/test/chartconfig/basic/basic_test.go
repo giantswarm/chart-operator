@@ -45,6 +45,11 @@ func TestChartLifecycle(t *testing.T) {
 		}
 	}
 
+	versionBundleVersion, err := chartconfig.VersionBundleVersion(env.GithubToken(), env.TestedVersion())
+	if err != nil {
+		t.Fatalf("could not get version bundle version %v", err)
+	}
+
 	// Test Creation
 	var chartConfigValues e2etemplates.ApiextensionsChartConfigValues
 	{
@@ -53,7 +58,7 @@ func TestChartLifecycle(t *testing.T) {
 			Name:                 "tb-chart",
 			Namespace:            "giantswarm",
 			Release:              "tb-release",
-			VersionBundleVersion: env.VersionBundleVersion(),
+			VersionBundleVersion: versionBundleVersion,
 		}
 
 		l.Log("level", "debug", "message", fmt.Sprintf("creating %s", cr))
