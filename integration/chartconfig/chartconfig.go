@@ -65,10 +65,10 @@ func InstallResources(ctx context.Context, h *framework.Host, helmClient *helmcl
 
 func VersionBundleVersion(githubToken, testedVersion string) (string, error) {
 	if githubToken == "" {
-		return "", microerror.Maskf(invalidConfigError, "env var %#q must not be empty", env.EnvVarGithubBotToken)
+		return "", microerror.Maskf(failedExecutionError, "env var %#q must not be empty", env.EnvVarGithubBotToken)
 	}
 	if testedVersion == "" {
-		return "", microerror.Maskf(invalidConfigError, "env var %#q must not be empty", env.EnvVarTestedVersion)
+		return "", microerror.Maskf(failedExecutionError, "env var %#q must not be empty", env.EnvVarTestedVersion)
 	}
 
 	params := &framework.VBVParams{
