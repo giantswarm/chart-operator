@@ -53,56 +53,48 @@ jobs:
   e2eTestChartConfigCurBasicPR:
     environment:
       TEST_DIR: "integration/test/chartconfig/basic"
-      TESTED_CUSTOM_RESOURCE: "chartconfig"
       TESTED_VERSION: "current"
     <<: *e2eTest
 
   e2eTestChartConfigCurBasicMaster:
     environment:
       TEST_DIR: "integration/test/chartconfig/basic"
-      TESTED_CUSTOM_RESOURCE: "chartconfig"
       TESTED_VERSION: "current"
     <<: *e2eTest
 
   e2eTestChartConfigWIPBasicPR:
     environment:
       TEST_DIR: "integration/test/chartconfig/basic"
-      TESTED_CUSTOM_RESOURCE: "chartconfig"
       TESTED_VERSION: "wip"
     <<: *e2eTest
 
   e2eTestChartConfigWIPBasicMaster:
     environment:
       TEST_DIR: "integration/test/chartconfig/basic"
-      TESTED_CUSTOM_RESOURCE: "chartconfig"
       TESTED_VERSION: "wip"
     <<: *e2eTest
 
   e2eTestChartConfigCurChartValuesPR:
     environment:
       TEST_DIR: "integration/test/chartconfig/chartvalues"
-      TESTED_CUSTOM_RESOURCE: "chartconfig"
       TESTED_VERSION: "current"
     <<: *e2eTest
 
   e2eTestChartConfigCurChartValuesMaster:
     environment:
       TEST_DIR: "integration/test/chartconfig/chartvalues"
-      TESTED_CUSTOM_RESOURCE: "chartconfig"
       TESTED_VERSION: "current"
     <<: *e2eTest
 
   e2eTestChartConfigWIPChartValuesPR:
     environment:
       TEST_DIR: "integration/test/chartconfig/chartvalues"
-      TESTED_CUSTOM_RESOURCE: "chartconfig"
       TESTED_VERSION: "wip"
     <<: *e2eTest
 
   e2eTestChartConfigWIPChartValuesMaster:
     environment:
       TEST_DIR: "integration/test/chartconfig/chartvalues"
-      TESTED_CUSTOM_RESOURCE: "chartconfig"
       TESTED_VERSION: "wip"
     <<: *e2eTest
 
