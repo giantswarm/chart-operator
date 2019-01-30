@@ -17,6 +17,7 @@ import (
 	"github.com/giantswarm/chart-operator/service/controller/chartconfig/v5/key"
 	"github.com/giantswarm/chart-operator/service/controller/chartconfig/v5/resource/chart"
 	"github.com/giantswarm/chart-operator/service/controller/chartconfig/v5/resource/chartstatus"
+	"github.com/giantswarm/chart-operator/service/controller/chartconfig/v5/resource/tiller"
 )
 
 // ResourceSetConfig contains necessary dependencies and settings for
@@ -93,7 +94,21 @@ func NewResourceSet(config ResourceSetConfig) (*controller.ResourceSet, error) {
 		}
 	}
 
+	var tillerResource controller.Resource
+	{
+		c := tiller.Config{
+			HelmClient: config.HelmClient,
+			Logger:     config.Logger,
+		}
+
+		tillerResource, err = tiller.New(c)
+		if err != nil {
+			return nil, microerror.Mask(err)
+		}
+	}
+
 	resources := []controller.Resource{
+		tillerResource,
 		chartResource,
 		chartStatusResource,
 	}
