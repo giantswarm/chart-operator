@@ -9,8 +9,8 @@ import (
 
 	"github.com/giantswarm/e2etemplates/pkg/e2etemplates"
 
-	"github.com/giantswarm/chart-operator/integration/chart"
 	"github.com/giantswarm/chart-operator/integration/chartconfig"
+	"github.com/giantswarm/chart-operator/integration/cnr"
 	"github.com/giantswarm/chart-operator/integration/env"
 )
 
@@ -19,7 +19,12 @@ func TestChartValues(t *testing.T) {
 
 	ctx := context.Background()
 
-	charts := []chart.Chart{
+	err := chartconfig.InstallResources(ctx, h, helmClient, l)
+	if err != nil {
+		t.Fatalf("could not install resources %v", err)
+	}
+
+	charts := []cnr.Chart{
 		{
 			Channel: "1-0-beta",
 			Release: "1.0.0",
@@ -28,26 +33,36 @@ func TestChartValues(t *testing.T) {
 		},
 	}
 
+	versionBundleVersion, err := chartconfig.VersionBundleVersion(env.GithubToken(), env.TestedVersion())
+	if err != nil {
+		t.Fatalf("could not get version bundle version %v", err)
+	}
+
 	chartConfigValues := e2etemplates.ApiextensionsChartConfigValues{
 		Channel:              "1-0-beta",
 		Name:                 "tb-chart",
 		Namespace:            "giantswarm",
 		Release:              "tb-release",
-		VersionBundleVersion: env.VersionBundleVersion(),
+		VersionBundleVersion: versionBundleVersion,
 	}
-	err := chart.Push(ctx, h, charts)
+	err = cnr.Push(ctx, h, charts)
 	if err != nil {
 		t.Fatalf("could not push inital charts to cnr %v", err)
 	}
 
 	// Test Creation
 	l.Log("level", "debug", "message", fmt.Sprintf("creating %s", cr))
-	chartValues, err := chartconfig.ExecuteChartValuesTemplate(chartConfigValues)
+	chartValues, err := chartconfig.ExecuteValuesTemplate(chartConfigValues)
 	if err != nil {
 		t.Fatalf("could not template chart values %q %v", chartValues, err)
 	}
 	err = r.Install(cr, chartValues, "stable")
 	if err != nil {
 		t.Fatalf("could not install %q %v", cr, err)
+	}
+
+	err = chartconfig.DeleteResources(ctx, helmClient, l)
+	if err != nil {
+		t.Fatalf("could not delete resources %v", err)
 	}
 }
