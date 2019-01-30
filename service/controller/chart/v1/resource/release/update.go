@@ -38,11 +38,6 @@ func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange inte
 			}
 		}()
 
-		err = r.helmClient.EnsureTillerInstalled(ctx)
-		if err != nil {
-			return microerror.Mask(err)
-		}
-
 		yamlValues, err := yaml.Marshal(releaseState.Values)
 		if err != nil {
 			return microerror.Mask(err)
