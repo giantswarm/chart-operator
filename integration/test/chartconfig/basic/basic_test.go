@@ -23,6 +23,11 @@ func TestChartLifecycle(t *testing.T) {
 	ctx := context.Background()
 
 	// Setup
+	err = chartconfig.InstallResources(ctx, h, helmClient, l)
+	if err != nil {
+		t.Fatalf("could not install resources %v", err)
+	}
+
 	{
 		charts := []cnr.Chart{
 			{
@@ -121,5 +126,10 @@ func TestChartLifecycle(t *testing.T) {
 			t.Fatalf("expected %#v got %#v", nil, err)
 		}
 		l.Log("level", "debug", "message", fmt.Sprintf("%s succesfully deleted", testRelease))
+	}
+
+	err = chartconfig.DeleteResources(ctx, helmClient, l)
+	if err != nil {
+		t.Fatalf("could not delete resources %v", err)
 	}
 }

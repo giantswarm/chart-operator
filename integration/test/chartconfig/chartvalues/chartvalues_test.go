@@ -19,6 +19,11 @@ func TestChartValues(t *testing.T) {
 
 	ctx := context.Background()
 
+	err = chartconfig.InstallResources(ctx, h, helmClient, l)
+	if err != nil {
+		t.Fatalf("could not install resources %v", err)
+	}
+
 	charts := []cnr.Chart{
 		{
 			Channel: "1-0-beta",
@@ -54,5 +59,10 @@ func TestChartValues(t *testing.T) {
 	err = r.Install(cr, chartValues, "stable")
 	if err != nil {
 		t.Fatalf("could not install %q %v", cr, err)
+	}
+
+	err = chartconfig.DeleteResources(ctx, helmClient, l)
+	if err != nil {
+		t.Fatalf("could not delete resources %v", err)
 	}
 }
