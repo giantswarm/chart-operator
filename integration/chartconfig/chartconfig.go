@@ -24,19 +24,7 @@ import (
 	"github.com/giantswarm/chart-operator/integration/templates"
 )
 
-func ExecuteValuesTemplate(ccv e2etemplates.ApiextensionsChartConfigValues) (string, error) {
-	buf := &bytes.Buffer{}
-	chartValuesTemplate := template.Must(template.New("chartConfigChartValues").Parse(e2etemplates.ApiextensionsChartConfigE2EChartValues))
-	err := chartValuesTemplate.Execute(buf, ccv)
-	if err != nil {
-		return "", microerror.Mask(err)
-	}
-
-	return buf.String(), nil
-}
-
 func DeleteResources(ctx context.Context, helmClient *helmclient.Client, l micrologger.Logger) error {
-	// Clean chartconfig related components.
 	items := []string{"cnr-server", "apiextensions-chart-config-e2e"}
 
 	for _, item := range items {
@@ -47,6 +35,17 @@ func DeleteResources(ctx context.Context, helmClient *helmclient.Client, l micro
 	}
 
 	return nil
+}
+
+func ExecuteValuesTemplate(ccv e2etemplates.ApiextensionsChartConfigValues) (string, error) {
+	buf := &bytes.Buffer{}
+	chartValuesTemplate := template.Must(template.New("chartConfigChartValues").Parse(e2etemplates.ApiextensionsChartConfigE2EChartValues))
+	err := chartValuesTemplate.Execute(buf, ccv)
+	if err != nil {
+		return "", microerror.Mask(err)
+	}
+
+	return buf.String(), nil
 }
 
 func InstallResources(ctx context.Context, h *framework.Host, helmClient *helmclient.Client, l micrologger.Logger) error {

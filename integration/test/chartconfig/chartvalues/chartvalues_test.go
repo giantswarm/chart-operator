@@ -19,7 +19,7 @@ func TestChartValues(t *testing.T) {
 
 	ctx := context.Background()
 
-	err = chartconfig.InstallResources(ctx, h, helmClient, l)
+	err := chartconfig.InstallResources(ctx, h, helmClient, l)
 	if err != nil {
 		t.Fatalf("could not install resources %v", err)
 	}
@@ -52,7 +52,7 @@ func TestChartValues(t *testing.T) {
 
 	// Test Creation
 	l.Log("level", "debug", "message", fmt.Sprintf("creating %s", cr))
-	chartValues, err := chartconfig.ExecuteChartConfigValuesTemplate(chartConfigValues)
+	chartValues, err := chartconfig.ExecuteValuesTemplate(chartConfigValues)
 	if err != nil {
 		t.Fatalf("could not template chart values %q %v", chartValues, err)
 	}
