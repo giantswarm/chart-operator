@@ -9,22 +9,27 @@ import (
 
 	"github.com/giantswarm/e2etemplates/pkg/e2etemplates"
 
-	"github.com/giantswarm/chart-operator/integration/chart"
 	"github.com/giantswarm/chart-operator/integration/chartconfig"
+	"github.com/giantswarm/chart-operator/integration/cnr"
 	"github.com/giantswarm/chart-operator/integration/env"
 )
 
 const (
-	testRelease = "tb-release"
 	cr          = "apiextensions-chart-config-e2e"
+	testRelease = "tb-release"
 )
 
 func TestChartLifecycle(t *testing.T) {
 	ctx := context.Background()
 
 	// Setup
+	err := chartconfig.InstallResources(ctx, h, helmClient, l)
+	if err != nil {
+		t.Fatalf("could not install resources %v", err)
+	}
+
 	{
-		charts := []chart.Chart{
+		charts := []cnr.Chart{
 			{
 				Channel: "5-5-beta",
 				Release: "5.5.5",
@@ -39,10 +44,15 @@ func TestChartLifecycle(t *testing.T) {
 			},
 		}
 
-		err := chart.Push(ctx, h, charts)
+		err := cnr.Push(ctx, h, charts)
 		if err != nil {
 			t.Fatalf("expected %#v got %#v", nil, err)
 		}
+	}
+
+	versionBundleVersion, err := chartconfig.VersionBundleVersion(env.GithubToken(), env.TestedVersion())
+	if err != nil {
+		t.Fatalf("could not get version bundle version %v", err)
 	}
 
 	// Test Creation
@@ -53,11 +63,11 @@ func TestChartLifecycle(t *testing.T) {
 			Name:                 "tb-chart",
 			Namespace:            "giantswarm",
 			Release:              "tb-release",
-			VersionBundleVersion: env.VersionBundleVersion(),
+			VersionBundleVersion: versionBundleVersion,
 		}
 
 		l.Log("level", "debug", "message", fmt.Sprintf("creating %s", cr))
-		chartValues, err := chartconfig.ExecuteChartValuesTemplate(chartConfigValues)
+		chartValues, err := chartconfig.ExecuteValuesTemplate(chartConfigValues)
 		if err != nil {
 			t.Fatalf("expected %#v got %#v", nil, err)
 		}
@@ -87,7 +97,7 @@ func TestChartLifecycle(t *testing.T) {
 	{
 		l.Log("level", "debug", "message", fmt.Sprintf("updating %s", cr))
 		chartConfigValues.Channel = "5-6-beta"
-		chartValues, err := chartconfig.ExecuteChartValuesTemplate(chartConfigValues)
+		chartValues, err := chartconfig.ExecuteValuesTemplate(chartConfigValues)
 		if err != nil {
 			t.Fatalf("expected %#v got %#v", nil, err)
 		}
