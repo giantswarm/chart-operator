@@ -1,6 +1,6 @@
 // +build k8srequired
 
-package customresource
+package chartconfig
 
 import (
 	"bytes"

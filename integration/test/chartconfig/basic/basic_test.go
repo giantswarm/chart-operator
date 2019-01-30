@@ -9,8 +9,8 @@ import (
 
 	"github.com/giantswarm/e2etemplates/pkg/e2etemplates"
 
+	"github.com/giantswarm/chart-operator/integration/chartconfig"
 	"github.com/giantswarm/chart-operator/integration/cnr"
-	"github.com/giantswarm/chart-operator/integration/customresource"
 	"github.com/giantswarm/chart-operator/integration/env"
 )
 
@@ -57,7 +57,7 @@ func TestChartLifecycle(t *testing.T) {
 		}
 
 		l.Log("level", "debug", "message", fmt.Sprintf("creating %s", cr))
-		chartValues, err := customresource.ExecuteChartConfigValuesTemplate(chartConfigValues)
+		chartValues, err := chartconfig.ExecuteChartConfigValuesTemplate(chartConfigValues)
 		if err != nil {
 			t.Fatalf("expected %#v got %#v", nil, err)
 		}
@@ -87,7 +87,7 @@ func TestChartLifecycle(t *testing.T) {
 	{
 		l.Log("level", "debug", "message", fmt.Sprintf("updating %s", cr))
 		chartConfigValues.Channel = "5-6-beta"
-		chartValues, err := customresource.ExecuteChartConfigValuesTemplate(chartConfigValues)
+		chartValues, err := chartconfig.ExecuteChartConfigValuesTemplate(chartConfigValues)
 		if err != nil {
 			t.Fatalf("expected %#v got %#v", nil, err)
 		}
