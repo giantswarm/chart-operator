@@ -57,10 +57,10 @@ func equals(a, b v1alpha1.ChartStatus) bool {
 	if a.AppVersion != b.AppVersion {
 		return false
 	}
-	if a.LastDeployed != b.LastDeployed {
+	if a.Release.LastDeployed != b.Release.LastDeployed {
 		return false
 	}
-	if a.Status != b.Status {
+	if a.Release.Status != b.Release.Status {
 		return false
 	}
 	if a.Version != b.Version {
@@ -68,9 +68,4 @@ func equals(a, b v1alpha1.ChartStatus) bool {
 	}
 
 	return true
-}
-
-// isEmpty checks if a ChartStatus is empty.
-func isEmpty(c v1alpha1.ChartStatus) bool {
-	return equals(c, v1alpha1.ChartStatus{})
 }
