@@ -51,16 +51,13 @@ func NewAppCatalogCRD() *apiextensionsv1beta1.CustomResourceDefinition {
 //    apiVersion: application.giantswarm.io/v1alpha1
 //    kind: AppCatalog
 //    metadata:
-//      name: “giantswarm”
+//      name: "giantswarm"
 //      labels:
 //        app-operator.giantswarm.io/version: "1.0.0"
 //
 //    spec:
-//      title: “Giant Swarm”
-//      description: “Catalog of Apps by Giant Swarm”
-//      catalogStorage:
-//        type: "helm"
-//        URL: “https://giantswarm.github.com/app-catalog/”
+//      title: "Giant Swarm"
+//      description: "Catalog of Apps by Giant Swarm"
 //      config:
 //        configMap:
 //          name: "app-catalog-values"
@@ -68,7 +65,10 @@ func NewAppCatalogCRD() *apiextensionsv1beta1.CustomResourceDefinition {
 //        secret:
 //          name: "app-catalog-secrets"
 //          namespace: "giantswarm"
-//      logoURL: “https://s.giantswarm.io/...”
+//      logoURL: "https://s.giantswarm.io/..."
+//      storage:
+//        type: "helm"
+//        URL: "https://giantswarm.github.com/app-catalog/"
 //
 type AppCatalog struct {
 	metav1.TypeMeta   `json:",inline"`
@@ -81,23 +81,14 @@ type AppCatalogSpec struct {
 	// e.g. Catalog of Apps by Giant Swarm
 	Title       string `json:"title" yaml:"title"`
 	Description string `json:"description" yaml:"description"`
-	// CatalogStorage references a map containing values that should be
-	// applied to the appcatalog.
-	CatalogStorage AppCatalogSpecCatalogStorage `json:"catalogStorage" yaml:"catalogStorage"`
 	// Config is the config to be applied when apps belonging to this
 	// catalog are deployed.
 	Config AppCatalogSpecConfig `json:"config" yaml:"config"`
 	// LogoURL contains the links for logo image file for this app catalog
 	LogoURL string `json:"logoURL" yaml:"logoURL"`
-}
-
-type AppCatalogSpecCatalogStorage struct {
-	// Type indicates which repository type would be used for this AppCatalog.
-	// e.g. helm
-	Type string `json:"type" yaml:"type"`
-	// URL is the link to where this AppCatalog's repository is located
-	// e.g. https://giantswarm.github.com/app-catalog/.
-	URL string `json:"URL" yaml:"URL"`
+	// Storage references a map containing values that should be applied to
+	// the appcatalog.
+	Storage AppCatalogSpecStorage `json:"storage" yaml:"storage"`
 }
 
 type AppCatalogSpecConfig struct {
@@ -125,6 +116,15 @@ type AppCatalogSpecConfigSecret struct {
 	// Namespace is the namespace of the secret,
 	// e.g. giantswarm.
 	Namespace string `json:"namespace" yaml:"namespace"`
+}
+
+type AppCatalogSpecStorage struct {
+	// Type indicates which repository type would be used for this AppCatalog.
+	// e.g. helm
+	Type string `json:"type" yaml:"type"`
+	// URL is the link to where this AppCatalog's repository is located
+	// e.g. https://giantswarm.github.com/app-catalog/.
+	URL string `json:"URL" yaml:"URL"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
