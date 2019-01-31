@@ -1,6 +1,8 @@
 package tiller
 
 import (
+	"context"
+
 	"github.com/giantswarm/helmclient"
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/micrologger"
@@ -39,6 +41,37 @@ func New(config Config) (*Resource, error) {
 	return r, nil
 }
 
+func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
+	err := r.ensureTillerInstalled(ctx)
+	if err != nil {
+		return microerror.Mask(err)
+	}
+
+	return nil
+}
+
+func (r *Resource) EnsureDeleted(ctx context.Context, obj interface{}) error {
+	err := r.ensureTillerInstalled(ctx)
+	if err != nil {
+		return microerror.Mask(err)
+	}
+
+	return nil
+}
+
 func (r *Resource) Name() string {
 	return Name
+}
+
+func (r *Resource) ensureTillerInstalled(ctx context.Context) error {
+	r.logger.LogCtx(ctx, "level", "debug", "message", "ensuring tiller is installed")
+
+	err := r.helmClient.EnsureTillerInstalled(ctx)
+	if err != nil {
+		return microerror.Mask(err)
+	}
+
+	r.logger.LogCtx(ctx, "level", "debug", "message", "ensured tiller is installed")
+
+	return nil
 }
