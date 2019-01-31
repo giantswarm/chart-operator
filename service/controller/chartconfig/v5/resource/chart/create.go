@@ -38,11 +38,6 @@ func (r *Resource) ApplyCreateChange(ctx context.Context, obj, createChange inte
 			}
 		}()
 
-		err = r.helmClient.EnsureTillerInstalled(ctx)
-		if err != nil {
-			return microerror.Mask(err)
-		}
-
 		values, err := json.Marshal(chartState.ChartValues)
 		if err != nil {
 			return microerror.Mask(err)

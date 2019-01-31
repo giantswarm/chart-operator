@@ -18,11 +18,6 @@ func (r *Resource) ApplyDeleteChange(ctx context.Context, obj, deleteChange inte
 	if releaseState.Name != "" {
 		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("deleting release %#q", releaseState.Name))
 
-		err := r.helmClient.EnsureTillerInstalled(ctx)
-		if err != nil {
-			return microerror.Mask(err)
-		}
-
 		err = r.helmClient.DeleteRelease(ctx, releaseState.Name, helm.DeletePurge(true))
 		if err != nil {
 			return microerror.Mask(err)
