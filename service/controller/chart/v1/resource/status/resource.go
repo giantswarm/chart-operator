@@ -69,8 +69,3 @@ func equals(a, b v1alpha1.ChartStatus) bool {
 
 	return true
 }
-
-// isEmpty checks if a ChartStatus is empty.
-func isEmpty(c v1alpha1.ChartStatus) bool {
-	return equals(c, v1alpha1.ChartStatus{})
-}
