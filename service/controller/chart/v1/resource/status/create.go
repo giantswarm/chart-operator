@@ -43,10 +43,12 @@ func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
 	}
 
 	desiredStatus := v1alpha1.ChartStatus{
-		AppVersion:   releaseHistory.AppVersion,
-		LastDeployed: v1alpha1.DeepCopyTime{releaseHistory.LastDeployed},
-		Status:       releaseContent.Status,
-		Version:      releaseHistory.Version,
+		AppVersion: releaseHistory.AppVersion,
+		Release: v1alpha1.ChartStatusRelease{
+			LastDeployed: v1alpha1.DeepCopyTime{releaseHistory.LastDeployed},
+			Status:       releaseContent.Status,
+		},
+		Version: releaseHistory.Version,
 	}
 
 	if !equals(desiredStatus, key.ChartStatus(cr)) {
