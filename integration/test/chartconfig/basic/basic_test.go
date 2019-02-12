@@ -23,7 +23,7 @@ func TestChartLifecycle(t *testing.T) {
 	ctx := context.Background()
 
 	// Setup
-	err := chartconfig.InstallResources(ctx, h, helmClient, l)
+	err := chartconfig.InstallResources(ctx, config)
 	if err != nil {
 		t.Fatalf("could not install resources %v", err)
 	}
@@ -44,7 +44,7 @@ func TestChartLifecycle(t *testing.T) {
 			},
 		}
 
-		err := cnr.Push(ctx, h, charts)
+		err := cnr.Push(ctx, config.Host, charts)
 		if err != nil {
 			t.Fatalf("expected %#v got %#v", nil, err)
 		}
@@ -66,65 +66,65 @@ func TestChartLifecycle(t *testing.T) {
 			VersionBundleVersion: versionBundleVersion,
 		}
 
-		l.Log("level", "debug", "message", fmt.Sprintf("creating %s", cr))
+		config.Logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("creating %#q", cr))
 		chartValues, err := chartconfig.ExecuteValuesTemplate(chartConfigValues)
 		if err != nil {
 			t.Fatalf("expected %#v got %#v", nil, err)
 		}
 
-		err = r.Install(cr, chartValues, "stable")
+		err = config.Resource.Install(cr, chartValues, "stable")
 		if err != nil {
 			t.Fatalf("expected %#v got %#v", nil, err)
 		}
 
-		err = r.WaitForStatus(cr, "DEPLOYED")
+		err = config.Resource.WaitForStatus(cr, "DEPLOYED")
 		if err != nil {
 			t.Fatalf("expected %#v got %#v", nil, err)
 		}
-		l.Log("level", "debug", "message", fmt.Sprintf("%s succesfully deployed", cr))
+		config.Logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("%#q succesfully deployed", cr))
 
-		err = r.WaitForStatus(testRelease, "DEPLOYED")
+		err = config.Resource.WaitForStatus(testRelease, "DEPLOYED")
 		if err != nil {
-			err = r.WaitForStatus(testRelease, "DEPLOYED")
+			err = config.Resource.WaitForStatus(testRelease, "DEPLOYED")
 			if err != nil {
 				t.Fatalf("expected %#v got %#v", nil, err)
 			}
 		}
-		l.Log("level", "debug", "message", fmt.Sprintf("%s succesfully deployed", testRelease))
+		config.Logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("%#q succesfully deployed", testRelease))
 	}
 
 	// Test Update
 	{
-		l.Log("level", "debug", "message", fmt.Sprintf("updating %s", cr))
+		config.Logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("updating %#q", cr))
 		chartConfigValues.Channel = "5-6-beta"
 		chartValues, err := chartconfig.ExecuteValuesTemplate(chartConfigValues)
 		if err != nil {
 			t.Fatalf("expected %#v got %#v", nil, err)
 		}
-		err = r.Update(cr, chartValues, "stable")
+		err = config.Resource.Update(cr, chartValues, "stable")
 		if err != nil {
 			t.Fatalf("expected %#v got %#v", nil, err)
 		}
 
-		err = r.WaitForVersion(testRelease, "5.6.0")
+		err = config.Resource.WaitForVersion(testRelease, "5.6.0")
 		if err != nil {
 			t.Fatalf("expected %#v got %#v", nil, err)
 		}
-		l.Log("level", "debug", "message", fmt.Sprintf("%s succesfully updated", testRelease))
+		config.Logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("%#q successfully updated", testRelease))
 	}
 
 	// Test Deletion
 	{
-		l.Log("level", "debug", "message", fmt.Sprintf("deleting %s", cr))
-		err := r.Delete(cr)
+		config.Logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("deleting %#q", cr))
+		err := config.Resource.Delete(cr)
 		if err != nil {
 			t.Fatalf("expected %#v got %#v", nil, err)
 		}
 
-		err = r.WaitForStatus(testRelease, "DELETED")
+		err = config.Resource.WaitForStatus(testRelease, "DELETED")
 		if err != nil {
 			t.Fatalf("expected %#v got %#v", nil, err)
 		}
-		l.Log("level", "debug", "message", fmt.Sprintf("%s succesfully deleted", testRelease))
+		config.Logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("%#q successfully deleted", testRelease))
 	}
 }
