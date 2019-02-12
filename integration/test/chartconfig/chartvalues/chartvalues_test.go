@@ -19,7 +19,7 @@ func TestChartValues(t *testing.T) {
 
 	ctx := context.Background()
 
-	err := chartconfig.InstallResources(ctx, h, helmClient, l)
+	err := chartconfig.InstallResources(ctx, config)
 	if err != nil {
 		t.Fatalf("could not install resources %v", err)
 	}
@@ -45,23 +45,23 @@ func TestChartValues(t *testing.T) {
 		Release:              "tb-release",
 		VersionBundleVersion: versionBundleVersion,
 	}
-	err = cnr.Push(ctx, h, charts)
+	err = cnr.Push(ctx, config.Host, charts)
 	if err != nil {
 		t.Fatalf("could not push inital charts to cnr %v", err)
 	}
 
 	// Test Creation
-	l.Log("level", "debug", "message", fmt.Sprintf("creating %s", cr))
+	config.Logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("creating %#q", cr))
 	chartValues, err := chartconfig.ExecuteValuesTemplate(chartConfigValues)
 	if err != nil {
 		t.Fatalf("could not template chart values %q %v", chartValues, err)
 	}
-	err = r.Install(cr, chartValues, "stable")
+	err = config.Resource.Install(cr, chartValues, "stable")
 	if err != nil {
 		t.Fatalf("could not install %q %v", cr, err)
 	}
 
-	err = chartconfig.DeleteResources(ctx, helmClient, l)
+	err = chartconfig.DeleteResources(ctx, config)
 	if err != nil {
 		t.Fatalf("could not delete resources %v", err)
 	}

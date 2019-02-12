@@ -4,31 +4,29 @@ package setup
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"os"
 	"testing"
 
-	"github.com/giantswarm/e2e-harness/pkg/framework"
-	"github.com/giantswarm/helmclient"
-	"github.com/giantswarm/micrologger"
-
 	"github.com/giantswarm/chart-operator/integration/env"
-	"github.com/giantswarm/chart-operator/integration/teardown"
 )
 
-func WrapTestMain(ctx context.Context, h *framework.Host, helmClient *helmclient.Client, l micrologger.Logger, m *testing.M) {
+func Setup(m *testing.M, config Config) {
+	ctx := context.Background()
+
 	var v int
 	var err error
 
-	err = h.CreateNamespace("giantswarm")
+	err = config.Host.CreateNamespace("giantswarm")
 	if err != nil {
-		log.Printf("%#v\n", err)
+		config.Logger.LogCtx(ctx, "level", "error", "message", "failed to create namespace", "stack", fmt.Sprintf("%#v", err))
 		v = 1
 	}
 
-	err = helmClient.EnsureTillerInstalled(ctx)
+	err = config.HelmClient.EnsureTillerInstalled(ctx)
 	if err != nil {
-		log.Printf("%#v\n", err)
+		config.Logger.LogCtx(ctx, "level", "error", "message", "failed to install tiller", "stack", fmt.Sprintf("%#v", err))
 		v = 1
 	}
 
@@ -39,13 +37,13 @@ func WrapTestMain(ctx context.Context, h *framework.Host, helmClient *helmclient
 	if env.KeepResources() != "true" {
 		// only do full teardown when not on CI
 		if env.CircleCI() != "true" {
-			err := teardown.Teardown(h, helmClient)
+			err := teardown(ctx, config)
 			if err != nil {
 				log.Printf("%#v\n", err)
 				v = 1
 			}
 			// TODO there should be error handling for the framework teardown.
-			h.Teardown()
+			config.Host.Teardown()
 		}
 	}
 
