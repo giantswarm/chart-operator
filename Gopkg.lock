@@ -140,7 +140,8 @@
     "internal/filelogger",
     "pkg/framework",
     "pkg/framework/resource",
-    "pkg/harness"
+    "pkg/harness",
+    "pkg/release"
   ]
   revision = "2debfbcd1495b5cc719a9191a940da58025b9cbc"
 
@@ -149,6 +150,7 @@
   name = "github.com/giantswarm/e2etemplates"
   packages = [
     "internal/render",
+    "pkg/chartvalues",
     "pkg/e2etemplates"
   ]
   revision = "35883a1a7f3352874473a6be2e5a72cd8bcd09d9"
@@ -716,7 +718,6 @@
   name = "gopkg.in/yaml.v2"
   packages = ["."]
   revision = "51d6538a90f86fe93ac480b35f37b2be17fef232"
-  version = "v2.2.2"
 
 [[projects]]
   name = "k8s.io/api"
@@ -993,6 +994,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "85e5d9ce73dc8ba9e21eb22941b7e4f96203af86882c5003281848f4f084a96c"
+  inputs-digest = "8581e6c1c6ea4a14d2ce57a40bc4230826ff7cf8b623a196f1fb500cdb5ead55"
   solver-name = "gps-cdcl"
   solver-version = 1
