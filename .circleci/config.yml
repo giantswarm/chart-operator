@@ -49,6 +49,16 @@ jobs:
         paths:
         - ./chart-operator
         - ./architect
+  
+  e2eTestChartBasicPR:
+    environment:
+      TEST_DIR: "integration/test/chart/basic"
+    <<: *e2eTest
+  
+  e2eTestChartBasicMaster:
+    environment:
+      TEST_DIR: "integration/test/chart/basic"
+    <<: *e2eTest
 
   e2eTestChartConfigCurBasicPR:
     environment:
@@ -130,6 +140,17 @@ workflows:
   build_e2e:
     jobs:
       - build
+      
+      - e2eTestChartBasicPR:
+          requires:
+          - build
+
+      - e2eTestChartBasicMaster:
+          filters:
+            branches:
+              only: master
+          requires:
+          - build
 
       - e2eTestChartConfigCurBasicPR:
           requires:
@@ -180,6 +201,7 @@ workflows:
             branches:
               only: master
           requires:
+          - e2eTestChartBasicMaster
           - e2eTestChartConfigCurBasicMaster
           - e2eTestChartConfigWIPBasicMaster
           - e2eTestChartConfigCurChartValuesMaster
