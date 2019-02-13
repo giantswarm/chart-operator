@@ -140,7 +140,8 @@
     "internal/filelogger",
     "pkg/framework",
     "pkg/framework/resource",
-    "pkg/harness"
+    "pkg/harness",
+    "pkg/release"
   ]
   revision = "2debfbcd1495b5cc719a9191a940da58025b9cbc"
 
@@ -993,6 +994,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "85e5d9ce73dc8ba9e21eb22941b7e4f96203af86882c5003281848f4f084a96c"
+  inputs-digest = "b213430c9b6f59a517eaf7a521165c7e816251223f03eab1c26f505119eb63ab"
   solver-name = "gps-cdcl"
   solver-version = 1
