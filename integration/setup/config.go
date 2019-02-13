@@ -3,15 +3,22 @@ package setup
 import (
 	"github.com/giantswarm/e2e-harness/pkg/framework"
 	"github.com/giantswarm/e2e-harness/pkg/framework/resource"
+	"github.com/giantswarm/e2e-harness/pkg/release"
 	"github.com/giantswarm/helmclient"
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/micrologger"
+)
+
+const (
+	namespace       = "giantswarm"
+	tillerNamespace = "kube-system"
 )
 
 type Config struct {
 	Host       *framework.Host
 	HelmClient *helmclient.Client
 	Logger     micrologger.Logger
+	Release    *release.Release
 	Resource   *resource.Resource
 }
 
@@ -34,7 +41,7 @@ func NewConfig() (Config, error) {
 
 			ClusterID:       "n/a",
 			VaultToken:      "n/a",
-			TargetNamespace: "giantswarm",
+			TargetNamespace: namespace,
 		}
 
 		host, err = framework.NewHost(c)
@@ -49,7 +56,7 @@ func NewConfig() (Config, error) {
 			Logger:          logger,
 			K8sClient:       host.K8sClient(),
 			RestConfig:      host.RestConfig(),
-			TillerNamespace: "giantswarm",
+			TillerNamespace: tillerNamespace,
 		}
 		helmClient, err = helmclient.New(c)
 		if err != nil {
@@ -57,14 +64,32 @@ func NewConfig() (Config, error) {
 		}
 	}
 
-	var r *resource.Resource
+	var newRelease *release.Release
+	{
+		c := release.Config{
+			ExtClient:  host.ExtClient(),
+			G8sClient:  host.G8sClient(),
+			HelmClient: helmClient,
+			K8sClient:  host.K8sClient(),
+			Logger:     logger,
+
+			Namespace: namespace,
+		}
+
+		newRelease, err = release.New(c)
+		if err != nil {
+			return Config{}, microerror.Mask(err)
+		}
+	}
+
+	var newResource *resource.Resource
 	{
 		c := resource.Config{
 			Logger:     logger,
 			HelmClient: helmClient,
-			Namespace:  "giantswarm",
+			Namespace:  namespace,
 		}
-		r, err = resource.New(c)
+		newResource, err = resource.New(c)
 		if err != nil {
 			return Config{}, microerror.Mask(err)
 		}
@@ -74,7 +99,9 @@ func NewConfig() (Config, error) {
 		Host:       host,
 		HelmClient: helmClient,
 		Logger:     logger,
-		Resource:   r,
+		Release:    newRelease,
+		// Resource is deprecated and used by legacy chartconfig tests.
+		Resource: newResource,
 	}
 
 	return c, nil

@@ -5,7 +5,6 @@ package chartconfig
 import (
 	"bytes"
 	"context"
-	"fmt"
 	"html/template"
 	"log"
 	"os"
@@ -20,7 +19,6 @@ import (
 
 	"github.com/giantswarm/chart-operator/integration/env"
 	"github.com/giantswarm/chart-operator/integration/setup"
-	"github.com/giantswarm/chart-operator/integration/templates"
 )
 
 func DeleteResources(ctx context.Context, config setup.Config) error {
@@ -49,12 +47,6 @@ func ExecuteValuesTemplate(ccv e2etemplates.ApiextensionsChartConfigValues) (str
 
 func InstallResources(ctx context.Context, config setup.Config) error {
 	err := initializeCNR(ctx, config)
-	if err != nil {
-		return microerror.Mask(err)
-	}
-
-	version := fmt.Sprintf(":%s", env.CircleSHA())
-	err = config.Host.InstallOperator("chart-operator", "chartconfig", templates.ChartOperatorValues, version)
 	if err != nil {
 		return microerror.Mask(err)
 	}
