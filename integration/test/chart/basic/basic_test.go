@@ -25,6 +25,17 @@ func TestChartLifecycle(t *testing.T) {
 				Name:       key.TestApp(),
 				Namespace:  "giantswarm",
 				TarballURL: "https://giantswarm.github.com/sample-catalog/kubernetes-test-app-chart-0.6.8.tgz",
+
+				Config: chartvalues.APIExtensionsChartE2EConfigChartConfig{
+					ConfigMap: chartvalues.APIExtensionsChartE2EConfigChartConfigConfigMap{
+						Name:      "test-app-values",
+						Namespace: "giantswarm",
+					},
+					Secret: chartvalues.APIExtensionsChartE2EConfigChartConfigSecret{
+						Name:      "test-app-secrets",
+						Namespace: "giantswarm",
+					},
+				},
 			},
 			ChartOperator: chartvalues.APIExtensionsChartE2EConfigChartOperator{
 				Version: "1.0.0",
@@ -50,13 +61,13 @@ func TestChartLifecycle(t *testing.T) {
 
 		config.Logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("created chart CR %#q", key.ChartCustomResource()))
 
-		config.Logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("checking release %#q is deployed", key.ChartCustomResource()))
+		config.Logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("checking release %#q is deployed", key.TestApp()))
 
 		err = config.Release.WaitForStatus(ctx, key.TestApp(), "DEPLOYED")
 		if err != nil {
 			t.Fatalf("expected %#v got %#v", nil, err)
 		}
 
-		config.Logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("release %#q is deployed", key.ChartCustomResource()))
+		config.Logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("release %#q is deployed", key.TestApp()))
 	}
 }
