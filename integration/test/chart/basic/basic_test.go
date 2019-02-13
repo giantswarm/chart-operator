@@ -59,4 +59,30 @@ func TestChartLifecycle(t *testing.T) {
 
 		config.Logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("release %#q is deployed", key.TestApp()))
 	}
+
+	// Test deletion.
+	{
+		config.Logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("deleting chart %#q", key.ChartCustomResource()))
+
+		err := config.Release.Delete(ctx, fmt.Sprintf("%s-%s", "giantswarm", key.ChartCustomResource()))
+		if err != nil {
+			t.Fatalf("expected %#v got %#v", nil, err)
+		}
+
+		err = config.Release.WaitForStatus(ctx, fmt.Sprintf("%s-%s", "giantswarm", key.ChartCustomResource()), "DELETED")
+		if err != nil {
+			t.Fatalf("expected %#v got %#v", nil, err)
+		}
+
+		config.Logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("deleted chart %#q", key.ChartCustomResource()))
+
+		config.Logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("checking release %#q is deleted", key.TestApp()))
+
+		err = config.Release.WaitForStatus(ctx, key.TestApp(), "DELETED")
+		if err != nil {
+			t.Fatalf("expected %#v got %#v", nil, err)
+		}
+
+		config.Logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("release %#q is deleted", key.TestApp()))
+	}
 }
