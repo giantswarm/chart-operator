@@ -18,6 +18,12 @@
   version = "v0.3.1"
 
 [[projects]]
+  name = "github.com/Masterminds/goutils"
+  packages = ["."]
+  revision = "41ac8693c5c10a92ea1ff5ac3a7f95646f6123b0"
+  version = "v1.1.0"
+
+[[projects]]
   name = "github.com/Masterminds/semver"
   packages = ["."]
   revision = "c7af12943936e8c39859482e61f0574c2fd7fc75"
@@ -26,14 +32,8 @@
 [[projects]]
   name = "github.com/Masterminds/sprig"
   packages = ["."]
-  revision = "544a9b1d90f323f6509491b389714fbbd126bee3"
-  version = "v2.17.1"
-
-[[projects]]
-  name = "github.com/aokoli/goutils"
-  packages = ["."]
-  revision = "41ac8693c5c10a92ea1ff5ac3a7f95646f6123b0"
-  version = "v1.1.0"
+  revision = "b1fe2752acccf8c3d7f8a1e7c75c7ae7d83a1975"
+  version = "v2.18.0"
 
 [[projects]]
   branch = "master"
@@ -72,7 +72,7 @@
     "digestset",
     "reference"
   ]
-  revision = "b75069ef13a1de846c0cdf964f5917f5b00c1a47"
+  revision = "0d3efadf0154c2b8a4e7b6621fff9809655cc580"
 
 [[projects]]
   branch = "master"
@@ -109,14 +109,16 @@
     "pkg/apis/core/v1alpha1",
     "pkg/apis/example/v1alpha1",
     "pkg/apis/provider/v1alpha1",
+    "pkg/apis/release/v1alpha1",
     "pkg/clientset/versioned",
     "pkg/clientset/versioned/scheme",
     "pkg/clientset/versioned/typed/application/v1alpha1",
     "pkg/clientset/versioned/typed/core/v1alpha1",
     "pkg/clientset/versioned/typed/example/v1alpha1",
-    "pkg/clientset/versioned/typed/provider/v1alpha1"
+    "pkg/clientset/versioned/typed/provider/v1alpha1",
+    "pkg/clientset/versioned/typed/release/v1alpha1"
   ]
-  revision = "2ff4a2175ed771e683b2d6e494d5ba860b805787"
+  revision = "a6922a8de8463ded39249e3dac6311e74edb14ca"
 
 [[projects]]
   branch = "master"
@@ -150,9 +152,10 @@
   name = "github.com/giantswarm/e2etemplates"
   packages = [
     "internal/render",
+    "pkg/chartvalues",
     "pkg/e2etemplates"
   ]
-  revision = "35883a1a7f3352874473a6be2e5a72cd8bcd09d9"
+  revision = "7ac838576def8415d079b2b577ce87fb64562f8f"
 
 [[projects]]
   branch = "master"
@@ -196,7 +199,7 @@
   branch = "master"
   name = "github.com/giantswarm/microerror"
   packages = ["."]
-  revision = "3bc3cb1a36700aa4bbfcf6c335bc2ab92ad66d8d"
+  revision = "dc32fd459f94c7f9f938366135f6a19b3f9c63a9"
 
 [[projects]]
   branch = "master"
@@ -246,7 +249,13 @@
     "informer",
     "informer/collector"
   ]
-  revision = "a1aa0b72cce3bb752ca8e5097dc84f97cf4cbbf7"
+  revision = "4a35f078742c3b4b1b558ee3d551465a431124ea"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/giantswarm/to"
+  packages = ["."]
+  revision = "ad9fc4aaa835db2a17ddb188047aff6a436886d7"
 
 [[projects]]
   branch = "master"
@@ -325,10 +334,10 @@
   revision = "4030bb1f1f0c35b30ca7009e9ebd06849dd45306"
 
 [[projects]]
-  branch = "master"
   name = "github.com/google/go-github"
   packages = ["github"]
-  revision = "2406bfd7f32dea4608923b39352fce69e647e1e1"
+  revision = "1c3f0aaee1ce742b655f1ba8f33740103e904c5c"
+  version = "v24.0.0"
 
 [[projects]]
   name = "github.com/google/go-querystring"
@@ -371,7 +380,7 @@
     ".",
     "diskcache"
   ]
-  revision = "c63ab54fda8f77302f8d414e19933f2b6026a089"
+  revision = "3befbb6ad0cc97d4c25d851e9528915809e1a22f"
 
 [[projects]]
   name = "github.com/hashicorp/golang-lru"
@@ -503,7 +512,7 @@
     "prometheus/internal",
     "prometheus/promhttp"
   ]
-  revision = "12af604cf208d3105ced825c65231b4ecf00a8cc"
+  revision = "4c99dd66303a54cbf8559dd6110d5c30b1819e4c"
 
 [[projects]]
   branch = "master"
@@ -530,7 +539,7 @@
     "nfs",
     "xfs"
   ]
-  revision = "316cf8ccfec56d206735d46333ca162eb374da8b"
+  revision = "f8d8b3f739bd91a7c0462cb55235ef63c79c9abc"
 
 [[projects]]
   name = "github.com/spf13/afero"
@@ -579,7 +588,7 @@
     "scrypt",
     "ssh/terminal"
   ]
-  revision = "b01c7a72566457eb1420261cdafef86638fc3861"
+  revision = "74369b46fc6756741c016591724fd1cb8e26845f"
 
 [[projects]]
   branch = "master"
@@ -595,7 +604,7 @@
     "publicsuffix",
     "trace"
   ]
-  revision = "d26f9f9a57f3fab6a695bec0d84433c2c50f8bbf"
+  revision = "3a22650c66bd7f4fb6d1e8072ffd7b75c8a27898"
 
 [[projects]]
   branch = "master"
@@ -604,7 +613,7 @@
     ".",
     "internal"
   ]
-  revision = "99b60b757ec124ebb7d6b7e97f153b19c10ce163"
+  revision = "3e8b2be1363542a95c52ea0796d4a40dacfb5b95"
 
 [[projects]]
   branch = "master"
@@ -619,7 +628,7 @@
     "unix",
     "windows"
   ]
-  revision = "aca44879d5644da7c5b8ec6a1115e9b6ea6c40d9"
+  revision = "983097b1a8a340cd1cc7df17d735154d89e10b1a"
 
 [[projects]]
   name = "golang.org/x/text"
@@ -666,7 +675,7 @@
   branch = "master"
   name = "google.golang.org/genproto"
   packages = ["googleapis/rpc/status"]
-  revision = "8ac453e89fca495c0d17f98932642f392e2a11f3"
+  revision = "4b09977fb92221987e99d190c8f88f2c92727a29"
 
 [[projects]]
   name = "google.golang.org/grpc"
@@ -717,7 +726,6 @@
   name = "gopkg.in/yaml.v2"
   packages = ["."]
   revision = "51d6538a90f86fe93ac480b35f37b2be17fef232"
-  version = "v2.2.2"
 
 [[projects]]
   name = "k8s.io/api"
@@ -962,8 +970,8 @@
 [[projects]]
   name = "k8s.io/klog"
   packages = ["."]
-  revision = "a5bc97fbc634d635061f3146511332c7e313a55a"
-  version = "v0.1.0"
+  revision = "71442cd4037d612096940ceb0f3fec3f7fff66e0"
+  version = "v0.2.0"
 
 [[projects]]
   name = "k8s.io/kube-aggregator"
@@ -983,7 +991,7 @@
   branch = "master"
   name = "k8s.io/kube-openapi"
   packages = ["pkg/util/proto"]
-  revision = "ced9eb3070a5f1c548ef46e8dfe2a97c208d9f03"
+  revision = "d7c86cdc46e3a4fcf892b32dd7bc3aa775e0870e"
 
 [[projects]]
   name = "sigs.k8s.io/yaml"
@@ -994,6 +1002,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "b213430c9b6f59a517eaf7a521165c7e816251223f03eab1c26f505119eb63ab"
+  inputs-digest = "8581e6c1c6ea4a14d2ce57a40bc4230826ff7cf8b623a196f1fb500cdb5ead55"
   solver-name = "gps-cdcl"
   solver-version = 1
