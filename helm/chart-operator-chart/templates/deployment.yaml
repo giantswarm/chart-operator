@@ -21,7 +21,20 @@ spec:
         giantswarm.io/service-type: "managed"
       annotations:
         releasetime: {{ $.Release.Time }}
+    tolerations:
+      - key: node-role.kubernetes.io/master
+        effect: NoSchedule
     spec:
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            preference:
+              matchExpressions:
+              - key: role
+                operator: In
+                values:
+                - master
       volumes:
       - name: {{ .Values.name }}
         configMap:
