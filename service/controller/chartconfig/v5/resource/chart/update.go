@@ -46,8 +46,14 @@ func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange inte
 			return microerror.Mask(err)
 		}
 
+		valuesPretty, err := json.MarshalIndent(chartState.ChartValues, "", "    ")
+		if err != nil {
+			return microerror.Mask(err)
+		}
+
 		err = r.helmClient.UpdateReleaseFromTarball(ctx, releaseName, tarballPath, helm.UpdateValueOverrides(values))
 		if err != nil {
+			r.logger.LogCtx(ctx, "level", "info", "message", fmt.Sprintf("values %s", valuesPretty))
 			return microerror.Mask(err)
 		}
 		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("updated chart %s", chartState.ChartName))
