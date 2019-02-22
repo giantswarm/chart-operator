@@ -41,24 +41,6 @@ func New(config Config) (*Resource, error) {
 	return r, nil
 }
 
-func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
-	err := r.ensureTillerInstalled(ctx)
-	if err != nil {
-		return microerror.Mask(err)
-	}
-
-	return nil
-}
-
-func (r *Resource) EnsureDeleted(ctx context.Context, obj interface{}) error {
-	err := r.ensureTillerInstalled(ctx)
-	if err != nil {
-		return microerror.Mask(err)
-	}
-
-	return nil
-}
-
 func (r *Resource) Name() string {
 	return Name
 }
