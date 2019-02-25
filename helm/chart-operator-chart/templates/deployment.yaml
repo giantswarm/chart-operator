@@ -22,6 +22,16 @@ spec:
       annotations:
         releasetime: {{ $.Release.Time }}
     spec:
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            preference:
+              matchExpressions:
+              - key: role
+                operator: In
+                values:
+                - master
       volumes:
       - name: {{ .Values.name }}
         configMap:
@@ -30,6 +40,9 @@ spec:
           - key: config.yaml
             path: config.yaml
       serviceAccountName: {{ .Values.name }}
+      tolerations:
+      - key: node-role.kubernetes.io/master
+        effect: NoSchedule
       dnsPolicy: None
       dnsConfig:
         nameservers:
