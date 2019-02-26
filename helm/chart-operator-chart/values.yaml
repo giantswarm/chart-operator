@@ -10,6 +10,9 @@ replicas: 1
 
 clusterDNSIP: 172.31.0.10
 
+cnr:
+  address: https://quay.io
+
 image:
   registry: quay.io
   repository: giantswarm/chart-operator
@@ -23,5 +26,5 @@ resources:
     cpu: 250m
     memory: 250Mi
 
-cnr:
-  address: https://quay.io
+tiller:
+  namespace: kube-system
