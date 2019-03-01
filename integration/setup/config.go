@@ -11,7 +11,7 @@ import (
 
 const (
 	namespace       = "giantswarm"
-	tillerNamespace = "giantswarm"
+	tillerNamespace = "kube-system"
 )
 
 type Config struct {
