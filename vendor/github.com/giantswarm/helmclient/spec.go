@@ -32,6 +32,7 @@ type Interface interface {
 	// As a first step, it checks if Tiller is already ready, in which case it
 	// returns early.
 	EnsureTillerInstalled(ctx context.Context) error
+	EnsureTillerInstalledWithValues(ctx context.Context, values []string) error
 	// GetReleaseContent gets the current status of the Helm Release. The
 	// releaseName is the name of the Helm Release that is set when the Chart
 	// is installed.
