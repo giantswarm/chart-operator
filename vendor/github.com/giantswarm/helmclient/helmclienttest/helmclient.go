@@ -54,6 +54,10 @@ func (c *Client) EnsureTillerInstalled(ctx context.Context) error {
 	return nil
 }
 
+func (c *Client) EnsureTillerInstalledWithValues(ctx context.Context, values []string) error {
+	return nil
+}
+
 func (c *Client) GetReleaseContent(ctx context.Context, releaseName string) (*helmclient.ReleaseContent, error) {
 	if c.defaultError != nil {
 		return nil, c.defaultError

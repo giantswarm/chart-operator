@@ -215,14 +215,14 @@
 
 [[projects]]
   branch = "add-value-installer"
-  digest = "1:68dc187b1b9c5c7020053fa83e3be43ce2eca85eff4e7daae830720978a7424b"
+  digest = "1:aba6929cbb48b085acc2a001c2a5c8477cfec0d26396f93a240ddda2c4d3f6c6"
   name = "github.com/giantswarm/helmclient"
   packages = [
     ".",
     "helmclienttest",
   ]
   pruneopts = "UT"
-  revision = "7e830c4b1e98f66e2df8772b409d3100b31de0b9"
+  revision = "91c404e325f66802956f1d8c241c72250c757ff3"
 
 [[projects]]
   branch = "master"
