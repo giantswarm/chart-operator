@@ -39,6 +39,7 @@ spec:
           items:
           - key: config.yaml
             path: config.yaml
+      priorityClassName: giantswarm-critical
       serviceAccountName: {{ .Values.name }}
       tolerations:
       - key: node-role.kubernetes.io/master
