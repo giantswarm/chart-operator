@@ -12,7 +12,7 @@ rules:
   - customresourcedefinitions
   verbs:
   - "*"
-  - apiGroups:
+- apiGroups:
   - apiextensions.k8s.io
   resources:
   - customresourcedefinitions/status
