@@ -66,7 +66,8 @@ func (r *Resource) Name() string {
 func (r *Resource) ensureTillerInstalled(ctx context.Context) error {
 	r.logger.LogCtx(ctx, "level", "debug", "message", "ensuring tiller is installed")
 
-	err := r.helmClient.EnsureTillerInstalled(ctx)
+	values := []string{"spec.template.spec.priorityClassName=giantswarm-critical"}
+	err := r.helmClient.EnsureTillerInstalledWithValues(ctx, values)
 	if err != nil {
 		return microerror.Mask(err)
 	}
