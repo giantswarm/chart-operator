@@ -246,10 +246,13 @@
     "controller/resource/internal",
     "controller/resource/metricsresource",
     "controller/resource/retryresource",
+    "flag/service/kubernetes",
+    "flag/service/kubernetes/tls",
+    "flag/service/kubernetes/watch",
     "informer",
     "informer/collector"
   ]
-  revision = "9b85f61ceb90ed074402e1cb1ba005e4170ece9e"
+  revision = "67aba158b01a7eb22405c4a5ad643853f29cb5f3"
 
 [[projects]]
   branch = "master"
@@ -1004,6 +1007,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "8581e6c1c6ea4a14d2ce57a40bc4230826ff7cf8b623a196f1fb500cdb5ead55"
+  inputs-digest = "b4a84e86e1b5880264c5740a3fed3083d506fd2942e3a15cad4d7d22840313be"
   solver-name = "gps-cdcl"
   solver-version = 1
