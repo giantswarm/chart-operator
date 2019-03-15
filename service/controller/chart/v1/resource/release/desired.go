@@ -20,6 +20,16 @@ func (r *Resource) GetDesiredState(ctx context.Context, obj interface{}) (interf
 	}
 
 	releaseName := key.ReleaseName(cr)
+
+	if key.IsDeleted(cr) {
+		releaseState := ReleaseState{
+			Name: releaseName,
+		}
+
+		// Return early as chart configmap and secret have been deleted.
+		return releaseState, nil
+	}
+
 	tarballURL := key.TarballURL(cr)
 
 	tarballPath, err := r.helmClient.PullChartTarball(ctx, tarballURL)
