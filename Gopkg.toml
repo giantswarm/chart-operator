@@ -61,7 +61,7 @@ required = [
   name = "github.com/giantswarm/e2etemplates"
 
 [[override]]
-  branch = "add-value-installer"
+  branch = "master"
   name = "github.com/giantswarm/helmclient"
 
 [[constraint]]
