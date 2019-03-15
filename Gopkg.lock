@@ -303,12 +303,14 @@
     "controller/resource/internal",
     "controller/resource/metricsresource",
     "controller/resource/retryresource",
+    "flag/service/kubernetes",
+    "flag/service/kubernetes/tls",
+    "flag/service/kubernetes/watch",
     "informer",
     "informer/collector",
   ]
-  pruneopts = "UT"
-  revision = "9b85f61ceb90ed074402e1cb1ba005e4170ece9e"
-
+  revision = "67aba158b01a7eb22405c4a5ad643853f29cb5f3"
+  
 [[projects]]
   branch = "master"
   digest = "1:f0a5bcad44c3c4cc5a254aa34b2415fd63028e71a13f6368805cd9ec7c62044d"
@@ -1196,53 +1198,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  input-imports = [
-    "github.com/Azure/go-autorest/autorest",
-    "github.com/cenkalti/backoff",
-    "github.com/docker/distribution/reference",
-    "github.com/giantswarm/apiextensions/pkg/apis/application/v1alpha1",
-    "github.com/giantswarm/apiextensions/pkg/apis/core/v1alpha1",
-    "github.com/giantswarm/apiextensions/pkg/clientset/versioned",
-    "github.com/giantswarm/apprclient",
-    "github.com/giantswarm/apprclient/apprclienttest",
-    "github.com/giantswarm/e2e-harness/pkg/framework",
-    "github.com/giantswarm/e2e-harness/pkg/framework/resource",
-    "github.com/giantswarm/e2e-harness/pkg/release",
-    "github.com/giantswarm/e2etemplates/pkg/chartvalues",
-    "github.com/giantswarm/e2etemplates/pkg/e2etemplates",
-    "github.com/giantswarm/helmclient",
-    "github.com/giantswarm/helmclient/helmclienttest",
-    "github.com/giantswarm/k8sportforward",
-    "github.com/giantswarm/microendpoint/endpoint/healthz",
-    "github.com/giantswarm/microendpoint/endpoint/version",
-    "github.com/giantswarm/microendpoint/service/version",
-    "github.com/giantswarm/microerror",
-    "github.com/giantswarm/microkit/command",
-    "github.com/giantswarm/microkit/flag",
-    "github.com/giantswarm/microkit/server",
-    "github.com/giantswarm/micrologger",
-    "github.com/giantswarm/micrologger/microloggertest",
-    "github.com/giantswarm/operatorkit/client/k8scrdclient",
-    "github.com/giantswarm/operatorkit/client/k8srestconfig",
-    "github.com/giantswarm/operatorkit/controller",
-    "github.com/giantswarm/operatorkit/controller/resource/metricsresource",
-    "github.com/giantswarm/operatorkit/controller/resource/retryresource",
-    "github.com/giantswarm/operatorkit/informer",
-    "github.com/giantswarm/versionbundle",
-    "github.com/prometheus/client_golang/prometheus",
-    "github.com/spf13/afero",
-    "github.com/spf13/viper",
-    "gopkg.in/yaml.v2",
-    "k8s.io/api/core/v1",
-    "k8s.io/apiextensions-apiserver/pkg/client/clientset/clientset",
-    "k8s.io/apimachinery/pkg/api/errors",
-    "k8s.io/apimachinery/pkg/apis/meta/v1",
-    "k8s.io/apimachinery/pkg/runtime",
-    "k8s.io/apiserver/pkg/endpoints/request",
-    "k8s.io/client-go/kubernetes",
-    "k8s.io/client-go/kubernetes/fake",
-    "k8s.io/client-go/rest",
-    "k8s.io/helm/pkg/helm",
-  ]
+  inputs-digest = "b4a84e86e1b5880264c5740a3fed3083d506fd2942e3a15cad4d7d22840313be"
   solver-name = "gps-cdcl"
   solver-version = 1
