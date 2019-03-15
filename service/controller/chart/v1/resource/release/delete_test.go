@@ -64,17 +64,6 @@ func Test_Resource_Chart_newDeleteChange(t *testing.T) {
 			},
 			expectedDeleteChange: nil,
 		},
-		{
-			description: "case 5: same non-empty current and desired name, different version, expected empty",
-			currentState: &ReleaseState{
-				Name: "desired",
-			},
-			desiredState: &ReleaseState{
-				Name:    "desired",
-				Version: "0.1.2",
-			},
-			expectedDeleteChange: nil,
-		},
 	}
 
 	var newResource *Resource

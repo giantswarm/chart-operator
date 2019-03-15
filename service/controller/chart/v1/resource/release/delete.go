@@ -54,7 +54,7 @@ func (r *Resource) newDeleteChange(ctx context.Context, obj, currentState, desir
 
 	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("finding out if the %#q release has to be deleted", desiredReleaseState.Name))
 
-	if !isEmpty(currentReleaseState) && equals(currentReleaseState, desiredReleaseState) {
+	if !isEmpty(currentReleaseState) && currentReleaseState.Name == desiredReleaseState.Name {
 		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("the %#q release needs to be deleted", desiredReleaseState.Name))
 
 		return &desiredReleaseState, nil
