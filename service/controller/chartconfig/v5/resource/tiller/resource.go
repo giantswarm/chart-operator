@@ -66,7 +66,12 @@ func (r *Resource) Name() string {
 func (r *Resource) ensureTillerInstalled(ctx context.Context) error {
 	r.logger.LogCtx(ctx, "level", "debug", "message", "ensuring tiller is installed")
 
-	values := []string{"spec.template.spec.priorityClassName=giantswarm-critical"}
+	values := []string{
+		"spec.template.spec.priorityClassName=giantswarm-critical",
+		"spec.template.spec.tolerations[0].effect=NoSchedule",
+		"spec.template.spec.tolerations[0].key=node-role.kubernetes.io/master",
+		"spec.template.spec.tolerations[0].operator=Exists",
+	}
 	err := r.helmClient.EnsureTillerInstalledWithValues(ctx, values)
 	if err != nil {
 		return microerror.Mask(err)
