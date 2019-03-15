@@ -22,7 +22,7 @@ func (r *Resource) GetDesiredState(ctx context.Context, obj interface{}) (interf
 	releaseName := key.ReleaseName(cr)
 
 	if key.IsDeleted(cr) {
-		releaseState := ReleaseState{
+		releaseState := &ReleaseState{
 			Name: releaseName,
 		}
 
