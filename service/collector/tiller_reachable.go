@@ -39,7 +39,7 @@ func (c *Collector) collectTillerReachable(ctx context.Context, ch chan<- promet
 		// Skip pinging tiller when there are no custom resources,
 		// as tiller is only installed when there is at least one CR to reconcile.
 		c.logger.Log("level", "debug", "message", "did not collect Tiller reachability")
-		c.logger.Log("level", "debug", "message", "no ChartConfg CRs in the cluster")
+		c.logger.Log("level", "debug", "message", "no Chart or ChartConfig CRs in the cluster")
 
 		value = 1
 	} else {
