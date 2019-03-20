@@ -25,21 +25,21 @@ func (c *Collector) collectTillerReachable(ctx context.Context, ch chan<- promet
 
 	charts, err := c.getCharts()
 	if err != nil {
-		c.logger.LogCtx(ctx, "level", "error", "message", fmt.Sprintf("could not get Charts"), "stack", fmt.Sprintf("%#v", err))
+		c.logger.LogCtx(ctx, "level", "error", "message", "could not get Charts", "stack", fmt.Sprintf("%#v", err))
 		return
 	}
 
 	chartConfigs, err := c.getChartConfigs()
 	if err != nil {
-		c.logger.LogCtx(ctx, "level", "error", "message", fmt.Sprintf("could not get ChartConfigs"), "stack", fmt.Sprintf("%#v", err))
+		c.logger.LogCtx(ctx, "level", "error", "message", "could not get ChartConfigs", "stack", fmt.Sprintf("%#v", err))
 		return
 	}
 
 	if len(charts) == 0 && len(chartConfigs) == 0 {
 		// Skip pinging tiller when there are no custom resources,
 		// as tiller is only installed when there is at least one CR to reconcile.
-		c.logger.Log("level", "error", "message", "did not collect Tiller reachability")
-		c.logger.Log("level", "error", "message", "no ChartConfg CRs in the cluster")
+		c.logger.Log("level", "debug", "message", "did not collect Tiller reachability")
+		c.logger.Log("level", "debug", "message", "no ChartConfg CRs in the cluster")
 
 		value = 1
 	} else {
