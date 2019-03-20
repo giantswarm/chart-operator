@@ -142,6 +142,8 @@ func New(config Config) (*Service, error) {
 			G8sClient:  g8sClient,
 			HelmClient: helmClient,
 			Logger:     config.Logger,
+
+			WatchNamespace: config.Viper.GetString(config.Flag.Service.Kubernetes.Watch.Namespace),
 		}
 
 		metricsCollector, err = collector.New(c)
