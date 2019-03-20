@@ -22,15 +22,22 @@ func (c *Collector) collectTillerReachable(ctx context.Context, ch chan<- promet
 	var value float64
 
 	c.logger.LogCtx(ctx, "level", "debug", "message", "collecting Tiller reachability")
+
+	charts, err := c.getCharts()
+	if err != nil {
+		c.logger.LogCtx(ctx, "level", "error", "message", fmt.Sprintf("could not get Charts"), "stack", fmt.Sprintf("%#v", err))
+		return
+	}
+
 	chartConfigs, err := c.getChartConfigs()
 	if err != nil {
 		c.logger.LogCtx(ctx, "level", "error", "message", fmt.Sprintf("could not get ChartConfigs"), "stack", fmt.Sprintf("%#v", err))
 		return
 	}
 
-	if len(chartConfigs) == 0 {
-		// Skip pinging tiller when there is no ChartConfig,
-		// as tiller is only installed when there is at least one ChartConfig to reconcile.
+	if len(charts) == 0 && len(chartConfigs) == 0 {
+		// Skip pinging tiller when there are no custom resources,
+		// as tiller is only installed when there is at least one CR to reconcile.
 		c.logger.Log("level", "error", "message", "did not collect Tiller reachability")
 		c.logger.Log("level", "error", "message", "no ChartConfg CRs in the cluster")
 
@@ -50,7 +57,7 @@ func (c *Collector) collectTillerReachable(ctx context.Context, ch chan<- promet
 		tillerReachableDesc,
 		prometheus.GaugeValue,
 		value,
-		defaultNamespace,
+		c.watchNamespace,
 	)
 
 	c.logger.LogCtx(ctx, "level", "debug", "message", "finished collecting Tiller reachability")
