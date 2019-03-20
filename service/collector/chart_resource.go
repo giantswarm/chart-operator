@@ -43,7 +43,7 @@ func (c *Collector) collectChartConfigStatus(ctx context.Context, ch chan<- prom
 
 	chartConfigs, err := c.getChartConfigs()
 	if err != nil {
-		c.logger.LogCtx(ctx, "level", "error", "message", fmt.Sprintf("could not get ChartConfigs"), "stack", fmt.Sprintf("%#v", err))
+		c.logger.LogCtx(ctx, "level", "error", "message", "could not get ChartConfigs", "stack", fmt.Sprintf("%#v", err))
 	}
 
 	for _, chartConfig := range chartConfigs {
