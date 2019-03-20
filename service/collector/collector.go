@@ -12,9 +12,8 @@ import (
 )
 
 const (
-	gaugeValue       float64 = 1
-	namespaceLabel           = "namespace"
-	defaultNamespace         = "giantswarm"
+	gaugeValue     float64 = 1
+	namespaceLabel         = "namespace"
 
 	Namespace = "chart_operator"
 )
@@ -23,12 +22,16 @@ type Config struct {
 	G8sClient  versioned.Interface
 	HelmClient *helmclient.Client
 	Logger     micrologger.Logger
+
+	WatchNamespace string
 }
 
 type Collector struct {
 	g8sClient  versioned.Interface
 	helmClient *helmclient.Client
 	logger     micrologger.Logger
+
+	watchNamespace string
 }
 
 func New(config Config) (*Collector, error) {
@@ -46,6 +49,8 @@ func New(config Config) (*Collector, error) {
 		g8sClient:  config.G8sClient,
 		helmClient: config.HelmClient,
 		logger:     config.Logger,
+
+		watchNamespace: config.WatchNamespace,
 	}
 
 	return c, nil
