@@ -9,7 +9,6 @@ import (
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/micrologger"
 	"github.com/prometheus/client_golang/prometheus"
-	"k8s.io/client-go/kubernetes"
 )
 
 const (
@@ -21,30 +20,23 @@ const (
 
 type Config struct {
 	G8sClient  versioned.Interface
-	K8sClient  kubernetes.Interface
 	HelmClient *helmclient.Client
 	Logger     micrologger.Logger
 
-	TillerNamespace string
-	WatchNamespace  string
+	WatchNamespace string
 }
 
 type Collector struct {
 	g8sClient  versioned.Interface
-	k8sClient  kubernetes.Interface
 	helmClient *helmclient.Client
 	logger     micrologger.Logger
 
-	tillerNamespace string
-	watchNamespace  string
+	watchNamespace string
 }
 
 func New(config Config) (*Collector, error) {
 	if config.G8sClient == nil {
 		return nil, microerror.Maskf(invalidConfigError, "%T.G8sClient must not be empty", config)
-	}
-	if config.K8sClient == nil {
-		return nil, microerror.Maskf(invalidConfigError, "%T.K8sClient must not be empty", config)
 	}
 	if config.HelmClient == nil {
 		return nil, microerror.Maskf(invalidConfigError, "%T.HelmClient must not be empty", config)
@@ -53,17 +45,12 @@ func New(config Config) (*Collector, error) {
 		return nil, microerror.Maskf(invalidConfigError, "%T.Logger must not be empty", config)
 	}
 
-	if config.TillerNamespace == "" {
-		return nil, microerror.Maskf(invalidConfigError, "%T.TillerNamespace must not be empty", config)
-	}
-
 	c := &Collector{
 		g8sClient:  config.G8sClient,
 		helmClient: config.HelmClient,
 		logger:     config.Logger,
 
-		tillerNamespace: config.TillerNamespace,
-		watchNamespace:  config.WatchNamespace,
+		watchNamespace: config.WatchNamespace,
 	}
 
 	return c, nil
@@ -81,7 +68,6 @@ func (c *Collector) Collect(ch chan<- prometheus.Metric) {
 
 	collectFuncs := []func(context.Context, chan<- prometheus.Metric){
 		c.collectChartConfigStatus,
-		c.collectTillerConfigured,
 		c.collectTillerReachable,
 	}
 
