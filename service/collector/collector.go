@@ -82,6 +82,7 @@ func (c *Collector) Collect(ch chan<- prometheus.Metric) {
 
 	collectFuncs := []func(context.Context, chan<- prometheus.Metric){
 		c.collectChartConfigStatus,
+		c.collectTillerConfigured,
 		c.collectTillerReachable,
 	}
 
