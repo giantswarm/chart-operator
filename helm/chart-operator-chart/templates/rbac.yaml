@@ -94,7 +94,8 @@ rules:
   resources:
   - deployments
   verbs:
-  - 'create'
+  - "create"
+  - "get"
 - nonResourceURLs:
   - "/"
   - "/healthz"
