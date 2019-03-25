@@ -144,8 +144,12 @@ func New(config Config) (*Service, error) {
 			HelmClient: helmClient,
 			Logger:     config.Logger,
 
+<<<<<<< HEAD
 			TillerNamespace: config.Viper.GetString(config.Flag.Service.Helm.TillerNamespace),
 			WatchNamespace:  config.Viper.GetString(config.Flag.Service.Kubernetes.Watch.Namespace),
+=======
+			WatchNamespace: config.Viper.GetString(config.Flag.Service.Kubernetes.Watch.Namespace),
+>>>>>>> master
 		}
 
 		metricsCollector, err = collector.New(c)
