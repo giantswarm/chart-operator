@@ -27,7 +27,7 @@ var (
 func (c *Collector) collectTillerConfigured(ctx context.Context, ch chan<- prometheus.Metric) {
 	var value float64
 
-	c.logger.LogCtx(ctx, "level", "debug", "message", "collecting Tiller configuration")
+	c.logger.LogCtx(ctx, "level", "debug", "message", "collecting Tiller max history")
 
 	charts, err := c.getCharts()
 	if err != nil {
@@ -44,7 +44,7 @@ func (c *Collector) collectTillerConfigured(ctx context.Context, ch chan<- prome
 	if len(charts) == 0 && len(chartConfigs) == 0 {
 		// Skip checking tiller when there are no custom resources,
 		// as tiller is only installed when there is at least one CR to reconcile.
-		c.logger.Log("level", "message", "message", "did not collect Tiller configuration")
+		c.logger.Log("level", "message", "message", "did not collect Tiller max history")
 		c.logger.Log("level", "message", "message", "no Chart or ChartConfig CRs in the cluster")
 
 		value = 1
@@ -62,7 +62,7 @@ func (c *Collector) collectTillerConfigured(ctx context.Context, ch chan<- prome
 		c.tillerNamespace,
 	)
 
-	c.logger.LogCtx(ctx, "level", "debug", "message", "finished collecting Tiller configuration")
+	c.logger.LogCtx(ctx, "level", "debug", "message", "finished collecting Tiller max history")
 }
 
 func (c *Collector) getTillerMaxHistory() (float64, error) {
