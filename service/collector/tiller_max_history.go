@@ -3,6 +3,7 @@ package collector
 import (
 	"context"
 	"fmt"
+	"strconv"
 
 	"github.com/giantswarm/microerror"
 	"github.com/prometheus/client_golang/prometheus"
@@ -14,8 +15,8 @@ import (
 
 var (
 	tillerConfiguredDesc *prometheus.Desc = prometheus.NewDesc(
-		prometheus.BuildFQName(Namespace, "", "tiller_configured"),
-		"Tiller is configured correctly.",
+		prometheus.BuildFQName(Namespace, "", "tiller_max_history"),
+		"Tiller setting for number of revisions to save per release.",
 		[]string{
 			namespaceLabel,
 		},
@@ -48,13 +49,9 @@ func (c *Collector) collectTillerConfigured(ctx context.Context, ch chan<- prome
 
 		value = 1
 	} else {
-		err := c.checkTillerDeployment()
+		value, err = c.getTillerMaxHistory()
 		if err != nil {
-			c.logger.Log("level", "error", "message", "failed to collect Tiller configuration", "stack", fmt.Sprintf("%#v", err))
-
-			value = 0
-		} else {
-			value = 1
+			c.logger.Log("level", "error", "message", "failed to get Tiller max history", "stack", fmt.Sprintf("%#v", err))
 		}
 	}
 
@@ -68,25 +65,29 @@ func (c *Collector) collectTillerConfigured(ctx context.Context, ch chan<- prome
 	c.logger.LogCtx(ctx, "level", "debug", "message", "finished collecting Tiller configuration")
 }
 
-func (c *Collector) checkTillerDeployment() error {
+func (c *Collector) getTillerMaxHistory() (float64, error) {
 	deploy, err := c.k8sClient.Extensions().Deployments(c.tillerNamespace).Get(key.TillerDeploymentName(), metav1.GetOptions{})
 	if apierrors.IsNotFound(err) {
-		return nil
+		return 0, nil
 	} else if err != nil {
-		return microerror.Mask(err)
+		return 0, microerror.Mask(err)
 	}
 
 	containers := deploy.Spec.Template.Spec.Containers
 	if len(containers) != 1 {
-		return microerror.Maskf(invalidExecutionError, "tiller container not found expected 1 got %d", len(containers))
+		return 0, microerror.Maskf(invalidExecutionError, "tiller container not found expected 1 got %d", len(containers))
 	}
 
 	for _, envVar := range containers[0].Env {
-		if envVar.Name == key.TillerMaxHistoryEnvVarName() && envVar.Value == key.TillerMaxHistoryEnvVarValue() {
-			// Configuration is correct.
-			return nil
+		if envVar.Name == key.TillerMaxHistoryEnvVarName() {
+			value, err := strconv.ParseFloat(envVar.Value, 64)
+			if err != nil {
+				return 0, microerror.Mask(err)
+			}
+
+			return value, nil
 		}
 	}
 
-	return microerror.Maskf(invalidExecutionError, "tiller configuration %#q=%#q not found", key.TillerMaxHistoryEnvVarName(), key.TillerMaxHistoryEnvVarValue())
+	return 0, microerror.Maskf(invalidExecutionError, "tiller env var %#q not found", key.TillerMaxHistoryEnvVarName())
 }
