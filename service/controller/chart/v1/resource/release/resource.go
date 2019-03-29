@@ -7,6 +7,7 @@ import (
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/micrologger"
 	"github.com/spf13/afero"
+	yaml "gopkg.in/yaml.v2"
 	"k8s.io/client-go/kubernetes"
 )
 
@@ -107,19 +108,27 @@ func isReleaseInTransitionState(r ReleaseState) bool {
 	return releaseTransitionStatuses[r.Status]
 }
 
-func isReleaseModified(a, b ReleaseState) bool {
+func isReleaseModified(a, b ReleaseState) (bool, error) {
 	// Version has changed so we need to update the Helm Release.
 	if a.Version != b.Version {
-		return true
+		return true, nil
 	}
 
-	// Values have changed so we need to update the values for the current
-	// Helm Release.
-	if !reflect.DeepEqual(a.Values, b.Values) {
-		return true
+	yamlA, err := yaml.Marshal(a.Values)
+	if err != nil {
+		return false, microerror.Mask(err)
 	}
 
-	return false
+	yamlB, err := yaml.Marshal(b.Values)
+	if err != nil {
+		return false, microerror.Mask(err)
+	}
+
+	if !reflect.DeepEqual(yamlA, yamlB) {
+		return true, nil
+	}
+
+	return false, nil
 }
 
 func toReleaseState(v interface{}) (ReleaseState, error) {
