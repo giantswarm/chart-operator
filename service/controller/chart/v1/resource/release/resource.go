@@ -124,6 +124,7 @@ func isReleaseModified(a, b ReleaseState) (bool, error) {
 		return false, microerror.Mask(err)
 	}
 
+
 	if !reflect.DeepEqual(yamlA, yamlB) {
 		return true, nil
 	}
