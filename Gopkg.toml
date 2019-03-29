@@ -93,6 +93,10 @@ required = [
   name = "github.com/giantswarm/versionbundle"
 
 [[constraint]]
+  name = "github.com/google/go-cmp"
+  version = "0.2.0"
+
+[[constraint]]
   branch = "master"
   name = "github.com/prometheus/client_golang"
 
