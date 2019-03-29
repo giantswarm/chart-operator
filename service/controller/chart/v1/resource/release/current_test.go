@@ -10,6 +10,7 @@ import (
 	"github.com/giantswarm/helmclient"
 	"github.com/giantswarm/helmclient/helmclienttest"
 	"github.com/giantswarm/micrologger/microloggertest"
+	"github.com/google/go-cmp/cmp"
 	"github.com/spf13/afero"
 	"k8s.io/client-go/kubernetes/fake"
 )
@@ -144,7 +145,7 @@ func Test_CurrentState(t *testing.T) {
 			}
 
 			if !reflect.DeepEqual(ReleaseState, tc.expectedState) {
-				t.Fatalf("ReleaseState == %q, want %q", ReleaseState, tc.expectedState)
+				t.Fatalf("want matching ReleaseState \n %s", cmp.Diff(ReleaseState, tc.expectedState))
 			}
 		})
 	}
