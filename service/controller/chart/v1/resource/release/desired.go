@@ -21,15 +21,6 @@ func (r *Resource) GetDesiredState(ctx context.Context, obj interface{}) (interf
 
 	releaseName := key.ReleaseName(cr)
 
-	if key.IsDeleted(cr) {
-		releaseState := &ReleaseState{
-			Name: releaseName,
-		}
-
-		// Return early as chart configmap and secret have been deleted.
-		return releaseState, nil
-	}
-
 	tarballURL := key.TarballURL(cr)
 
 	tarballPath, err := r.helmClient.PullChartTarball(ctx, tarballURL)
@@ -77,7 +68,7 @@ func (r *Resource) GetDesiredState(ctx context.Context, obj interface{}) (interf
 func (r *Resource) getConfigMapValues(ctx context.Context, cr v1alpha1.Chart) (map[string]interface{}, error) {
 	configMapValues := make(map[string]interface{})
 
-	if key.ConfigMapName(cr) != "" {
+	if key.ConfigMapName(cr) != "" && !key.IsDeleted(cr) {
 		configMapName := key.ConfigMapName(cr)
 		configMapNamespace := key.ConfigMapNamespace(cr)
 
@@ -103,7 +94,7 @@ func (r *Resource) getConfigMapValues(ctx context.Context, cr v1alpha1.Chart) (m
 func (r *Resource) getSecretValues(ctx context.Context, cr v1alpha1.Chart) (map[string]interface{}, error) {
 	secretValues := make(map[string]interface{})
 
-	if key.SecretName(cr) != "" {
+	if key.SecretName(cr) != "" && !key.IsDeleted(cr) {
 		secretName := key.SecretName(cr)
 		secretNamespace := key.SecretNamespace(cr)
 
