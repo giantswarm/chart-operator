@@ -9,6 +9,7 @@ import (
 	"github.com/giantswarm/helmclient"
 	"github.com/giantswarm/helmclient/helmclienttest"
 	"github.com/giantswarm/micrologger/microloggertest"
+	"github.com/google/go-cmp/cmp"
 	"github.com/spf13/afero"
 	apiv1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -346,7 +347,7 @@ func Test_DesiredState(t *testing.T) {
 			}
 
 			if !reflect.DeepEqual(ReleaseState, tc.expectedState) {
-				t.Fatalf("ReleaseState == %#v, want %#v", ReleaseState, tc.expectedState)
+				t.Fatalf("want matching ReleaseState \n %s", cmp.Diff(ReleaseState, tc.expectedState))
 			}
 		})
 	}
