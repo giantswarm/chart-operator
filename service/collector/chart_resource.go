@@ -43,7 +43,7 @@ func (c *Collector) collectChartConfigStatus(ctx context.Context, ch chan<- prom
 
 	chartConfigs, err := c.getChartConfigs()
 	if err != nil {
-		c.logger.LogCtx(ctx, "level", "error", "message", fmt.Sprintf("could not get ChartConfigs"), "stack", fmt.Sprintf("%#v", err))
+		c.logger.LogCtx(ctx, "level", "error", "message", "could not get ChartConfigs", "stack", fmt.Sprintf("%#v", err))
 	}
 
 	for _, chartConfig := range chartConfigs {
@@ -55,14 +55,30 @@ func (c *Collector) collectChartConfigStatus(ctx context.Context, ch chan<- prom
 			chartConfig.channelName,
 			chartConfig.releaseName,
 			chartConfig.releaseStatus,
-			defaultNamespace,
+			c.watchNamespace,
 		)
 	}
 	c.logger.LogCtx(ctx, "level", "debug", "message", "finished collecting metrics for ChartConfigs")
 }
 
+func (c *Collector) getCharts() ([]*chartState, error) {
+	r, err := c.g8sClient.ApplicationV1alpha1().Charts(c.watchNamespace).List(metav1.ListOptions{})
+	if err != nil {
+		return nil, microerror.Mask(err)
+	}
+
+	res := []*chartState{}
+	for _, chart := range r.Items {
+		v := &chartState{
+			chartName: chart.ObjectMeta.Name,
+		}
+		res = append(res, v)
+	}
+	return res, nil
+}
+
 func (c *Collector) getChartConfigs() ([]*chartState, error) {
-	r, err := c.g8sClient.CoreV1alpha1().ChartConfigs(defaultNamespace).List(metav1.ListOptions{})
+	r, err := c.g8sClient.CoreV1alpha1().ChartConfigs(c.watchNamespace).List(metav1.ListOptions{})
 	if err != nil {
 		return nil, microerror.Mask(err)
 	}
