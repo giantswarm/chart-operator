@@ -20,6 +20,7 @@ func (r *Resource) GetDesiredState(ctx context.Context, obj interface{}) (interf
 	}
 
 	releaseName := key.ReleaseName(cr)
+
 	tarballURL := key.TarballURL(cr)
 
 	tarballPath, err := r.helmClient.PullChartTarball(ctx, tarballURL)
@@ -67,6 +68,15 @@ func (r *Resource) GetDesiredState(ctx context.Context, obj interface{}) (interf
 func (r *Resource) getConfigMapValues(ctx context.Context, cr v1alpha1.Chart) (map[string]interface{}, error) {
 	configMapValues := make(map[string]interface{})
 
+	// TODO: Improve desired state generation by removing call to key.IsDeleted.
+	//
+	//	See https://github.com/giantswarm/giantswarm/issues/5719
+	//
+	if key.IsDeleted(cr) {
+		// Return early as configmap has already been deleted.
+		return configMapValues, nil
+	}
+
 	if key.ConfigMapName(cr) != "" {
 		configMapName := key.ConfigMapName(cr)
 		configMapNamespace := key.ConfigMapNamespace(cr)
@@ -92,6 +102,15 @@ func (r *Resource) getConfigMapValues(ctx context.Context, cr v1alpha1.Chart) (m
 
 func (r *Resource) getSecretValues(ctx context.Context, cr v1alpha1.Chart) (map[string]interface{}, error) {
 	secretValues := make(map[string]interface{})
+
+	// TODO: Improve desired state generation by removing call to key.IsDeleted.
+	//
+	//	See https://github.com/giantswarm/giantswarm/issues/5719
+	//
+	if key.IsDeleted(cr) {
+		// Return early as secret has already been deleted.
+		return secretValues, nil
+	}
 
 	if key.SecretName(cr) != "" {
 		secretName := key.SecretName(cr)
