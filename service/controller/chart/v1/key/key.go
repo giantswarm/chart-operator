@@ -21,6 +21,10 @@ func ConfigMapNamespace(customResource v1alpha1.Chart) string {
 	return customResource.Spec.Config.ConfigMap.Namespace
 }
 
+func IsDeleted(customResource v1alpha1.Chart) bool {
+	return customResource.GetDeletionTimestamp() != nil
+}
+
 func Namespace(customResource v1alpha1.Chart) string {
 	return customResource.Spec.Namespace
 }
