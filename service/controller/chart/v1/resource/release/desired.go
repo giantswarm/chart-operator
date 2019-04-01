@@ -68,6 +68,10 @@ func (r *Resource) GetDesiredState(ctx context.Context, obj interface{}) (interf
 func (r *Resource) getConfigMapValues(ctx context.Context, cr v1alpha1.Chart) (map[string]interface{}, error) {
 	configMapValues := make(map[string]interface{})
 
+	// TODO: Improve desired state generation by removing call to key.IsDeleted.
+	//
+	//	See https://github.com/giantswarm/giantswarm/issues/5719
+	//
 	if key.IsDeleted(cr) {
 		// Return early as configmap has already been deleted.
 		return configMapValues, nil
@@ -99,6 +103,10 @@ func (r *Resource) getConfigMapValues(ctx context.Context, cr v1alpha1.Chart) (m
 func (r *Resource) getSecretValues(ctx context.Context, cr v1alpha1.Chart) (map[string]interface{}, error) {
 	secretValues := make(map[string]interface{})
 
+	// TODO: Improve desired state generation by removing call to key.IsDeleted.
+	//
+	//	See https://github.com/giantswarm/giantswarm/issues/5719
+	//
 	if key.IsDeleted(cr) {
 		// Return early as secret has already been deleted.
 		return secretValues, nil
