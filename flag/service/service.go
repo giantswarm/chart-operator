@@ -1,9 +1,10 @@
 package service
 
 import (
+	"github.com/giantswarm/operatorkit/flag/service/kubernetes"
+
 	"github.com/giantswarm/chart-operator/flag/service/cnr"
 	"github.com/giantswarm/chart-operator/flag/service/helm"
-	"github.com/giantswarm/chart-operator/flag/service/kubernetes"
 )
 
 // Service is an intermediate data structure for command line configuration flags.
