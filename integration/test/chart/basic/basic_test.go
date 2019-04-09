@@ -28,25 +28,30 @@ import (
 func TestChartLifecycle(t *testing.T) {
 	ctx := context.Background()
 
+	var err error
+
 	// Test creation.
 	{
 		config.Logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("creating chart %#q", key.CustomResourceReleaseName()))
 
-		c := chartvalues.APIExtensionsChartE2EConfig{
-			Chart: chartvalues.APIExtensionsChartE2EConfigChart{
-				Name:       key.TestAppReleaseName(),
-				Namespace:  "giantswarm",
-				TarballURL: "https://giantswarm.github.com/sample-catalog/kubernetes-test-app-chart-0.5.3.tgz",
-			},
-			ChartOperator: chartvalues.APIExtensionsChartE2EConfigChartOperator{
-				Version: "1.0.0",
-			},
-			Namespace: "giantswarm",
-		}
+		var values string
+		{
+			c := chartvalues.APIExtensionsChartE2EConfig{
+				Chart: chartvalues.APIExtensionsChartE2EConfigChart{
+					Name:       key.TestAppReleaseName(),
+					Namespace:  "giantswarm",
+					TarballURL: "https://giantswarm.github.com/sample-catalog/kubernetes-test-app-chart-0.5.3.tgz",
+				},
+				ChartOperator: chartvalues.APIExtensionsChartE2EConfigChartOperator{
+					Version: "1.0.0",
+				},
+				Namespace: "giantswarm",
+			}
 
-		chartValues, err := chartvalues.NewAPIExtensionsChartE2E(c)
-		if err != nil {
-			t.Fatalf("expected %#v got %#v", nil, err)
+			values, err = chartvalues.NewAPIExtensionsChartE2E(c)
+			if err != nil {
+				t.Fatalf("expected %#v got %#v", nil, err)
+			}
 		}
 
 		chartInfo := release.NewStableChartInfo(key.CustomResourceReleaseName())

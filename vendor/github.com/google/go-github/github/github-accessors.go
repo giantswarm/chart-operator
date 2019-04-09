@@ -188,6 +188,30 @@ func (a *App) GetUpdatedAt() time.Time {
 	return *a.UpdatedAt
 }
 
+// GetBody returns the Body field if it's non-nil, zero value otherwise.
+func (a *Attachment) GetBody() string {
+	if a == nil || a.Body == nil {
+		return ""
+	}
+	return *a.Body
+}
+
+// GetID returns the ID field if it's non-nil, zero value otherwise.
+func (a *Attachment) GetID() int64 {
+	if a == nil || a.ID == nil {
+		return 0
+	}
+	return *a.ID
+}
+
+// GetTitle returns the Title field if it's non-nil, zero value otherwise.
+func (a *Attachment) GetTitle() string {
+	if a == nil || a.Title == nil {
+		return ""
+	}
+	return *a.Title
+}
+
 // GetApp returns the App field.
 func (a *Authorization) GetApp() *AuthorizationApp {
 	if a == nil {
@@ -802,6 +826,14 @@ func (c *CheckSuite) GetHeadBranch() string {
 		return ""
 	}
 	return *c.HeadBranch
+}
+
+// GetHeadCommit returns the HeadCommit field.
+func (c *CheckSuite) GetHeadCommit() *Commit {
+	if c == nil {
+		return nil
+	}
+	return c.HeadCommit
 }
 
 // GetHeadSHA returns the HeadSHA field if it's non-nil, zero value otherwise.
@@ -5490,6 +5522,14 @@ func (n *NewPullRequest) GetBody() string {
 		return ""
 	}
 	return *n.Body
+}
+
+// GetDraft returns the Draft field if it's non-nil, zero value otherwise.
+func (n *NewPullRequest) GetDraft() bool {
+	if n == nil || n.Draft == nil {
+		return false
+	}
+	return *n.Draft
 }
 
 // GetHead returns the Head field if it's non-nil, zero value otherwise.
