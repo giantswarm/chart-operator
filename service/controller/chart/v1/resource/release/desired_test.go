@@ -288,6 +288,9 @@ func Test_DesiredState(t *testing.T) {
 "replicas": 2`,
 				},
 			},
+			helmChart: helmclient.Chart{
+				Version: "0.1.2",
+			},
 			secret: &apiv1.Secret{
 				ObjectMeta: metav1.ObjectMeta{
 					Name:      "chart-operator-values-secret",
@@ -298,7 +301,16 @@ func Test_DesiredState(t *testing.T) {
 "secretnumber": 2`),
 				},
 			},
-			errorMatcher: IsInvalidExecution,
+			expectedState: ReleaseState{
+				Name:   "chart-operator-chart",
+				Status: helmDeployedStatus,
+				Values: map[string]interface{}{
+					"username":     "admin",
+					"replicas":     2,
+					"secretnumber": 2,
+				},
+				Version: "0.1.2",
+			},
 		},
 	}
 

@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/giantswarm/apiextensions/pkg/apis/application/v1alpha1"
+	"github.com/giantswarm/helmclient"
 	"github.com/giantswarm/microerror"
 	yaml "gopkg.in/yaml.v2"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
@@ -50,7 +51,7 @@ func (r *Resource) GetDesiredState(ctx context.Context, obj interface{}) (interf
 		return nil, microerror.Mask(err)
 	}
 
-	values, err := union(configMapValues, secretValues)
+	values, err := helmclient.MergeValues(configMapValues, secretValues)
 	if err != nil {
 		return nil, microerror.Mask(err)
 	}
