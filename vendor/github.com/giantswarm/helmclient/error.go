@@ -221,3 +221,29 @@ var tooManyResultsError = &microerror.Error{
 func IsTooManyResults(err error) bool {
 	return microerror.Cause(err) == tooManyResultsError
 }
+
+var (
+	yamlConvertingFailedRegexp = regexp.MustCompile(`error converting YAML to JSON:`)
+)
+
+var yamlConvertingFailedError = &microerror.Error{
+	Kind: "releaseAlreadyExistsError",
+}
+
+// IsYamlConvertingFailed asserts yamlConvertingFailedError.
+func IsYamlConvertingFailed(err error) bool {
+	if err == nil {
+		return false
+	}
+
+	c := microerror.Cause(err)
+
+	if c == yamlConvertingFailedError {
+		return true
+	}
+	if yamlConvertingFailedRegexp.MatchString(c.Error()) {
+		return true
+	}
+
+	return false
+}
