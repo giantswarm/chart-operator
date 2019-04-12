@@ -496,6 +496,7 @@ func (c *Client) InstallReleaseFromTarball(ctx context.Context, path, ns string,
 					c.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("could not read chart tarball %s", path), "stack", fmt.Sprintf("%#v", readErr))
 				}
 			}
+			c.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("err string: %#q", err.Error()))
 			return microerror.Mask(err)
 		}
 
@@ -670,6 +671,7 @@ func (c *Client) UpdateReleaseFromTarball(ctx context.Context, releaseName, path
 					c.logger.LogCtx(ctx, "level", "error", "message", fmt.Sprintf("could not read chart tarball %s", path), "stack", fmt.Sprintf("%#v", readErr))
 				}
 			}
+			c.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("err string: %#q", err.Error()))
 			return microerror.Mask(err)
 		}
 

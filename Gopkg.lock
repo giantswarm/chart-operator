@@ -215,14 +215,14 @@
 
 [[projects]]
   branch = "reduce_install_time"
-  digest = "1:92284efe377cd9aab34d5ccdb66e94800fd1cd9ba8a8139a9eb05eec16be2c9f"
+  digest = "1:47415250e0e92920e21a21c25daa948fbe281e5ef2afd01126193fbbb9232b09"
   name = "github.com/giantswarm/helmclient"
   packages = [
     ".",
     "helmclienttest",
   ]
   pruneopts = "UT"
-  revision = "529126520229ca492af589bae1a733a00544edda"
+  revision = "5fb29d79c4d4d0a2ac0e126227927d1dc823350d"
 
 [[projects]]
   branch = "master"
