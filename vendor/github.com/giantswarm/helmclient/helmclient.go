@@ -816,51 +816,6 @@ func (c *Client) upgradeTiller(ctx context.Context, installerOptions *installer.
 	return nil
 }
 
-// MergeValues does a deep merge of values in the source and destination maps.
-// If a value is present in both then the source map is preferred.
-func MergeValues(dest, src map[string]interface{}) (map[string]interface{}, error) {
-	if dest == nil {
-		return nil, microerror.Maskf(executionFailedError, "destination map must not be nil")
-	}
-
-	if src == nil {
-		return nil, microerror.Maskf(executionFailedError, "source map must not be nil")
-	}
-
-	return mergeValues(dest, src), nil
-}
-
-// mergeValues implements the merge logic and is called from MergeValues.
-func mergeValues(dest, src map[string]interface{}) map[string]interface{} {
-	for k, v := range src {
-		if _, exists := dest[k]; !exists {
-			// If the key doesn't exist already. Set the key to that value.
-			dest[k] = v
-			continue
-		}
-
-		nextMap, ok := v.(map[string]interface{})
-		if !ok {
-			// If it isn't another map. Overwrite the value.
-			dest[k] = v
-			continue
-		}
-
-		// Edge case: If the key exists in the destination but isn't a map.
-		destMap, ok := dest[k].(map[string]interface{})
-		if !ok {
-			// If the source map has a map for this key. Prefer that value.
-			dest[k] = v
-			continue
-		}
-
-		// If we got to this point. It is a map in both so merge them.
-		dest[k] = mergeValues(destMap, nextMap)
-	}
-
-	return dest
-}
-
 // filterList returns a list scrubbed of old releases.
 // See https://github.com/helm/helm/blob/3a8a797eab0e1d02456c7944bf41631546ee2e47/cmd/helm/list.go#L197.
 func filterList(rels []*hapirelease.Release) []*hapirelease.Release {
