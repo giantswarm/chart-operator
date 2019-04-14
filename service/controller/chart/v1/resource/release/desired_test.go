@@ -138,7 +138,7 @@ func Test_DesiredState(t *testing.T) {
 				Status: helmDeployedStatus,
 				Values: map[string]interface{}{
 					"provider": "azure",
-					"replicas": 2,
+					"replicas": "2",
 				},
 				Version: "0.1.2",
 			},
@@ -232,7 +232,7 @@ func Test_DesiredState(t *testing.T) {
 				Status: helmDeployedStatus,
 				Values: map[string]interface{}{
 					"secretpassword": "admin",
-					"secretnumber":   2,
+					"secretnumber":   "2",
 				},
 				Version: "0.1.2",
 			},
@@ -306,8 +306,8 @@ func Test_DesiredState(t *testing.T) {
 				Status: helmDeployedStatus,
 				Values: map[string]interface{}{
 					"username":     "admin",
-					"replicas":     2,
-					"secretnumber": 2,
+					"replicas":     "2",
+					"secretnumber": "2",
 				},
 				Version: "0.1.2",
 			},

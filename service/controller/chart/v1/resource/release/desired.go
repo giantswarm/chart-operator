@@ -7,7 +7,6 @@ import (
 	"github.com/giantswarm/apiextensions/pkg/apis/application/v1alpha1"
 	"github.com/giantswarm/helmclient"
 	"github.com/giantswarm/microerror"
-	yaml "gopkg.in/yaml.v2"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
@@ -41,17 +40,17 @@ func (r *Resource) GetDesiredState(ctx context.Context, obj interface{}) (interf
 		return nil, microerror.Mask(err)
 	}
 
-	configMapValues, err := r.getConfigMapValues(ctx, cr)
+	configMapData, err := r.getConfigMapData(ctx, cr)
 	if err != nil {
 		return nil, microerror.Mask(err)
 	}
 
-	secretValues, err := r.getSecretValues(ctx, cr)
+	secretData, err := r.getSecretData(ctx, cr)
 	if err != nil {
 		return nil, microerror.Mask(err)
 	}
 
-	values, err := helmclient.MergeValues(configMapValues, secretValues)
+	values, err := helmclient.MergeValues(configMapData, secretData)
 	if err != nil {
 		return nil, microerror.Mask(err)
 	}
@@ -66,8 +65,8 @@ func (r *Resource) GetDesiredState(ctx context.Context, obj interface{}) (interf
 	return releaseState, nil
 }
 
-func (r *Resource) getConfigMapValues(ctx context.Context, cr v1alpha1.Chart) (map[string]interface{}, error) {
-	configMapValues := make(map[string]interface{})
+func (r *Resource) getConfigMapData(ctx context.Context, cr v1alpha1.Chart) (map[string][]byte, error) {
+	configMapData := map[string][]byte{}
 
 	// TODO: Improve desired state generation by removing call to key.IsDeleted.
 	//
@@ -75,7 +74,7 @@ func (r *Resource) getConfigMapValues(ctx context.Context, cr v1alpha1.Chart) (m
 	//
 	if key.IsDeleted(cr) {
 		// Return early as configmap has already been deleted.
-		return configMapValues, nil
+		return configMapData, nil
 	}
 
 	if key.ConfigMapName(cr) != "" {
@@ -89,20 +88,16 @@ func (r *Resource) getConfigMapValues(ctx context.Context, cr v1alpha1.Chart) (m
 			return nil, microerror.Mask(err)
 		}
 
-		yamlData := configMap.Data[valuesKey]
-		if yamlData != "" {
-			err = yaml.Unmarshal([]byte(yamlData), &configMapValues)
-			if err != nil {
-				return nil, microerror.Mask(err)
-			}
+		for k, v := range configMap.Data {
+			configMapData[k] = []byte(v)
 		}
 	}
 
-	return configMapValues, nil
+	return configMapData, nil
 }
 
-func (r *Resource) getSecretValues(ctx context.Context, cr v1alpha1.Chart) (map[string]interface{}, error) {
-	secretValues := make(map[string]interface{})
+func (r *Resource) getSecretData(ctx context.Context, cr v1alpha1.Chart) (map[string][]byte, error) {
+	secretData := map[string][]byte{}
 
 	// TODO: Improve desired state generation by removing call to key.IsDeleted.
 	//
@@ -110,7 +105,7 @@ func (r *Resource) getSecretValues(ctx context.Context, cr v1alpha1.Chart) (map[
 	//
 	if key.IsDeleted(cr) {
 		// Return early as secret has already been deleted.
-		return secretValues, nil
+		return secretData, nil
 	}
 
 	if key.SecretName(cr) != "" {
@@ -124,15 +119,8 @@ func (r *Resource) getSecretValues(ctx context.Context, cr v1alpha1.Chart) (map[
 			return nil, microerror.Mask(err)
 		}
 
-		yamlData := secret.Data[valuesKey]
-		if yamlData != nil {
-			err = yaml.Unmarshal(yamlData, &secretValues)
-			if err != nil {
-				return nil, microerror.Mask(err)
-			}
-		}
+		secretData = secret.Data
 	}
 
-	return secretValues, nil
-}
+	return secretData, nil
 }
