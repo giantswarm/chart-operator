@@ -176,7 +176,7 @@
     ".",
     "helmclienttest"
   ]
-  revision = "e3152752ea8c69c47d1a7b0d1033e50e7baeea77"
+  revision = "936a3f064bb9f68ced372f20b5b0a6644ccf3611"
 
 [[projects]]
   branch = "master"
