@@ -135,20 +135,4 @@ func (r *Resource) getSecretValues(ctx context.Context, cr v1alpha1.Chart) (map[
 
 	return secretValues, nil
 }
-
-func union(a, b map[string]interface{}) (map[string]interface{}, error) {
-	if a == nil {
-		return b, nil
-	}
-
-	for k, v := range b {
-		_, ok := a[k]
-		if ok {
-			// The configmap and secret have at least one shared key. We cannot
-			// decide which value should be applied.
-			return nil, microerror.Maskf(invalidExecutionError, "configmap and secret share the same key %#q", k)
-		}
-		a[k] = v
-	}
-	return a, nil
 }
