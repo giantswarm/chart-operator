@@ -487,7 +487,7 @@ func (c *Client) InstallReleaseFromTarball(ctx context.Context, path, ns string,
 			return backoff.Permanent(microerror.Mask(err))
 		} else if IsTarballNotFound(err) {
 			return backoff.Permanent(microerror.Mask(err))
-		} else if IsYamlConvertingFailed(err) {
+		} else if IsYamlConversionFailed(err) {
 			return backoff.Permanent(microerror.Mask(err))
 		} else if err != nil {
 			if IsInvalidGZipHeader(err) {
@@ -664,7 +664,7 @@ func (c *Client) UpdateReleaseFromTarball(ctx context.Context, releaseName, path
 		release, err := c.newHelmClientFromTunnel(t).UpdateRelease(releaseName, path, options...)
 		if IsReleaseNotFound(err) {
 			return backoff.Permanent(microerror.Mask(err))
-		} else if IsYamlConvertingFailed(err) {
+		} else if IsYamlConversionFailed(err) {
 			return backoff.Permanent(microerror.Mask(err))
 		} else if err != nil {
 			if IsInvalidGZipHeader(err) {

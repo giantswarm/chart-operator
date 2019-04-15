@@ -226,19 +226,19 @@ var (
 	yamlConversionFailedErrorText = "error converting YAML to JSON:"
 )
 
-var yamlConvertingFailedError = &microerror.Error{
-	Kind: "yamlConvertingFailedError",
+var yamlConversionFailedError = &microerror.Error{
+	Kind: "yamlConversionFailedError",
 }
 
-// IsYamlConvertingFailed asserts yamlConvertingFailedError.
-func IsYamlConvertingFailed(err error) bool {
+// IsYamlConversionFailed asserts yamlConversionFailedError.
+func IsYamlConversionFailed(err error) bool {
 	if err == nil {
 		return false
 	}
 
 	c := microerror.Cause(err)
 
-	if c == yamlConvertingFailedError {
+	if c == yamlConversionFailedError {
 		return true
 	}
 	if strings.Contains(c.Error(), yamlConversionFailedErrorText) {

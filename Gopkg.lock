@@ -172,8 +172,8 @@
   revision = "4763148864dc4815b691a69b4f60b4f4a8f88dad"
 
 [[projects]]
-  branch = "reduce_install_time"
-  digest = "1:6016daa1e3fd30d2534da27725d0f8111de024d94277a0e5833cbf165d4b04b9"
+  branch = "master"
+  digest = "1:a569fabc27dd4fe7ce7678315c3e7133eabe3e49fa2153cec3bf2ffc5d2b7771"
   name = "github.com/giantswarm/e2e-harness"
   packages = [
     "internal/filelogger",
@@ -183,7 +183,7 @@
     "pkg/release",
   ]
   pruneopts = "UT"
-  revision = "4b7fc1b514a70461adc63be6a18b256a3ae5d00b"
+  revision = "0e3e9c7ce207c881f003d5d91044902f79cb71ae"
 
 [[projects]]
   branch = "master"
@@ -214,15 +214,15 @@
   revision = "1d58394415d4f9fdd2bec8a9ec8d085131afd1c8"
 
 [[projects]]
-  branch = "reduce_install_time"
-  digest = "1:77df1fbb44546ea6ed00d69816b4811ebb5a88520273a4f016a545ef20cb1d55"
+  branch = "master"
+  digest = "1:1f784430ddcb5844f0793d1c89bf5a8197b95543b2ccd0ff83e5d22dd1187ae1"
   name = "github.com/giantswarm/helmclient"
   packages = [
     ".",
     "helmclienttest",
   ]
   pruneopts = "UT"
-  revision = "125811ef73d163a7114fb57582f3eb7878f2104c"
+  revision = "fd22615d21bdf303f8acefd937fda82019d71471"
 
 [[projects]]
   branch = "master"

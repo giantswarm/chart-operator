@@ -53,7 +53,7 @@ required = [
   name = "github.com/giantswarm/apprclient"
 
 [[constraint]]
-  branch = "reduce_install_time"
+  branch = "master"
   name = "github.com/giantswarm/e2e-harness"
 
 [[constraint]]
@@ -61,7 +61,7 @@ required = [
   name = "github.com/giantswarm/e2etemplates"
 
 [[constraint]]
-  branch = "reduce_install_time"
+  branch = "master"
   name = "github.com/giantswarm/helmclient"
 
 [[constraint]]
