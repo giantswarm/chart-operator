@@ -223,7 +223,7 @@ func IsTooManyResults(err error) bool {
 }
 
 var (
-	yamlConvertingFailedPrefix = "error converting YAML to JSON:"
+	yamlConversionFailedErrorText = "error converting YAML to JSON:"
 )
 
 var yamlConvertingFailedError = &microerror.Error{
@@ -241,7 +241,7 @@ func IsYamlConvertingFailed(err error) bool {
 	if c == yamlConvertingFailedError {
 		return true
 	}
-	if strings.Contains(c.Error(), yamlConvertingFailedPrefix) {
+	if strings.Contains(c.Error(), yamlConversionFailedErrorText) {
 		return true
 	}
 
