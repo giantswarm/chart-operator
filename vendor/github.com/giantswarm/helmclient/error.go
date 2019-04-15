@@ -223,11 +223,11 @@ func IsTooManyResults(err error) bool {
 }
 
 var (
-	yamlConvertingFailedRegexp = regexp.MustCompile(`error converting YAML to JSON:`)
+	yamlConvertingFailedPrefix = "error converting YAML to JSON:"
 )
 
 var yamlConvertingFailedError = &microerror.Error{
-	Kind: "releaseAlreadyExistsError",
+	Kind: "yamlConvertingFailedError",
 }
 
 // IsYamlConvertingFailed asserts yamlConvertingFailedError.
@@ -241,7 +241,7 @@ func IsYamlConvertingFailed(err error) bool {
 	if c == yamlConvertingFailedError {
 		return true
 	}
-	if yamlConvertingFailedRegexp.MatchString(c.Error()) {
+	if strings.Contains(c.Error(), yamlConvertingFailedPrefix) {
 		return true
 	}
 
