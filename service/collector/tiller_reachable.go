@@ -4,6 +4,9 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/giantswarm/helmclient"
+	"github.com/giantswarm/microerror"
+	"github.com/giantswarm/micrologger"
 	"github.com/prometheus/client_golang/prometheus"
 )
 
@@ -18,34 +21,79 @@ var (
 	)
 )
 
-func (c *Collector) collectTillerReachable(ctx context.Context, ch chan<- prometheus.Metric) {
-	var value float64
+// TillerReachableConfig is this collector's configuration struct.
+type TillerReachableConfig struct {
+	HelmClient helmclient.Interface
+	Helper     *helper
+	Logger     micrologger.Logger
 
-	c.logger.LogCtx(ctx, "level", "debug", "message", "collecting Tiller reachability")
+	TillerNamespace string
+}
 
-	charts, err := c.getCharts()
-	if err != nil {
-		c.logger.LogCtx(ctx, "level", "error", "message", "could not get Charts", "stack", fmt.Sprintf("%#v", err))
-		return
+// TillerReachable is the main struct for this collector.
+type TillerReachable struct {
+	helmClient helmclient.Interface
+	helper     *helper
+	logger     micrologger.Logger
+
+	tillerNamespace string
+}
+
+// NewTillerReachable creates a new TillerReachable metrics collector.
+func NewTillerReachable(config TillerReachableConfig) (*TillerReachable, error) {
+	if config.HelmClient == nil {
+		return nil, microerror.Maskf(invalidConfigError, "%T.HelmClient must not be empty", config)
+	}
+	if config.Helper == nil {
+		return nil, microerror.Maskf(invalidConfigError, "%T.Helper must not be empty", config)
+	}
+	if config.Logger == nil {
+		return nil, microerror.Maskf(invalidConfigError, "%T.Logger must not be empty", config)
 	}
 
-	chartConfigs, err := c.getChartConfigs()
+	if config.TillerNamespace == "" {
+		return nil, microerror.Maskf(invalidConfigError, "%T.TillerNamespace must not be empty", config)
+	}
+
+	t := &TillerReachable{
+		helmClient: config.HelmClient,
+		helper:     config.Helper,
+		logger:     config.Logger,
+
+		tillerNamespace: config.TillerNamespace,
+	}
+
+	return t, nil
+}
+
+func (t *TillerReachable) Collect(ch chan<- prometheus.Metric) error {
+	var value float64
+
+	ctx := context.Background()
+
+	t.logger.Log("level", "debug", "message", "collecting Tiller reachability")
+
+	charts, err := t.helper.getCharts()
 	if err != nil {
-		c.logger.LogCtx(ctx, "level", "error", "message", "could not get ChartConfigs", "stack", fmt.Sprintf("%#v", err))
-		return
+		return microerror.Mask(err)
+	}
+
+	chartConfigs, err := t.helper.getChartConfigs()
+	if err != nil {
+		return microerror.Mask(err)
 	}
 
 	if len(charts) == 0 && len(chartConfigs) == 0 {
 		// Skip pinging tiller when there are no custom resources,
 		// as tiller is only installed when there is at least one CR to reconcile.
-		c.logger.Log("level", "debug", "message", "did not collect Tiller reachability")
-		c.logger.Log("level", "debug", "message", "no Chart or ChartConfig CRs in the cluster")
+		t.logger.Log("level", "debug", "message", "did not collect Tiller reachability")
+		t.logger.Log("level", "debug", "message", "no Chart or ChartConfig CRs in the cluster")
 
 		value = 1
 	} else {
-		err := c.helmClient.PingTiller(ctx)
+		err := t.helmClient.PingTiller(ctx)
 		if err != nil {
-			c.logger.Log("level", "error", "message", "failed to collect Tiller reachability", "stack", fmt.Sprintf("%#v", err))
+			t.logger.Log("level", "error", "message", "failed to collect Tiller reachability", "stack", fmt.Sprintf("%#v", err))
 
 			value = 0
 		} else {
@@ -57,8 +105,16 @@ func (c *Collector) collectTillerReachable(ctx context.Context, ch chan<- promet
 		tillerReachableDesc,
 		prometheus.GaugeValue,
 		value,
-		c.watchNamespace,
+		t.tillerNamespace,
 	)
 
-	c.logger.LogCtx(ctx, "level", "debug", "message", "finished collecting Tiller reachability")
+	t.logger.Log("level", "debug", "message", "finished collecting Tiller reachability")
+
+	return nil
+}
+
+// Describe emits the description for the metrics collected here.
+func (t *TillerReachable) Describe(ch chan<- *prometheus.Desc) error {
+	ch <- tillerReachableDesc
+	return nil
 }
