@@ -8,10 +8,14 @@ import (
 )
 
 // MergeValues merges config values so they can be used when installing or
-// updating Helm releases. It takes in 2 maps with string keys and YAML values.
+// updating Helm releases. It takes in 2 maps with string keys and YAML values
+// passed as a byte array.
 //
 // A deep merge is performed into a single map[string]interface{} output. If a
 // value is present in both then the source map is preferred.
+//
+// Multiple keys with YAML values can be passed. If so the source and
+// destination maps will be merged first and then merged together.
 //
 // The YAML values are parsed using yamlToStringMap. This is because the
 // default behaviour of the YAML parser is to unmarshal into
@@ -21,16 +25,28 @@ import (
 func MergeValues(destMap, srcMap map[string][]byte) (map[string]interface{}, error) {
 	result := map[string]interface{}{}
 
-	for _, v := range destMap {
-		vals, err := yamlToStringMap(v)
-		if err != nil {
-			return nil, microerror.Mask(err)
-		}
-
-		result = mergeValues(result, vals)
+	mergedDestMap, err := mergeMapValues(destMap)
+	if err != nil {
+		return nil, microerror.Mask(err)
 	}
 
-	for _, v := range srcMap {
+	mergedSrcMap, err := mergeMapValues(srcMap)
+	if err != nil {
+		return nil, microerror.Mask(err)
+	}
+
+	result = mergeValues(mergedDestMap, mergedSrcMap)
+
+	return result, nil
+}
+
+// mergeMapValues accepts a map with string keys and YAML values passed as a
+// byte array. A deep merge is performed into a single map[string]interface{}
+// output.
+func mergeMapValues(inputMap map[string][]byte) (map[string]interface{}, error) {
+	result := map[string]interface{}{}
+
+	for _, v := range inputMap {
 		vals, err := yamlToStringMap(v)
 		if err != nil {
 			return nil, microerror.Mask(err)
@@ -42,9 +58,11 @@ func MergeValues(destMap, srcMap map[string][]byte) (map[string]interface{}, err
 	return result, nil
 }
 
-// mergeValues implements the merge logic and is called from MergeValues. It
-// performs a deep merge. If a value is present in both then the source map is
-// preferred.
+// mergeValues implements the merge logic. It performs a deep merge. If a value
+// is present in both then the source map is preferred.
+//
+// Logic is based on the upstream logic implemented by Helm.
+// https://github.com/helm/helm/blob/240e539cec44e2b746b3541529d41f4ba01e77df/cmd/helm/install.go#L358
 func mergeValues(dest, src map[string]interface{}) map[string]interface{} {
 	for k, v := range src {
 		if _, exists := dest[k]; !exists {
@@ -113,13 +131,19 @@ func processInterfaceMap(in map[interface{}]interface{}) map[string]interface{} 
 
 func processMapValue(v interface{}) interface{} {
 	switch v := v.(type) {
+	case bool:
+		return v
+	case float64:
+		return v
+	case int:
+		return v
+	case string:
+		return v
 	case []interface{}:
 		return processInterfaceArray(v)
 	case map[interface{}]interface{}:
 		return processInterfaceMap(v)
-	case string:
-		return v
 	default:
-		return fmt.Sprintf("%v", v)
+		return microerror.Maskf(yamlConversionFailedError, "%#v with type %T not supported")
 	}
 }

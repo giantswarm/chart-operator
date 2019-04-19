@@ -102,7 +102,7 @@
   version = "v1.0.0"
 
 [[projects]]
-  branch = "master"
+  branch = "values-checksum"
   name = "github.com/giantswarm/apiextensions"
   packages = [
     "pkg/apis/application/v1alpha1",
@@ -118,7 +118,7 @@
     "pkg/clientset/versioned/typed/provider/v1alpha1",
     "pkg/clientset/versioned/typed/release/v1alpha1"
   ]
-  revision = "db49342c89a63379fffd096e826190d4d5a09512"
+  revision = "278347302c0bf94bafe683b542fb2926f758cb76"
 
 [[projects]]
   branch = "master"
@@ -176,7 +176,7 @@
     ".",
     "helmclienttest"
   ]
-  revision = "936a3f064bb9f68ced372f20b5b0a6644ccf3611"
+  revision = "bee9086e6a6cc9790e4a0583e92938edcdbbdebb"
 
 [[projects]]
   branch = "master"
@@ -1018,6 +1018,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "e6a0b5ab1adbee98913d6bb598b5d8f6700401169d4e58bfe8c3e845ac0c15b9"
+  inputs-digest = "95e781f01aa025b049fa1c744cd7cf9da3152b5eeddf6bf36d469832475a9a98"
   solver-name = "gps-cdcl"
   solver-version = 1

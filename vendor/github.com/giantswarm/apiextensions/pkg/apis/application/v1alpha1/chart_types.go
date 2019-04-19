@@ -103,9 +103,6 @@ type ChartSpec struct {
 	// Name is the name of the Helm chart to be deployed.
 	// e.g. kubernetes-prometheus
 	Name string `json:"name" yaml:"name"`
-	// KubeConfig is the kubeconfig to connect to the cluster when deploying
-	// the app.
-	KubeConfig ChartSpecKubeConfig `json:"kubeConfig" yaml:"kubeConfig"`
 	// Namespace is the namespace where the chart should be deployed.
 	// e.g. monitoring
 	Namespace string `json:"namespace" yaml:"namespace"`
@@ -147,20 +144,6 @@ type ChartSpecConfigSecret struct {
 	ResourceVersion string `json:"resourceVersion" yaml:"resourceVersion"`
 }
 
-type ChartSpecKubeConfig struct {
-	// Secret references a secret containing the kubconfig.
-	Secret ChartSpecKubeConfigSecret `json:"secret" yaml:"secret"`
-}
-
-type ChartSpecKubeConfigSecret struct {
-	// Name is the name of the secret containing the kubeconfig,
-	// e.g. chart-operator-kubeconfig.
-	Name string `json:"name" yaml:"name"`
-	// Namespace is the namespace of the secret containing the kubeconfig,
-	// e.g. giantswarm.
-	Namespace string `json:"namespace" yaml:"namespace"`
-}
-
 type ChartStatus struct {
 	// AppVersion is the value of the AppVersion field in the Chart.yaml of the
 	// deployed chart. This is an optional field with the version of the
@@ -170,6 +153,8 @@ type ChartStatus struct {
 	AppVersion string `json:"appVersion" yaml:"appVersion"`
 	// Release is the status of the Helm release for the deployed chart.
 	Release ChartStatusRelease `json:"release" yaml:"release"`
+	// Values is the status of the values for the deployed chart.
+        Values ChartStatusValues `json:"values" yaml:"values"`
 	// Version is the value of the Version field in the Chart.yaml of the
 	// deployed chart.
 	// e.g. 1.0.0.
@@ -182,6 +167,12 @@ type ChartStatusRelease struct {
 	// Status is the status of the deployed chart,
 	// e.g. DEPLOYED.
 	Status string `json:"status" yaml:"status"`
+}
+
+type ChartStatusValues struct {
+       // MD5Checksum is the MD5 checksum of the values for the deployed chart,
+       // e.g. 1ee001c5286ca00fdf64d9660c04bde2.
+       MD5Checksum string `json:"md5Checksum" yaml:"md5Checksum"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
