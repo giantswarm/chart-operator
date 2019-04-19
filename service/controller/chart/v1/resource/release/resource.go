@@ -112,18 +112,18 @@ func isReleaseInTransitionState(r ReleaseState) bool {
 	return releaseTransitionStatuses[r.Status]
 }
 
-func isReleaseModified(a, b ReleaseState) (bool, error) {
+func isReleaseModified(a, b ReleaseState) bool {
 	// Values have changed so we need to update the Helm Release.
-	if a.ValuesMD5Checksum != b.ValuesMD5Checksum {
-		return true, nil
+	if a.ValuesMD5Checksum != "" && a.ValuesMD5Checksum != b.ValuesMD5Checksum {
+		return true
 	}
 
 	// Version has changed so we need to update the Helm Release.
 	if a.Version != b.Version {
-		return true, nil
+		return true
 	}
 
-	return false, nil
+	return false
 }
 
 func toReleaseState(v interface{}) (ReleaseState, error) {
