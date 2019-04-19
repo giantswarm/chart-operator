@@ -8,9 +8,13 @@ type ReleaseState struct {
 	// Status is the status of the Helm release when the chart is deployed.
 	// e.g. DEPLOYED
 	Status string
-	// Values are any values that have been set when the Helm Chart was
+	// ValuesMD5Checksum is the MD5 checksum of the values YAML. It is used for
+	// comparison since it is more reliable than using the values returned by
+	// helmclient.GetReleaseContent.
+	ValuesMD5Checksum string
+	// ValuesYAML are any values that have been set when the Helm Chart was
 	// installed.
-	Values map[string]interface{}
+	ValuesYAML []byte
 	// Version is the version of the Helm Chart to be deployed.
 	// e.g. 0.1.2
 	Version string

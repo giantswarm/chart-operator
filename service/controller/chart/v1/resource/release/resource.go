@@ -1,14 +1,11 @@
 package release
 
 import (
-	"reflect"
-
 	"github.com/giantswarm/apiextensions/pkg/clientset/versioned"
 	"github.com/giantswarm/helmclient"
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/micrologger"
 	"github.com/spf13/afero"
-	yaml "gopkg.in/yaml.v2"
 	"k8s.io/client-go/kubernetes"
 )
 
@@ -97,7 +94,7 @@ func equals(a, b ReleaseState) bool {
 	if a.Status != b.Status {
 		return false
 	}
-	if !reflect.DeepEqual(a.Values, b.Values) {
+	if a.ValuesMD5Checksum != b.ValuesMD5Checksum {
 		return false
 	}
 	if a.Version != b.Version {
@@ -116,22 +113,13 @@ func isReleaseInTransitionState(r ReleaseState) bool {
 }
 
 func isReleaseModified(a, b ReleaseState) (bool, error) {
-	// Version has changed so we need to update the Helm Release.
-	if a.Version != b.Version {
+	// Values have changed so we need to update the Helm Release.
+	if a.ValuesMD5Checksum != b.ValuesMD5Checksum {
 		return true, nil
 	}
 
-	yamlA, err := yaml.Marshal(a.Values)
-	if err != nil {
-		return false, microerror.Mask(err)
-	}
-
-	yamlB, err := yaml.Marshal(b.Values)
-	if err != nil {
-		return false, microerror.Mask(err)
-	}
-
-	if !reflect.DeepEqual(yamlA, yamlB) {
+	// Version has changed so we need to update the Helm Release.
+	if a.Version != b.Version {
 		return true, nil
 	}
 

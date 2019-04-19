@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"github.com/giantswarm/microerror"
-	yaml "gopkg.in/yaml.v2"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/helm/pkg/helm"
 
 	"github.com/giantswarm/chart-operator/service/controller/chart/v1/key"
@@ -39,17 +39,26 @@ func (r *Resource) ApplyCreateChange(ctx context.Context, obj, createChange inte
 			}
 		}()
 
-		yamlValues, err := yaml.Marshal(releaseState.Values)
+		// We need to pass the ValueOverrides option to make the install process
+		// use the default values and prevent errors on nested values.
+		err = r.helmClient.InstallReleaseFromTarball(ctx, tarballPath, ns, helm.ReleaseName(releaseState.Name), helm.ValueOverrides(releaseState.ValuesYAML))
 		if err != nil {
 			return microerror.Mask(err)
 		}
 
-		// We need to pass the ValueOverrides option to make the install process
-		// use the default values and prevent errors on nested values.
-		err = r.helmClient.InstallReleaseFromTarball(ctx, tarballPath, ns, helm.ReleaseName(releaseState.Name), helm.ValueOverrides(yamlValues))
+		// Get chart CR again to ensure the resource version is correct.
+		currentCR, err := r.g8sClient.ApplicationV1alpha1().Charts(cr.Namespace).Get(cr.Name, metav1.GetOptions{})
 		if err != nil {
 			return microerror.Mask(err)
 		}
+
+		// Set the checksum and update the chart CR status.
+		currentCR.Status.Values.MD5Checksum = releaseState.ValuesMD5Checksum
+		_, err = r.g8sClient.ApplicationV1alpha1().Charts(currentCR.Namespace).UpdateStatus(currentCR)
+		if err != nil {
+			return microerror.Mask(err)
+		}
+
 		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("created release %#q", releaseState.Name))
 	}
 

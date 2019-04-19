@@ -48,6 +48,9 @@ func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
 			LastDeployed: v1alpha1.DeepCopyTime{releaseHistory.LastDeployed},
 			Status:       releaseContent.Status,
 		},
+		Values: v1alpha1.ChartStatusValues{
+			MD5Checksum: key.ValuesMD5Checksum(cr),
+		},
 		Version: releaseHistory.Version,
 	}
 

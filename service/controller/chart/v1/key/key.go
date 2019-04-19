@@ -60,6 +60,10 @@ func ToCustomResource(v interface{}) (v1alpha1.Chart, error) {
 	return *customResourcePointer, nil
 }
 
+func ValuesMD5Checksum(customResource v1alpha1.Chart) string {
+	return customResource.Status.Values.MD5Checksum
+}
+
 // VersionLabel returns the label value to determine if the custom resource is
 // supported by this version of the operatorkit resource.
 func VersionLabel(customResource v1alpha1.Chart) string {

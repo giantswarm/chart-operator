@@ -30,10 +30,10 @@ func (r *Resource) GetCurrentState(ctx context.Context, obj interface{}) (interf
 	}
 
 	releaseState := &ReleaseState{
-		Name:    releaseName,
-		Status:  releaseContent.Status,
-		Values:  releaseContent.Values,
-		Version: releaseHistory.Version,
+		Name:              releaseName,
+		Status:            releaseContent.Status,
+		ValuesMD5Checksum: key.ValuesMD5Checksum(cr),
+		Version:           releaseHistory.Version,
 	}
 
 	return releaseState, nil

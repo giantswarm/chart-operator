@@ -2,11 +2,13 @@ package release
 
 import (
 	"context"
+	"crypto/md5"
 	"fmt"
 
 	"github.com/giantswarm/apiextensions/pkg/apis/application/v1alpha1"
 	"github.com/giantswarm/helmclient"
 	"github.com/giantswarm/microerror"
+	yaml "gopkg.in/yaml.v2"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
@@ -55,11 +57,24 @@ func (r *Resource) GetDesiredState(ctx context.Context, obj interface{}) (interf
 		return nil, microerror.Mask(err)
 	}
 
+	var valuesYAML []byte
+	var valuesMD5Checksum string
+
+	if len(values) > 0 {
+		valuesYAML, err = yaml.Marshal(values)
+		if err != nil {
+			return nil, microerror.Mask(err)
+		}
+
+		valuesMD5Checksum = fmt.Sprintf("%x", md5.Sum(valuesYAML))
+	}
+
 	releaseState := &ReleaseState{
-		Name:    releaseName,
-		Status:  helmDeployedStatus,
-		Values:  values,
-		Version: chart.Version,
+		Name:              releaseName,
+		Status:            helmDeployedStatus,
+		ValuesMD5Checksum: valuesMD5Checksum,
+		ValuesYAML:        valuesYAML,
+		Version:           chart.Version,
 	}
 
 	return releaseState, nil
