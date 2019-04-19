@@ -63,17 +63,11 @@ func Test_Resource_Chart_newUpdateChange(t *testing.T) {
 				Version: "release-version",
 			},
 			desiredState: &ReleaseState{
-				Name: "release-name",
-				Values: map[string]interface{}{
-					"key": "value",
-				},
+				Name:    "release-name",
 				Version: "release-version",
 			},
 			expectedUpdateState: &ReleaseState{
-				Name: "release-name",
-				Values: map[string]interface{}{
-					"key": "value",
-				},
+				Name:    "release-name",
 				Version: "release-version",
 			},
 		},
@@ -84,34 +78,22 @@ func Test_Resource_Chart_newUpdateChange(t *testing.T) {
 				Version: "release-version",
 			},
 			desiredState: &ReleaseState{
-				Name: "release-name",
-				Values: map[string]interface{}{
-					"key": "new-value",
-				},
+				Name:    "release-name",
 				Version: "release-version",
 			},
 			expectedUpdateState: &ReleaseState{
-				Name: "release-name",
-				Values: map[string]interface{}{
-					"key": "new-value",
-				},
+				Name:    "release-name",
 				Version: "release-version",
 			},
 		},
 		{
 			name: "case 5: current state has values, desired state has equal values, empty update change",
 			currentState: &ReleaseState{
-				Name: "release-name",
-				Values: map[string]interface{}{
-					"key": "value",
-				},
+				Name:    "release-name",
 				Version: "release-version",
 			},
 			desiredState: &ReleaseState{
-				Name: "release-name",
-				Values: map[string]interface{}{
-					"key": "value",
-				},
+				Name:    "release-name",
 				Version: "release-version",
 			},
 			expectedUpdateState: nil,
@@ -119,24 +101,15 @@ func Test_Resource_Chart_newUpdateChange(t *testing.T) {
 		{
 			name: "case 6: current state has values, desired state has new release and equal values, expected desired state",
 			currentState: &ReleaseState{
-				Name: "release-name",
-				Values: map[string]interface{}{
-					"key": "value",
-				},
+				Name:    "release-name",
 				Version: "release-version",
 			},
 			desiredState: &ReleaseState{
-				Name: "release-name",
-				Values: map[string]interface{}{
-					"key": "value",
-				},
+				Name:    "release-name",
 				Version: "new-release-version",
 			},
 			expectedUpdateState: &ReleaseState{
-				Name: "release-name",
-				Values: map[string]interface{}{
-					"key": "value",
-				},
+				Name:    "release-name",
 				Version: "new-release-version",
 			},
 		},

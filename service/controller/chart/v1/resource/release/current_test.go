@@ -45,19 +45,21 @@ func Test_CurrentState(t *testing.T) {
 				Version: "0.1.2",
 			},
 			expectedState: ReleaseState{
-				Name:   "prometheus",
-				Status: "DEPLOYED",
-				Values: map[string]interface{}{
-					"key": "value",
-				},
+				Name:    "prometheus",
+				Status:  "DEPLOYED",
 				Version: "0.1.2",
 			},
 		},
 		{
-			name: "case 1: different values",
+			name: "case 1: values with md5 checksum",
 			obj: &v1alpha1.Chart{
 				Spec: v1alpha1.ChartSpec{
 					Name: "prometheus",
+				},
+				Status: v1alpha1.ChartStatus{
+					Values: v1alpha1.ChartStatusValues{
+						MD5Checksum: "1ee001c5286ca00fdf64d9660c04bde2",
+					},
 				},
 			},
 			releaseContent: &helmclient.ReleaseContent{
@@ -73,13 +75,10 @@ func Test_CurrentState(t *testing.T) {
 				Version: "1.2.3",
 			},
 			expectedState: ReleaseState{
-				Values: map[string]interface{}{
-					"key":     "value",
-					"another": "value",
-				},
-				Name:    "prometheus",
-				Status:  "FAILED",
-				Version: "1.2.3",
+				Name:              "prometheus",
+				Status:            "FAILED",
+				ValuesMD5Checksum: "1ee001c5286ca00fdf64d9660c04bde2",
+				Version:           "1.2.3",
 			},
 		},
 		{

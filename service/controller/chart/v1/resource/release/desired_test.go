@@ -2,7 +2,6 @@ package release
 
 import (
 	"context"
-	"reflect"
 	"testing"
 
 	"github.com/giantswarm/apiextensions/pkg/apis/application/v1alpha1"
@@ -41,7 +40,6 @@ func Test_DesiredState(t *testing.T) {
 			expectedState: ReleaseState{
 				Name:    "chart-operator-chart",
 				Status:  helmDeployedStatus,
-				Values:  map[string]interface{}{},
 				Version: "0.1.2",
 			},
 		},
@@ -69,10 +67,10 @@ func Test_DesiredState(t *testing.T) {
 				Version: "1.2.3",
 			},
 			expectedState: ReleaseState{
-				Name:    "chart-operator-chart",
-				Status:  helmDeployedStatus,
-				Values:  map[string]interface{}{},
-				Version: "1.2.3",
+				Name:              "chart-operator-chart",
+				Status:            helmDeployedStatus,
+				ValuesMD5Checksum: "",
+				Version:           "1.2.3",
 			},
 		},
 		{
@@ -94,58 +92,21 @@ func Test_DesiredState(t *testing.T) {
 					Namespace: "giantswarm",
 				},
 				Data: map[string]string{
-					"values": `"test": "test"`,
+					"values": `test: "test"`,
 				},
 			},
 			helmChart: helmclient.Chart{
 				Version: "0.1.2",
 			},
 			expectedState: ReleaseState{
-				Name:   "chart-operator-chart",
-				Status: helmDeployedStatus,
-				Values: map[string]interface{}{
-					"test": "test",
-				},
-				Version: "0.1.2",
+				Name:              "chart-operator-chart",
+				Status:            helmDeployedStatus,
+				ValuesMD5Checksum: "d27213d2ae2b24e8d1be0806469c564c",
+				Version:           "0.1.2",
 			},
 		},
 		{
-			name: "case 3: config map with multiple values",
-			obj: &v1alpha1.Chart{
-				Spec: v1alpha1.ChartSpec{
-					Name: "chart-operator-chart",
-					Config: v1alpha1.ChartSpecConfig{
-						ConfigMap: v1alpha1.ChartSpecConfigConfigMap{
-							Name:      "chart-operator-values-configmap",
-							Namespace: "giantswarm",
-						},
-					},
-				},
-			},
-			configMap: &apiv1.ConfigMap{
-				ObjectMeta: metav1.ObjectMeta{
-					Name:      "chart-operator-values-configmap",
-					Namespace: "giantswarm",
-				},
-				Data: map[string]string{
-					"values": `"provider": "azure"
-"replicas": 2`},
-			},
-			helmChart: helmclient.Chart{
-				Version: "0.1.2",
-			},
-			expectedState: ReleaseState{
-				Name:   "chart-operator-chart",
-				Status: helmDeployedStatus,
-				Values: map[string]interface{}{
-					"provider": "azure",
-					"replicas": "2",
-				},
-				Version: "0.1.2",
-			},
-		},
-		{
-			name: "case 4: config map not found",
+			name: "case 3: config map not found",
 			obj: &v1alpha1.Chart{
 				Spec: v1alpha1.ChartSpec{
 					Name: "chart-operator-chart",
@@ -169,7 +130,7 @@ func Test_DesiredState(t *testing.T) {
 			errorMatcher: IsNotFound,
 		},
 		{
-			name: "case 5: basic match with secret value",
+			name: "case 4: basic match with secret value",
 			obj: &v1alpha1.Chart{
 				Spec: v1alpha1.ChartSpec{
 					Name: "chart-operator-chart",
@@ -190,56 +151,18 @@ func Test_DesiredState(t *testing.T) {
 					Namespace: "giantswarm",
 				},
 				Data: map[string][]byte{
-					"values": []byte(`"test": "test"`),
+					"values": []byte(`test: "test"`),
 				},
 			},
 			expectedState: ReleaseState{
-				Name:   "chart-operator-chart",
-				Status: helmDeployedStatus,
-				Values: map[string]interface{}{
-					"test": "test",
-				},
-				Version: "0.1.2",
+				Name:              "chart-operator-chart",
+				Status:            helmDeployedStatus,
+				ValuesMD5Checksum: "d27213d2ae2b24e8d1be0806469c564c",
+				Version:           "0.1.2",
 			},
 		},
 		{
-			name: "case 6: secret with multiple values",
-			obj: &v1alpha1.Chart{
-				Spec: v1alpha1.ChartSpec{
-					Name: "chart-operator-chart",
-					Config: v1alpha1.ChartSpecConfig{
-						Secret: v1alpha1.ChartSpecConfigSecret{
-							Name:      "chart-operator-values-secret",
-							Namespace: "giantswarm",
-						},
-					},
-				},
-			},
-			helmChart: helmclient.Chart{
-				Version: "0.1.2",
-			},
-			secret: &apiv1.Secret{
-				ObjectMeta: metav1.ObjectMeta{
-					Name:      "chart-operator-values-secret",
-					Namespace: "giantswarm",
-				},
-				Data: map[string][]byte{
-					"values": []byte(`"secretpassword": "admin"
-"secretnumber": 2`),
-				},
-			},
-			expectedState: ReleaseState{
-				Name:   "chart-operator-chart",
-				Status: helmDeployedStatus,
-				Values: map[string]interface{}{
-					"secretpassword": "admin",
-					"secretnumber":   "2",
-				},
-				Version: "0.1.2",
-			},
-		},
-		{
-			name: "case 7: secret not found",
+			name: "case 5: secret not found",
 			obj: &v1alpha1.Chart{
 				Spec: v1alpha1.ChartSpec{
 					Name: "chart-operator-chart",
@@ -263,7 +186,7 @@ func Test_DesiredState(t *testing.T) {
 			errorMatcher: IsNotFound,
 		},
 		{
-			name: "case 8: secret and configmap clash",
+			name: "case 6: merge configmap and secret with identical values",
 			obj: &v1alpha1.Chart{
 				Spec: v1alpha1.ChartSpec{
 					Name: "chart-operator-chart",
@@ -279,18 +202,17 @@ func Test_DesiredState(t *testing.T) {
 					},
 				},
 			},
+			helmChart: helmclient.Chart{
+				Version: "0.1.2",
+			},
 			configMap: &apiv1.ConfigMap{
 				ObjectMeta: metav1.ObjectMeta{
 					Name:      "chart-operator-values-configmap",
 					Namespace: "giantswarm",
 				},
 				Data: map[string]string{
-					"values": `"username": "admin"
-"replicas": 2`,
+					"values": `test: "test"`,
 				},
-			},
-			helmChart: helmclient.Chart{
-				Version: "0.1.2",
 			},
 			secret: &apiv1.Secret{
 				ObjectMeta: metav1.ObjectMeta{
@@ -298,19 +220,14 @@ func Test_DesiredState(t *testing.T) {
 					Namespace: "giantswarm",
 				},
 				Data: map[string][]byte{
-					"values": []byte(`"username": "admin"
-"secretnumber": 2`),
+					"values": []byte(`test: "test"`),
 				},
 			},
 			expectedState: ReleaseState{
-				Name:   "chart-operator-chart",
-				Status: helmDeployedStatus,
-				Values: map[string]interface{}{
-					"username":     "admin",
-					"replicas":     "2",
-					"secretnumber": "2",
-				},
-				Version: "0.1.2",
+				Name:              "chart-operator-chart",
+				Status:            helmDeployedStatus,
+				ValuesMD5Checksum: "d27213d2ae2b24e8d1be0806469c564c",
+				Version:           "0.1.2",
 			},
 		},
 	}
@@ -355,13 +272,17 @@ func Test_DesiredState(t *testing.T) {
 				t.Fatalf("error == %#v, want matching", err)
 			}
 
-			ReleaseState, err := toReleaseState(result)
+			releaseState, err := toReleaseState(result)
 			if err != nil {
 				t.Fatalf("error == %#v, want nil", err)
 			}
 
-			if !reflect.DeepEqual(ReleaseState, tc.expectedState) {
-				t.Fatalf("want matching ReleaseState \n %s", cmp.Diff(ReleaseState, tc.expectedState))
+			if !equals(releaseState, tc.expectedState) {
+				// Don't show yalues YAML in the diff as the MD5 checksum is
+				// compared by equals.
+				releaseState.ValuesYAML = []byte{}
+
+				t.Fatalf("want matching releaseState \n %s", cmp.Diff(releaseState, tc.expectedState))
 			}
 		})
 	}
