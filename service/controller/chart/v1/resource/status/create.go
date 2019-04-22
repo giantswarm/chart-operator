@@ -42,6 +42,13 @@ func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
 		return microerror.Mask(err)
 	}
 
+	// Get chart CR again to ensure the resource version and MD5 checksum are
+	// correct.
+	currentCR, err := r.g8sClient.ApplicationV1alpha1().Charts(cr.Namespace).Get(cr.Name, metav1.GetOptions{})
+	if err != nil {
+		return microerror.Mask(err)
+	}
+
 	desiredStatus := v1alpha1.ChartStatus{
 		AppVersion: releaseHistory.AppVersion,
 		Release: v1alpha1.ChartStatusRelease{
@@ -49,19 +56,13 @@ func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
 			Status:       releaseContent.Status,
 		},
 		Values: v1alpha1.ChartStatusValues{
-			MD5Checksum: key.ValuesMD5Checksum(cr),
+			MD5Checksum: key.ValuesMD5Checksum(*currentCR),
 		},
 		Version: releaseHistory.Version,
 	}
 
 	if !equals(desiredStatus, key.ChartStatus(cr)) {
 		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("setting status for release %#q status to %#q", releaseName, releaseContent.Status))
-
-		// Get chart CR again to ensure the resource version is correct.
-		currentCR, err := r.g8sClient.ApplicationV1alpha1().Charts(cr.Namespace).Get(cr.Name, metav1.GetOptions{})
-		if err != nil {
-			return microerror.Mask(err)
-		}
 
 		currentCR.Status = desiredStatus
 
