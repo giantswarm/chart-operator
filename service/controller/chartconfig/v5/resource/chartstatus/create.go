@@ -29,17 +29,20 @@ func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
 		return microerror.Mask(err)
 	}
 
-	releaseHistory, err := r.helmClient.GetReleaseHistory(ctx, releaseName)
-	if err != nil {
-		return microerror.Mask(err)
-	}
-
 	if key.ReleaseStatus(customObject) != releaseContent.Status {
 		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("setting status for release '%s' status to '%s'", releaseName, releaseContent.Status))
 
 		customObjectCopy := customObject.DeepCopy()
 		customObjectCopy.Status.ReleaseStatus = releaseContent.Status
-		customObjectCopy.Status.Reason = releaseHistory.Description
+
+		if releaseContent.Status != releaseStatusDeployed {
+			releaseHistory, err := r.helmClient.GetReleaseHistory(ctx, releaseName)
+			if err != nil {
+				return microerror.Mask(err)
+			}
+
+			customObjectCopy.Status.Reason = releaseHistory.Description
+		}
 		_, err := r.g8sClient.CoreV1alpha1().ChartConfigs(customObject.Namespace).UpdateStatus(customObjectCopy)
 		if err != nil {
 			return microerror.Mask(err)
