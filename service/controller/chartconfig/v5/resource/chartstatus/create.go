@@ -37,8 +37,6 @@ func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
 	if key.ReleaseStatus(customObject) != releaseContent.Status {
 		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("setting status for release '%s' status to '%s'", releaseName, releaseContent.Status))
 
-		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("release history: %#v", releaseHistory))
-		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("release content: %#v", releaseContent))
 		customObjectCopy := customObject.DeepCopy()
 		customObjectCopy.Status.ReleaseStatus = releaseContent.Status
 		customObjectCopy.Status.Reason = releaseHistory.Description
