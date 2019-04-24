@@ -111,12 +111,18 @@
     "pkg/apis/provider/v1alpha1",
     "pkg/apis/release/v1alpha1",
     "pkg/clientset/versioned",
+    "pkg/clientset/versioned/fake",
     "pkg/clientset/versioned/scheme",
     "pkg/clientset/versioned/typed/application/v1alpha1",
+    "pkg/clientset/versioned/typed/application/v1alpha1/fake",
     "pkg/clientset/versioned/typed/core/v1alpha1",
+    "pkg/clientset/versioned/typed/core/v1alpha1/fake",
     "pkg/clientset/versioned/typed/example/v1alpha1",
+    "pkg/clientset/versioned/typed/example/v1alpha1/fake",
     "pkg/clientset/versioned/typed/provider/v1alpha1",
-    "pkg/clientset/versioned/typed/release/v1alpha1"
+    "pkg/clientset/versioned/typed/provider/v1alpha1/fake",
+    "pkg/clientset/versioned/typed/release/v1alpha1",
+    "pkg/clientset/versioned/typed/release/v1alpha1/fake"
   ]
   revision = "07f6bab854429f3454bfb09881a3e45c9b8a2c94"
 
@@ -1018,6 +1024,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "249b78aba2c214a8096aa5a00359f51f75c654b924601f26b0f605cd0dd083b4"
+  inputs-digest = "25219767ac7dd2587fe10f992b007d40eacfe6bed3dba25753774c0cc4061281"
   solver-name = "gps-cdcl"
   solver-version = 1
