@@ -5,7 +5,6 @@ import (
 	"fmt"
 
 	"github.com/giantswarm/microerror"
-	yaml "gopkg.in/yaml.v2"
 	"k8s.io/helm/pkg/helm"
 
 	"github.com/giantswarm/chart-operator/service/controller/chart/v1/key"
@@ -39,14 +38,9 @@ func (r *Resource) ApplyCreateChange(ctx context.Context, obj, createChange inte
 			}
 		}()
 
-		yamlValues, err := yaml.Marshal(releaseState.Values)
-		if err != nil {
-			return microerror.Mask(err)
-		}
-
 		// We need to pass the ValueOverrides option to make the install process
 		// use the default values and prevent errors on nested values.
-		err = r.helmClient.InstallReleaseFromTarball(ctx, tarballPath, ns, helm.ReleaseName(releaseState.Name), helm.ValueOverrides(yamlValues))
+		err = r.helmClient.InstallReleaseFromTarball(ctx, tarballPath, ns, helm.ReleaseName(releaseState.Name), helm.ValueOverrides(releaseState.ValuesYAML))
 		if err != nil {
 			return microerror.Mask(err)
 		}
