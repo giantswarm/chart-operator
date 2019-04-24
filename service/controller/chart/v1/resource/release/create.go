@@ -44,6 +44,12 @@ func (r *Resource) ApplyCreateChange(ctx context.Context, obj, createChange inte
 		if err != nil {
 			return microerror.Mask(err)
 		}
+
+		err = r.updateAnnotations(cr, releaseState)
+		if err != nil {
+			return microerror.Mask(err)
+		}
+
 		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("created release %#q", releaseState.Name))
 	}
 

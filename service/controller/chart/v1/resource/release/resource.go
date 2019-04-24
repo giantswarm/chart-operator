@@ -1,12 +1,16 @@
 package release
 
 import (
+	"github.com/giantswarm/apiextensions/pkg/apis/application/v1alpha1"
 	"github.com/giantswarm/apiextensions/pkg/clientset/versioned"
 	"github.com/giantswarm/helmclient"
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/micrologger"
 	"github.com/spf13/afero"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
+
+	"github.com/giantswarm/chart-operator/service/controller/chart/v1/key"
 )
 
 const (
@@ -84,6 +88,30 @@ func New(config Config) (*Resource, error) {
 
 func (r *Resource) Name() string {
 	return Name
+}
+
+func (r *Resource) updateAnnotations(cr v1alpha1.Chart, releaseState ReleaseState) error {
+	// Get chart CR again to ensure the resource version and annotations
+	// are correct.
+	currentCR, err := r.g8sClient.ApplicationV1alpha1().Charts(cr.Namespace).Get(cr.Name, metav1.GetOptions{})
+	if err != nil {
+		return microerror.Mask(err)
+	}
+
+	currentChecksum := key.ValuesMD5ChecksumAnnotation(*currentCR)
+
+	if releaseState.ValuesMD5Checksum != currentChecksum {
+		annotations := currentCR.Annotations
+		annotations[key.ValuesMD5ChecksumAnnotationName] = releaseState.ValuesMD5Checksum
+
+		currentCR.Annotations = annotations
+		_, err = r.g8sClient.ApplicationV1alpha1().Charts(cr.Namespace).Update(currentCR)
+		if err != nil {
+			return microerror.Mask(err)
+		}
+	}
+
+	return nil
 }
 
 // equals asseses the equality of ReleaseStates with regards to distinguishing fields.

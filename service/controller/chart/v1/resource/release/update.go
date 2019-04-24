@@ -49,8 +49,13 @@ func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange inte
 		if err != nil {
 			return microerror.Mask(err)
 		}
-		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("updated release %#q", releaseState.Name))
 
+		err = r.updateAnnotations(cr, releaseState)
+		if err != nil {
+			return microerror.Mask(err)
+		}
+
+		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("updated release %#q", releaseState.Name))
 	}
 
 	return nil
