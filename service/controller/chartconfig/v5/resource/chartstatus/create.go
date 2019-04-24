@@ -42,6 +42,8 @@ func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
 			}
 
 			customObjectCopy.Status.Reason = releaseHistory.Description
+		} else {
+			customObjectCopy.Status.Reason = ""
 		}
 		_, err := r.g8sClient.CoreV1alpha1().ChartConfigs(customObject.Namespace).UpdateStatus(customObjectCopy)
 		if err != nil {
