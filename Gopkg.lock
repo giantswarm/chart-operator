@@ -103,6 +103,7 @@
 
 [[projects]]
   branch = "master"
+  digest = "1:019d9058aac1f396ff6e0a4a184f1b5c331e4615ee9a0ee3f937a6f5c637f470"
   name = "github.com/giantswarm/apiextensions"
   packages = [
     "pkg/apis/application/v1alpha1",
@@ -124,7 +125,8 @@
     "pkg/clientset/versioned/typed/release/v1alpha1",
     "pkg/clientset/versioned/typed/release/v1alpha1/fake"
   ]
-  revision = "db49342c89a63379fffd096e826190d4d5a09512"
+  pruneopts = "UT"
+  revision = "07f6bab854429f3454bfb09881a3e45c9b8a2c94"
 
 [[projects]]
   branch = "master"
@@ -177,12 +179,14 @@
 
 [[projects]]
   branch = "master"
+  digest = "1:7c9fa1f3c10aebb1f198b9c2bcd51cab318f8421f5dce340b1fc5a810bc0c13b"
   name = "github.com/giantswarm/helmclient"
   packages = [
     ".",
     "helmclienttest"
   ]
-  revision = "fd22615d21bdf303f8acefd937fda82019d71471"
+  pruneopts = "UT"
+  revision = "f7d5742963c33dc7083ec48e651b1808cc481320"
 
 [[projects]]
   branch = "master"
