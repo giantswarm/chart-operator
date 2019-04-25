@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/giantswarm/apiextensions/pkg/apis/application/v1alpha1"
+	"github.com/giantswarm/apiextensions/pkg/clientset/versioned/fake"
 	"github.com/giantswarm/helmclient"
 	"github.com/giantswarm/helmclient/helmclienttest"
 	"github.com/giantswarm/micrologger/microloggertest"
@@ -14,7 +15,7 @@ import (
 	apiv1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
-	"k8s.io/client-go/kubernetes/fake"
+	k8sfake "k8s.io/client-go/kubernetes/fake"
 )
 
 func Test_DesiredState(t *testing.T) {
@@ -322,8 +323,9 @@ func Test_DesiredState(t *testing.T) {
 
 			c := Config{
 				Fs:         afero.NewMemMapFs(),
+				G8sClient:  fake.NewSimpleClientset(),
 				HelmClient: helmClient,
-				K8sClient:  fake.NewSimpleClientset(objs...),
+				K8sClient:  k8sfake.NewSimpleClientset(objs...),
 				Logger:     microloggertest.New(),
 			}
 			r, err := New(c)

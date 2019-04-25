@@ -64,6 +64,7 @@ func NewResourceSet(config ResourceSetConfig) (*controller.ResourceSet, error) {
 	{
 		c := release.Config{
 			Fs:         config.Fs,
+			G8sClient:  config.G8sClient,
 			HelmClient: config.HelmClient,
 			K8sClient:  config.K8sClient,
 			Logger:     config.Logger,
