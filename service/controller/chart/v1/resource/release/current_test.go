@@ -13,6 +13,7 @@ import (
 	"github.com/giantswarm/micrologger/microloggertest"
 	"github.com/google/go-cmp/cmp"
 	"github.com/spf13/afero"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	k8sfake "k8s.io/client-go/kubernetes/fake"
 )
 
@@ -29,6 +30,11 @@ func Test_CurrentState(t *testing.T) {
 		{
 			name: "case 0: basic match",
 			obj: &v1alpha1.Chart{
+				ObjectMeta: metav1.ObjectMeta{
+					Annotations: map[string]string{
+						"chart-operator.giantswarm.io/values-md5-checksum": "1ee001c5286ca00fdf64d9660c04bde2",
+					},
+				},
 				Spec: v1alpha1.ChartSpec{
 					Name: "prometheus",
 				},
@@ -45,17 +51,20 @@ func Test_CurrentState(t *testing.T) {
 				Version: "0.1.2",
 			},
 			expectedState: ReleaseState{
-				Name:   "prometheus",
-				Status: "DEPLOYED",
-				Values: map[string]interface{}{
-					"key": "value",
-				},
-				Version: "0.1.2",
+				Name:              "prometheus",
+				Status:            "DEPLOYED",
+				ValuesMD5Checksum: "1ee001c5286ca00fdf64d9660c04bde2",
+				Version:           "0.1.2",
 			},
 		},
 		{
 			name: "case 1: different values",
 			obj: &v1alpha1.Chart{
+				ObjectMeta: metav1.ObjectMeta{
+					Annotations: map[string]string{
+						"chart-operator.giantswarm.io/values-md5-checksum": "5eb63bbbe01eeed093cb22bb8f5acdc3",
+					},
+				},
 				Spec: v1alpha1.ChartSpec{
 					Name: "prometheus",
 				},
@@ -73,13 +82,10 @@ func Test_CurrentState(t *testing.T) {
 				Version: "1.2.3",
 			},
 			expectedState: ReleaseState{
-				Values: map[string]interface{}{
-					"key":     "value",
-					"another": "value",
-				},
-				Name:    "prometheus",
-				Status:  "FAILED",
-				Version: "1.2.3",
+				Name:              "prometheus",
+				Status:            "FAILED",
+				ValuesMD5Checksum: "5eb63bbbe01eeed093cb22bb8f5acdc3",
+				Version:           "1.2.3",
 			},
 		},
 		{
