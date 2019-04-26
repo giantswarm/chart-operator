@@ -50,7 +50,7 @@ func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange inte
 			return microerror.Mask(err)
 		}
 
-		err = r.updateAnnotations(cr, releaseState)
+		err = r.updateAnnotations(ctx, cr, releaseState)
 		if err != nil {
 			return microerror.Mask(err)
 		}

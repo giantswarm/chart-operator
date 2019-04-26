@@ -1,6 +1,9 @@
 package release
 
 import (
+	"context"
+	"fmt"
+
 	"github.com/giantswarm/apiextensions/pkg/apis/application/v1alpha1"
 	"github.com/giantswarm/apiextensions/pkg/clientset/versioned"
 	"github.com/giantswarm/helmclient"
@@ -90,8 +93,10 @@ func (r *Resource) Name() string {
 	return Name
 }
 
-func (r *Resource) updateAnnotations(cr v1alpha1.Chart, releaseState ReleaseState) error {
+func (r *Resource) updateAnnotations(ctx context.Context, cr v1alpha1.Chart, releaseState ReleaseState) error {
 	annotations := map[string]string{}
+
+	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("updating annotations for app CR %#q in namespace %#q", cr.Name, cr.Namespace))
 
 	// Get chart CR again to ensure the resource version and annotations
 	// are correct.
@@ -115,6 +120,8 @@ func (r *Resource) updateAnnotations(cr v1alpha1.Chart, releaseState ReleaseStat
 			return microerror.Mask(err)
 		}
 	}
+
+	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("updated annotations for app CR %#q in namespace %#q", cr.Name, cr.Namespace))
 
 	return nil
 }
