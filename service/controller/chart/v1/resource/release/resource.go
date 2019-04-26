@@ -153,13 +153,28 @@ func isReleaseInTransitionState(r ReleaseState) bool {
 }
 
 func isReleaseModified(a, b ReleaseState) bool {
+	if isEmpty(a) {
+		return false
+	}
+
 	// Values have changed so we need to update the Helm Release.
-	if a.ValuesMD5Checksum != "" && a.ValuesMD5Checksum != b.ValuesMD5Checksum {
+	if a.ValuesMD5Checksum != b.ValuesMD5Checksum {
 		return true
 	}
 
-	// Version has changed so we need to update the Helm Release.
 	if a.Version != b.Version {
+		return true
+	}
+
+	return false
+}
+
+func isStatusUpdateable(a, b ReleaseState) bool {
+	if a.Status == "" {
+		return false
+	}
+
+	if a.Status != b.Status {
 		return true
 	}
 
