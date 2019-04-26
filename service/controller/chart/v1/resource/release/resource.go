@@ -91,6 +91,8 @@ func (r *Resource) Name() string {
 }
 
 func (r *Resource) updateAnnotations(cr v1alpha1.Chart, releaseState ReleaseState) error {
+	annotations := map[string]string{}
+
 	// Get chart CR again to ensure the resource version and annotations
 	// are correct.
 	currentCR, err := r.g8sClient.ApplicationV1alpha1().Charts(cr.Namespace).Get(cr.Name, metav1.GetOptions{})
@@ -101,7 +103,10 @@ func (r *Resource) updateAnnotations(cr v1alpha1.Chart, releaseState ReleaseStat
 	currentChecksum := key.ValuesMD5ChecksumAnnotation(*currentCR)
 
 	if releaseState.ValuesMD5Checksum != currentChecksum {
-		annotations := currentCR.Annotations
+		if currentCR.Annotations != nil {
+			annotations = currentCR.Annotations
+		}
+
 		annotations[key.ValuesMD5ChecksumAnnotationName] = releaseState.ValuesMD5Checksum
 
 		currentCR.Annotations = annotations
