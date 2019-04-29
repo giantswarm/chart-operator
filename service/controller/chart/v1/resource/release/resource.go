@@ -93,6 +93,9 @@ func (r *Resource) Name() string {
 	return Name
 }
 
+// updateAnnotations updates the chart CR annotations if they have changed. The
+// CR is fetched again to ensure that the resource version and annotations are
+// up to date.
 func (r *Resource) updateAnnotations(ctx context.Context, cr v1alpha1.Chart, releaseState ReleaseState) error {
 	annotations := map[string]string{}
 
@@ -119,9 +122,12 @@ func (r *Resource) updateAnnotations(ctx context.Context, cr v1alpha1.Chart, rel
 		if err != nil {
 			return microerror.Mask(err)
 		}
-	}
 
-	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("updated annotations for app CR %#q in namespace %#q", cr.Name, cr.Namespace))
+		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("updated annotations for app CR %#q in namespace %#q", cr.Name, cr.Namespace))
+
+	} else {
+		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("no need to update annotations for app CR %#q in namespace %#q", cr.Name, cr.Namespace))
+	}
 
 	return nil
 }
