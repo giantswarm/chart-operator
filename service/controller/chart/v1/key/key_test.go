@@ -161,6 +161,22 @@ func Test_ToCustomResource(t *testing.T) {
 	}
 }
 
+func Test_ValuesMD5ChecksumAnnotation(t *testing.T) {
+	expectedMD5Checksum := "1ee001c5286ca00fdf64d9660c04bde2"
+
+	obj := v1alpha1.Chart{
+		ObjectMeta: metav1.ObjectMeta{
+			Annotations: map[string]string{
+				ValuesMD5ChecksumAnnotationName: "1ee001c5286ca00fdf64d9660c04bde2",
+			},
+		},
+	}
+
+	if ValuesMD5ChecksumAnnotation(obj) != expectedMD5Checksum {
+		t.Fatalf("values md5 checksum %#q, want %#q", ValuesMD5ChecksumAnnotation(obj), expectedMD5Checksum)
+	}
+}
+
 func Test_VersionLabel(t *testing.T) {
 	testCases := []struct {
 		name            string

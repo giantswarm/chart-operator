@@ -2,9 +2,11 @@ package release
 
 import (
 	"context"
+	"crypto/md5"
 	"fmt"
 
 	"github.com/giantswarm/apiextensions/pkg/apis/application/v1alpha1"
+	"github.com/giantswarm/helmclient"
 	"github.com/giantswarm/microerror"
 	yaml "gopkg.in/yaml.v2"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
@@ -40,33 +42,51 @@ func (r *Resource) GetDesiredState(ctx context.Context, obj interface{}) (interf
 		return nil, microerror.Mask(err)
 	}
 
-	configMapValues, err := r.getConfigMapValues(ctx, cr)
+	configMapData, err := r.getConfigMapData(ctx, cr)
 	if err != nil {
 		return nil, microerror.Mask(err)
 	}
 
-	secretValues, err := r.getSecretValues(ctx, cr)
+	secretData, err := r.getSecretData(ctx, cr)
 	if err != nil {
 		return nil, microerror.Mask(err)
 	}
 
-	values, err := union(configMapValues, secretValues)
+	// Merge configmap and secret to provide a single set of values to Helm.
+	values, err := helmclient.MergeValues(configMapData, secretData)
 	if err != nil {
 		return nil, microerror.Mask(err)
+	}
+
+	var valuesYAML []byte
+	var valuesMD5Checksum string
+
+	if len(values) > 0 {
+		valuesYAML, err = yaml.Marshal(values)
+		if err != nil {
+			return nil, microerror.Mask(err)
+		}
+
+		valuesMD5Checksum = fmt.Sprintf("%x", md5.Sum(valuesYAML))
+	} else {
+		// We need to pass empty values in ValueOverrides to make the install
+		// process use the default values and prevent errors on nested values.
+		valuesYAML = []byte("{}")
 	}
 
 	releaseState := &ReleaseState{
-		Name:    releaseName,
-		Status:  helmDeployedStatus,
-		Values:  values,
-		Version: chart.Version,
+		Name:              releaseName,
+		Status:            helmDeployedStatus,
+		ValuesMD5Checksum: valuesMD5Checksum,
+		ValuesYAML:        valuesYAML,
+		Version:           chart.Version,
 	}
 
 	return releaseState, nil
 }
 
-func (r *Resource) getConfigMapValues(ctx context.Context, cr v1alpha1.Chart) (map[string]interface{}, error) {
-	configMapValues := make(map[string]interface{})
+func (r *Resource) getConfigMapData(ctx context.Context, cr v1alpha1.Chart) (map[string][]byte, error) {
+	configMapData := map[string][]byte{}
 
 	// TODO: Improve desired state generation by removing call to key.IsDeleted.
 	//
@@ -74,7 +94,7 @@ func (r *Resource) getConfigMapValues(ctx context.Context, cr v1alpha1.Chart) (m
 	//
 	if key.IsDeleted(cr) {
 		// Return early as configmap has already been deleted.
-		return configMapValues, nil
+		return configMapData, nil
 	}
 
 	if key.ConfigMapName(cr) != "" {
@@ -88,20 +108,17 @@ func (r *Resource) getConfigMapValues(ctx context.Context, cr v1alpha1.Chart) (m
 			return nil, microerror.Mask(err)
 		}
 
-		yamlData := configMap.Data[valuesKey]
-		if yamlData != "" {
-			err = yaml.Unmarshal([]byte(yamlData), &configMapValues)
-			if err != nil {
-				return nil, microerror.Mask(err)
-			}
+		// Convert strings to byte arrays to match secret types.
+		for k, v := range configMap.Data {
+			configMapData[k] = []byte(v)
 		}
 	}
 
-	return configMapValues, nil
+	return configMapData, nil
 }
 
-func (r *Resource) getSecretValues(ctx context.Context, cr v1alpha1.Chart) (map[string]interface{}, error) {
-	secretValues := make(map[string]interface{})
+func (r *Resource) getSecretData(ctx context.Context, cr v1alpha1.Chart) (map[string][]byte, error) {
+	secretData := map[string][]byte{}
 
 	// TODO: Improve desired state generation by removing call to key.IsDeleted.
 	//
@@ -109,7 +126,7 @@ func (r *Resource) getSecretValues(ctx context.Context, cr v1alpha1.Chart) (map[
 	//
 	if key.IsDeleted(cr) {
 		// Return early as secret has already been deleted.
-		return secretValues, nil
+		return secretData, nil
 	}
 
 	if key.SecretName(cr) != "" {
@@ -123,31 +140,8 @@ func (r *Resource) getSecretValues(ctx context.Context, cr v1alpha1.Chart) (map[
 			return nil, microerror.Mask(err)
 		}
 
-		yamlData := secret.Data[valuesKey]
-		if yamlData != nil {
-			err = yaml.Unmarshal(yamlData, &secretValues)
-			if err != nil {
-				return nil, microerror.Mask(err)
-			}
-		}
+		secretData = secret.Data
 	}
 
-	return secretValues, nil
-}
-
-func union(a, b map[string]interface{}) (map[string]interface{}, error) {
-	if a == nil {
-		return b, nil
-	}
-
-	for k, v := range b {
-		_, ok := a[k]
-		if ok {
-			// The configmap and secret have at least one shared key. We cannot
-			// decide which value should be applied.
-			return nil, microerror.Maskf(invalidExecutionError, "configmap and secret share the same key %#q", k)
-		}
-		a[k] = v
-	}
-	return a, nil
+	return secretData, nil
 }

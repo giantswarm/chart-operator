@@ -63,81 +63,64 @@ func Test_Resource_Chart_newUpdateChange(t *testing.T) {
 				Version: "release-version",
 			},
 			desiredState: &ReleaseState{
-				Name: "release-name",
-				Values: map[string]interface{}{
-					"key": "value",
-				},
-				Version: "release-version",
+				Name:              "release-name",
+				ValuesMD5Checksum: "checksum",
+				Version:           "release-version",
 			},
 			expectedUpdateState: &ReleaseState{
-				Name: "release-name",
-				Values: map[string]interface{}{
-					"key": "value",
-				},
-				Version: "release-version",
+				Name:              "release-name",
+				ValuesMD5Checksum: "checksum",
+				Version:           "release-version",
 			},
 		},
 		{
 			name: "case 4: nonempty current state, desired state has different values, expected desired state",
 			currentState: &ReleaseState{
-				Name:    "release-name",
-				Version: "release-version",
+				Name:              "release-name",
+				ValuesMD5Checksum: "old-checksum",
+				Version:           "release-version",
 			},
 			desiredState: &ReleaseState{
-				Name: "release-name",
-				Values: map[string]interface{}{
-					"key": "new-value",
-				},
-				Version: "release-version",
+				Name:              "release-name",
+				ValuesMD5Checksum: "new-checksum",
+				Version:           "release-version",
 			},
 			expectedUpdateState: &ReleaseState{
-				Name: "release-name",
-				Values: map[string]interface{}{
-					"key": "new-value",
-				},
-				Version: "release-version",
+				Name:              "release-name",
+				ValuesMD5Checksum: "new-checksum",
+				Version:           "release-version",
 			},
 		},
 		{
 			name: "case 5: current state has values, desired state has equal values, empty update change",
 			currentState: &ReleaseState{
-				Name: "release-name",
-				Values: map[string]interface{}{
-					"key": "value",
-				},
-				Version: "release-version",
+				Name:              "release-name",
+				ValuesMD5Checksum: "checksum",
+				Version:           "release-version",
 			},
 			desiredState: &ReleaseState{
-				Name: "release-name",
-				Values: map[string]interface{}{
-					"key": "value",
-				},
-				Version: "release-version",
+				Name:              "release-name",
+				ValuesMD5Checksum: "checksum",
+				Version:           "release-version",
 			},
 			expectedUpdateState: nil,
 		},
 		{
 			name: "case 6: current state has values, desired state has new release and equal values, expected desired state",
 			currentState: &ReleaseState{
-				Name: "release-name",
-				Values: map[string]interface{}{
-					"key": "value",
-				},
-				Version: "release-version",
+				Name:              "release-name",
+				ValuesMD5Checksum: "checksum",
+				Version:           "release-version",
 			},
 			desiredState: &ReleaseState{
-				Name: "release-name",
-				Values: map[string]interface{}{
-					"key": "value",
-				},
-				Version: "new-release-version",
+				Name:              "release-name",
+				ValuesMD5Checksum: "checksum",
+				Version:           "new-release-version",
 			},
 			expectedUpdateState: &ReleaseState{
-				Name: "release-name",
-				Values: map[string]interface{}{
-					"key": "value",
-				},
-				Version: "new-release-version",
+				Name:              "release-name",
+				ValuesMD5Checksum: "checksum",
+				Version:           "new-release-version",
 			},
 		},
 		{

@@ -6,6 +6,10 @@ import (
 )
 
 const (
+	// ValuesMD5ChecksumAnnotationName is the name of the annotation storing
+	// an MD5 checksum of the Helm release values.
+	ValuesMD5ChecksumAnnotationName = "chart-operator.giantswarm.io/values-md5-checksum"
+
 	versionLabel = "chart-operator.giantswarm.io/version"
 )
 
@@ -58,6 +62,16 @@ func ToCustomResource(v interface{}) (v1alpha1.Chart, error) {
 	}
 
 	return *customResourcePointer, nil
+}
+
+// ValuesMD5ChecksumAnnotation returns the annotation value to determine if the
+// Helm release values have changed.
+func ValuesMD5ChecksumAnnotation(customResource v1alpha1.Chart) string {
+	if val, ok := customResource.ObjectMeta.Annotations[ValuesMD5ChecksumAnnotationName]; ok {
+		return val
+	} else {
+		return ""
+	}
 }
 
 // VersionLabel returns the label value to determine if the custom resource is

@@ -59,11 +59,17 @@ rules:
 - apiGroups:
   - ""
   resources:
-  - configmaps
   - pods
   verbs:
   - "get"
   - "list"
+- apiGroups:
+  - ""
+  resources:
+  - configmaps
+  - secrets
+  verbs:
+  - "get"
 - apiGroups:
   - ""
   resources:

@@ -39,10 +39,11 @@ func Test_DesiredState(t *testing.T) {
 				Version: "0.1.2",
 			},
 			expectedState: ReleaseState{
-				Name:    "chart-operator-chart",
-				Status:  helmDeployedStatus,
-				Values:  map[string]interface{}{},
-				Version: "0.1.2",
+				Name:              "chart-operator-chart",
+				Status:            helmDeployedStatus,
+				ValuesMD5Checksum: "",
+				ValuesYAML:        []byte("{}"),
+				Version:           "0.1.2",
 			},
 		},
 		{
@@ -69,10 +70,11 @@ func Test_DesiredState(t *testing.T) {
 				Version: "1.2.3",
 			},
 			expectedState: ReleaseState{
-				Name:    "chart-operator-chart",
-				Status:  helmDeployedStatus,
-				Values:  map[string]interface{}{},
-				Version: "1.2.3",
+				Name:              "chart-operator-chart",
+				Status:            helmDeployedStatus,
+				ValuesMD5Checksum: "",
+				ValuesYAML:        []byte("{}"),
+				Version:           "1.2.3",
 			},
 		},
 		{
@@ -94,19 +96,18 @@ func Test_DesiredState(t *testing.T) {
 					Namespace: "giantswarm",
 				},
 				Data: map[string]string{
-					"values": `"test": "test"`,
+					"values": `test: test`,
 				},
 			},
 			helmChart: helmclient.Chart{
 				Version: "0.1.2",
 			},
 			expectedState: ReleaseState{
-				Name:   "chart-operator-chart",
-				Status: helmDeployedStatus,
-				Values: map[string]interface{}{
-					"test": "test",
-				},
-				Version: "0.1.2",
+				Name:              "chart-operator-chart",
+				Status:            helmDeployedStatus,
+				ValuesMD5Checksum: "d27213d2ae2b24e8d1be0806469c564c",
+				ValuesYAML:        []byte("test: test\n"),
+				Version:           "0.1.2",
 			},
 		},
 		{
@@ -135,13 +136,11 @@ func Test_DesiredState(t *testing.T) {
 				Version: "0.1.2",
 			},
 			expectedState: ReleaseState{
-				Name:   "chart-operator-chart",
-				Status: helmDeployedStatus,
-				Values: map[string]interface{}{
-					"provider": "azure",
-					"replicas": 2,
-				},
-				Version: "0.1.2",
+				Name:              "chart-operator-chart",
+				Status:            helmDeployedStatus,
+				ValuesMD5Checksum: "dead3edde0c0c861d8bf4d83e2e4847a",
+				ValuesYAML:        []byte("provider: azure\nreplicas: 2\n"),
+				Version:           "0.1.2",
 			},
 		},
 		{
@@ -194,12 +193,11 @@ func Test_DesiredState(t *testing.T) {
 				},
 			},
 			expectedState: ReleaseState{
-				Name:   "chart-operator-chart",
-				Status: helmDeployedStatus,
-				Values: map[string]interface{}{
-					"test": "test",
-				},
-				Version: "0.1.2",
+				Name:              "chart-operator-chart",
+				Status:            helmDeployedStatus,
+				ValuesMD5Checksum: "d27213d2ae2b24e8d1be0806469c564c",
+				ValuesYAML:        []byte("test: test\n"),
+				Version:           "0.1.2",
 			},
 		},
 		{
@@ -229,13 +227,11 @@ func Test_DesiredState(t *testing.T) {
 				},
 			},
 			expectedState: ReleaseState{
-				Name:   "chart-operator-chart",
-				Status: helmDeployedStatus,
-				Values: map[string]interface{}{
-					"secretpassword": "admin",
-					"secretnumber":   2,
-				},
-				Version: "0.1.2",
+				Name:              "chart-operator-chart",
+				Status:            helmDeployedStatus,
+				ValuesMD5Checksum: "8ccfa2ed7f5cb9a125b5f53254c296a8",
+				ValuesYAML:        []byte("secretnumber: 2\nsecretpassword: admin\n"),
+				Version:           "0.1.2",
 			},
 		},
 		{
@@ -289,6 +285,9 @@ func Test_DesiredState(t *testing.T) {
 "replicas": 2`,
 				},
 			},
+			helmChart: helmclient.Chart{
+				Version: "0.1.2",
+			},
 			secret: &apiv1.Secret{
 				ObjectMeta: metav1.ObjectMeta{
 					Name:      "chart-operator-values-secret",
@@ -299,7 +298,13 @@ func Test_DesiredState(t *testing.T) {
 "secretnumber": 2`),
 				},
 			},
-			errorMatcher: IsInvalidExecution,
+			expectedState: ReleaseState{
+				Name:              "chart-operator-chart",
+				Status:            helmDeployedStatus,
+				ValuesMD5Checksum: "80c4411b068b4b415a94b2b775797891",
+				ValuesYAML:        []byte("replicas: 2\nsecretnumber: 2\nusername: admin\n"),
+				Version:           "0.1.2",
+			},
 		},
 	}
 
@@ -343,93 +348,20 @@ func Test_DesiredState(t *testing.T) {
 				t.Fatalf("error == %#v, want matching", err)
 			}
 
-			ReleaseState, err := toReleaseState(result)
+			releaseState, err := toReleaseState(result)
 			if err != nil {
 				t.Fatalf("error == %#v, want nil", err)
 			}
 
-			if !reflect.DeepEqual(ReleaseState, tc.expectedState) {
-				t.Fatalf("want matching ReleaseState \n %s", cmp.Diff(ReleaseState, tc.expectedState))
-			}
-		})
-	}
+			if !reflect.DeepEqual(releaseState.ValuesYAML, tc.expectedState.ValuesYAML) {
+				desiredYAML := string(releaseState.ValuesYAML)
+				expectedYAML := string(tc.expectedState.ValuesYAML)
 
-}
-
-func Test_union(t *testing.T) {
-	testCases := []struct {
-		name         string
-		inputA       map[string]interface{}
-		inputB       map[string]interface{}
-		expectedMap  map[string]interface{}
-		errorMatcher func(error) bool
-	}{
-		{
-			name: "case 0: both maps with exclusive entries",
-			inputA: map[string]interface{}{
-				"secret": "secret",
-			},
-			inputB: map[string]interface{}{
-				"config": "config",
-			},
-			expectedMap: map[string]interface{}{
-				"secret": "secret",
-				"config": "config",
-			},
-		},
-		{
-			name: "case 1: only the first input",
-			inputA: map[string]interface{}{
-				"secret": "secret",
-			},
-			inputB: nil,
-			expectedMap: map[string]interface{}{
-				"secret": "secret",
-			},
-		},
-		{
-			name:   "case 2: only the second input",
-			inputA: nil,
-			inputB: map[string]interface{}{
-				"config": "config",
-			},
-			expectedMap: map[string]interface{}{
-				"config": "config",
-			},
-		},
-		{
-			name:        "case 3: no input",
-			inputA:      nil,
-			inputB:      nil,
-			expectedMap: nil,
-		},
-		{
-			name: "case 4: entries are not exclusive",
-			inputA: map[string]interface{}{
-				"secret": "secret",
-			},
-			inputB: map[string]interface{}{
-				"config": "config",
-				"secret": "config",
-			},
-			errorMatcher: IsInvalidExecution,
-		},
-	}
-
-	for _, tc := range testCases {
-		t.Run(tc.name, func(t *testing.T) {
-			result, err := union(tc.inputA, tc.inputB)
-			switch {
-			case err != nil && tc.errorMatcher == nil:
-				t.Fatalf("error == %#v, want nil", err)
-			case err == nil && tc.errorMatcher != nil:
-				t.Fatalf("error == nil, want non-nil")
-			case err != nil && !tc.errorMatcher(err):
-				t.Fatalf("error == %#v, want matching", err)
+				t.Fatalf("want matching ValuesYAML \n %s", cmp.Diff(desiredYAML, expectedYAML))
 			}
 
-			if !reflect.DeepEqual(result, tc.expectedMap) {
-				t.Fatalf("Map == %q, want %q", result, tc.expectedMap)
+			if !reflect.DeepEqual(releaseState, tc.expectedState) {
+				t.Fatalf("want matching ReleaseState \n %s", cmp.Diff(releaseState, tc.expectedState))
 			}
 		})
 	}
