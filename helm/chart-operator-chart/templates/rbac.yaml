@@ -69,7 +69,7 @@ rules:
   - configmaps
   - secrets
   verbs:
-  - "*"
+  - "get"
 - apiGroups:
   - ""
   resources:
