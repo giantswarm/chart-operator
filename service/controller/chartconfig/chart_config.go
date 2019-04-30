@@ -19,6 +19,7 @@ import (
 	v3 "github.com/giantswarm/chart-operator/service/controller/chartconfig/v3"
 	v4 "github.com/giantswarm/chart-operator/service/controller/chartconfig/v4"
 	v5 "github.com/giantswarm/chart-operator/service/controller/chartconfig/v5"
+	v6 "github.com/giantswarm/chart-operator/service/controller/chartconfig/v6"
 )
 
 const chartConfigControllerSuffix = "-chartconfig"
@@ -180,6 +181,24 @@ func NewChartConfig(config Config) (*ChartConfig, error) {
 		}
 	}
 
+	var resourceSetV6 *controller.ResourceSet
+	{
+		c := v6.ResourceSetConfig{
+			ApprClient:  config.ApprClient,
+			Fs:          config.Fs,
+			G8sClient:   config.G8sClient,
+			HelmClient:  config.HelmClient,
+			K8sClient:   config.K8sClient,
+			Logger:      config.Logger,
+			ProjectName: config.ProjectName,
+		}
+
+		resourceSetV5, err = v6.NewResourceSet(c)
+		if err != nil {
+			return nil, microerror.Mask(err)
+		}
+	}
+
 	var chartConfigController *controller.Controller
 	{
 		c := controller.Config{
@@ -193,6 +212,7 @@ func NewChartConfig(config Config) (*ChartConfig, error) {
 				resourceSetV3,
 				resourceSetV4,
 				resourceSetV5,
+				resourceSetV6,
 			},
 			RESTClient: config.G8sClient.CoreV1alpha1().RESTClient(),
 
