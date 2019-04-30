@@ -9,7 +9,7 @@ import (
 	"github.com/giantswarm/operatorkit/controller"
 	"k8s.io/helm/pkg/helm"
 
-	"github.com/giantswarm/chart-operator/service/controller/chartconfig/v5/key"
+	"github.com/giantswarm/chart-operator/service/controller/chartconfig/v6/key"
 )
 
 func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange interface{}) error {
