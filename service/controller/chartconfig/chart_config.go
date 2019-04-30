@@ -193,7 +193,7 @@ func NewChartConfig(config Config) (*ChartConfig, error) {
 			ProjectName: config.ProjectName,
 		}
 
-		resourceSetV5, err = v6.NewResourceSet(c)
+		resourceSetV6, err = v6.NewResourceSet(c)
 		if err != nil {
 			return nil, microerror.Mask(err)
 		}
