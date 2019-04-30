@@ -42,8 +42,6 @@ func Setup(m *testing.M, config Config) {
 				log.Printf("%#v\n", err)
 				v = 1
 			}
-			// TODO there should be error handling for the framework teardown.
-			config.Host.Teardown()
 		}
 	}
 
@@ -54,7 +52,7 @@ func installResources(ctx context.Context, config Config) error {
 	var err error
 
 	{
-		err = config.Host.CreateNamespace("giantswarm")
+		err = config.CPK8sSetup.EnsureNamespaceCreated(ctx, "giantswarm")
 		if err != nil {
 			return microerror.Mask(err)
 		}

@@ -1,9 +1,11 @@
 package setup
 
 import (
-	"github.com/giantswarm/e2e-harness/pkg/framework"
+	"github.com/giantswarm/chart-operator/integration/env"
 	"github.com/giantswarm/e2e-harness/pkg/framework/resource"
+	"github.com/giantswarm/e2e-harness/pkg/harness"
 	"github.com/giantswarm/e2e-harness/pkg/release"
+	"github.com/giantswarm/e2esetup/k8s"
 	"github.com/giantswarm/helmclient"
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/micrologger"
@@ -15,11 +17,12 @@ const (
 )
 
 type Config struct {
-	Host       *framework.Host
-	HelmClient *helmclient.Client
-	Logger     micrologger.Logger
-	Release    *release.Release
-	Resource   *resource.Resource
+	CPK8sClients *k8s.Clients
+	CPK8sSetup   *k8s.Setup
+	HelmClient   *helmclient.Client
+	Logger       micrologger.Logger
+	Release      *release.Release
+	Resource     *resource.Resource
 }
 
 func NewConfig() (Config, error) {
@@ -34,17 +37,33 @@ func NewConfig() (Config, error) {
 		}
 	}
 
-	var host *framework.Host
+	var cpK8sClients *k8s.Clients
 	{
-		c := framework.HostConfig{
-			Logger: logger,
-
-			ClusterID:       "n/a",
-			VaultToken:      "n/a",
-			TargetNamespace: namespace,
+		kubeConfigPath := env.KubeConfigPath()
+		if kubeConfigPath == "" {
+			kubeConfigPath = harness.DefaultKubeConfig
 		}
 
-		host, err = framework.NewHost(c)
+		c := k8s.ClientsConfig{
+			Logger: logger,
+
+			KubeConfigPath: kubeConfigPath,
+		}
+
+		cpK8sClients, err = k8s.NewClients(c)
+		if err != nil {
+			return Config{}, microerror.Mask(err)
+		}
+	}
+
+	var cpK8sSetup *k8s.Setup
+	{
+		c := k8s.SetupConfig{
+			K8sClient: cpK8sClients.K8sClient(),
+			Logger:    logger,
+		}
+
+		cpK8sSetup, err = k8s.NewSetup(c)
 		if err != nil {
 			return Config{}, microerror.Mask(err)
 		}
@@ -54,8 +73,8 @@ func NewConfig() (Config, error) {
 	{
 		c := helmclient.Config{
 			Logger:          logger,
-			K8sClient:       host.K8sClient(),
-			RestConfig:      host.RestConfig(),
+			K8sClient:       cpK8sClients.K8sClient(),
+			RestConfig:      cpK8sClients.RestConfig(),
 			TillerNamespace: tillerNamespace,
 		}
 		helmClient, err = helmclient.New(c)
@@ -67,10 +86,10 @@ func NewConfig() (Config, error) {
 	var newRelease *release.Release
 	{
 		c := release.Config{
-			ExtClient:  host.ExtClient(),
-			G8sClient:  host.G8sClient(),
+			ExtClient:  cpK8sClients.ExtClient(),
+			G8sClient:  cpK8sClients.G8sClient(),
 			HelmClient: helmClient,
-			K8sClient:  host.K8sClient(),
+			K8sClient:  cpK8sClients.K8sClient(),
 			Logger:     logger,
 
 			Namespace: namespace,
@@ -96,10 +115,11 @@ func NewConfig() (Config, error) {
 	}
 
 	c := Config{
-		Host:       host,
-		HelmClient: helmClient,
-		Logger:     logger,
-		Release:    newRelease,
+		CPK8sClients: cpK8sClients,
+		CPK8sSetup:   cpK8sSetup,
+		HelmClient:   helmClient,
+		Logger:       logger,
+		Release:      newRelease,
 		// Resource is deprecated and used by legacy chartconfig tests.
 		Resource: newResource,
 	}

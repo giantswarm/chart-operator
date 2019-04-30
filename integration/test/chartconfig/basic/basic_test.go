@@ -44,7 +44,7 @@ func TestChartLifecycle(t *testing.T) {
 			},
 		}
 
-		err := cnr.Push(ctx, config.Host, charts)
+		err := cnr.Push(ctx, config, charts)
 		if err != nil {
 			t.Fatalf("expected %#v got %#v", nil, err)
 		}

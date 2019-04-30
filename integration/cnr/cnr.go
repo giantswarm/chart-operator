@@ -10,7 +10,7 @@ import (
 
 	"github.com/cenkalti/backoff"
 	"github.com/giantswarm/apprclient"
-	"github.com/giantswarm/e2e-harness/pkg/framework"
+	"github.com/giantswarm/chart-operator/integration/setup"
 	"github.com/giantswarm/k8sportforward"
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/micrologger"
@@ -24,13 +24,13 @@ type Chart struct {
 	Name    string
 }
 
-func Push(ctx context.Context, h *framework.Host, charts []Chart) error {
+func Push(ctx context.Context, config setup.Config, charts []Chart) error {
 	var err error
 
 	var forwarder *k8sportforward.Forwarder
 	{
 		c := k8sportforward.ForwarderConfig{
-			RestConfig: h.RestConfig(),
+			RestConfig: config.CPK8sClients.RestConfig(),
 		}
 
 		forwarder, err = k8sportforward.NewForwarder(c)
@@ -39,7 +39,7 @@ func Push(ctx context.Context, h *framework.Host, charts []Chart) error {
 		}
 	}
 
-	podName, err := waitForPod(h, "giantswarm", "app=cnr-server")
+	err = config.Release.Condition().PodExists(ctx, "giantswarm", "app=cnr-server")
 	if err != nil {
 		return microerror.Mask(err)
 	}
@@ -49,7 +49,7 @@ func Push(ctx context.Context, h *framework.Host, charts []Chart) error {
 		return microerror.Mask(err)
 	}
 
-	err = waitForServer(h, "http://"+tunnel.LocalAddress()+"/cnr/api/v1/packages")
+	err = waitForServer("http://" + tunnel.LocalAddress() + "/cnr/api/v1/packages")
 	if err != nil {
 		return microerror.Mask(err)
 	}
@@ -86,7 +86,7 @@ func Push(ctx context.Context, h *framework.Host, charts []Chart) error {
 	return nil
 }
 
-func waitForServer(h *framework.Host, url string) error {
+func waitForServer(url string) error {
 	var err error
 
 	operation := func() error {
@@ -107,28 +107,4 @@ func waitForServer(h *framework.Host, url string) error {
 		return microerror.Mask(err)
 	}
 	return nil
-}
-
-func waitForPod(h *framework.Host, ns, selector string) (string, error) {
-	var err error
-	var podName string
-	operation := func() error {
-		podName, err = h.GetPodName(ns, selector)
-		if err != nil {
-			return microerror.Mask(err)
-		}
-
-		return nil
-	}
-
-	notify := func(err error, t time.Duration) {
-		log.Printf("waiting for pod at %s: %v", t, err)
-	}
-
-	err = backoff.RetryNotify(operation, backoff.NewExponentialBackOff(), notify)
-	if err != nil {
-		return "", microerror.Mask(err)
-	}
-
-	return podName, nil
 }

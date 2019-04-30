@@ -45,7 +45,7 @@ func TestChartValues(t *testing.T) {
 		Release:              "tb-release",
 		VersionBundleVersion: versionBundleVersion,
 	}
-	err = cnr.Push(ctx, config.Host, charts)
+	err = cnr.Push(ctx, config, charts)
 	if err != nil {
 		t.Fatalf("could not push inital charts to cnr %v", err)
 	}
