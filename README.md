@@ -2,9 +2,40 @@
 
 # chart-operator
 
-The chart-operator deploys Helm charts by reconciling against a CNR registry.
+The chart-operator deploys Helm charts as [helm] releases. It is implemented
+using [operatorkit].
 
-The chart-operator is still under development.
+## chart CRD
+
+The operator deploys charts hosted in a Helm repository. The chart CRs are
+managed by [app-operator] which provides a higher level abstraction for
+managing apps via the app CRD.
+
+### Example chart CR
+
+```yaml
+apiVersion: application.giantswarm.io/v1alpha1
+kind: Chart
+metadata:
+  name: "prometheus"
+  labels:
+    chart-operator.giantswarm.io/version: "1.0.0"
+spec:
+  name: "prometheus"
+  namespace: "monitoring"
+  config:
+    configMap:
+      name: "prometheus-values"
+      namespace: "monitoring"
+    secret:
+      name: "prometheus-secrets"
+      namespace: "monitoring"
+  tarballURL: "https://giantswarm.github.com/app-catalog/prometheus-1-0-0.tgz"
+```
+
+## chartconfig CRD
+
+Legacy CRD that reconciles against an [appr] repository.
 
 ## Getting Project
 
@@ -33,3 +64,8 @@ contribution workflow as well as reporting bugs.
 
 chart-operator is under the Apache 2.0 license. See the [LICENSE](LICENSE) file for
 details.
+
+[app-operator]: https://github.com/giantswarm/app-operator
+[appr]: https://github.com/appr/appr
+[helm]: https://github.com/helm/helm
+[operatorkit]: https://github.com/giantswarm/operatorkit
