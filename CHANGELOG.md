@@ -11,3 +11,4 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 ### Added
 
 - Separate podsecuritypolicy.
+- Security context in deployment spec with non-root user.
