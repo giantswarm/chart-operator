@@ -10,6 +10,9 @@ replicas: 1
 
 clusterDNSIP: 172.31.0.10
 
+userID: 1000
+groupID: 1000
+
 cnr:
   address: https://quay.io
 
