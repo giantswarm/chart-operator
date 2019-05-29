@@ -46,7 +46,14 @@ func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange inte
 			return microerror.Mask(err)
 		}
 
-		err = r.helmClient.UpdateReleaseFromTarball(ctx, releaseName, tarballPath, helm.UpdateValueOverrides(values))
+		upgradeForce, err := key.HasForceUpgradeAnnotation(customObject)
+		if err != nil {
+			return microerror.Mask(err)
+		}
+
+		err = r.helmClient.UpdateReleaseFromTarball(ctx, releaseName, tarballPath,
+			helm.UpdateValueOverrides(values),
+			helm.UpgradeForce(upgradeForce))
 		if err != nil {
 			return microerror.Mask(err)
 		}

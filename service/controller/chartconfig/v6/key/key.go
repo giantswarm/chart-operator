@@ -1,6 +1,8 @@
 package key
 
 import (
+	"strconv"
+
 	"github.com/giantswarm/apiextensions/pkg/apis/core/v1alpha1"
 	"github.com/giantswarm/microerror"
 )
@@ -19,6 +21,20 @@ func ConfigMapName(customObject v1alpha1.ChartConfig) string {
 
 func ConfigMapNamespace(customObject v1alpha1.ChartConfig) string {
 	return customObject.Spec.Chart.ConfigMap.Namespace
+}
+
+func HasForceUpgradeAnnotation(customObject v1alpha1.ChartConfig) (bool, error) {
+	val, ok := customObject.Annotations["chart-operator.giantswarm.io/force-helm-upgrade"]
+	if !ok {
+		return false, nil
+	}
+
+	result, err := strconv.ParseBool(val)
+	if err != nil {
+		return false, microerror.Mask(err)
+	}
+
+	return result, nil
 }
 
 func Namespace(customObject v1alpha1.ChartConfig) string {
