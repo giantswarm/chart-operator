@@ -51,7 +51,6 @@ func Test_HasForceUpgradeAnnotation(t *testing.T) {
 		name           string
 		input          v1alpha1.Chart
 		expectedResult bool
-		hasError       bool
 	}{
 		{
 			name: "case 0: no annotations",
@@ -103,19 +102,12 @@ func Test_HasForceUpgradeAnnotation(t *testing.T) {
 				},
 			},
 			expectedResult: false,
-			hasError:       true,
 		},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			result, err := HasForceUpgradeAnnotation(tc.input)
-			switch {
-			case err != nil && tc.hasError == false:
-				t.Fatalf("error == %#v, want nil", err)
-			case err == nil && tc.hasError == true:
-				t.Fatalf("error == nil, want non-nil")
-			}
+			result := HasForceUpgradeAnnotation(tc.input)
 
 			if result != tc.expectedResult {
 				t.Fatalf("HasForceUpgradeAnnotation == %t, want %t", result, tc.expectedResult)

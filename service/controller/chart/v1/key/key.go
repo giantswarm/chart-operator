@@ -31,18 +31,20 @@ func ConfigMapNamespace(customResource v1alpha1.Chart) string {
 	return customResource.Spec.Config.ConfigMap.Namespace
 }
 
-func HasForceUpgradeAnnotation(customResource v1alpha1.Chart) (bool, error) {
+func HasForceUpgradeAnnotation(customResource v1alpha1.Chart) bool {
 	val, ok := customResource.Annotations[ForceHelmUpgradeAnnotationName]
 	if !ok {
-		return false, nil
+		return false
 	}
 
 	result, err := strconv.ParseBool(val)
 	if err != nil {
-		return false, microerror.Mask(err)
+		// If we cannot parse the boolean we return false and this is shown
+		// in the logs.
+		return false
 	}
 
-	return result, nil
+	return result
 }
 
 func IsDeleted(customResource v1alpha1.Chart) bool {

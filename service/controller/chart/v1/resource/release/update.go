@@ -21,8 +21,10 @@ func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange inte
 		return microerror.Mask(err)
 	}
 
+	upgradeForce := key.HasForceUpgradeAnnotation(cr)
+
 	if releaseState.Name != "" {
-		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("updating release %#q", releaseState.Name))
+		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("updating release %#q with force == %t", releaseState.Name, upgradeForce))
 
 		tarballURL := key.TarballURL(cr)
 		tarballPath, err := r.helmClient.PullChartTarball(ctx, tarballURL)
@@ -36,11 +38,6 @@ func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange inte
 				r.logger.LogCtx(ctx, "level", "error", "message", fmt.Sprintf("deletion of %#q failed", tarballPath), "stack", fmt.Sprintf("%#v", err))
 			}
 		}()
-
-		upgradeForce, err := key.HasForceUpgradeAnnotation(cr)
-		if err != nil {
-			return microerror.Mask(err)
-		}
 
 		// We need to pass the ValueOverrides option to make the update process
 		// use the default values and prevent errors on nested values.
