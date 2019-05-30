@@ -45,6 +45,77 @@ func Test_ConfigMapNamespace(t *testing.T) {
 		t.Fatalf("config map namespace %#q, want %#q", ConfigMapNamespace(obj), expectedConfigMapNamespace)
 	}
 }
+
+func Test_HasForceUpgradeAnnotation(t *testing.T) {
+	testCases := []struct {
+		name           string
+		input          v1alpha1.Chart
+		expectedResult bool
+	}{
+		{
+			name: "case 0: no annotations",
+			input: v1alpha1.Chart{
+				ObjectMeta: metav1.ObjectMeta{},
+			},
+			expectedResult: false,
+		},
+		{
+			name: "case 1: other annotations",
+			input: v1alpha1.Chart{
+				ObjectMeta: metav1.ObjectMeta{
+					Annotations: map[string]string{
+						"test": "test",
+					},
+				},
+			},
+			expectedResult: false,
+		},
+		{
+			name: "case 2: annotation present",
+			input: v1alpha1.Chart{
+				ObjectMeta: metav1.ObjectMeta{
+					Annotations: map[string]string{
+						"chart-operator.giantswarm.io/force-helm-upgrade": "true",
+					},
+				},
+			},
+			expectedResult: true,
+		},
+		{
+			name: "case 3: annotation present but false",
+			input: v1alpha1.Chart{
+				ObjectMeta: metav1.ObjectMeta{
+					Annotations: map[string]string{
+						"chart-operator.giantswarm.io/force-helm-upgrade": "false",
+					},
+				},
+			},
+			expectedResult: false,
+		},
+		{
+			name: "case 4: annotation present but invalid value",
+			input: v1alpha1.Chart{
+				ObjectMeta: metav1.ObjectMeta{
+					Annotations: map[string]string{
+						"chart-operator.giantswarm.io/force-helm-upgrade": "invalid",
+					},
+				},
+			},
+			expectedResult: false,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			result := HasForceUpgradeAnnotation(tc.input)
+
+			if result != tc.expectedResult {
+				t.Fatalf("HasForceUpgradeAnnotation == %t, want %t", result, tc.expectedResult)
+			}
+		})
+	}
+}
+
 func Test_ReleaseName(t *testing.T) {
 	expectedRelease := "my-prometheus"
 

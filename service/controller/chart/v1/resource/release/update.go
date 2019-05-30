@@ -21,8 +21,10 @@ func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange inte
 		return microerror.Mask(err)
 	}
 
+	upgradeForce := key.HasForceUpgradeAnnotation(cr)
+
 	if releaseState.Name != "" {
-		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("updating release %#q", releaseState.Name))
+		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("updating release %#q with force == %t", releaseState.Name, upgradeForce))
 
 		tarballURL := key.TarballURL(cr)
 		tarballPath, err := r.helmClient.PullChartTarball(ctx, tarballURL)
@@ -37,15 +39,11 @@ func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange inte
 			}
 		}()
 
-		// TODO: Remove once upgrade --force support for re-installing releases
-		// is supported.
-		//
-		//	See https://github.com/giantswarm/giantswarm/issues/5612
-		//
-
 		// We need to pass the ValueOverrides option to make the update process
 		// use the default values and prevent errors on nested values.
-		err = r.helmClient.UpdateReleaseFromTarball(ctx, releaseState.Name, tarballPath, helm.UpdateValueOverrides(releaseState.ValuesYAML))
+		err = r.helmClient.UpdateReleaseFromTarball(ctx, releaseState.Name, tarballPath,
+			helm.UpdateValueOverrides(releaseState.ValuesYAML),
+			helm.UpgradeForce(upgradeForce))
 		if err != nil {
 			return microerror.Mask(err)
 		}

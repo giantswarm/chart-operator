@@ -1,11 +1,17 @@
 package key
 
 import (
+	"strconv"
+
 	"github.com/giantswarm/apiextensions/pkg/apis/application/v1alpha1"
 	"github.com/giantswarm/microerror"
 )
 
 const (
+	// ForceHelmUpgradeAnnotationName is the name of the annotation that
+	// controls whether force is used when upgrading the Helm release.
+	ForceHelmUpgradeAnnotationName = "chart-operator.giantswarm.io/force-helm-upgrade"
+
 	// ValuesMD5ChecksumAnnotationName is the name of the annotation storing
 	// an MD5 checksum of the Helm release values.
 	ValuesMD5ChecksumAnnotationName = "chart-operator.giantswarm.io/values-md5-checksum"
@@ -23,6 +29,22 @@ func ConfigMapName(customResource v1alpha1.Chart) string {
 
 func ConfigMapNamespace(customResource v1alpha1.Chart) string {
 	return customResource.Spec.Config.ConfigMap.Namespace
+}
+
+func HasForceUpgradeAnnotation(customResource v1alpha1.Chart) bool {
+	val, ok := customResource.Annotations[ForceHelmUpgradeAnnotationName]
+	if !ok {
+		return false
+	}
+
+	result, err := strconv.ParseBool(val)
+	if err != nil {
+		// If we cannot parse the boolean we return false and this is shown
+		// in the logs.
+		return false
+	}
+
+	return result
 }
 
 func IsDeleted(customResource v1alpha1.Chart) bool {
