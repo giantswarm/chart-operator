@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	Name = "chartstatusv6"
+	Name = "chartstatusv7"
 
 	releaseStatusDeployed = "DEPLOYED"
 )

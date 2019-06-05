@@ -13,7 +13,7 @@ import (
 
 const (
 	// Name is the identifier of the resource.
-	Name = "chartv6"
+	Name = "chartv7"
 
 	releaseStatusDeployed = "DEPLOYED"
 )
