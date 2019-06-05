@@ -9,12 +9,12 @@ func VersionBundle() versionbundle.Bundle {
 		Changelogs: []versionbundle.Changelog{
 			{
 				Component:   "chart-operator",
-				Description: "Added support for force upgrading Helm releases which is controlled via an annotation.",
+				Description: "Add your changes here.",
 				Kind:        versionbundle.KindAdded,
 			},
 		},
 		Components: []versionbundle.Component{},
 		Name:       "chart-operator",
-		Version:    "0.6.0",
+		Version:    "0.7.0",
 	}
 }
