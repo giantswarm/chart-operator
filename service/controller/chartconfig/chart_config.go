@@ -202,7 +202,7 @@ func NewChartConfig(config Config) (*ChartConfig, error) {
 
 	var resourceSetV7 *controller.ResourceSet
 	{
-		c := v6.ResourceSetConfig{
+		c := v7.ResourceSetConfig{
 			ApprClient:  config.ApprClient,
 			Fs:          config.Fs,
 			G8sClient:   config.G8sClient,
