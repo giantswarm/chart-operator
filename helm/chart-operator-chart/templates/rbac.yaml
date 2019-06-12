@@ -102,6 +102,7 @@ rules:
   verbs:
   - "create"
   - "get"
+  - "update"
 - nonResourceURLs:
   - "/"
   - "/healthz"
