@@ -149,7 +149,7 @@ func (c *Client) EnsureTillerInstalledWithValues(ctx context.Context, values []s
 
 	if !installTiller && pod != nil {
 		err = validateTillerVersion(pod, c.tillerImage)
-		if IsTillerOutdated(err) {
+		if IsTillerInvalidVersion(err) {
 			upgradeTiller = true
 		} else if err != nil {
 			return microerror.Mask(err)
@@ -158,6 +158,7 @@ func (c *Client) EnsureTillerInstalledWithValues(ctx context.Context, values []s
 
 	i := &installer.Options{
 		AutoMountServiceAccountToken: true,
+		ForceUpgrade:                 true,
 		ImageSpec:                    c.tillerImage,
 		MaxHistory:                   defaultMaxHistory,
 		Namespace:                    c.tillerNamespace,
