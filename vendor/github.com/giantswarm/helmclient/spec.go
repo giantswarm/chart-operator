@@ -15,7 +15,7 @@ const (
 	// runReleaseTestTimeout is the timeout in seconds when running tests.
 	runReleaseTestTimout = 300
 
-	defaultTillerImage     = "quay.io/giantswarm/tiller:v2.12.0"
+	defaultTillerImage     = "quay.io/giantswarm/tiller:v2.14.1"
 	defaultTillerNamespace = "kube-system"
 	roleBindingNamePrefix  = "tiller"
 	tillerLabelSelector    = "app=helm,name=tiller"
