@@ -65,6 +65,8 @@ contribution workflow as well as reporting bugs.
 chart-operator is under the Apache 2.0 license. See the [LICENSE](LICENSE) file for
 details.
 
+
+
 [app-operator]: https://github.com/giantswarm/app-operator
 [appr]: https://github.com/appr/appr
 [helm]: https://github.com/helm/helm
