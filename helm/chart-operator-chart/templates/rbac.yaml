@@ -100,7 +100,7 @@ rules:
   resources:
   - networkpolicies
   verbs:
-  - "create"
+  - create
 - apiGroups:
   - extensions
   resources:
