@@ -93,6 +93,11 @@ rules:
   resources:
   - services
   - serviceaccounts
+  verbs:
+  - "create"
+- apiGroups:
+  - networking.k8s.io
+  resources:
   - networkpolicies
   verbs:
   - "create"
