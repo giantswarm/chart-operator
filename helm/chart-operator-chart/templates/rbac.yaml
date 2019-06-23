@@ -96,6 +96,12 @@ rules:
   verbs:
   - "create"
 - apiGroups:
+  - networking.k8s.io
+  resources:
+  - networkpolicies
+  verbs:
+  - create
+- apiGroups:
   - extensions
   resources:
   - deployments
