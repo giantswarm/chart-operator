@@ -15,6 +15,7 @@ import (
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/micrologger"
 	"github.com/spf13/afero"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 type Chart struct {
@@ -106,17 +107,30 @@ func waitForServer(h *framework.Host, url string) error {
 	if err != nil {
 		return microerror.Mask(err)
 	}
+
 	return nil
 }
 
-func waitForPod(h *framework.Host, ns, selector string) (string, error) {
+func waitForPod(h *framework.Host, namespace, selector string) (string, error) {
 	var err error
 	var podName string
+
 	operation := func() error {
-		podName, err = h.GetPodName(ns, selector)
+		o := metav1.ListOptions{
+			LabelSelector: selector,
+		}
+		pods, err := h.K8sClient().CoreV1().Pods(namespace).List(o)
 		if err != nil {
 			return microerror.Mask(err)
 		}
+
+		if len(pods.Items) > 1 {
+			return microerror.Maskf(executionFailedError, "expected 1 pod, found %d", len(pods.Items))
+		}
+		if len(pods.Items) == 0 {
+			return microerror.Maskf(executionFailedError, "expected 1 pod, found 0")
+		}
+		podName = pods.Items[0].Name
 
 		return nil
 	}
