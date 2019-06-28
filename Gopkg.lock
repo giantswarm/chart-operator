@@ -193,6 +193,14 @@
 
 [[projects]]
   branch = "master"
+  digest = "1:0b4fd3b507391be0388ba170d99e096d9abe8e302e68d2ed20a71561aeaa1b66"
+  name = "github.com/giantswarm/e2esetup"
+  packages = ["k8s"]
+  pruneopts = "UT"
+  revision = "5b23ce08dec2137cf3e348e11f88275bc0c39181"
+
+[[projects]]
+  branch = "master"
   digest = "1:1ef737848b8d33ae75698708356fa0f87fd79af8608366de0faafc17e1252b5b"
   name = "github.com/giantswarm/e2etemplates"
   packages = [
@@ -1238,7 +1246,9 @@
     "github.com/giantswarm/apprclient/apprclienttest",
     "github.com/giantswarm/e2e-harness/pkg/framework",
     "github.com/giantswarm/e2e-harness/pkg/framework/resource",
+    "github.com/giantswarm/e2e-harness/pkg/harness",
     "github.com/giantswarm/e2e-harness/pkg/release",
+    "github.com/giantswarm/e2esetup/k8s",
     "github.com/giantswarm/e2etemplates/pkg/chartvalues",
     "github.com/giantswarm/e2etemplates/pkg/e2etemplates",
     "github.com/giantswarm/helmclient",
