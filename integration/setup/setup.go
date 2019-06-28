@@ -5,7 +5,6 @@ package setup
 import (
 	"context"
 	"fmt"
-	"log"
 	"os"
 	"testing"
 
@@ -34,19 +33,6 @@ func Setup(m *testing.M, config Config) {
 		v = m.Run()
 	}
 
-	if env.KeepResources() != "true" {
-		// only do full teardown when not on CI
-		if env.CircleCI() != "true" {
-			err := teardown(ctx, config)
-			if err != nil {
-				log.Printf("%#v\n", err)
-				v = 1
-			}
-			// TODO there should be error handling for the framework teardown.
-			config.Host.Teardown()
-		}
-	}
-
 	os.Exit(v)
 }
 
@@ -54,7 +40,7 @@ func installResources(ctx context.Context, config Config) error {
 	var err error
 
 	{
-		err = config.Host.CreateNamespace("giantswarm")
+		err := config.K8s.EnsureNamespaceCreated(ctx, namespace)
 		if err != nil {
 			return microerror.Mask(err)
 		}
