@@ -40,7 +40,6 @@ func NewConfig() (Config, error) {
 			Logger: logger,
 
 			ClusterID:       "n/a",
-			VaultToken:      "n/a",
 			TargetNamespace: namespace,
 		}
 
