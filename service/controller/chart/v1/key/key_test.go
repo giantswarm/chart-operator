@@ -6,6 +6,8 @@ import (
 
 	"github.com/giantswarm/apiextensions/pkg/apis/application/v1alpha1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+
+	"github.com/giantswarm/chart-operator/pkg/annotation"
 )
 
 func Test_ConfigMapName(t *testing.T) {
@@ -43,6 +45,38 @@ func Test_ConfigMapNamespace(t *testing.T) {
 
 	if ConfigMapNamespace(obj) != expectedConfigMapNamespace {
 		t.Fatalf("config map namespace %#q, want %#q", ConfigMapNamespace(obj), expectedConfigMapNamespace)
+	}
+}
+
+func Test_CordonReason(t *testing.T) {
+	expectedCordonReason := "manual upgrade"
+
+	obj := v1alpha1.Chart{
+		ObjectMeta: metav1.ObjectMeta{
+			Annotations: map[string]string{
+				annotation.CordonReason: "manual upgrade",
+			},
+		},
+	}
+
+	if CordonReason(obj) != expectedCordonReason {
+		t.Fatalf("cordon reason %#q, want %s", CordonReason(obj), expectedCordonReason)
+	}
+}
+
+func Test_CordonUntil(t *testing.T) {
+	expectedCordonUntil := "2019-12-31T23:59:59Z"
+
+	obj := v1alpha1.Chart{
+		ObjectMeta: metav1.ObjectMeta{
+			Annotations: map[string]string{
+				annotation.CordonUntilDate: "2019-12-31T23:59:59Z",
+			},
+		},
+	}
+
+	if CordonUntil(obj) != expectedCordonUntil {
+		t.Fatalf("cordon until %s, want %s", CordonUntil(obj), expectedCordonUntil)
 	}
 }
 
@@ -111,6 +145,39 @@ func Test_HasForceUpgradeAnnotation(t *testing.T) {
 
 			if result != tc.expectedResult {
 				t.Fatalf("HasForceUpgradeAnnotation == %t, want %t", result, tc.expectedResult)
+			}
+		})
+	}
+}
+
+func Test_IsCordoned(t *testing.T) {
+	tests := []struct {
+		name           string
+		chart          v1alpha1.Chart
+		expectedResult bool
+	}{
+		{
+			name: "case 0: chart cordoned",
+			chart: v1alpha1.Chart{
+				ObjectMeta: metav1.ObjectMeta{
+					Annotations: map[string]string{
+						annotation.CordonReason:    "testing manual upgrade",
+						annotation.CordonUntilDate: "2019-12-31T23:59:59Z",
+					},
+				},
+			},
+			expectedResult: true,
+		},
+		{
+			name:           "case 1: chart did not cordon",
+			chart:          v1alpha1.Chart{},
+			expectedResult: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := IsCordoned(tt.chart); got != tt.expectedResult {
+				t.Errorf("IsCordoned() = %v, want %v", got, tt.expectedResult)
 			}
 		})
 	}
