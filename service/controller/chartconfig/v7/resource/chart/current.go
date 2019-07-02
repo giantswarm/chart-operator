@@ -2,17 +2,28 @@ package chart
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/giantswarm/helmclient"
 	"github.com/giantswarm/microerror"
+	"github.com/giantswarm/operatorkit/controller/context/resourcecanceledcontext"
 
-	"github.com/giantswarm/chart-operator/service/controller/chartconfig/v6/key"
+	"github.com/giantswarm/chart-operator/service/controller/chartconfig/v7/key"
 )
 
 func (r *Resource) GetCurrentState(ctx context.Context, obj interface{}) (interface{}, error) {
 	customObject, err := key.ToCustomObject(obj)
 	if err != nil {
 		return nil, microerror.Mask(err)
+	}
+
+	if key.IsCordoned(customObject) {
+		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("chart %#q has been cordoned until %#q due to reason %#q ", key.ChartName(customObject), key.CordonUntil(customObject), key.CordonReason(customObject)))
+
+		resourcecanceledcontext.SetCanceled(ctx)
+		r.logger.LogCtx(ctx, "level", "debug", "message", "canceling resource")
+
+		return nil, nil
 	}
 
 	releaseName := key.ReleaseName(customObject)

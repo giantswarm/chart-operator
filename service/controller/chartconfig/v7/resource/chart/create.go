@@ -8,7 +8,7 @@ import (
 	"github.com/giantswarm/microerror"
 	"k8s.io/helm/pkg/helm"
 
-	"github.com/giantswarm/chart-operator/service/controller/chartconfig/v6/key"
+	"github.com/giantswarm/chart-operator/service/controller/chartconfig/v7/key"
 )
 
 func (r *Resource) ApplyCreateChange(ctx context.Context, obj, createChange interface{}) error {
@@ -16,6 +16,7 @@ func (r *Resource) ApplyCreateChange(ctx context.Context, obj, createChange inte
 	if err != nil {
 		return microerror.Mask(err)
 	}
+
 	chartState, err := toChartState(createChange)
 	if err != nil {
 		return microerror.Mask(err)
