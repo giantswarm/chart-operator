@@ -3,11 +3,11 @@
 package annotation
 
 const (
-	// CordonReasonAnnotationName is the name of the annotation that indicates
+	// CordonReason is the name of the annotation that indicates
 	// the reason of why chart-operator should not apply any update on this chart CR.
-	CordonReasonAnnotationName = "chart-operator.giantswarm.io/cordon-reason"
+	CordonReason = "chart-operator.giantswarm.io/cordon-reason"
 
-	// CordonUntilAnnotationName is the name of the annotation that indicates
+	// CordonExpirationDate is the name of the annotation that indicates
 	// the expiration date of rule of this cordon.
-	CordonUntilAnnotationName = "chart-operator.giantswarm.io/cordon-until"
+	CordonExpirationDate = "chart-operator.giantswarm.io/cordon-until"
 )

@@ -26,11 +26,11 @@ func ConfigMapNamespace(customObject v1alpha1.ChartConfig) string {
 }
 
 func CordonReason(customObject v1alpha1.ChartConfig) string {
-	return customObject.GetAnnotations()[annotation.CordonReasonAnnotationName]
+	return customObject.GetAnnotations()[annotation.CordonReason]
 }
 
 func CordonUntil(customObject v1alpha1.ChartConfig) string {
-	return customObject.GetAnnotations()[annotation.CordonUntilAnnotationName]
+	return customObject.GetAnnotations()[annotation.CordonExpirationDate]
 }
 
 func HasForceUpgradeAnnotation(customObject v1alpha1.ChartConfig) (bool, error) {
@@ -48,8 +48,8 @@ func HasForceUpgradeAnnotation(customObject v1alpha1.ChartConfig) (bool, error) 
 }
 
 func IsCordoned(customObject v1alpha1.ChartConfig) bool {
-	_, reasonOk := customObject.Annotations[annotation.CordonReasonAnnotationName]
-	_, untilOk := customObject.Annotations[annotation.CordonUntilAnnotationName]
+	_, reasonOk := customObject.Annotations[annotation.CordonReason]
+	_, untilOk := customObject.Annotations[annotation.CordonExpirationDate]
 
 	if reasonOk && untilOk {
 		return true
