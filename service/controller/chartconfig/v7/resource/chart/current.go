@@ -8,6 +8,7 @@ import (
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/operatorkit/controller/context/resourcecanceledcontext"
 
+	"github.com/giantswarm/chart-operator/pkg/annotation"
 	"github.com/giantswarm/chart-operator/service/controller/chartconfig/v7/key"
 )
 
@@ -17,8 +18,8 @@ func (r *Resource) GetCurrentState(ctx context.Context, obj interface{}) (interf
 		return nil, microerror.Mask(err)
 	}
 
-	reason, reasonOk := customObject.Labels[key.CordonReasonAnnotationName]
-	until, untilOk := customObject.Labels[key.CordonUntilAnnotationName]
+	reason, reasonOk := customObject.Labels[annotation.CordonReasonAnnotationName]
+	until, untilOk := customObject.Labels[annotation.CordonUntilAnnotationName]
 
 	if reasonOk && untilOk {
 		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("chart %#q had been cordoned off until %s with following reason; %s ", key.ChartName(customObject), until, reason))

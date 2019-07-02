@@ -7,16 +7,6 @@ import (
 	"github.com/giantswarm/microerror"
 )
 
-const (
-	// CordonReasonAnnotationName is the name of the annotation that indicates
-	// the reason of why chart-operator should not apply any update on this chart CR.
-	CordonReasonAnnotationName = "app-operator.giantswarm.io/cordon-reason"
-
-	// CordonUntilAnnotationName is the name of the annotation that indicates
-	// the expiration date of rule of this cordon.
-	CordonUntilAnnotationName = "app-operator.giantswarm.io/cordon-until"
-)
-
 func ChartName(customObject v1alpha1.ChartConfig) string {
 	return customObject.Spec.Chart.Name
 }
