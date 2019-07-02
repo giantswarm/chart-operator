@@ -6,7 +6,6 @@ import (
 	"fmt"
 
 	"github.com/giantswarm/microerror"
-	"github.com/giantswarm/operatorkit/controller/context/resourcecanceledcontext"
 	"k8s.io/helm/pkg/helm"
 
 	"github.com/giantswarm/chart-operator/service/controller/chartconfig/v7/key"
@@ -16,15 +15,6 @@ func (r *Resource) ApplyCreateChange(ctx context.Context, obj, createChange inte
 	customObject, err := key.ToCustomObject(obj)
 	if err != nil {
 		return microerror.Mask(err)
-	}
-
-	if key.IsCordoned(customObject) {
-		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("chart %#q had been cordoned until %s due to reason %#q ", key.ChartName(customObject), key.CordonReason(customObject), key.CordonUntil(customObject)))
-
-		resourcecanceledcontext.SetCanceled(ctx)
-		r.logger.LogCtx(ctx, "level", "debug", "message", "canceling resource")
-
-		return nil
 	}
 
 	chartState, err := toChartState(createChange)

@@ -26,19 +26,11 @@ func ConfigMapNamespace(customObject v1alpha1.ChartConfig) string {
 }
 
 func CordonReason(customObject v1alpha1.ChartConfig) string {
-	val, ok := customObject.Annotations[annotation.CordonReasonAnnotationName]
-	if ok {
-		return val
-	}
-	return ""
+	return customObject.GetAnnotations()[annotation.CordonReasonAnnotationName]
 }
 
 func CordonUntil(customObject v1alpha1.ChartConfig) string {
-	val, ok := customObject.Annotations[annotation.CordonUntilAnnotationName]
-	if ok {
-		return val
-	}
-	return ""
+	return customObject.GetAnnotations()[annotation.CordonUntilAnnotationName]
 }
 
 func HasForceUpgradeAnnotation(customObject v1alpha1.ChartConfig) (bool, error) {
