@@ -30,7 +30,7 @@ func CordonReason(customObject v1alpha1.ChartConfig) string {
 }
 
 func CordonUntil(customObject v1alpha1.ChartConfig) string {
-	return customObject.GetAnnotations()[annotation.CordonExpirationDate]
+	return customObject.GetAnnotations()[annotation.CordonUntilDate]
 }
 
 func HasForceUpgradeAnnotation(customObject v1alpha1.ChartConfig) (bool, error) {
@@ -49,7 +49,7 @@ func HasForceUpgradeAnnotation(customObject v1alpha1.ChartConfig) (bool, error) 
 
 func IsCordoned(customObject v1alpha1.ChartConfig) bool {
 	_, reasonOk := customObject.Annotations[annotation.CordonReason]
-	_, untilOk := customObject.Annotations[annotation.CordonExpirationDate]
+	_, untilOk := customObject.Annotations[annotation.CordonUntilDate]
 
 	if reasonOk && untilOk {
 		return true

@@ -112,7 +112,7 @@ func Test_CordonUntil(t *testing.T) {
 	obj := v1alpha1.ChartConfig{
 		ObjectMeta: metav1.ObjectMeta{
 			Annotations: map[string]string{
-				annotation.CordonExpirationDate: "2019-12-31T23:59:59Z",
+				annotation.CordonUntilDate: "2019-12-31T23:59:59Z",
 			},
 		},
 	}
@@ -202,32 +202,32 @@ func Test_HasForceUpgradeAnnotation(t *testing.T) {
 
 func Test_IsCordoned(t *testing.T) {
 	tests := []struct {
-		name        string
-		chartconfig v1alpha1.ChartConfig
-		want        bool
+		name           string
+		chartconfig    v1alpha1.ChartConfig
+		expectedResult bool
 	}{
 		{
 			name: "case 0: chart cordoned",
 			chartconfig: v1alpha1.ChartConfig{
 				ObjectMeta: metav1.ObjectMeta{
 					Annotations: map[string]string{
-						annotation.CordonReason:         "testing manual upgrade",
-						annotation.CordonExpirationDate: "2019-12-31T23:59:59Z",
+						annotation.CordonReason:    "testing manual upgrade",
+						annotation.CordonUntilDate: "2019-12-31T23:59:59Z",
 					},
 				},
 			},
-			want: true,
+			expectedResult: true,
 		},
 		{
-			name:        "case 1: chart did not cordon",
-			chartconfig: v1alpha1.ChartConfig{},
-			want:        false,
+			name:           "case 1: chart did not cordon",
+			chartconfig:    v1alpha1.ChartConfig{},
+			expectedResult: false,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := IsCordoned(tt.chartconfig); got != tt.want {
-				t.Errorf("IsCordoned() = %v, want %v", got, tt.want)
+			if got := IsCordoned(tt.chartconfig); got != tt.expectedResult {
+				t.Errorf("IsCordoned() = %v, want %v", got, tt.expectedResult)
 			}
 		})
 	}

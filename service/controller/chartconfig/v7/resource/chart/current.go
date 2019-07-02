@@ -18,7 +18,7 @@ func (r *Resource) GetCurrentState(ctx context.Context, obj interface{}) (interf
 	}
 
 	if key.IsCordoned(customObject) {
-		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("chart %#q had been cordoned until %s due to reason %#q ", key.ChartName(customObject), key.CordonReason(customObject), key.CordonUntil(customObject)))
+		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("chart %#q has been cordoned until %#q due to reason %#q ", key.ChartName(customObject), key.CordonUntil(customObject), key.CordonReason(customObject)))
 
 		resourcecanceledcontext.SetCanceled(ctx)
 		r.logger.LogCtx(ctx, "level", "debug", "message", "canceling resource")

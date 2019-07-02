@@ -7,7 +7,7 @@ const (
 	// the reason of why chart-operator should not apply any update on this chart CR.
 	CordonReason = "chart-operator.giantswarm.io/cordon-reason"
 
-	// CordonExpirationDate is the name of the annotation that indicates
+	// CordonUntilDate is the name of the annotation that indicates
 	// the expiration date of rule of this cordon.
-	CordonExpirationDate = "chart-operator.giantswarm.io/cordon-until"
+	CordonUntilDate = "chart-operator.giantswarm.io/cordon-until"
 )
