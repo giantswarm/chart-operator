@@ -14,10 +14,10 @@ import (
 	"github.com/spf13/afero"
 	"k8s.io/client-go/kubernetes"
 
-	"github.com/giantswarm/chart-operator/service/controller/chartconfig/v6/key"
-	"github.com/giantswarm/chart-operator/service/controller/chartconfig/v6/resource/chart"
-	"github.com/giantswarm/chart-operator/service/controller/chartconfig/v6/resource/chartstatus"
-	"github.com/giantswarm/chart-operator/service/controller/chartconfig/v6/resource/tiller"
+	"github.com/giantswarm/chart-operator/service/controller/chartconfig/v7/key"
+	"github.com/giantswarm/chart-operator/service/controller/chartconfig/v7/resource/chart"
+	"github.com/giantswarm/chart-operator/service/controller/chartconfig/v7/resource/chartstatus"
+	"github.com/giantswarm/chart-operator/service/controller/chartconfig/v7/resource/tiller"
 )
 
 // ResourceSetConfig contains necessary dependencies and settings for

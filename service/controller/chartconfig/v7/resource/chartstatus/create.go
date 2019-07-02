@@ -7,7 +7,7 @@ import (
 	"github.com/giantswarm/helmclient"
 	"github.com/giantswarm/microerror"
 
-	"github.com/giantswarm/chart-operator/service/controller/chartconfig/v6/key"
+	"github.com/giantswarm/chart-operator/service/controller/chartconfig/v7/key"
 )
 
 func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
@@ -29,22 +29,33 @@ func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
 		return microerror.Mask(err)
 	}
 
-	if key.ReleaseStatus(customObject) != releaseContent.Status {
-		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("setting status for release '%s' status to '%s'", releaseName, releaseContent.Status))
+	var status, reason string
+	{
+		if key.IsCordoned(customObject) {
+			status = releaseStatusCordoned
+			reason = key.CordonReason(customObject)
+		} else {
+			status = releaseContent.Status
+			if releaseContent.Status != releaseStatusDeployed {
+				releaseHistory, err := r.helmClient.GetReleaseHistory(ctx, releaseName)
+				if err != nil {
+					return microerror.Mask(err)
+				}
+
+				reason = releaseHistory.Description
+			} else {
+				reason = ""
+			}
+		}
+	}
+
+	if key.ReleaseStatus(customObject) != status {
+		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("setting status for release '%s' status to '%s'", releaseName, status))
 
 		customObjectCopy := customObject.DeepCopy()
-		customObjectCopy.Status.ReleaseStatus = releaseContent.Status
+		customObjectCopy.Status.ReleaseStatus = status
+		customObjectCopy.Status.Reason = reason
 
-		if releaseContent.Status != releaseStatusDeployed {
-			releaseHistory, err := r.helmClient.GetReleaseHistory(ctx, releaseName)
-			if err != nil {
-				return microerror.Mask(err)
-			}
-
-			customObjectCopy.Status.Reason = releaseHistory.Description
-		} else {
-			customObjectCopy.Status.Reason = ""
-		}
 		_, err := r.g8sClient.CoreV1alpha1().ChartConfigs(customObject.Namespace).UpdateStatus(customObjectCopy)
 		if err != nil {
 			return microerror.Mask(err)
@@ -52,7 +63,7 @@ func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
 
 		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("status set for release '%s'", releaseName))
 	} else {
-		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("status for release '%s' already set to '%s'", releaseName, releaseContent.Status))
+		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("status for release '%s' already set to '%s'", releaseName, status))
 	}
 
 	return nil
