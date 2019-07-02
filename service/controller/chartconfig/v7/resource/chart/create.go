@@ -9,7 +9,6 @@ import (
 	"github.com/giantswarm/operatorkit/controller/context/resourcecanceledcontext"
 	"k8s.io/helm/pkg/helm"
 
-	"github.com/giantswarm/chart-operator/pkg/annotation"
 	"github.com/giantswarm/chart-operator/service/controller/chartconfig/v7/key"
 )
 
@@ -19,11 +18,8 @@ func (r *Resource) ApplyCreateChange(ctx context.Context, obj, createChange inte
 		return microerror.Mask(err)
 	}
 
-	reason, reasonOk := customObject.Labels[annotation.CordonReasonAnnotationName]
-	until, untilOk := customObject.Labels[annotation.CordonUntilAnnotationName]
-
-	if reasonOk && untilOk {
-		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("chart %#q had been cordoned off until %s with following reason; %s ", key.ChartName(customObject), until, reason))
+	if key.IsCordoned(customObject) {
+		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("chart %#q had been cordoned until %s due to reason %#q ", key.ChartName(customObject), key.CordonReason(customObject), key.CordonUntil(customObject)))
 
 		resourcecanceledcontext.SetCanceled(ctx)
 		r.logger.LogCtx(ctx, "level", "debug", "message", "canceling resource")

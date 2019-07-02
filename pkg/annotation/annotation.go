@@ -5,9 +5,9 @@ package annotation
 const (
 	// CordonReasonAnnotationName is the name of the annotation that indicates
 	// the reason of why chart-operator should not apply any update on this chart CR.
-	CordonReasonAnnotationName = "app-operator.giantswarm.io/cordon-reason"
+	CordonReasonAnnotationName = "chart-operator.giantswarm.io/cordon-reason"
 
 	// CordonUntilAnnotationName is the name of the annotation that indicates
 	// the expiration date of rule of this cordon.
-	CordonUntilAnnotationName = "app-operator.giantswarm.io/cordon-until"
+	CordonUntilAnnotationName = "chart-operator.giantswarm.io/cordon-until"
 )

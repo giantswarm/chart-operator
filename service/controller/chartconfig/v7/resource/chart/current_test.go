@@ -127,9 +127,9 @@ func Test_CurrentState(t *testing.T) {
 			name: "case 4: chart cordoned",
 			obj: &v1alpha1.ChartConfig{
 				ObjectMeta: metav1.ObjectMeta{
-					Labels: map[string]string{
-						"app-operator.giantswarm.io/cordon-reason": "testing upgrade",
-						"app-operator.giantswarm.io/cordon-until":  "2019-12-31T23:59:59Z",
+					Annotations: map[string]string{
+						"chart-operator.giantswarm.io/cordon-reason": "testing upgrade",
+						"chart-operator.giantswarm.io/cordon-until":  "2019-12-31T23:59:59Z",
 					},
 				},
 				Spec: v1alpha1.ChartConfigSpec{
