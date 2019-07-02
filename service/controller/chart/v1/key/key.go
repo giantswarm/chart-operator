@@ -5,6 +5,8 @@ import (
 
 	"github.com/giantswarm/apiextensions/pkg/apis/application/v1alpha1"
 	"github.com/giantswarm/microerror"
+
+	"github.com/giantswarm/chart-operator/pkg/annotation"
 )
 
 const (
@@ -31,6 +33,14 @@ func ConfigMapNamespace(customResource v1alpha1.Chart) string {
 	return customResource.Spec.Config.ConfigMap.Namespace
 }
 
+func CordonReason(customResource v1alpha1.Chart) string {
+	return customResource.GetAnnotations()[annotation.CordonReason]
+}
+
+func CordonUntil(customResource v1alpha1.Chart) string {
+	return customResource.GetAnnotations()[annotation.CordonUntilDate]
+}
+
 func HasForceUpgradeAnnotation(customResource v1alpha1.Chart) bool {
 	val, ok := customResource.Annotations[ForceHelmUpgradeAnnotationName]
 	if !ok {
@@ -45,6 +55,18 @@ func HasForceUpgradeAnnotation(customResource v1alpha1.Chart) bool {
 	}
 
 	return result
+}
+
+func IsCordoned(customResource v1alpha1.Chart) bool {
+	_, reasonOk := customResource.Annotations[annotation.CordonReason]
+	_, untilOk := customResource.Annotations[annotation.CordonUntilDate]
+
+	if reasonOk && untilOk {
+		return true
+	} else {
+		return false
+	}
+
 }
 
 func IsDeleted(customResource v1alpha1.Chart) bool {

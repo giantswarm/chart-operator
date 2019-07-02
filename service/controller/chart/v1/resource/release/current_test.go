@@ -112,6 +112,21 @@ func Test_CurrentState(t *testing.T) {
 			returnedError:  fmt.Errorf("Unexpected error"),
 			expectedError:  true,
 		},
+		{
+			name: "case 4: chart cordoned",
+			obj: &v1alpha1.Chart{
+				ObjectMeta: metav1.ObjectMeta{
+					Annotations: map[string]string{
+						"chart-operator.giantswarm.io/cordon-reason": "testing upgrade",
+						"chart-operator.giantswarm.io/cordon-until":  "2019-12-31T23:59:59Z",
+					},
+				},
+				Spec: v1alpha1.ChartSpec{
+					Name: "quay.io/giantswarm/chart-operator-chart",
+				},
+			},
+			expectedState: ReleaseState{},
+		},
 	}
 
 	for _, tc := range testCases {
