@@ -9,7 +9,7 @@ func VersionBundle() versionbundle.Bundle {
 		Changelogs: []versionbundle.Changelog{
 			{
 				Component:   "chart-operator",
-				Description: "checking cordon annotations in chart resource to avoid any further update.",
+				Description: "Check cordon annotations in chart resource to avoid any further update.",
 				Kind:        versionbundle.KindAdded,
 			},
 		},
