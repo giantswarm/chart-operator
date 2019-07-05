@@ -43,8 +43,6 @@ func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
 				}
 
 				reason = releaseHistory.Description
-			} else {
-				reason = ""
 			}
 		}
 	}
@@ -63,7 +61,7 @@ func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
 
 		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("status set for release '%s'", releaseName))
 	} else {
-		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("status for release '%s' already set to '%s'", releaseName, status))
+		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("status for release %#q already set to %#q", releaseName, status))
 	}
 
 	return nil
