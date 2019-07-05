@@ -4,8 +4,10 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/giantswarm/apiextensions/pkg/apis/core/v1alpha1"
 	"github.com/giantswarm/helmclient"
 	"github.com/giantswarm/microerror"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
 	"github.com/giantswarm/chart-operator/service/controller/chartconfig/v7/key"
 )
@@ -50,11 +52,20 @@ func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
 	if key.ReleaseStatus(customObject) != status {
 		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("setting status for release '%s' status to '%s'", releaseName, status))
 
-		customObjectCopy := customObject.DeepCopy()
-		customObjectCopy.Status.ReleaseStatus = status
-		customObjectCopy.Status.Reason = reason
+		status := v1alpha1.ChartConfigStatus{
+			ReleaseStatus: status,
+			Reason:        reason,
+		}
 
-		_, err := r.g8sClient.CoreV1alpha1().ChartConfigs(customObject.Namespace).UpdateStatus(customObjectCopy)
+		// Get chartconfig CR again to ensure the resource version is correct.
+		currentCR, err := r.g8sClient.CoreV1alpha1().ChartConfigs(customObject.Namespace).Get(customObject.Name, metav1.GetOptions{})
+		if err != nil {
+			return microerror.Mask(err)
+		}
+
+		currentCR.Status = status
+
+		_, err = r.g8sClient.CoreV1alpha1().ChartConfigs(customObject.Namespace).UpdateStatus(currentCR)
 		if err != nil {
 			return microerror.Mask(err)
 		}
