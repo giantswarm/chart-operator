@@ -55,15 +55,21 @@ func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
 	}
 
 	if customObject.Status != chartConfigStatus {
-		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("setting status for release '%s' status to '%s'", releaseName, status))
-
 		// Get chartconfig CR again to ensure the resource version is correct.
 		currentCR, err := r.g8sClient.CoreV1alpha1().ChartConfigs(customObject.Namespace).Get(customObject.Name, metav1.GetOptions{})
 		if err != nil {
 			return microerror.Mask(err)
 		}
 
-		currentCR.Status = chartConfigStatus
+		if currentCR.Status.Reason != chartConfigStatus.Reason {
+			r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("setting reason for release '%s' to '%s'", releaseName, reason))
+			currentCR.Status.Reason = chartConfigStatus.Reason
+		}
+
+		if currentCR.Status.ReleaseStatus != chartConfigStatus.ReleaseStatus {
+			r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("setting status for release '%s' status to '%s'", releaseName, status))
+			currentCR.Status.ReleaseStatus = chartConfigStatus.ReleaseStatus
+		}
 
 		_, err = r.g8sClient.CoreV1alpha1().ChartConfigs(customObject.Namespace).UpdateStatus(currentCR)
 		if err != nil {
