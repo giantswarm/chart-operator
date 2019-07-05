@@ -10,6 +10,7 @@ import (
 const (
 	Name = "chartstatusv7"
 
+	releaseStatusCordoned = "CORDONED"
 	releaseStatusDeployed = "DEPLOYED"
 )
 
