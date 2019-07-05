@@ -31,6 +31,7 @@ func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
 
 	var status, reason string
 	{
+		r.logger.LogCtx(ctx, "level", "debug", "message", "checking cordon status")
 		if key.IsCordoned(customObject) {
 			status = releaseStatusCordoned
 			reason = key.CordonReason(customObject)
