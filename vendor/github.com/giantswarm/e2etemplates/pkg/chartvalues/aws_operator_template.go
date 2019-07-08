@@ -6,6 +6,11 @@ const awsOperatorTemplate = `Installation:
       Vault:
         Address: http://vault.default.svc.cluster.local:8200
     Guest:
+      Calico:
+        CIDR: 16
+        Subnet: "192.168.0.0"
+      Docker:
+        CIDR: "172.17.0.1/16"
       IPAM:
         NetworkCIDR: "10.12.0.0/16"
         CIDRMask: 24
@@ -20,8 +25,10 @@ const awsOperatorTemplate = `Installation:
                 IssueURL: ""
                 UsernameClaim: ""
                 GroupsClaim: ""
+          ClusterIPRange: "172.31.0.0/24"
       SSH:
         SSOPublicKey: 'test'
+        UserList: '{{ .SSH.UserList }}'
       Update:
         Enabled: true
     Name: ci-aws-operator
@@ -36,10 +43,11 @@ const awsOperatorTemplate = `Installation:
         IncludeTags: true
         Route53:
           Enabled: true
-        RouteTableNames: 'gauss_private_0,gauss_private_1'
+        RouteTableNames: '{{ .Provider.AWS.RouteTableNames }}'
         Encrypter: '{{ .Provider.AWS.Encrypter }}'
         TrustedAdvisor:
           Enabled: false
+        VPCPeerID: '{{ .Provider.AWS.VPCPeerID }}'
     Registry:
       Domain: quay.io
     Secret:
@@ -47,7 +55,6 @@ const awsOperatorTemplate = `Installation:
         CredentialDefault:
           AdminARN: '{{ .Secret.AWSOperator.CredentialDefault.AdminARN }}'
           AWSOperatorARN: '{{ .Secret.AWSOperator.CredentialDefault.AWSOperatorARN }}'
-        IDRSAPub: {{ .Secret.AWSOperator.IDRSAPub }}
         SecretYaml: |
           service:
             aws:
@@ -59,7 +66,6 @@ const awsOperatorTemplate = `Installation:
                 id: '{{ .Secret.AWSOperator.SecretYaml.Service.AWS.HostAccessKey.ID }}'
                 secret: '{{ .Secret.AWSOperator.SecretYaml.Service.AWS.HostAccessKey.Secret }}'
                 token: '{{ .Secret.AWSOperator.SecretYaml.Service.AWS.HostAccessKey.Token }}'
-
       Registry:
         PullSecret:
           DockerConfigJSON: "{\"auths\":{\"quay.io\":{\"auth\":\"{{ .RegistryPullSecret }}\"}}}"

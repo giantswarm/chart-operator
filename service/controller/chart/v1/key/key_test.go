@@ -6,6 +6,8 @@ import (
 
 	"github.com/giantswarm/apiextensions/pkg/apis/application/v1alpha1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+
+	"github.com/giantswarm/chart-operator/pkg/annotation"
 )
 
 func Test_ConfigMapName(t *testing.T) {
@@ -45,6 +47,142 @@ func Test_ConfigMapNamespace(t *testing.T) {
 		t.Fatalf("config map namespace %#q, want %#q", ConfigMapNamespace(obj), expectedConfigMapNamespace)
 	}
 }
+
+func Test_CordonReason(t *testing.T) {
+	expectedCordonReason := "manual upgrade"
+
+	obj := v1alpha1.Chart{
+		ObjectMeta: metav1.ObjectMeta{
+			Annotations: map[string]string{
+				annotation.CordonReason: "manual upgrade",
+			},
+		},
+	}
+
+	if CordonReason(obj) != expectedCordonReason {
+		t.Fatalf("cordon reason %#q, want %s", CordonReason(obj), expectedCordonReason)
+	}
+}
+
+func Test_CordonUntil(t *testing.T) {
+	expectedCordonUntil := "2019-12-31T23:59:59Z"
+
+	obj := v1alpha1.Chart{
+		ObjectMeta: metav1.ObjectMeta{
+			Annotations: map[string]string{
+				annotation.CordonUntilDate: "2019-12-31T23:59:59Z",
+			},
+		},
+	}
+
+	if CordonUntil(obj) != expectedCordonUntil {
+		t.Fatalf("cordon until %s, want %s", CordonUntil(obj), expectedCordonUntil)
+	}
+}
+
+func Test_HasForceUpgradeAnnotation(t *testing.T) {
+	testCases := []struct {
+		name           string
+		input          v1alpha1.Chart
+		expectedResult bool
+	}{
+		{
+			name: "case 0: no annotations",
+			input: v1alpha1.Chart{
+				ObjectMeta: metav1.ObjectMeta{},
+			},
+			expectedResult: false,
+		},
+		{
+			name: "case 1: other annotations",
+			input: v1alpha1.Chart{
+				ObjectMeta: metav1.ObjectMeta{
+					Annotations: map[string]string{
+						"test": "test",
+					},
+				},
+			},
+			expectedResult: false,
+		},
+		{
+			name: "case 2: annotation present",
+			input: v1alpha1.Chart{
+				ObjectMeta: metav1.ObjectMeta{
+					Annotations: map[string]string{
+						"chart-operator.giantswarm.io/force-helm-upgrade": "true",
+					},
+				},
+			},
+			expectedResult: true,
+		},
+		{
+			name: "case 3: annotation present but false",
+			input: v1alpha1.Chart{
+				ObjectMeta: metav1.ObjectMeta{
+					Annotations: map[string]string{
+						"chart-operator.giantswarm.io/force-helm-upgrade": "false",
+					},
+				},
+			},
+			expectedResult: false,
+		},
+		{
+			name: "case 4: annotation present but invalid value",
+			input: v1alpha1.Chart{
+				ObjectMeta: metav1.ObjectMeta{
+					Annotations: map[string]string{
+						"chart-operator.giantswarm.io/force-helm-upgrade": "invalid",
+					},
+				},
+			},
+			expectedResult: false,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			result := HasForceUpgradeAnnotation(tc.input)
+
+			if result != tc.expectedResult {
+				t.Fatalf("HasForceUpgradeAnnotation == %t, want %t", result, tc.expectedResult)
+			}
+		})
+	}
+}
+
+func Test_IsCordoned(t *testing.T) {
+	tests := []struct {
+		name           string
+		chart          v1alpha1.Chart
+		expectedResult bool
+	}{
+		{
+			name: "case 0: chart cordoned",
+			chart: v1alpha1.Chart{
+				ObjectMeta: metav1.ObjectMeta{
+					Annotations: map[string]string{
+						annotation.CordonReason:    "testing manual upgrade",
+						annotation.CordonUntilDate: "2019-12-31T23:59:59Z",
+					},
+				},
+			},
+			expectedResult: true,
+		},
+		{
+			name:           "case 1: chart did not cordon",
+			chart:          v1alpha1.Chart{},
+			expectedResult: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := IsCordoned(tt.chart); got != tt.expectedResult {
+				t.Errorf("IsCordoned() = %v, want %v", got, tt.expectedResult)
+			}
+		})
+	}
+}
+
 func Test_ReleaseName(t *testing.T) {
 	expectedRelease := "my-prometheus"
 
@@ -158,6 +296,22 @@ func Test_ToCustomResource(t *testing.T) {
 				t.Fatalf("Custom Object == %#v, want %#v", result, tc.expectedObject)
 			}
 		})
+	}
+}
+
+func Test_ValuesMD5ChecksumAnnotation(t *testing.T) {
+	expectedMD5Checksum := "1ee001c5286ca00fdf64d9660c04bde2"
+
+	obj := v1alpha1.Chart{
+		ObjectMeta: metav1.ObjectMeta{
+			Annotations: map[string]string{
+				ValuesMD5ChecksumAnnotationName: "1ee001c5286ca00fdf64d9660c04bde2",
+			},
+		},
+	}
+
+	if ValuesMD5ChecksumAnnotation(obj) != expectedMD5Checksum {
+		t.Fatalf("values md5 checksum %#q, want %#q", ValuesMD5ChecksumAnnotation(obj), expectedMD5Checksum)
 	}
 }
 

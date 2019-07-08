@@ -22,6 +22,7 @@ type TeamsService service
 // manage access to an organization's repositories.
 type Team struct {
 	ID          *int64  `json:"id,omitempty"`
+	NodeID      *string `json:"node_id,omitempty"`
 	Name        *string `json:"name,omitempty"`
 	Description *string `json:"description,omitempty"`
 	URL         *string `json:"url,omitempty"`
@@ -55,9 +56,10 @@ func (t Team) String() string {
 
 // Invitation represents a team member's invitation status.
 type Invitation struct {
-	ID    *int64  `json:"id,omitempty"`
-	Login *string `json:"login,omitempty"`
-	Email *string `json:"email,omitempty"`
+	ID     *int64  `json:"id,omitempty"`
+	NodeID *string `json:"node_id,omitempty"`
+	Login  *string `json:"login,omitempty"`
+	Email  *string `json:"email,omitempty"`
 	// Role can be one of the values - 'direct_member', 'admin', 'billing_manager', 'hiring_manager', or 'reinstate'.
 	Role              *string    `json:"role,omitempty"`
 	CreatedAt         *time.Time `json:"created_at,omitempty"`
@@ -109,6 +111,25 @@ func (s *TeamsService) GetTeam(ctx context.Context, team int64) (*Team, *Respons
 
 	// TODO: remove custom Accept header when this API fully launches.
 	req.Header.Set("Accept", mediaTypeNestedTeamsPreview)
+
+	t := new(Team)
+	resp, err := s.client.Do(ctx, req, t)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return t, resp, nil
+}
+
+// GetTeamBySlug fetches a team by slug.
+//
+// GitHub API docs: https://developer.github.com/v3/teams/#get-team-by-name
+func (s *TeamsService) GetTeamBySlug(ctx context.Context, org, slug string) (*Team, *Response, error) {
+	u := fmt.Sprintf("orgs/%v/teams/%v", org, slug)
+	req, err := s.client.NewRequest("GET", u, nil)
+	if err != nil {
+		return nil, nil, err
+	}
 
 	t := new(Team)
 	resp, err := s.client.Do(ctx, req, t)

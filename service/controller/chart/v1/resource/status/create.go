@@ -62,6 +62,17 @@ func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
 
 		currentCR.Status = desiredStatus
 
+		if releaseContent.Status != releaseStatusDeployed {
+			releaseHistory, err := r.helmClient.GetReleaseHistory(ctx, releaseName)
+			if err != nil {
+				return microerror.Mask(err)
+			}
+
+			currentCR.Status.Reason = releaseHistory.Description
+		} else {
+			currentCR.Status.Reason = ""
+		}
+
 		_, err = r.g8sClient.ApplicationV1alpha1().Charts(cr.Namespace).UpdateStatus(currentCR)
 		if err != nil {
 			return microerror.Mask(err)

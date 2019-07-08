@@ -5,10 +5,11 @@ import (
 	"testing"
 
 	"github.com/giantswarm/apiextensions/pkg/apis/core/v1alpha1"
+	"github.com/giantswarm/apiextensions/pkg/clientset/versioned/fake"
 	"github.com/giantswarm/helmclient/helmclienttest"
 	"github.com/giantswarm/micrologger/microloggertest"
 	"github.com/spf13/afero"
-	"k8s.io/client-go/kubernetes/fake"
+	k8sfake "k8s.io/client-go/kubernetes/fake"
 )
 
 func Test_Resource_Chart_newDeleteChange(t *testing.T) {
@@ -71,8 +72,9 @@ func Test_Resource_Chart_newDeleteChange(t *testing.T) {
 	{
 		c := Config{
 			Fs:         afero.NewMemMapFs(),
+			G8sClient:  fake.NewSimpleClientset(),
 			HelmClient: helmclienttest.New(helmclienttest.Config{}),
-			K8sClient:  fake.NewSimpleClientset(),
+			K8sClient:  k8sfake.NewSimpleClientset(),
 			Logger:     microloggertest.New(),
 		}
 

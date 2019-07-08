@@ -8,8 +8,8 @@ import (
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/micrologger"
 	"github.com/giantswarm/operatorkit/controller"
-	"github.com/giantswarm/operatorkit/controller/resource/metricsresource"
-	"github.com/giantswarm/operatorkit/controller/resource/retryresource"
+	"github.com/giantswarm/operatorkit/resource/wrapper/metricsresource"
+	"github.com/giantswarm/operatorkit/resource/wrapper/retryresource"
 	"github.com/spf13/afero"
 	"k8s.io/client-go/kubernetes"
 
@@ -64,6 +64,7 @@ func NewResourceSet(config ResourceSetConfig) (*controller.ResourceSet, error) {
 	{
 		c := release.Config{
 			Fs:         config.Fs,
+			G8sClient:  config.G8sClient,
 			HelmClient: config.HelmClient,
 			K8sClient:  config.K8sClient,
 			Logger:     config.Logger,

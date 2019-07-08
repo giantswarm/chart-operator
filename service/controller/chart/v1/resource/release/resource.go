@@ -1,14 +1,19 @@
 package release
 
 import (
-	"reflect"
+	"context"
+	"fmt"
 
+	"github.com/giantswarm/apiextensions/pkg/apis/application/v1alpha1"
+	"github.com/giantswarm/apiextensions/pkg/clientset/versioned"
 	"github.com/giantswarm/helmclient"
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/micrologger"
 	"github.com/spf13/afero"
-	yaml "gopkg.in/yaml.v2"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
+
+	"github.com/giantswarm/chart-operator/service/controller/chart/v1/key"
 )
 
 const (
@@ -37,6 +42,7 @@ var (
 type Config struct {
 	// Dependencies.
 	Fs         afero.Fs
+	G8sClient  versioned.Interface
 	HelmClient helmclient.Interface
 	K8sClient  kubernetes.Interface
 	Logger     micrologger.Logger
@@ -46,6 +52,7 @@ type Config struct {
 type Resource struct {
 	// Dependencies.
 	fs         afero.Fs
+	g8sClient  versioned.Interface
 	helmClient helmclient.Interface
 	k8sClient  kubernetes.Interface
 	logger     micrologger.Logger
@@ -56,6 +63,9 @@ func New(config Config) (*Resource, error) {
 	// Dependencies.
 	if config.Fs == nil {
 		return nil, microerror.Maskf(invalidConfigError, "%T.Fs must not be empty", config)
+	}
+	if config.G8sClient == nil {
+		return nil, microerror.Maskf(invalidConfigError, "%T.G8sClient must not be empty", config)
 	}
 	if config.HelmClient == nil {
 		return nil, microerror.Maskf(invalidConfigError, "%T.HelmClient must not be empty", config)
@@ -70,6 +80,7 @@ func New(config Config) (*Resource, error) {
 	r := &Resource{
 		// Dependencies.
 		fs:         config.Fs,
+		g8sClient:  config.G8sClient,
 		helmClient: config.HelmClient,
 		k8sClient:  config.K8sClient,
 		logger:     config.Logger,
@@ -82,6 +93,45 @@ func (r *Resource) Name() string {
 	return Name
 }
 
+// updateAnnotations updates the chart CR annotations if they have changed. The
+// CR is fetched again to ensure that the resource version and annotations are
+// up to date.
+func (r *Resource) updateAnnotations(ctx context.Context, cr v1alpha1.Chart, releaseState ReleaseState) error {
+	annotations := map[string]string{}
+
+	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("updating annotations for app CR %#q in namespace %#q", cr.Name, cr.Namespace))
+
+	// Get chart CR again to ensure the resource version and annotations
+	// are correct.
+	currentCR, err := r.g8sClient.ApplicationV1alpha1().Charts(cr.Namespace).Get(cr.Name, metav1.GetOptions{})
+	if err != nil {
+		return microerror.Mask(err)
+	}
+
+	currentChecksum := key.ValuesMD5ChecksumAnnotation(*currentCR)
+
+	if releaseState.ValuesMD5Checksum != currentChecksum {
+		if currentCR.Annotations != nil {
+			annotations = currentCR.Annotations
+		}
+
+		annotations[key.ValuesMD5ChecksumAnnotationName] = releaseState.ValuesMD5Checksum
+
+		currentCR.Annotations = annotations
+		_, err = r.g8sClient.ApplicationV1alpha1().Charts(cr.Namespace).Update(currentCR)
+		if err != nil {
+			return microerror.Mask(err)
+		}
+
+		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("updated annotations for app CR %#q in namespace %#q", cr.Name, cr.Namespace))
+
+	} else {
+		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("no need to update annotations for app CR %#q in namespace %#q", cr.Name, cr.Namespace))
+	}
+
+	return nil
+}
+
 // equals asseses the equality of ReleaseStates with regards to distinguishing fields.
 func equals(a, b ReleaseState) bool {
 	if a.Name != b.Name {
@@ -90,7 +140,7 @@ func equals(a, b ReleaseState) bool {
 	if a.Status != b.Status {
 		return false
 	}
-	if !reflect.DeepEqual(a.Values, b.Values) {
+	if a.ValuesMD5Checksum != b.ValuesMD5Checksum {
 		return false
 	}
 	if a.Version != b.Version {
@@ -108,27 +158,21 @@ func isReleaseInTransitionState(r ReleaseState) bool {
 	return releaseTransitionStatuses[r.Status]
 }
 
-func isReleaseModified(a, b ReleaseState) (bool, error) {
-	// Version has changed so we need to update the Helm Release.
+func isReleaseModified(a, b ReleaseState) bool {
+	if isEmpty(a) {
+		return false
+	}
+
+	// Values have changed so we need to update the Helm Release.
+	if a.ValuesMD5Checksum != b.ValuesMD5Checksum {
+		return true
+	}
+
 	if a.Version != b.Version {
-		return true, nil
+		return true
 	}
 
-	yamlA, err := yaml.Marshal(a.Values)
-	if err != nil {
-		return false, microerror.Mask(err)
-	}
-
-	yamlB, err := yaml.Marshal(b.Values)
-	if err != nil {
-		return false, microerror.Mask(err)
-	}
-
-	if !reflect.DeepEqual(yamlA, yamlB) {
-		return true, nil
-	}
-
-	return false, nil
+	return false
 }
 
 func toReleaseState(v interface{}) (ReleaseState, error) {
@@ -142,4 +186,16 @@ func toReleaseState(v interface{}) (ReleaseState, error) {
 	}
 
 	return *releaseState, nil
+}
+
+func isWrongStatus(a, b ReleaseState) bool {
+	if a.Status == "" {
+		return false
+	}
+
+	if a.Status != b.Status {
+		return true
+	}
+
+	return false
 }

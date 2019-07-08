@@ -7,12 +7,14 @@ import (
 	"testing"
 
 	"github.com/giantswarm/apiextensions/pkg/apis/application/v1alpha1"
+	"github.com/giantswarm/apiextensions/pkg/clientset/versioned/fake"
 	"github.com/giantswarm/helmclient"
 	"github.com/giantswarm/helmclient/helmclienttest"
 	"github.com/giantswarm/micrologger/microloggertest"
 	"github.com/google/go-cmp/cmp"
 	"github.com/spf13/afero"
-	"k8s.io/client-go/kubernetes/fake"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	k8sfake "k8s.io/client-go/kubernetes/fake"
 )
 
 func Test_CurrentState(t *testing.T) {
@@ -28,6 +30,11 @@ func Test_CurrentState(t *testing.T) {
 		{
 			name: "case 0: basic match",
 			obj: &v1alpha1.Chart{
+				ObjectMeta: metav1.ObjectMeta{
+					Annotations: map[string]string{
+						"chart-operator.giantswarm.io/values-md5-checksum": "1ee001c5286ca00fdf64d9660c04bde2",
+					},
+				},
 				Spec: v1alpha1.ChartSpec{
 					Name: "prometheus",
 				},
@@ -44,17 +51,20 @@ func Test_CurrentState(t *testing.T) {
 				Version: "0.1.2",
 			},
 			expectedState: ReleaseState{
-				Name:   "prometheus",
-				Status: "DEPLOYED",
-				Values: map[string]interface{}{
-					"key": "value",
-				},
-				Version: "0.1.2",
+				Name:              "prometheus",
+				Status:            "DEPLOYED",
+				ValuesMD5Checksum: "1ee001c5286ca00fdf64d9660c04bde2",
+				Version:           "0.1.2",
 			},
 		},
 		{
 			name: "case 1: different values",
 			obj: &v1alpha1.Chart{
+				ObjectMeta: metav1.ObjectMeta{
+					Annotations: map[string]string{
+						"chart-operator.giantswarm.io/values-md5-checksum": "5eb63bbbe01eeed093cb22bb8f5acdc3",
+					},
+				},
 				Spec: v1alpha1.ChartSpec{
 					Name: "prometheus",
 				},
@@ -72,13 +82,10 @@ func Test_CurrentState(t *testing.T) {
 				Version: "1.2.3",
 			},
 			expectedState: ReleaseState{
-				Values: map[string]interface{}{
-					"key":     "value",
-					"another": "value",
-				},
-				Name:    "prometheus",
-				Status:  "FAILED",
-				Version: "1.2.3",
+				Name:              "prometheus",
+				Status:            "FAILED",
+				ValuesMD5Checksum: "5eb63bbbe01eeed093cb22bb8f5acdc3",
+				Version:           "1.2.3",
 			},
 		},
 		{
@@ -105,6 +112,21 @@ func Test_CurrentState(t *testing.T) {
 			returnedError:  fmt.Errorf("Unexpected error"),
 			expectedError:  true,
 		},
+		{
+			name: "case 4: chart cordoned",
+			obj: &v1alpha1.Chart{
+				ObjectMeta: metav1.ObjectMeta{
+					Annotations: map[string]string{
+						"chart-operator.giantswarm.io/cordon-reason": "testing upgrade",
+						"chart-operator.giantswarm.io/cordon-until":  "2019-12-31T23:59:59Z",
+					},
+				},
+				Spec: v1alpha1.ChartSpec{
+					Name: "quay.io/giantswarm/chart-operator-chart",
+				},
+			},
+			expectedState: ReleaseState{},
+		},
 	}
 
 	for _, tc := range testCases {
@@ -121,8 +143,9 @@ func Test_CurrentState(t *testing.T) {
 
 			c := Config{
 				Fs:         afero.NewMemMapFs(),
+				G8sClient:  fake.NewSimpleClientset(),
 				HelmClient: helmClient,
-				K8sClient:  fake.NewSimpleClientset(),
+				K8sClient:  k8sfake.NewSimpleClientset(),
 				Logger:     microloggertest.New(),
 			}
 

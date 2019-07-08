@@ -9,6 +9,8 @@ import (
 
 const (
 	Name = "chartstatusv5"
+
+	releaseStatusDeployed = "DEPLOYED"
 )
 
 // Config represents the configuration used to create a new chartstatus resource.

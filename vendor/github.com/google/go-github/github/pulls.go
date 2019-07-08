@@ -159,6 +159,35 @@ func (s *PullRequestsService) List(ctx context.Context, owner string, repo strin
 	return pulls, resp, nil
 }
 
+// ListPullRequestsWithCommit returns pull requests associated with a commit SHA.
+//
+// The results will include open and closed pull requests.
+//
+// GitHub API docs: https://developer.github.com/v3/repos/commits/#list-pull-requests-associated-with-commit
+func (s *PullRequestsService) ListPullRequestsWithCommit(ctx context.Context, owner, repo, sha string, opt *PullRequestListOptions) ([]*PullRequest, *Response, error) {
+	u := fmt.Sprintf("repos/%v/%v/commits/%v/pulls", owner, repo, sha)
+	u, err := addOptions(u, opt)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	req, err := s.client.NewRequest("GET", u, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	// TODO: remove custom Accept header when this API fully launches.
+	acceptHeaders := []string{mediaTypeListPullsOrBranchesForCommitPreview, mediaTypeDraftPreview, mediaTypeLabelDescriptionSearchPreview, mediaTypeLockReasonPreview}
+	req.Header.Set("Accept", strings.Join(acceptHeaders, ", "))
+	var pulls []*PullRequest
+	resp, err := s.client.Do(ctx, req, &pulls)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return pulls, resp, nil
+}
+
 // Get a single pull request.
 //
 // GitHub API docs: https://developer.github.com/v3/pulls/#get-a-single-pull-request
@@ -216,6 +245,7 @@ type NewPullRequest struct {
 	Body                *string `json:"body,omitempty"`
 	Issue               *int    `json:"issue,omitempty"`
 	MaintainerCanModify *bool   `json:"maintainer_can_modify,omitempty"`
+	Draft               *bool   `json:"draft,omitempty"`
 }
 
 // Create a new pull request on the specified repository.
@@ -229,9 +259,53 @@ func (s *PullRequestsService) Create(ctx context.Context, owner string, repo str
 	}
 
 	// TODO: remove custom Accept header when this API fully launches.
-	req.Header.Set("Accept", mediaTypeLabelDescriptionSearchPreview)
+	acceptHeaders := []string{mediaTypeLabelDescriptionSearchPreview, mediaTypeDraftPreview}
+	req.Header.Set("Accept", strings.Join(acceptHeaders, ", "))
 
 	p := new(PullRequest)
+	resp, err := s.client.Do(ctx, req, p)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return p, resp, nil
+}
+
+// PullReqestBranchUpdateOptions specifies the optional parameters to the
+// PullRequestsService.UpdateBranch method.
+type PullReqestBranchUpdateOptions struct {
+	// ExpectedHeadSHA specifies the most recent commit on the pull request's branch.
+	// Default value is the SHA of the pull request's current HEAD ref.
+	ExpectedHeadSHA *string `json:"expected_head_sha,omitempty"`
+}
+
+// PullRequestBranchUpdateResponse specifies the response of pull request branch update.
+type PullRequestBranchUpdateResponse struct {
+	Message *string `json:"message,omitempty"`
+	URL     *string `json:"url,omitempty"`
+}
+
+// UpdateBranch updates the pull request branch with latest upstream changes.
+//
+// This method might return an AcceptedError and a status code of
+// 202. This is because this is the status that GitHub returns to signify that
+// it has now scheduled the update of the pull request branch in a background task.
+// A follow up request, after a delay of a second or so, should result
+// in a successful request.
+//
+// GitHub API docs: https://developer.github.com/v3/pulls/#update-a-pull-request-branch
+func (s *PullRequestsService) UpdateBranch(ctx context.Context, owner, repo string, number int, opts *PullReqestBranchUpdateOptions) (*PullRequestBranchUpdateResponse, *Response, error) {
+	u := fmt.Sprintf("repos/%v/%v/pulls/%d/update-branch", owner, repo, number)
+
+	req, err := s.client.NewRequest("PUT", u, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	// TODO: remove custom Accept header when this API fully launches.
+	req.Header.Set("Accept", mediaTypeUpdatePullRequestBranchPreview)
+
+	p := new(PullRequestBranchUpdateResponse)
 	resp, err := s.client.Do(ctx, req, p)
 	if err != nil {
 		return nil, resp, err
