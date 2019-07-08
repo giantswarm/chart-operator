@@ -1,12 +1,10 @@
 package collector
 
 import (
-	"context"
-	"fmt"
-
+	"github.com/giantswarm/apiextensions/pkg/clientset/versioned"
 	"github.com/giantswarm/microerror"
+	"github.com/giantswarm/micrologger"
 	"github.com/prometheus/client_golang/prometheus"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 const (
@@ -15,13 +13,6 @@ const (
 	releaseNameLabel   = "release_name"
 	releaseStatusLabel = "release_status"
 )
-
-type chartState struct {
-	chartName     string
-	channelName   string
-	releaseName   string
-	releaseStatus string
-}
 
 var (
 	chartConfigDesc *prometheus.Desc = prometheus.NewDesc(
@@ -38,12 +29,47 @@ var (
 	)
 )
 
-func (c *Collector) collectChartConfigStatus(ctx context.Context, ch chan<- prometheus.Metric) {
-	c.logger.LogCtx(ctx, "level", "debug", "message", "collecting metrics for ChartConfigs")
+// ChartResourceConfig is this collector's configuration struct.
+type ChartResourceConfig struct {
+	G8sClient versioned.Interface
+	Helper    *helper
+	Logger    micrologger.Logger
+}
 
-	chartConfigs, err := c.getChartConfigs()
+// ChartResource is the main struct for this collector.
+type ChartResource struct {
+	g8sClient versioned.Interface
+	helper    *helper
+	logger    micrologger.Logger
+}
+
+// NewChartResource creates a new ChartResource metrics collector.
+func NewChartResource(config ChartResourceConfig) (*ChartResource, error) {
+	if config.G8sClient == nil {
+		return nil, microerror.Maskf(invalidConfigError, "%T.G8sClient must not be empty", config)
+	}
+	if config.Helper == nil {
+		return nil, microerror.Maskf(invalidConfigError, "%T.Helper must not be empty", config)
+	}
+	if config.Logger == nil {
+		return nil, microerror.Maskf(invalidConfigError, "%T.Logger must not be empty", config)
+	}
+
+	a := &ChartResource{
+		g8sClient: config.G8sClient,
+		helper:    config.Helper,
+		logger:    config.Logger,
+	}
+
+	return a, nil
+}
+
+func (c *ChartResource) Collect(ch chan<- prometheus.Metric) error {
+	c.logger.Log("level", "debug", "message", "collecting metrics for ChartConfigs")
+
+	chartConfigs, err := c.helper.getChartConfigs()
 	if err != nil {
-		c.logger.LogCtx(ctx, "level", "error", "message", "could not get ChartConfigs", "stack", fmt.Sprintf("%#v", err))
+		return microerror.Mask(err)
 	}
 
 	for _, chartConfig := range chartConfigs {
@@ -55,43 +81,17 @@ func (c *Collector) collectChartConfigStatus(ctx context.Context, ch chan<- prom
 			chartConfig.channelName,
 			chartConfig.releaseName,
 			chartConfig.releaseStatus,
-			c.watchNamespace,
+			chartConfig.namespace,
 		)
 	}
-	c.logger.LogCtx(ctx, "level", "debug", "message", "finished collecting metrics for ChartConfigs")
+
+	c.logger.Log("level", "debug", "message", "finished collecting metrics for ChartConfigs")
+
+	return nil
 }
 
-func (c *Collector) getCharts() ([]*chartState, error) {
-	r, err := c.g8sClient.ApplicationV1alpha1().Charts(c.watchNamespace).List(metav1.ListOptions{})
-	if err != nil {
-		return nil, microerror.Mask(err)
-	}
-
-	res := []*chartState{}
-	for _, chart := range r.Items {
-		v := &chartState{
-			chartName: chart.ObjectMeta.Name,
-		}
-		res = append(res, v)
-	}
-	return res, nil
-}
-
-func (c *Collector) getChartConfigs() ([]*chartState, error) {
-	r, err := c.g8sClient.CoreV1alpha1().ChartConfigs(c.watchNamespace).List(metav1.ListOptions{})
-	if err != nil {
-		return nil, microerror.Mask(err)
-	}
-
-	res := []*chartState{}
-	for _, chartConfig := range r.Items {
-		v := &chartState{
-			chartName:     chartConfig.Spec.Chart.Name,
-			channelName:   chartConfig.Spec.Chart.Channel,
-			releaseName:   chartConfig.Spec.Chart.Release,
-			releaseStatus: chartConfig.Status.ReleaseStatus,
-		}
-		res = append(res, v)
-	}
-	return res, nil
+// Describe emits the description for the metrics collected here.
+func (a *ChartResource) Describe(ch chan<- *prometheus.Desc) error {
+	ch <- chartConfigDesc
+	return nil
 }

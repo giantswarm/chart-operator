@@ -1,14 +1,15 @@
 package collector
 
 import (
-	"context"
 	"fmt"
 	"strconv"
 
 	"github.com/giantswarm/microerror"
+	"github.com/giantswarm/micrologger"
 	"github.com/prometheus/client_golang/prometheus"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/client-go/kubernetes"
 
 	"github.com/giantswarm/chart-operator/service/collector/key"
 )
@@ -24,34 +25,77 @@ var (
 	)
 )
 
-func (c *Collector) collectTillerConfigured(ctx context.Context, ch chan<- prometheus.Metric) {
-	var value float64
+// TillerMaxHistoryConfig is this collector's configuration struct.
+type TillerMaxHistoryConfig struct {
+	Helper    *helper
+	K8sClient kubernetes.Interface
+	Logger    micrologger.Logger
 
-	c.logger.LogCtx(ctx, "level", "debug", "message", "collecting Tiller max history")
+	TillerNamespace string
+}
 
-	charts, err := c.getCharts()
-	if err != nil {
-		c.logger.LogCtx(ctx, "level", "debug", "message", "could not get Charts", "stack", fmt.Sprintf("%#v", err))
-		return
+// TillerMaxHistory is the main struct for this collector.
+type TillerMaxHistory struct {
+	helper    *helper
+	k8sClient kubernetes.Interface
+	logger    micrologger.Logger
+
+	tillerNamespace string
+}
+
+// NewTillerMaxHistory creates a new TillerMaxHistory metrics collector.
+func NewTillerMaxHistory(config TillerMaxHistoryConfig) (*TillerMaxHistory, error) {
+	if config.Helper == nil {
+		return nil, microerror.Maskf(invalidConfigError, "%T.Helper must not be empty", config)
+	}
+	if config.K8sClient == nil {
+		return nil, microerror.Maskf(invalidConfigError, "%T.K8sClient must not be empty", config)
+	}
+	if config.Logger == nil {
+		return nil, microerror.Maskf(invalidConfigError, "%T.Logger must not be empty", config)
 	}
 
-	chartConfigs, err := c.getChartConfigs()
+	if config.TillerNamespace == "" {
+		return nil, microerror.Maskf(invalidConfigError, "%T.TillerNamespace must not be empty", config)
+	}
+
+	t := &TillerMaxHistory{
+		helper:    config.Helper,
+		k8sClient: config.K8sClient,
+		logger:    config.Logger,
+
+		tillerNamespace: config.TillerNamespace,
+	}
+
+	return t, nil
+}
+
+func (t *TillerMaxHistory) Collect(ch chan<- prometheus.Metric) error {
+	var value float64
+
+	t.logger.Log("level", "debug", "message", "collecting Tiller max history")
+
+	charts, err := t.helper.getCharts()
 	if err != nil {
-		c.logger.LogCtx(ctx, "level", "debug", "message", "could not get ChartConfigs", "stack", fmt.Sprintf("%#v", err))
-		return
+		return microerror.Mask(err)
+	}
+
+	chartConfigs, err := t.helper.getChartConfigs()
+	if err != nil {
+		return microerror.Mask(err)
 	}
 
 	if len(charts) == 0 && len(chartConfigs) == 0 {
 		// Skip checking tiller when there are no custom resources,
 		// as tiller is only installed when there is at least one CR to reconcile.
-		c.logger.Log("level", "debug", "message", "did not collect Tiller max history")
-		c.logger.Log("level", "debug", "message", "no Chart or ChartConfig CRs in the cluster")
+		t.logger.Log("level", "debug", "message", "did not collect Tiller max history")
+		t.logger.Log("level", "debug", "message", "no Chart or ChartConfig CRs in the cluster")
 
 		value = 1
 	} else {
-		value, err = c.getTillerMaxHistory()
+		value, err = t.getTillerMaxHistory()
 		if err != nil {
-			c.logger.Log("level", "error", "message", "failed to get Tiller max history", "stack", fmt.Sprintf("%#v", err))
+			t.logger.Log("level", "error", "message", "failed to get Tiller max history", "stack", fmt.Sprintf("%#v", err))
 		}
 	}
 
@@ -59,14 +103,22 @@ func (c *Collector) collectTillerConfigured(ctx context.Context, ch chan<- prome
 		tillerConfiguredDesc,
 		prometheus.GaugeValue,
 		value,
-		c.tillerNamespace,
+		t.tillerNamespace,
 	)
 
-	c.logger.LogCtx(ctx, "level", "debug", "message", "finished collecting Tiller max history")
+	t.logger.Log("level", "debug", "message", "finished collecting Tiller max history")
+
+	return nil
 }
 
-func (c *Collector) getTillerMaxHistory() (float64, error) {
-	deploy, err := c.k8sClient.Extensions().Deployments(c.tillerNamespace).Get(key.TillerDeploymentName(), metav1.GetOptions{})
+// Describe emits the description for the metrics collected here.
+func (t *TillerMaxHistory) Describe(ch chan<- *prometheus.Desc) error {
+	ch <- tillerConfiguredDesc
+	return nil
+}
+
+func (t *TillerMaxHistory) getTillerMaxHistory() (float64, error) {
+	deploy, err := t.k8sClient.Extensions().Deployments(t.tillerNamespace).Get(key.TillerDeploymentName(), metav1.GetOptions{})
 	if apierrors.IsNotFound(err) {
 		return 0, nil
 	} else if err != nil {

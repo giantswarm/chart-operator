@@ -11,7 +11,6 @@ import (
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/micrologger"
 	"github.com/giantswarm/operatorkit/client/k8srestconfig"
-	"github.com/prometheus/client_golang/prometheus"
 	"github.com/spf13/afero"
 	"github.com/spf13/viper"
 	apiextensionsclient "k8s.io/apiextensions-apiserver/pkg/client/clientset/clientset"
@@ -47,7 +46,7 @@ type Service struct {
 	bootOnce              sync.Once
 	chartController       *chart.Chart
 	chartConfigController *chartconfig.ChartConfig
-	metricsCollector      *collector.Collector
+	operatorCollector     *collector.Set
 }
 
 // New creates a new service with given configuration.
@@ -136,24 +135,6 @@ func New(config Config) (*Service, error) {
 		}
 	}
 
-	var metricsCollector *collector.Collector
-	{
-		c := collector.Config{
-			G8sClient:  g8sClient,
-			K8sClient:  k8sClient,
-			HelmClient: helmClient,
-			Logger:     config.Logger,
-
-			TillerNamespace: config.Viper.GetString(config.Flag.Service.Helm.TillerNamespace),
-			WatchNamespace:  config.Viper.GetString(config.Flag.Service.Kubernetes.Watch.Namespace),
-		}
-
-		metricsCollector, err = collector.New(c)
-		if err != nil {
-			return nil, microerror.Mask(err)
-		}
-	}
-
 	var chartController *chart.Chart
 	{
 		c := chart.Config{
@@ -195,6 +176,23 @@ func New(config Config) (*Service, error) {
 		}
 	}
 
+	var operatorCollector *collector.Set
+	{
+		c := collector.SetConfig{
+			G8sClient:  g8sClient,
+			HelmClient: helmClient,
+			K8sClient:  k8sClient,
+			Logger:     config.Logger,
+
+			TillerNamespace: config.Viper.GetString(config.Flag.Service.Helm.TillerNamespace),
+		}
+
+		operatorCollector, err = collector.NewSet(c)
+		if err != nil {
+			return nil, microerror.Mask(err)
+		}
+	}
+
 	var versionService *version.Service
 	{
 		versionConfig := version.Config{
@@ -217,19 +215,19 @@ func New(config Config) (*Service, error) {
 		bootOnce:              sync.Once{},
 		chartController:       chartController,
 		chartConfigController: chartConfigController,
-		metricsCollector:      metricsCollector,
+		operatorCollector:     operatorCollector,
 	}
 
 	return s, nil
 }
 
 // Boot starts top level service implementation.
-func (s *Service) Boot() {
+func (s *Service) Boot(ctx context.Context) {
 	s.bootOnce.Do(func() {
-		prometheus.MustRegister(s.metricsCollector)
+		go s.operatorCollector.Boot(ctx)
 
 		// Start the controllers
-		go s.chartController.Boot(context.Background())
-		go s.chartConfigController.Boot(context.Background())
+		go s.chartController.Boot(ctx)
+		go s.chartConfigController.Boot(ctx)
 	})
 }
