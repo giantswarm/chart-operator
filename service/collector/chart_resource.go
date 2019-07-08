@@ -30,6 +30,15 @@ var (
 		},
 		nil,
 	)
+
+	cordonExpireTimeDesc = prometheus.NewDesc(
+		prometheus.BuildFQName(Namespace, "", "cordon_expire_time"),
+		"A metric of the expire time of cordoned chartconfig as unix seconds.",
+		[]string{
+			chartNameLabel,
+		},
+		nil,
+	)
 )
 
 // ChartResourceConfig is this collector's configuration struct.
@@ -80,6 +89,15 @@ func (c *ChartResource) Collect(ch chan<- prometheus.Metric) error {
 			key.ReleaseStatus(chartConfig),
 			key.Namespace(chartConfig),
 		)
+
+		if chartConfig.cordonUntil != 0.0 {
+			ch <- prometheus.MustNewConstMetric(
+				cordonExpireTimeDesc,
+				prometheus.GaugeValue,
+				chartConfig.cordonUntil,
+				chartConfig.chartName,
+			)
+		}
 	}
 
 	c.logger.Log("level", "debug", "message", "finished collecting metrics for ChartConfigs")
