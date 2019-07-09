@@ -17,7 +17,7 @@ var (
 		prometheus.BuildFQName(Namespace, "", "tiller_reachable"),
 		"Tiller is reachable from chart-operator.",
 		[]string{
-			namespaceLabel,
+			labelNamespace,
 		},
 		nil,
 	)
