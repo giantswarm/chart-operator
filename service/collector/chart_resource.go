@@ -13,23 +13,16 @@ import (
 	"github.com/giantswarm/chart-operator/service/controller/chartconfig/v7/key"
 )
 
-const (
-	chartNameLabel     = "chart_name"
-	channelNameLabel   = "channel_name"
-	releaseNameLabel   = "release_name"
-	releaseStatusLabel = "release_status"
-)
-
 var (
 	chartConfigDesc *prometheus.Desc = prometheus.NewDesc(
 		prometheus.BuildFQName(Namespace, "", "chartconfig_status"),
 		"Managed charts status.",
 		[]string{
-			chartNameLabel,
-			channelNameLabel,
-			releaseNameLabel,
-			releaseStatusLabel,
-			namespaceLabel,
+			labelChart,
+			labelChannel,
+			labelRelease,
+			labelReleaseStatus,
+			labelNamespace,
 		},
 		nil,
 	)
@@ -38,7 +31,7 @@ var (
 		prometheus.BuildFQName(Namespace, "", "cordon_expire_time"),
 		"A metric of the expire time of cordoned chartconfig as unix seconds.",
 		[]string{
-			chartNameLabel,
+			labelChart,
 		},
 		nil,
 	)

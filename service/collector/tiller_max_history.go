@@ -20,7 +20,7 @@ var (
 		prometheus.BuildFQName(Namespace, "", "tiller_max_history"),
 		"Tiller setting for number of revisions to save per release.",
 		[]string{
-			namespaceLabel,
+			labelNamespace,
 		},
 		nil,
 	)
