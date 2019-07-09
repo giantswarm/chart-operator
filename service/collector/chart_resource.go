@@ -93,20 +93,22 @@ func (c *ChartResource) Collect(ch chan<- prometheus.Metric) error {
 			key.Namespace(chartConfig),
 		)
 
-		if key.IsCordoned(chartConfig) {
-			t, err := convertToTime(key.CordonUntil(chartConfig))
-			if err != nil {
-				c.logger.Log("level", "warning", "message", "could not convert cordon-until", "stack", fmt.Sprintf("%#v", err))
-				continue
-			}
-
-			ch <- prometheus.MustNewConstMetric(
-				cordonExpireTimeDesc,
-				prometheus.GaugeValue,
-				float64(t.Unix()),
-				key.ChartName(chartConfig),
-			)
+		if !key.IsCordoned(chartConfig) {
+			continue
 		}
+
+		t, err := convertToTime(key.CordonUntil(chartConfig))
+		if err != nil {
+			c.logger.Log("level", "warning", "message", "could not convert cordon-until", "stack", fmt.Sprintf("%#v", err))
+			continue
+		}
+
+		ch <- prometheus.MustNewConstMetric(
+			cordonExpireTimeDesc,
+			prometheus.GaugeValue,
+			float64(t.Unix()),
+			key.ChartName(chartConfig),
+		)
 	}
 
 	c.logger.Log("level", "debug", "message", "finished collecting metrics for ChartConfigs")
