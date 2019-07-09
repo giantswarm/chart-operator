@@ -45,24 +45,10 @@ func NewSet(config SetConfig) (*Set, error) {
 
 	var err error
 
-	var helper *helper
-	{
-		c := helperConfig{
-			G8sClient: config.G8sClient,
-			Logger:    config.Logger,
-		}
-
-		helper, err = newHelper(c)
-		if err != nil {
-			return nil, microerror.Mask(err)
-		}
-	}
-
 	var chartResourceCollector *ChartResource
 	{
 		c := ChartResourceConfig{
 			G8sClient: config.G8sClient,
-			Helper:    helper,
 			Logger:    config.Logger,
 		}
 
@@ -75,7 +61,7 @@ func NewSet(config SetConfig) (*Set, error) {
 	var tillerMaxHistoryCollector *TillerMaxHistory
 	{
 		c := TillerMaxHistoryConfig{
-			Helper:    helper,
+			G8sClient: config.G8sClient,
 			K8sClient: config.K8sClient,
 			Logger:    config.Logger,
 
@@ -91,8 +77,8 @@ func NewSet(config SetConfig) (*Set, error) {
 	var tillerReachableCollector *TillerReachable
 	{
 		c := TillerReachableConfig{
+			G8sClient:  config.G8sClient,
 			HelmClient: config.HelmClient,
-			Helper:     helper,
 			Logger:     config.Logger,
 
 			TillerNamespace: config.TillerNamespace,

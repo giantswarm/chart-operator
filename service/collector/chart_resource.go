@@ -5,6 +5,9 @@ import (
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/micrologger"
 	"github.com/prometheus/client_golang/prometheus"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+
+	"github.com/giantswarm/chart-operator/service/controller/chartconfig/v7/key"
 )
 
 const (
@@ -32,14 +35,12 @@ var (
 // ChartResourceConfig is this collector's configuration struct.
 type ChartResourceConfig struct {
 	G8sClient versioned.Interface
-	Helper    *helper
 	Logger    micrologger.Logger
 }
 
 // ChartResource is the main struct for this collector.
 type ChartResource struct {
 	g8sClient versioned.Interface
-	helper    *helper
 	logger    micrologger.Logger
 }
 
@@ -48,16 +49,12 @@ func NewChartResource(config ChartResourceConfig) (*ChartResource, error) {
 	if config.G8sClient == nil {
 		return nil, microerror.Maskf(invalidConfigError, "%T.G8sClient must not be empty", config)
 	}
-	if config.Helper == nil {
-		return nil, microerror.Maskf(invalidConfigError, "%T.Helper must not be empty", config)
-	}
 	if config.Logger == nil {
 		return nil, microerror.Maskf(invalidConfigError, "%T.Logger must not be empty", config)
 	}
 
 	a := &ChartResource{
 		g8sClient: config.G8sClient,
-		helper:    config.Helper,
 		logger:    config.Logger,
 	}
 
@@ -67,21 +64,21 @@ func NewChartResource(config ChartResourceConfig) (*ChartResource, error) {
 func (c *ChartResource) Collect(ch chan<- prometheus.Metric) error {
 	c.logger.Log("level", "debug", "message", "collecting metrics for ChartConfigs")
 
-	chartConfigs, err := c.helper.getChartConfigs()
+	chartConfigs, err := c.g8sClient.CoreV1alpha1().ChartConfigs("").List(metav1.ListOptions{})
 	if err != nil {
 		return microerror.Mask(err)
 	}
 
-	for _, chartConfig := range chartConfigs {
+	for _, chartConfig := range chartConfigs.Items {
 		ch <- prometheus.MustNewConstMetric(
 			chartConfigDesc,
 			prometheus.GaugeValue,
 			gaugeValue,
-			chartConfig.chartName,
-			chartConfig.channelName,
-			chartConfig.releaseName,
-			chartConfig.releaseStatus,
-			chartConfig.namespace,
+			key.ChartName(chartConfig),
+			key.ChannelName(chartConfig),
+			key.ReleaseName(chartConfig),
+			key.ReleaseStatus(chartConfig),
+			key.Namespace(chartConfig),
 		)
 	}
 
