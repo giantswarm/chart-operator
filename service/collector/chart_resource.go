@@ -1,6 +1,8 @@
 package collector
 
 import (
+	"fmt"
+
 	"github.com/giantswarm/apiextensions/pkg/clientset/versioned"
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/micrologger"
@@ -90,12 +92,18 @@ func (c *ChartResource) Collect(ch chan<- prometheus.Metric) error {
 			key.Namespace(chartConfig),
 		)
 
-		if chartConfig.cordonUntil != 0.0 {
+		if key.IsCordoned(chartConfig) {
+			t, err := convertToTime(key.CordonUntil(chartConfig))
+			if err != nil {
+				c.logger.Log("level", "warning", "message", "could not convert cordon-until", "stack", fmt.Sprintf("%#v", err))
+				continue
+			}
+
 			ch <- prometheus.MustNewConstMetric(
 				cordonExpireTimeDesc,
 				prometheus.GaugeValue,
-				chartConfig.cordonUntil,
-				chartConfig.chartName,
+				float64(t.Unix()),
+				key.ChartName(chartConfig),
 			)
 		}
 	}
