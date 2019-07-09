@@ -24,7 +24,7 @@ func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange inte
 	}
 
 	if chartState.ReleaseName != "" {
-		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("updating chart %s", chartState.ChartName))
+		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("updating chart %#q", chartState.ChartName))
 
 		name := key.ChartName(customObject)
 		releaseName := chartState.ReleaseName
@@ -37,7 +37,7 @@ func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange inte
 		defer func() {
 			err := r.fs.Remove(tarballPath)
 			if err != nil {
-				r.logger.LogCtx(ctx, "level", "error", "message", fmt.Sprintf("deletion of %q failed", tarballPath), "stack", fmt.Sprintf("%#v", err))
+				r.logger.LogCtx(ctx, "level", "error", "message", fmt.Sprintf("deletion of %q failed", tarballPath), "stack", fmt.Sprintf("%#q", err))
 			}
 		}()
 
@@ -57,10 +57,10 @@ func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange inte
 		if err != nil {
 			return microerror.Mask(err)
 		}
-		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("updated chart %s", chartState.ChartName))
+		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("updated chart %#q", chartState.ChartName))
 
 	} else {
-		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("chart %s does not need to be updated", chartState.ChartName))
+		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("chart %#q does not need to be updated", chartState.ChartName))
 	}
 	return nil
 }
