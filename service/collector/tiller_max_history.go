@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strconv"
 
+	"github.com/giantswarm/apiextensions/pkg/clientset/versioned"
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/micrologger"
 	"github.com/prometheus/client_golang/prometheus"
@@ -27,7 +28,7 @@ var (
 
 // TillerMaxHistoryConfig is this collector's configuration struct.
 type TillerMaxHistoryConfig struct {
-	Helper    *helper
+	G8sClient versioned.Interface
 	K8sClient kubernetes.Interface
 	Logger    micrologger.Logger
 
@@ -36,7 +37,7 @@ type TillerMaxHistoryConfig struct {
 
 // TillerMaxHistory is the main struct for this collector.
 type TillerMaxHistory struct {
-	helper    *helper
+	g8sClient versioned.Interface
 	k8sClient kubernetes.Interface
 	logger    micrologger.Logger
 
@@ -45,8 +46,8 @@ type TillerMaxHistory struct {
 
 // NewTillerMaxHistory creates a new TillerMaxHistory metrics collector.
 func NewTillerMaxHistory(config TillerMaxHistoryConfig) (*TillerMaxHistory, error) {
-	if config.Helper == nil {
-		return nil, microerror.Maskf(invalidConfigError, "%T.Helper must not be empty", config)
+	if config.G8sClient == nil {
+		return nil, microerror.Maskf(invalidConfigError, "%T.G8sClient must not be empty", config)
 	}
 	if config.K8sClient == nil {
 		return nil, microerror.Maskf(invalidConfigError, "%T.K8sClient must not be empty", config)
@@ -60,7 +61,7 @@ func NewTillerMaxHistory(config TillerMaxHistoryConfig) (*TillerMaxHistory, erro
 	}
 
 	t := &TillerMaxHistory{
-		helper:    config.Helper,
+		g8sClient: config.G8sClient,
 		k8sClient: config.K8sClient,
 		logger:    config.Logger,
 
@@ -75,17 +76,17 @@ func (t *TillerMaxHistory) Collect(ch chan<- prometheus.Metric) error {
 
 	t.logger.Log("level", "debug", "message", "collecting Tiller max history")
 
-	charts, err := t.helper.getCharts()
+	charts, err := t.g8sClient.ApplicationV1alpha1().Charts("").List(metav1.ListOptions{})
 	if err != nil {
 		return microerror.Mask(err)
 	}
 
-	chartConfigs, err := t.helper.getChartConfigs()
+	chartConfigs, err := t.g8sClient.CoreV1alpha1().ChartConfigs("").List(metav1.ListOptions{})
 	if err != nil {
 		return microerror.Mask(err)
 	}
 
-	if len(charts) == 0 && len(chartConfigs) == 0 {
+	if len(charts.Items) == 0 && len(chartConfigs.Items) == 0 {
 		// Skip checking tiller when there are no custom resources,
 		// as tiller is only installed when there is at least one CR to reconcile.
 		t.logger.Log("level", "debug", "message", "did not collect Tiller max history")

@@ -4,10 +4,12 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/giantswarm/apiextensions/pkg/clientset/versioned"
 	"github.com/giantswarm/helmclient"
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/micrologger"
 	"github.com/prometheus/client_golang/prometheus"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 var (
@@ -23,8 +25,8 @@ var (
 
 // TillerReachableConfig is this collector's configuration struct.
 type TillerReachableConfig struct {
+	G8sClient  versioned.Interface
 	HelmClient helmclient.Interface
-	Helper     *helper
 	Logger     micrologger.Logger
 
 	TillerNamespace string
@@ -32,8 +34,8 @@ type TillerReachableConfig struct {
 
 // TillerReachable is the main struct for this collector.
 type TillerReachable struct {
+	g8sClient  versioned.Interface
 	helmClient helmclient.Interface
-	helper     *helper
 	logger     micrologger.Logger
 
 	tillerNamespace string
@@ -41,11 +43,11 @@ type TillerReachable struct {
 
 // NewTillerReachable creates a new TillerReachable metrics collector.
 func NewTillerReachable(config TillerReachableConfig) (*TillerReachable, error) {
+	if config.G8sClient == nil {
+		return nil, microerror.Maskf(invalidConfigError, "%T.G8sClient must not be empty", config)
+	}
 	if config.HelmClient == nil {
 		return nil, microerror.Maskf(invalidConfigError, "%T.HelmClient must not be empty", config)
-	}
-	if config.Helper == nil {
-		return nil, microerror.Maskf(invalidConfigError, "%T.Helper must not be empty", config)
 	}
 	if config.Logger == nil {
 		return nil, microerror.Maskf(invalidConfigError, "%T.Logger must not be empty", config)
@@ -56,8 +58,8 @@ func NewTillerReachable(config TillerReachableConfig) (*TillerReachable, error) 
 	}
 
 	t := &TillerReachable{
+		g8sClient:  config.G8sClient,
 		helmClient: config.HelmClient,
-		helper:     config.Helper,
 		logger:     config.Logger,
 
 		tillerNamespace: config.TillerNamespace,
@@ -73,17 +75,17 @@ func (t *TillerReachable) Collect(ch chan<- prometheus.Metric) error {
 
 	t.logger.Log("level", "debug", "message", "collecting Tiller reachability")
 
-	charts, err := t.helper.getCharts()
+	charts, err := t.g8sClient.ApplicationV1alpha1().Charts("").List(metav1.ListOptions{})
 	if err != nil {
 		return microerror.Mask(err)
 	}
 
-	chartConfigs, err := t.helper.getChartConfigs()
+	chartConfigs, err := t.g8sClient.CoreV1alpha1().ChartConfigs("").List(metav1.ListOptions{})
 	if err != nil {
 		return microerror.Mask(err)
 	}
 
-	if len(charts) == 0 && len(chartConfigs) == 0 {
+	if len(charts.Items) == 0 && len(chartConfigs.Items) == 0 {
 		// Skip pinging tiller when there are no custom resources,
 		// as tiller is only installed when there is at least one CR to reconcile.
 		t.logger.Log("level", "debug", "message", "did not collect Tiller reachability")
