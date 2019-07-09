@@ -23,7 +23,7 @@ func (r *Resource) ApplyCreateChange(ctx context.Context, obj, createChange inte
 	}
 
 	if chartState.ChartName != "" {
-		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("creating chart %s", chartState.ChartName))
+		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("creating chart %#q", chartState.ChartName))
 		name := key.ChartName(customObject)
 		channel := key.ChannelName(customObject)
 		ns := key.Namespace(customObject)
@@ -57,9 +57,9 @@ func (r *Resource) ApplyCreateChange(ctx context.Context, obj, createChange inte
 		if err != nil {
 			return microerror.Mask(err)
 		}
-		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("created chart %s", chartState.ChartName))
+		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("created chart %#q", chartState.ChartName))
 	} else {
-		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("not creating chart %s", chartState.ChartName))
+		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("not creating chart %#q", chartState.ChartName))
 	}
 
 	return nil
@@ -75,16 +75,16 @@ func (r *Resource) newCreateChange(ctx context.Context, obj, currentState, desir
 		return nil, microerror.Mask(err)
 	}
 
-	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("finding out if the %s chart has to be created", desiredChartState.ChartName))
+	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("finding out if the %#q chart has to be created", desiredChartState.ChartName))
 
 	createState := &ChartState{}
 
 	if currentChartState.IsEmpty() {
-		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("the %s chart needs to be created", desiredChartState.ChartName))
+		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("the %#q chart needs to be created", desiredChartState.ChartName))
 
 		createState = &desiredChartState
 	} else {
-		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("the %s chart does not need to be created", desiredChartState.ChartName))
+		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("the %#q chart does not need to be created", desiredChartState.ChartName))
 	}
 
 	return createState, nil

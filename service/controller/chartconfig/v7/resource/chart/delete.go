@@ -16,16 +16,16 @@ func (r *Resource) ApplyDeleteChange(ctx context.Context, obj, deleteChange inte
 	}
 
 	if chartState.ReleaseName != "" {
-		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("deleting release %s", chartState.ReleaseName))
+		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("deleting release %#q", chartState.ReleaseName))
 
 		err = r.helmClient.DeleteRelease(ctx, chartState.ReleaseName, helm.DeletePurge(true))
 		if err != nil {
 			return microerror.Mask(err)
 		}
 
-		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("deleted release %s", chartState.ReleaseName))
+		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("deleted release %#q", chartState.ReleaseName))
 	} else {
-		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("not deleting release %s", chartState.ReleaseName))
+		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("not deleting release %#q", chartState.ReleaseName))
 	}
 	return nil
 }
@@ -52,14 +52,14 @@ func (r *Resource) newDeleteChange(ctx context.Context, obj, currentState, desir
 		return nil, microerror.Mask(err)
 	}
 
-	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("finding out if the %s release has to be deleted", desiredChartState.ReleaseName))
+	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("finding out if the %#q release has to be deleted", desiredChartState.ReleaseName))
 
 	if !currentChartState.IsEmpty() && currentChartState.Equals(desiredChartState) {
-		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("the %s release needs to be deleted", desiredChartState.ReleaseName))
+		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("the %#q release needs to be deleted", desiredChartState.ReleaseName))
 
 		return &desiredChartState, nil
 	} else {
-		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("the %s release does not need to be deleted", desiredChartState.ReleaseName))
+		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("the %#q release does not need to be deleted", desiredChartState.ReleaseName))
 	}
 
 	return nil, nil

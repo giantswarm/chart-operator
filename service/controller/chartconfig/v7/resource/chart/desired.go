@@ -118,7 +118,7 @@ func (r *Resource) getUserConfigMapValues(ctx context.Context, customObject v1al
 func (r *Resource) getConfigMap(ctx context.Context, configMapName, configMapNamespace string) (*corev1.ConfigMap, error) {
 	configMap, err := r.k8sClient.CoreV1().ConfigMaps(configMapNamespace).Get(configMapName, metav1.GetOptions{})
 	if apierrors.IsNotFound(err) {
-		return nil, microerror.Maskf(notFoundError, "config map '%s' in namespace '%s' not found", configMapName, configMapNamespace)
+		return nil, microerror.Maskf(notFoundError, "config map %#q in namespace %#q not found", configMapName, configMapNamespace)
 	} else if err != nil {
 		return nil, microerror.Mask(err)
 	}
@@ -135,7 +135,7 @@ func (r *Resource) getSecretValues(ctx context.Context, customObject v1alpha1.Ch
 
 		secret, err := r.k8sClient.CoreV1().Secrets(secretNamespace).Get(secretName, metav1.GetOptions{})
 		if apierrors.IsNotFound(err) {
-			return nil, microerror.Maskf(notFoundError, "secret '%s' in namespace '%s' not found", secretName, secretNamespace)
+			return nil, microerror.Maskf(notFoundError, "secret %#q in namespace %#q not found", secretName, secretNamespace)
 		} else if err != nil {
 			return nil, microerror.Mask(err)
 		}
@@ -211,7 +211,7 @@ func union(a, b map[string]interface{}) (map[string]interface{}, error) {
 		if ok {
 			// The secret and config map we use have at least one shared key. We can not
 			// decide which value is supposed to be applied.
-			return nil, microerror.Maskf(invalidConfigError, "secret and config map share the same key %s", k)
+			return nil, microerror.Maskf(invalidConfigError, "secret and config map share the same key %#q", k)
 		}
 		a[k] = v
 	}
