@@ -2,6 +2,7 @@ package collector
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/giantswarm/apiextensions/pkg/clientset/versioned"
 	"github.com/giantswarm/microerror"
@@ -117,4 +118,15 @@ func (c *ChartResource) Collect(ch chan<- prometheus.Metric) error {
 func (a *ChartResource) Describe(ch chan<- *prometheus.Desc) error {
 	ch <- chartConfigDesc
 	return nil
+}
+
+func convertToTime(datetime string) (time.Time, error) {
+	layout := "2006-01-02T15:04:05.000Z"
+	t, err := time.Parse(layout, datetime)
+
+	if err != nil {
+		return time.Time{}, microerror.Mask(err)
+	}
+
+	return t, nil
 }
