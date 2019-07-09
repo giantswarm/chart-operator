@@ -1,6 +1,9 @@
 package collector
 
 import (
+	"fmt"
+	"time"
+
 	"github.com/giantswarm/apiextensions/pkg/clientset/versioned"
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/micrologger"
@@ -10,23 +13,25 @@ import (
 	"github.com/giantswarm/chart-operator/service/controller/chartconfig/v7/key"
 )
 
-const (
-	chartNameLabel     = "chart_name"
-	channelNameLabel   = "channel_name"
-	releaseNameLabel   = "release_name"
-	releaseStatusLabel = "release_status"
-)
-
 var (
 	chartConfigDesc *prometheus.Desc = prometheus.NewDesc(
 		prometheus.BuildFQName(Namespace, "", "chartconfig_status"),
 		"Managed charts status.",
 		[]string{
-			chartNameLabel,
-			channelNameLabel,
-			releaseNameLabel,
-			releaseStatusLabel,
-			namespaceLabel,
+			labelChart,
+			labelChannel,
+			labelRelease,
+			labelReleaseStatus,
+			labelNamespace,
+		},
+		nil,
+	)
+
+	cordonExpireTimeDesc = prometheus.NewDesc(
+		prometheus.BuildFQName(Namespace, "", "cordon_expire_time"),
+		"A metric of the expire time of cordoned chartconfig as unix seconds.",
+		[]string{
+			labelChart,
 		},
 		nil,
 	)
@@ -80,6 +85,23 @@ func (c *ChartResource) Collect(ch chan<- prometheus.Metric) error {
 			key.ReleaseStatus(chartConfig),
 			key.Namespace(chartConfig),
 		)
+
+		if !key.IsCordoned(chartConfig) {
+			continue
+		}
+
+		t, err := convertToTime(key.CordonUntil(chartConfig))
+		if err != nil {
+			c.logger.Log("level", "warning", "message", "could not convert cordon-until", "stack", fmt.Sprintf("%#v", err))
+			continue
+		}
+
+		ch <- prometheus.MustNewConstMetric(
+			cordonExpireTimeDesc,
+			prometheus.GaugeValue,
+			float64(t.Unix()),
+			key.ChartName(chartConfig),
+		)
 	}
 
 	c.logger.Log("level", "debug", "message", "finished collecting metrics for ChartConfigs")
@@ -91,4 +113,15 @@ func (c *ChartResource) Collect(ch chan<- prometheus.Metric) error {
 func (a *ChartResource) Describe(ch chan<- *prometheus.Desc) error {
 	ch <- chartConfigDesc
 	return nil
+}
+
+func convertToTime(datetime string) (time.Time, error) {
+	layout := "2006-01-02T15:04:05.000Z"
+	t, err := time.Parse(layout, datetime)
+
+	if err != nil {
+		return time.Time{}, microerror.Mask(err)
+	}
+
+	return t, nil
 }
