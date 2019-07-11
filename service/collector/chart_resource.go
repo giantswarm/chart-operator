@@ -28,7 +28,7 @@ var (
 	)
 
 	cordonExpireTimeDesc = prometheus.NewDesc(
-		prometheus.BuildFQName(Namespace, "", "cordon_expire_time"),
+		prometheus.BuildFQName(Namespace, "", "cordon_expire_time_seconds"),
 		"A metric of the expire time of cordoned chartconfig as unix seconds.",
 		[]string{
 			labelChart,
