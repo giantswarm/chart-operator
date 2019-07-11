@@ -112,6 +112,7 @@ func (c *ChartConfigResource) Collect(ch chan<- prometheus.Metric) error {
 // Describe emits the description for the metrics collected here.
 func (a *ChartConfigResource) Describe(ch chan<- *prometheus.Desc) error {
 	ch <- chartConfigDesc
+	ch <- cordonExpireTimeDesc
 	return nil
 }
 
