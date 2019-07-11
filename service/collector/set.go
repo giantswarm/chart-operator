@@ -45,6 +45,19 @@ func NewSet(config SetConfig) (*Set, error) {
 
 	var err error
 
+	var chartResourceCollector *ChartResource
+	{
+		c := ChartResourceConfig{
+			G8sClient: config.G8sClient,
+			Logger:    config.Logger,
+		}
+
+		chartResourceCollector, err = NewChartResource(c)
+		if err != nil {
+			return nil, microerror.Mask(err)
+		}
+	}
+
 	var chartConfigResourceCollector *ChartConfigResource
 	{
 		c := ChartConfigResourceConfig{
@@ -94,6 +107,7 @@ func NewSet(config SetConfig) (*Set, error) {
 	{
 		c := collector.SetConfig{
 			Collectors: []collector.Interface{
+				chartResourceCollector,
 				chartConfigResourceCollector,
 				tillerMaxHistoryCollector,
 				tillerReachableCollector,
