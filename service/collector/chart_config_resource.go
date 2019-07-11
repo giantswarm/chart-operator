@@ -27,8 +27,8 @@ var (
 		nil,
 	)
 
-	cordonExpireTimeDesc = prometheus.NewDesc(
-		prometheus.BuildFQName(Namespace, "", "cordon_expire_time_seconds"),
+	chartConfigCordonExpireTimeDesc = prometheus.NewDesc(
+		prometheus.BuildFQName(Namespace, "", "chartconfig_cordon_expire_time_seconds"),
 		"A metric of the expire time of cordoned chartconfig as unix seconds.",
 		[]string{
 			labelChart,
@@ -97,7 +97,7 @@ func (c *ChartConfigResource) Collect(ch chan<- prometheus.Metric) error {
 		}
 
 		ch <- prometheus.MustNewConstMetric(
-			cordonExpireTimeDesc,
+			chartConfigCordonExpireTimeDesc,
 			prometheus.GaugeValue,
 			float64(t.Unix()),
 			key.ChartName(chartConfig),
@@ -112,7 +112,7 @@ func (c *ChartConfigResource) Collect(ch chan<- prometheus.Metric) error {
 // Describe emits the description for the metrics collected here.
 func (a *ChartConfigResource) Describe(ch chan<- *prometheus.Desc) error {
 	ch <- chartConfigDesc
-	ch <- cordonExpireTimeDesc
+	ch <- chartConfigCordonExpireTimeDesc
 	return nil
 }
 
