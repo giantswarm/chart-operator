@@ -37,20 +37,20 @@ var (
 	)
 )
 
-// ChartResourceConfig is this collector's configuration struct.
-type ChartResourceConfig struct {
+// ChartConfigResourceConfig is this collector's configuration struct.
+type ChartConfigResourceConfig struct {
 	G8sClient versioned.Interface
 	Logger    micrologger.Logger
 }
 
-// ChartResource is the main struct for this collector.
-type ChartResource struct {
+// ChartConfigResource is the main struct for this collector.
+type ChartConfigResource struct {
 	g8sClient versioned.Interface
 	logger    micrologger.Logger
 }
 
-// NewChartResource creates a new ChartResource metrics collector.
-func NewChartResource(config ChartResourceConfig) (*ChartResource, error) {
+// NewChartConfigResource creates a new ChartConfigResource metrics collector.
+func NewChartConfigResource(config ChartConfigResourceConfig) (*ChartConfigResource, error) {
 	if config.G8sClient == nil {
 		return nil, microerror.Maskf(invalidConfigError, "%T.G8sClient must not be empty", config)
 	}
@@ -58,7 +58,7 @@ func NewChartResource(config ChartResourceConfig) (*ChartResource, error) {
 		return nil, microerror.Maskf(invalidConfigError, "%T.Logger must not be empty", config)
 	}
 
-	a := &ChartResource{
+	a := &ChartConfigResource{
 		g8sClient: config.G8sClient,
 		logger:    config.Logger,
 	}
@@ -66,7 +66,7 @@ func NewChartResource(config ChartResourceConfig) (*ChartResource, error) {
 	return a, nil
 }
 
-func (c *ChartResource) Collect(ch chan<- prometheus.Metric) error {
+func (c *ChartConfigResource) Collect(ch chan<- prometheus.Metric) error {
 	c.logger.Log("level", "debug", "message", "collecting metrics for ChartConfigs")
 
 	chartConfigs, err := c.g8sClient.CoreV1alpha1().ChartConfigs("").List(metav1.ListOptions{})
@@ -110,7 +110,7 @@ func (c *ChartResource) Collect(ch chan<- prometheus.Metric) error {
 }
 
 // Describe emits the description for the metrics collected here.
-func (a *ChartResource) Describe(ch chan<- *prometheus.Desc) error {
+func (a *ChartConfigResource) Describe(ch chan<- *prometheus.Desc) error {
 	ch <- chartConfigDesc
 	return nil
 }
