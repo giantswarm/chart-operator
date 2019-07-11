@@ -15,7 +15,7 @@ import (
 
 var (
 	chartConfigDesc *prometheus.Desc = prometheus.NewDesc(
-		prometheus.BuildFQName(Namespace, "", "chartconfig_status"),
+		prometheus.BuildFQName(Namespace, "chartconfig", "status"),
 		"Managed charts status.",
 		[]string{
 			labelChart,
@@ -28,7 +28,7 @@ var (
 	)
 
 	chartConfigCordonExpireTimeDesc = prometheus.NewDesc(
-		prometheus.BuildFQName(Namespace, "", "chartconfig_cordon_expire_time_seconds"),
+		prometheus.BuildFQName(Namespace, "chartconfig", "cordon_expire_time_seconds"),
 		"A metric of the expire time of cordoned chartconfig as unix seconds.",
 		[]string{
 			labelChart,
