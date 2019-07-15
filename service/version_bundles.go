@@ -11,6 +11,7 @@ import (
 	chartconfigv4 "github.com/giantswarm/chart-operator/service/controller/chartconfig/v4"
 	chartconfigv5 "github.com/giantswarm/chart-operator/service/controller/chartconfig/v5"
 	chartconfigv6 "github.com/giantswarm/chart-operator/service/controller/chartconfig/v6"
+	chartconfigv7 "github.com/giantswarm/chart-operator/service/controller/chartconfig/v7"
 )
 
 func NewVersionBundles() []versionbundle.Bundle {
@@ -24,6 +25,7 @@ func NewVersionBundles() []versionbundle.Bundle {
 	versionBundles = append(versionBundles, chartconfigv4.VersionBundle())
 	versionBundles = append(versionBundles, chartconfigv5.VersionBundle())
 	versionBundles = append(versionBundles, chartconfigv6.VersionBundle())
+	versionBundles = append(versionBundles, chartconfigv7.VersionBundle())
 
 	return versionBundles
 }
