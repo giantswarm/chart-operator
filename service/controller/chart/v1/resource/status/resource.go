@@ -11,6 +11,7 @@ import (
 const (
 	Name = "statusv1"
 
+	releaseStatusCordoned = "CORDONED"
 	releaseStatusDeployed = "DEPLOYED"
 )
 
@@ -60,6 +61,9 @@ func equals(a, b v1alpha1.ChartStatus) bool {
 		return false
 	}
 	if a.Release.LastDeployed != b.Release.LastDeployed {
+		return false
+	}
+	if a.Reason != b.Reason {
 		return false
 	}
 	if a.Release.Status != b.Release.Status {
