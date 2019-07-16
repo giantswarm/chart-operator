@@ -122,12 +122,12 @@ func convertToTime(datetime string) (time.Time, error) {
 
 	split := strings.Split(datetime, ".")
 	if len(split) == 0 {
-		return time.Time{}, microerror.Maskf(invalidExecutionError, "'%#v' must have at least one item in order to collect metrics for the cordon expiration", datetime)
+		return time.Time{}, microerror.Maskf(invalidExecutionError, "%#q must have at least one item in order to collect metrics for the cordon expiration", datetime)
 	}
 
 	t, err := time.Parse(layout, split[0])
 	if err != nil {
-		return time.Time{}, microerror.Mask(err)
+		return time.Time{}, microerror.Maskf(invalidExecutionError, "unavailable to %#q parsing: %#v", split[0], err.Error())
 	}
 
 	return t, nil
