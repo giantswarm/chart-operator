@@ -42,11 +42,25 @@ func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
 		return microerror.Mask(err)
 	}
 
+	var status, reason string
+	{
+		if key.IsCordoned(cr) {
+			status = releaseStatusCordoned
+			reason = key.CordonReason(cr)
+		} else {
+			status = releaseContent.Status
+			if releaseContent.Status != releaseStatusDeployed {
+				reason = releaseHistory.Description
+			}
+		}
+	}
+
 	desiredStatus := v1alpha1.ChartStatus{
 		AppVersion: releaseHistory.AppVersion,
+		Reason:     reason,
 		Release: v1alpha1.ChartStatusRelease{
 			LastDeployed: v1alpha1.DeepCopyTime{releaseHistory.LastDeployed},
-			Status:       releaseContent.Status,
+			Status:       status,
 		},
 		Version: releaseHistory.Version,
 	}
@@ -61,17 +75,6 @@ func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
 		}
 
 		currentCR.Status = desiredStatus
-
-		if releaseContent.Status != releaseStatusDeployed {
-			releaseHistory, err := r.helmClient.GetReleaseHistory(ctx, releaseName)
-			if err != nil {
-				return microerror.Mask(err)
-			}
-
-			currentCR.Status.Reason = releaseHistory.Description
-		} else {
-			currentCR.Status.Reason = ""
-		}
 
 		_, err = r.g8sClient.ApplicationV1alpha1().Charts(cr.Namespace).UpdateStatus(currentCR)
 		if err != nil {
