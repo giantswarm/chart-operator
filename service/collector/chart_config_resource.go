@@ -2,6 +2,7 @@ package collector
 
 import (
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/giantswarm/apiextensions/pkg/clientset/versioned"
@@ -117,11 +118,16 @@ func (a *ChartConfigResource) Describe(ch chan<- *prometheus.Desc) error {
 }
 
 func convertToTime(datetime string) (time.Time, error) {
-	layout := "2006-01-02T15:04:05.000Z"
-	t, err := time.Parse(layout, datetime)
+	layout := "2006-01-02T15:04:05"
 
+	split := strings.Split(datetime, ".")
+	if len(split) == 0 {
+		return time.Time{}, microerror.Maskf(invalidExecutionError, "%#q must have at least one item in order to collect metrics for the cordon expiration", datetime)
+	}
+
+	t, err := time.Parse(layout, split[0])
 	if err != nil {
-		return time.Time{}, microerror.Mask(err)
+		return time.Time{}, microerror.Maskf(invalidExecutionError, "unavailable to %#q parsing: %#v", split[0], err.Error())
 	}
 
 	return t, nil
