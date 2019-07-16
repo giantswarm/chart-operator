@@ -126,7 +126,6 @@ func convertToTime(datetime string) (time.Time, error) {
 	}
 
 	t, err := time.Parse(layout, split[0])
-
 	if err != nil {
 		return time.Time{}, microerror.Mask(err)
 	}
