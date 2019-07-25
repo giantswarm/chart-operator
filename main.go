@@ -12,16 +12,13 @@ import (
 	"github.com/spf13/viper"
 
 	"github.com/giantswarm/chart-operator/flag"
+	"github.com/giantswarm/chart-operator/pkg/project"
 	"github.com/giantswarm/chart-operator/server"
 	"github.com/giantswarm/chart-operator/service"
 )
 
 var (
-	description = "The chart-operator deploys Helm charts by reconciling against a CNR repository."
-	f           = flag.New()
-	name        = "chart-operator"
-	gitCommit   = "n/a"
-	source      = "https://github.com/giantswarm/chart-operator"
+	f = flag.New()
 )
 
 func main() {
@@ -59,10 +56,11 @@ func mainWithError() error {
 				Logger: newLogger,
 				Viper:  v,
 
-				Description: description,
-				GitCommit:   gitCommit,
-				ProjectName: name,
-				Source:      source,
+				Description: project.Description(),
+				GitCommit:   project.GitSHA(),
+				ProjectName: project.Name(),
+				Source:      project.Source(),
+				Version:     project.Version(),
 			}
 			newService, err = service.New(c)
 			if err != nil {
@@ -79,7 +77,7 @@ func mainWithError() error {
 				Logger:      newLogger,
 				Service:     newService,
 				Viper:       v,
-				ProjectName: name,
+				ProjectName: project.Name(),
 			}
 
 			newServer, err = server.New(c)
@@ -98,10 +96,11 @@ func mainWithError() error {
 			Logger:        newLogger,
 			ServerFactory: newServerFactory,
 
-			Description: description,
-			GitCommit:   gitCommit,
-			Name:        name,
-			Source:      source,
+			Description: project.Description(),
+			GitCommit:   project.GitSHA(),
+			Name:        project.Name(),
+			Source:      project.Source(),
+			Version:     project.Version(),
 		}
 
 		newCommand, err = command.New(c)

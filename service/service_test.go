@@ -65,6 +65,7 @@ func Test_Service_New(t *testing.T) {
 					GitCommit:   "test",
 					ProjectName: "chart-operator",
 					Source:      "test",
+					Version:     "test",
 				}
 
 				c.Viper.Set(c.Flag.Service.CNR.Address, "https://127.0.0.1:5555")

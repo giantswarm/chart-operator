@@ -36,6 +36,7 @@ type Config struct {
 	GitCommit   string
 	ProjectName string
 	Source      string
+	Version     string
 }
 
 // Service is a type providing implementation of microkit service interface.
@@ -200,6 +201,7 @@ func New(config Config) (*Service, error) {
 			GitCommit:      config.GitCommit,
 			Name:           config.ProjectName,
 			Source:         config.Source,
+			Version:        config.Version,
 			VersionBundles: NewVersionBundles(),
 		}
 
