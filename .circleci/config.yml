@@ -144,6 +144,29 @@ workflows:
     jobs:
       - build
 
+      - architect/push-to-docker:
+          image: "quay.io/giantswarm/chart-operator"
+          username_envar: "QUAY_USERNAME"
+          password_envar: "QUAY_PASSWORD"
+          requires:
+            - build
+          filters:
+            tags:
+              only: /^v.*/
+
+      - architect/push-to-app-catalog:
+          name: "package and push chart-operator-chart"
+          app_catalog: "giantswarm-catalog"
+          app_catalog_test: "giantswarm-test-catalog"
+          chart: "chart-operator-chart"
+          # Make sure docker image is successfully built.
+          requires:
+            - architect/push-to-docker
+          # Trigger job on git tag.
+          filters:
+            tags:
+              only: /^v.*/
+
       - e2eTestChartBasicPR:
           requires:
           - build
@@ -216,26 +239,3 @@ workflows:
               only: master
           requires:
           - deploy
-  push-to-app-catalog:
-    jobs:
-      - architect/push-to-docker:
-          image: "quay.io/giantswarm/chart-operator"
-          username_envar: "QUAY_USERNAME"
-          password_envar: "QUAY_PASSWORD"
-          requires:
-            - build
-          filters:
-            tags:
-              only: /^v.*/
-      - architect/push-to-app-catalog:
-          name: "package and push chart-operator-chart"
-          app_catalog: "giantswarm-catalog"
-          app_catalog_test: "giantswarm-test-catalog"
-          chart: "chart-operator-chart"
-          # Make sure docker image is successfully built.
-          requires:
-            - architect/push-to-docker
-          # Trigger job on git tag.
-          filters:
-            tags:
-              only: /^v.*/
