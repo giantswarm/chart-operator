@@ -28,7 +28,7 @@ e2eTest: &e2eTest
 
 version: 2.1
 orbs:
-  architect: giantswarm/architect@0.1.2
+  architect: giantswarm/architect@0.2.0
 
 jobs:
   build:
