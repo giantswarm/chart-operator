@@ -26,7 +26,10 @@ e2eTest: &e2eTest
         command: ./e2e-harness teardown
         when: always
 
-version: 2
+version: 2.1
+orbs:
+  architect: giantswarm/architect@0.1.2
+
 jobs:
   build:
     machine: true
