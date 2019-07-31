@@ -1,33 +1,27 @@
-# Default values for chart-operator-chart.
-# This is a YAML-formatted file.
-# Declare variables to be passed into your templates.
-
-name: chart-operator
-namespace: giantswarm
-port: 8000
-
-replicas: 1
-
-clusterDNSIP: 172.31.0.10
-
-userID: 1000
-groupID: 1000
-
-cnr:
-  address: https://quay.io
-
 image:
-  registry: quay.io
-  repository: giantswarm/chart-operator
-  tag: [[ .SHA ]]
-
-resources:
-  requests:
-    cpu: 250m
-    memory: 250Mi
-  limits:
-    cpu: 250m
-    memory: 250Mi
-
-tiller:
-  namespace: kube-system
+  registry: "quay.io"
+  repository: "giantswarm/chart-operator"
+  tag: "[[ .Version ]]"
+pod:
+  user:
+    id: 1000
+  group:
+    id: 1000
+  port: 8000
+  replicas: 1
+project:
+  name: "chart-operator"
+resource:
+  clusterDNSIP: 172.31.0.10
+  cnr:
+    address: https://quay.io
+  default:
+    name:  chart-operator-v[[ .Version | replace "." "-" ]]
+    namespace: "giantswarm"
+  psp:
+    name: chart-operator-psp-v[[ .Version | replace "." "-" ]]
+  pullSecret:
+    name: chart-operator-pull-secret-v[[ .Version | replace "." "-" ]]
+    namespace: "giantswarm"
+  tiller:
+    namespace: "kube-system"
