@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.project.name }}
+  namespace: {{ .Values.project.namespace }}
+  labels:
+    app: {{ .Values.project.name }}
+    giantswarm.io/service-type: "managed"
+  annotations:
+    prometheus.io/scrape: "true"
+spec:
+  ports:
+  - port: {{ .Values.pod.port }}
+  selector:
+    app: {{ .Values.project.name }}

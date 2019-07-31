@@ -1,0 +1,93 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.project.name }}
+  namespace: {{ .Values.project.namespace }}
+  labels:
+    app: {{ .Values.project.name }}
+    giantswarm.io/service-type: "managed"
+spec:
+  replicas: 1
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      app: {{ .Values.project.name }}
+  strategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.project.name }}
+        giantswarm.io/service-type: "managed"
+      annotations:
+        releasetime: {{ $.Release.Time }}
+    spec:
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            preference:
+              matchExpressions:
+              - key: role
+                operator: In
+                values:
+                - master
+      volumes:
+      - name: {{ .Values.project.name }}
+        configMap:
+          name: {{ .Values.project.name }}
+          items:
+          - key: config.yaml
+            path: config.yaml
+      priorityClassName: giantswarm-critical
+      serviceAccountName: {{ .Values.project.name }}
+      tolerations:
+      - key: node-role.kubernetes.io/master
+        effect: NoSchedule
+      dnsPolicy: None
+      dnsConfig:
+        nameservers:
+        - {{ .Values.resource.clusterDNSIP }}
+        - 8.8.8.8
+        searches:
+        - giantswarm.svc.cluster.local
+        - svc.cluster.local
+        - cluster.local
+        options:
+        - name: ndots
+          value: "5"
+      containers:
+      - name: {{ .Values.project.name }}
+        image: "{{ .Values.image.registry }}/{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        volumeMounts:
+        - name: {{  .Values.project.name }}
+          mountPath: /var/run/{{ .Values.project.name }}/configmap/
+        ports:
+        - name: http
+          containerPort: {{ .Values.pod.port }}
+        args:
+        - daemon
+        - --config.dirs=/var/run/{{ .Values.project.name }}/configmap/
+        - --config.files=config
+        securityContext:
+          runAsUser: {{ .Values.pod.user.id }}
+          runAsGroup: {{ .Values.pod.group.id }}
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: {{ .Values.pod.port }}
+          initialDelaySeconds: 15
+          timeoutSeconds: 1
+        readinessProbe:
+          httpGet:
+            path: /healthz
+            port: {{ .Values.pod.port }}
+          initialDelaySeconds: 15
+          timeoutSeconds: 1
+        resources:
+          requests:
+            cpu: 250m
+            memory: 250Mi
+          limits:
+            cpu: 250m
+            memory: 250Mi

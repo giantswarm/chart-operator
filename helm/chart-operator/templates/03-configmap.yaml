@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.project.name }}
+  namespace: {{ .Values.project.namespace }}
+  labels:
+    app: {{ .Values.project.name }}
+    giantswarm.io/service-type: "managed"
+data:
+  config.yaml: |
+    server:
+      enable:
+        debug:
+          server: true
+      listen:
+        address: 'http://0.0.0.0:{{ .Values.pod.port }}'
+    service:
+      cnr:
+        address: '{{ .Values.resource.cnr.address }}'
+      helm:
+        tillerNamespace:  '{{ .Values.resource.tiller.namespace }}'
+      kubernetes:
+        incluster: true
+        watch:
+          namespace: '{{ .Values.project.namespace }}'
