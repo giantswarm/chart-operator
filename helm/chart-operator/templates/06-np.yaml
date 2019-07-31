@@ -1,8 +1,8 @@
 kind: NetworkPolicy
 apiVersion: networking.k8s.io/v1
 metadata:
-  namespace: {{ .Values.project.namespace }}
-  name: {{ .Values.project.name }}
+  name: {{ .Values.resource.default.name }}
+  namespace: {{ .Values.resource.default.namespace }}
   labels:
     app: {{ .Values.project.name }}
     giantswarm.io/service-type: "managed"
