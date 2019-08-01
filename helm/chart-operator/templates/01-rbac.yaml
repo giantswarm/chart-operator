@@ -125,7 +125,7 @@ metadata:
 subjects:
   - kind: ServiceAccount
     name: {{ tpl .Values.resource.default.name  . }}
-    namespace: {{ .Values.resource.default.namespace }}
+    namespace: {{ tpl .Values.resource.default.namespace . }}
 roleRef:
   kind: ClusterRole
   name: {{ tpl .Values.resource.default.name  . }}
@@ -158,7 +158,7 @@ metadata:
 subjects:
   - kind: ServiceAccount
     name: {{ tpl .Values.resource.default.name  . }}
-    namespace: {{ .Values.resource.default.namespace }}
+    namespace: {{ tpl .Values.resource.default.namespace . }}
 roleRef:
   kind: ClusterRole
   name: {{ tpl .Values.resource.psp.name . }}

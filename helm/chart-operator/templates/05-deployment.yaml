@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ tpl .Values.resource.default.name  . }}
-  namespace: {{ .Values.resource.default.namespace }}
+  namespace: {{ tpl .Values.resource.default.namespace . }}
   labels:
     app: {{ .Values.project.name }}
     giantswarm.io/service-type: "managed"
