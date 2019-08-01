@@ -1,7 +1,7 @@
 kind: NetworkPolicy
 apiVersion: networking.k8s.io/v1
 metadata:
-  name: {{ .Values.resource.default.name }}
+  name: {{ tpl .Values.resource.default.name  . }}
   namespace: {{ .Values.resource.default.namespace }}
   labels:
     app: {{ .Values.project.name }}

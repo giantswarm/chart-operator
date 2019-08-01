@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Values.resource.default.name }}
+  name: {{ tpl .Values.resource.default.name  . }}
   namespace: {{ .Values.resource.default.namespace }}
   labels:
     app: {{ .Values.project.name }}
@@ -40,7 +40,7 @@ spec:
           - key: config.yaml
             path: config.yaml
       priorityClassName: giantswarm-critical
-      serviceAccountName: {{ .Values.resource.default.name }}
+      serviceAccountName: {{ tpl .Values.resource.default.name  . }}
       tolerations:
       - key: node-role.kubernetes.io/master
         effect: NoSchedule
