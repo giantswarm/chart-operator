@@ -26,7 +26,10 @@ e2eTest: &e2eTest
         command: ./e2e-harness teardown
         when: always
 
-version: 2
+version: 2.1
+orbs:
+  architect: giantswarm/architect@0.2.0
+
 jobs:
   build:
     machine: true
@@ -137,9 +140,33 @@ jobs:
 
 workflows:
   version: 2
-  build_e2e:
+  build:
     jobs:
       - build
+
+      - architect/push-to-docker:
+          name: push-chart-operator-to-docker
+          image: "quay.io/giantswarm/chart-operator"
+          username_envar: "QUAY_USERNAME"
+          password_envar: "QUAY_PASSWORD"
+          requires:
+            - build
+          # Needed to trigger job also on git tag.
+          filters:
+            tags:
+              only: /^v.*/
+
+      - architect/push-to-app-catalog:
+          name: push-chart-operator-to-app-catalog
+          app_catalog: "giantswarm-catalog"
+          app_catalog_test: "giantswarm-test-catalog"
+          chart: "chart-operator"
+          requires:
+            - push-chart-operator-to-docker
+          # Needed to trigger job also on git tag.
+          filters:
+            tags:
+              only: /^v.*/
 
       - e2eTestChartBasicPR:
           requires:
