@@ -1,3 +1,4 @@
+clusterDNSIP: 172.31.0.10
 image:
   registry: "quay.io"
   repository: "giantswarm/chart-operator"
@@ -23,7 +24,6 @@ project:
 #     {{ tpl .Values.resource.default.name . }}.
 #
 resource:
-  clusterDNSIP: 172.31.0.10
   cnr:
     address: https://quay.io
   default:

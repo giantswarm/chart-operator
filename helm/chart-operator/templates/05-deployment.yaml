@@ -47,7 +47,7 @@ spec:
       dnsPolicy: None
       dnsConfig:
         nameservers:
-        - {{ .Values.resource.clusterDNSIP }}
+        - {{ .Values.clusterDNSIP }}
         - 8.8.8.8
         searches:
         - giantswarm.svc.cluster.local
