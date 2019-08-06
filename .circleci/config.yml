@@ -143,9 +143,9 @@ workflows:
   build:
     jobs:
       - build:
-        filters:
-          tags:
-            only: /^v.*/
+          filters:
+            tags:
+              only: /^v.*/
 
       - architect/push-to-docker:
           name: push-chart-operator-to-docker
