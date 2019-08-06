@@ -82,6 +82,11 @@ func (r *Resource) GetDesiredState(ctx context.Context, obj interface{}) (interf
 		Version:           chart.Version,
 	}
 
+	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("Desired Name: %#q", releaseState.Name))
+	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("Desired Status: %#q", releaseState.Status))
+	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("Desired Values MD5: %#q", releaseState.ValuesMD5Checksum))
+	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("Desired Version: %#q", releaseState.Version))
+
 	return releaseState, nil
 }
 

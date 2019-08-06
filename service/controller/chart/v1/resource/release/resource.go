@@ -165,10 +165,13 @@ func isReleaseModified(a, b ReleaseState) bool {
 
 	// Values have changed so we need to update the Helm Release.
 	if a.ValuesMD5Checksum != b.ValuesMD5Checksum {
+		fmt.Printf("A MD5 %#q B MD5 %#q", a.ValuesMD5Checksum, b.ValuesMD5Checksum)
+
 		return true
 	}
 
 	if a.Version != b.Version {
+		fmt.Printf("A Version %#q B Version %#q", a.Version, b.Version)
 		return true
 	}
 
@@ -194,6 +197,7 @@ func isWrongStatus(a, b ReleaseState) bool {
 	}
 
 	if a.Status != b.Status {
+		fmt.Printf("A Status %#q B Status %#q", a.Status, b.Status)
 		return true
 	}
 

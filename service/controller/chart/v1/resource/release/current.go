@@ -47,5 +47,10 @@ func (r *Resource) GetCurrentState(ctx context.Context, obj interface{}) (interf
 		Version:           releaseHistory.Version,
 	}
 
+	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("Current Name: %#q", releaseState.Name))
+	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("Current Status: %#q", releaseState.Status))
+	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("Current Values MD5: %#q", releaseState.ValuesMD5Checksum))
+	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("Current Version: %#q", releaseState.Version))
+
 	return releaseState, nil
 }
