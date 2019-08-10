@@ -2,6 +2,7 @@ package release
 
 import (
 	"context"
+	"strconv"
 	"testing"
 
 	"github.com/giantswarm/apiextensions/pkg/apis/application/v1alpha1"
@@ -82,8 +83,8 @@ func Test_Resource_Release_newCreate(t *testing.T) {
 		}
 	}
 
-	for _, tc := range testCases {
-		t.Run(tc.name, func(t *testing.T) {
+	for i, tc := range testCases {
+		t.Run(strconv.Itoa(i), func(t *testing.T) {
 			result, err := newResource.newCreateChange(context.TODO(), tc.obj, tc.currentState, tc.desiredState)
 			if err != nil {
 				t.Fatal("expected", nil, "got", err)
@@ -97,5 +98,4 @@ func Test_Resource_Release_newCreate(t *testing.T) {
 			}
 		})
 	}
-
 }

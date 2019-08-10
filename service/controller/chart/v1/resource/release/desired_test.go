@@ -2,7 +2,7 @@ package release
 
 import (
 	"context"
-	"reflect"
+	"strconv"
 	"testing"
 
 	"github.com/giantswarm/apiextensions/pkg/apis/application/v1alpha1"
@@ -308,8 +308,8 @@ func Test_DesiredState(t *testing.T) {
 		},
 	}
 
-	for _, tc := range testCases {
-		t.Run(tc.name, func(t *testing.T) {
+	for i, tc := range testCases {
+		t.Run(strconv.Itoa(i), func(t *testing.T) {
 			objs := make([]runtime.Object, 0, 0)
 			if tc.configMap != nil {
 				objs = append(objs, tc.configMap)
@@ -353,14 +353,14 @@ func Test_DesiredState(t *testing.T) {
 				t.Fatalf("error == %#v, want nil", err)
 			}
 
-			if !reflect.DeepEqual(releaseState.ValuesYAML, tc.expectedState.ValuesYAML) {
+			if !cmp.Equal(releaseState.ValuesYAML, tc.expectedState.ValuesYAML) {
 				desiredYAML := string(releaseState.ValuesYAML)
 				expectedYAML := string(tc.expectedState.ValuesYAML)
 
 				t.Fatalf("want matching ValuesYAML \n %s", cmp.Diff(desiredYAML, expectedYAML))
 			}
 
-			if !reflect.DeepEqual(releaseState, tc.expectedState) {
+			if !cmp.Equal(releaseState, tc.expectedState) {
 				t.Fatalf("want matching ReleaseState \n %s", cmp.Diff(releaseState, tc.expectedState))
 			}
 		})

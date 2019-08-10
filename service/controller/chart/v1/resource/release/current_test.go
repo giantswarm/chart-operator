@@ -3,7 +3,7 @@ package release
 import (
 	"context"
 	"fmt"
-	"reflect"
+	"strconv"
 	"testing"
 
 	"github.com/giantswarm/apiextensions/pkg/apis/application/v1alpha1"
@@ -129,8 +129,8 @@ func Test_CurrentState(t *testing.T) {
 		},
 	}
 
-	for _, tc := range testCases {
-		t.Run(tc.name, func(t *testing.T) {
+	for i, tc := range testCases {
+		t.Run(strconv.Itoa(i), func(t *testing.T) {
 			var helmClient helmclient.Interface
 			{
 				c := helmclienttest.Config{
@@ -167,7 +167,7 @@ func Test_CurrentState(t *testing.T) {
 				t.Fatalf("error == %#v, want nil", err)
 			}
 
-			if !reflect.DeepEqual(ReleaseState, tc.expectedState) {
+			if !cmp.Equal(ReleaseState, tc.expectedState) {
 				t.Fatalf("want matching ReleaseState \n %s", cmp.Diff(ReleaseState, tc.expectedState))
 			}
 		})

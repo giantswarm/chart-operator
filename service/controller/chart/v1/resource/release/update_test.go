@@ -2,6 +2,7 @@ package release
 
 import (
 	"context"
+	"strconv"
 	"testing"
 
 	"github.com/giantswarm/apiextensions/pkg/apis/application/v1alpha1"
@@ -12,7 +13,7 @@ import (
 	k8sfake "k8s.io/client-go/kubernetes/fake"
 )
 
-func Test_Resource_Chart_newUpdateChange(t *testing.T) {
+func Test_Resource_Release_newUpdateChange(t *testing.T) {
 	testCases := []struct {
 		name                string
 		obj                 v1alpha1.Chart
@@ -159,8 +160,8 @@ func Test_Resource_Chart_newUpdateChange(t *testing.T) {
 		}
 	}
 
-	for _, tc := range testCases {
-		t.Run(tc.name, func(t *testing.T) {
+	for i, tc := range testCases {
+		t.Run(strconv.Itoa(i), func(t *testing.T) {
 			result, err := newResource.newUpdateChange(context.TODO(), tc.obj, tc.currentState, tc.desiredState)
 			if err != nil {
 				t.Fatal("expected", nil, "got", err)
@@ -179,7 +180,6 @@ func Test_Resource_Chart_newUpdateChange(t *testing.T) {
 				if updateChange.Status != tc.expectedUpdateState.Status {
 					t.Fatalf("expected Status %q, got %q", tc.expectedUpdateState.Status, updateChange.Status)
 				}
-
 			}
 		})
 	}
