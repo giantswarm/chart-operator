@@ -99,7 +99,7 @@ func (r *Resource) Name() string {
 func (r *Resource) updateAnnotations(ctx context.Context, cr v1alpha1.Chart, releaseState ReleaseState) error {
 	annotations := map[string]string{}
 
-	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("updating annotations for app CR %#q in namespace %#q", cr.Name, cr.Namespace))
+	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("updating annotations for chart CR %#q in namespace %#q", cr.Name, cr.Namespace))
 
 	// Get chart CR again to ensure the resource version and annotations
 	// are correct.
@@ -123,10 +123,10 @@ func (r *Resource) updateAnnotations(ctx context.Context, cr v1alpha1.Chart, rel
 			return microerror.Mask(err)
 		}
 
-		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("updated annotations for app CR %#q in namespace %#q", cr.Name, cr.Namespace))
+		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("updated annotations for chart CR %#q in namespace %#q", cr.Name, cr.Namespace))
 
 	} else {
-		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("no need to update annotations for app CR %#q in namespace %#q", cr.Name, cr.Namespace))
+		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("no need to update annotations for chart CR %#q in namespace %#q", cr.Name, cr.Namespace))
 	}
 
 	return nil
