@@ -175,6 +175,18 @@ func isReleaseModified(a, b ReleaseState) bool {
 	return false
 }
 
+func isWrongStatus(a, b ReleaseState) bool {
+	if a.Status == "" {
+		return false
+	}
+
+	if a.Status != b.Status {
+		return true
+	}
+
+	return false
+}
+
 func toReleaseState(v interface{}) (ReleaseState, error) {
 	if v == nil {
 		return ReleaseState{}, nil
@@ -186,16 +198,4 @@ func toReleaseState(v interface{}) (ReleaseState, error) {
 	}
 
 	return *releaseState, nil
-}
-
-func isWrongStatus(a, b ReleaseState) bool {
-	if a.Status == "" {
-		return false
-	}
-
-	if a.Status != b.Status {
-		return true
-	}
-
-	return false
 }
