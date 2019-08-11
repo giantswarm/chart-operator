@@ -1,5 +1,11 @@
 package release
 
+type Patch struct {
+	Op    string      `json:"op"`
+	Path  string      `json:"path"`
+	Value interface{} `json:"value"`
+}
+
 // ReleaseState holds the state of the Helm release to be reconciled.
 type ReleaseState struct {
 	// Name is the name of the Helm release when the chart is deployed.

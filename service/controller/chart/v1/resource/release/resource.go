@@ -2,6 +2,7 @@ package release
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 
 	"github.com/giantswarm/apiextensions/pkg/apis/application/v1alpha1"
@@ -11,6 +12,7 @@ import (
 	"github.com/giantswarm/micrologger"
 	"github.com/spf13/afero"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/client-go/kubernetes"
 
 	"github.com/giantswarm/chart-operator/service/controller/chart/v1/key"
@@ -93,13 +95,11 @@ func (r *Resource) Name() string {
 	return Name
 }
 
-// updateAnnotations updates the chart CR annotations if they have changed. The
-// CR is fetched again to ensure that the resource version and annotations are
-// up to date.
-func (r *Resource) updateAnnotations(ctx context.Context, cr v1alpha1.Chart, releaseState ReleaseState) error {
-	annotations := map[string]string{}
-
-	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("updating annotations for app CR %#q in namespace %#q", cr.Name, cr.Namespace))
+// patchAnnotations updates the chart CR annotations if they have changed.
+// A patch operation is used because app-operator also sets annotations for
+// chart CRs.
+func (r *Resource) patchAnnotations(ctx context.Context, cr v1alpha1.Chart, releaseState ReleaseState) error {
+	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("patching annotations for chart CR %#q in namespace %#q", cr.Name, cr.Namespace))
 
 	// Get chart CR again to ensure the resource version and annotations
 	// are correct.
@@ -111,22 +111,32 @@ func (r *Resource) updateAnnotations(ctx context.Context, cr v1alpha1.Chart, rel
 	currentChecksum := key.ValuesMD5ChecksumAnnotation(*currentCR)
 
 	if releaseState.ValuesMD5Checksum != currentChecksum {
-		if currentCR.Annotations != nil {
-			annotations = currentCR.Annotations
+		annotations := map[string]string{
+			key.ValuesMD5ChecksumAnnotationName: releaseState.ValuesMD5Checksum,
 		}
 
-		annotations[key.ValuesMD5ChecksumAnnotationName] = releaseState.ValuesMD5Checksum
+		patches := []Patch{
+			{
+				Op:    "replace",
+				Path:  "/metadata/annotations",
+				Value: annotations,
+			},
+		}
 
-		currentCR.Annotations = annotations
-		_, err = r.g8sClient.ApplicationV1alpha1().Charts(cr.Namespace).Update(currentCR)
+		bytes, err := json.Marshal(patches)
 		if err != nil {
 			return microerror.Mask(err)
 		}
 
-		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("updated annotations for app CR %#q in namespace %#q", cr.Name, cr.Namespace))
+		_, err = r.g8sClient.ApplicationV1alpha1().Charts(cr.Namespace).Patch(cr.Name, types.JSONPatchType, bytes)
+		if err != nil {
+			return microerror.Mask(err)
+		}
+
+		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("patched annotations for chart CR %#q in namespace %#q", cr.Name, cr.Namespace))
 
 	} else {
-		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("no need to update annotations for app CR %#q in namespace %#q", cr.Name, cr.Namespace))
+		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("no need to patch annotations for chart CR %#q in namespace %#q", cr.Name, cr.Namespace))
 	}
 
 	return nil
