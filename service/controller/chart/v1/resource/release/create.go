@@ -45,7 +45,7 @@ func (r *Resource) ApplyCreateChange(ctx context.Context, obj, createChange inte
 			return microerror.Mask(err)
 		}
 
-		err = r.updateAnnotations(ctx, cr, releaseState)
+		err = r.patchAnnotations(ctx, cr, releaseState)
 		if err != nil {
 			return microerror.Mask(err)
 		}
