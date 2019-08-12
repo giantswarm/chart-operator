@@ -2,6 +2,7 @@ package release
 
 import (
 	"context"
+	"strconv"
 	"testing"
 
 	"github.com/giantswarm/apiextensions/pkg/apis/core/v1alpha1"
@@ -12,7 +13,7 @@ import (
 	k8sfake "k8s.io/client-go/kubernetes/fake"
 )
 
-func Test_Resource_Chart_newDeleteChange(t *testing.T) {
+func Test_Resource_Release_newDeleteChange(t *testing.T) {
 	testCases := []struct {
 		obj                  v1alpha1.ChartConfig
 		currentState         *ReleaseState
@@ -84,8 +85,8 @@ func Test_Resource_Chart_newDeleteChange(t *testing.T) {
 		}
 	}
 
-	for _, tc := range testCases {
-		t.Run(tc.description, func(t *testing.T) {
+	for i, tc := range testCases {
+		t.Run(strconv.Itoa(i), func(t *testing.T) {
 			result, err := newResource.newDeleteChange(context.TODO(), tc.obj, tc.currentState, tc.desiredState)
 			if err != nil {
 				t.Fatal("expected", nil, "got", err)
