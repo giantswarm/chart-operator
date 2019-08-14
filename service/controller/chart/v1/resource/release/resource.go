@@ -115,7 +115,7 @@ func (r *Resource) patchAnnotations(ctx context.Context, cr v1alpha1.Chart, rele
 		patches := []Patch{
 			{
 				Op:    "add",
-				Path:  replaceToEscape(fmt.Sprintf("/metadata/annotations/%s", key.ValuesMD5ChecksumAnnotationName)),
+				Path:  fmt.Sprintf("/metadata/annotations/%s", replaceToEscape(key.ValuesMD5ChecksumAnnotationName)),
 				Value: releaseState.ValuesMD5Checksum,
 			},
 		}
