@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"strings"
 
 	"github.com/giantswarm/apiextensions/pkg/apis/application/v1alpha1"
 	"github.com/giantswarm/apiextensions/pkg/clientset/versioned"
@@ -111,15 +112,11 @@ func (r *Resource) patchAnnotations(ctx context.Context, cr v1alpha1.Chart, rele
 	currentChecksum := key.ValuesMD5ChecksumAnnotation(*currentCR)
 
 	if releaseState.ValuesMD5Checksum != currentChecksum {
-		annotations := map[string]string{
-			key.ValuesMD5ChecksumAnnotationName: releaseState.ValuesMD5Checksum,
-		}
-
 		patches := []Patch{
 			{
-				Op:    "replace",
-				Path:  "/metadata/annotations",
-				Value: annotations,
+				Op:    "add",
+				Path:  fmt.Sprintf("/metadata/annotations/%s", replaceToEscape(key.ValuesMD5ChecksumAnnotationName)),
+				Value: releaseState.ValuesMD5Checksum,
 			},
 		}
 
@@ -208,4 +205,8 @@ func isWrongStatus(a, b ReleaseState) bool {
 	}
 
 	return false
+}
+
+func replaceToEscape(from string) string {
+	return strings.Replace(from, "/", "~1", -1)
 }
