@@ -10,7 +10,7 @@ import (
 
 	"github.com/cenkalti/backoff"
 	"github.com/giantswarm/apprclient"
-	"github.com/giantswarm/e2e-harness/pkg/framework"
+	"github.com/giantswarm/k8sclient"
 	"github.com/giantswarm/k8sportforward"
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/micrologger"
@@ -25,13 +25,13 @@ type Chart struct {
 	Name    string
 }
 
-func Push(ctx context.Context, h *framework.Host, charts []Chart) error {
+func Push(ctx context.Context, k8sClients *k8sclient.Clients, charts []Chart) error {
 	var err error
 
 	var forwarder *k8sportforward.Forwarder
 	{
 		c := k8sportforward.ForwarderConfig{
-			RestConfig: h.RestConfig(),
+			RestConfig: k8sClients.RestConfig(),
 		}
 
 		forwarder, err = k8sportforward.NewForwarder(c)
@@ -40,7 +40,7 @@ func Push(ctx context.Context, h *framework.Host, charts []Chart) error {
 		}
 	}
 
-	podName, err := waitForPod(h, "giantswarm", "app=cnr-server")
+	podName, err := waitForPod(k8sClients, "giantswarm", "app=cnr-server")
 	if err != nil {
 		return microerror.Mask(err)
 	}
@@ -50,7 +50,7 @@ func Push(ctx context.Context, h *framework.Host, charts []Chart) error {
 		return microerror.Mask(err)
 	}
 
-	err = waitForServer(h, "http://"+tunnel.LocalAddress()+"/cnr/api/v1/packages")
+	err = waitForServer("http://" + tunnel.LocalAddress() + "/cnr/api/v1/packages")
 	if err != nil {
 		return microerror.Mask(err)
 	}
@@ -87,7 +87,7 @@ func Push(ctx context.Context, h *framework.Host, charts []Chart) error {
 	return nil
 }
 
-func waitForServer(h *framework.Host, url string) error {
+func waitForServer(url string) error {
 	var err error
 
 	operation := func() error {
@@ -111,7 +111,7 @@ func waitForServer(h *framework.Host, url string) error {
 	return nil
 }
 
-func waitForPod(h *framework.Host, namespace, selector string) (string, error) {
+func waitForPod(k8sClients *k8sclient.Clients, namespace, selector string) (string, error) {
 	var err error
 	var podName string
 
@@ -119,7 +119,7 @@ func waitForPod(h *framework.Host, namespace, selector string) (string, error) {
 		o := metav1.ListOptions{
 			LabelSelector: selector,
 		}
-		pods, err := h.K8sClient().CoreV1().Pods(namespace).List(o)
+		pods, err := k8sClients.K8sClient().CoreV1().Pods(namespace).List(o)
 		if err != nil {
 			return microerror.Mask(err)
 		}

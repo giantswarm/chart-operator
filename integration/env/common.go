@@ -19,8 +19,8 @@ const (
 	// KEEP_RESOURCES env var.
 	EnvVarKeepResources = "KEEP_RESOURCES"
 	// EnvVarTestedVersion is the process environment variable representing the
-	// TESTED_VERSION env var.
-	EnvVarTestedVersion = "TESTED_VERSION"
+	// E2E_TESTED_VERSION env var.
+	EnvVarTestedVersion = "E2E_TESTED_VERSION"
 )
 
 var (
