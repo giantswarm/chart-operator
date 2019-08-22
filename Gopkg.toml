@@ -58,11 +58,19 @@ required = [
 
 [[constraint]]
   branch = "master"
+  name = "github.com/giantswarm/e2esetup"
+
+[[constraint]]
+  branch = "master"
   name = "github.com/giantswarm/e2etemplates"
 
 [[constraint]]
   branch = "master"
   name = "github.com/giantswarm/helmclient"
+
+[[constraint]]
+  branch = "master"
+  name = "github.com/giantswarm/k8sclient"
 
 [[constraint]]
   branch = "master"
@@ -133,7 +141,3 @@ required = [
 [prune]
   go-tests = true
   unused-packages = true
-
-[[constraint]]
-  branch = "master"
-  name = "github.com/giantswarm/k8sclient"
