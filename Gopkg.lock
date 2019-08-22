@@ -124,16 +124,16 @@
   version = "v1.4.7"
 
 [[projects]]
-  digest = "1:2cd7915ab26ede7d95b8749e6b1f933f1c6d5398030684e6505940a10f31cfda"
+  branch = "master"
+  digest = "1:08188cf7ce7027b22e88cc23da27f17349a0ba7746271a60cbe0a70266c2346f"
   name = "github.com/ghodss/yaml"
   packages = ["."]
   pruneopts = "UT"
-  revision = "0ca9ea5df5451ffdf184b4428c902747c2c11cd7"
-  version = "v1.0.0"
+  revision = "25d852aebe32c875e9c044af3eef9c7dc6bc777f"
 
 [[projects]]
   branch = "master"
-  digest = "1:b2187e28e5904cbbd9d7da5bf6c9cad3db5fd6dacffaa0fa11717f4e1209555d"
+  digest = "1:bfe79969162c245c57fc564c53ed469e537d184e04bec9dffb9637796f7c6770"
   name = "github.com/giantswarm/apiextensions"
   packages = [
     "pkg/apis/application/v1alpha1",
@@ -156,7 +156,7 @@
     "pkg/clientset/versioned/typed/release/v1alpha1/fake",
   ]
   pruneopts = "UT"
-  revision = "6d6990ab19fc21766e67aec28d8ab62aede51a6a"
+  revision = "7f178f7ebd4566ad4eb1dd5a8f83ede5b20ba978"
 
 [[projects]]
   branch = "master"
@@ -200,7 +200,7 @@
     "k8s",
   ]
   pruneopts = "UT"
-  revision = "1675d59b4910bf10fd25b550112ba0a1c798b4d5"
+  revision = "a7944f007d0ed219e788966522e213b2bac1a897"
 
 [[projects]]
   branch = "master"
@@ -243,11 +243,11 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:60dc19718c86cd62db01e17d5f77cb8f8bb9e2c3d7b6840c0257a99e97fbe83a"
+  digest = "1:98c9ad635693241a4a3276f0ed2f99a08420aaf20afce0732318b4574289f010"
   name = "github.com/giantswarm/k8sclient"
   packages = ["."]
   pruneopts = "UT"
-  revision = "0a72530d66189725d01f3e8aca5af0acfbb531c8"
+  revision = "cb19a71151dd4a9b440cd8846630a9fb948d2515"
 
 [[projects]]
   branch = "master"
