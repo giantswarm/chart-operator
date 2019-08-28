@@ -118,7 +118,7 @@ func (r *Resource) patchAnnotations(ctx context.Context, cr v1alpha1.Chart, rele
 			patches = append(patches, Patch{
 				Op:    "add",
 				Path:  "/metadata/annotations/",
-				Value: "",
+				Value: "[]",
 			})
 		}
 
