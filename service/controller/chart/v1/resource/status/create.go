@@ -76,7 +76,7 @@ func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
 
 		currentCR.Status = desiredStatus
 
-		_, err = r.g8sClient.ApplicationV1alpha1().Charts(cr.Namespace).UpdateStatus(currentCR)
+		_, err = r.g8sClient.ApplicationV1alpha1().Charts(cr.Namespace).Update(currentCR)
 		if err != nil {
 			return microerror.Mask(err)
 		}
