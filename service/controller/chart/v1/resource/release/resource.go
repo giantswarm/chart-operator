@@ -114,7 +114,7 @@ func (r *Resource) patchAnnotations(ctx context.Context, cr v1alpha1.Chart, rele
 	if releaseState.ValuesMD5Checksum != currentChecksum {
 		patches := []Patch{}
 
-		if len(cr.Annotations) == 0 {
+		if len(currentCR.Annotations) == 0 {
 			patches = append(patches, Patch{
 				Op:    "add",
 				Path:  "/metadata/annotations",
