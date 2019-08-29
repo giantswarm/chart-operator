@@ -112,13 +112,21 @@ func (r *Resource) patchAnnotations(ctx context.Context, cr v1alpha1.Chart, rele
 	currentChecksum := key.ValuesMD5ChecksumAnnotation(*currentCR)
 
 	if releaseState.ValuesMD5Checksum != currentChecksum {
-		patches := []Patch{
-			{
+		patches := []Patch{}
+
+		if len(currentCR.Annotations) == 0 {
+			patches = append(patches, Patch{
 				Op:    "add",
-				Path:  fmt.Sprintf("/metadata/annotations/%s", replaceToEscape(key.ValuesMD5ChecksumAnnotationName)),
-				Value: releaseState.ValuesMD5Checksum,
-			},
+				Path:  "/metadata/annotations",
+				Value: map[string]string{},
+			})
 		}
+
+		patches = append(patches, Patch{
+			Op:    "add",
+			Path:  fmt.Sprintf("/metadata/annotations/%s", replaceToEscape(key.ValuesMD5ChecksumAnnotationName)),
+			Value: releaseState.ValuesMD5Checksum,
+		})
 
 		bytes, err := json.Marshal(patches)
 		if err != nil {
