@@ -9,6 +9,7 @@ import (
 
 	"github.com/giantswarm/e2e-harness/pkg/release"
 	"github.com/giantswarm/e2etemplates/pkg/chartvalues"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
 	"github.com/giantswarm/chart-operator/integration/key"
 )
@@ -76,7 +77,7 @@ func TestChartLifecycle(t *testing.T) {
 	{
 		config.Logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("checking status for chart CR %#q", key.ChartCRName()))
 
-		cr, err := config.K8sClients().G8sClient().ApplicationV1alpha1().Charts(key.ChartCRNamespace()).Get(key.ChartCRName(), metav1.GetOptions{})
+		cr, err := config.K8sClients.G8sClient().ApplicationV1alpha1().Charts(key.ChartCRNamespace()).Get(key.ChartCRName(), metav1.GetOptions{})
 		if err != nil {
 			t.Fatalf("expected %#v got %#v", nil, err)
 		}
