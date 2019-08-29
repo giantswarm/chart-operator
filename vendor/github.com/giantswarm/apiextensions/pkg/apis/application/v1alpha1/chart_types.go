@@ -23,6 +23,8 @@ spec:
     kind: Chart
     plural: charts
     singular: chart
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       properties:

@@ -133,7 +133,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:bfe79969162c245c57fc564c53ed469e537d184e04bec9dffb9637796f7c6770"
+  digest = "1:a4b4574e383aa6611b304fb09ee3679aa55787509e906f644198eb5d1e749aea"
   name = "github.com/giantswarm/apiextensions"
   packages = [
     "pkg/apis/application/v1alpha1",
@@ -156,7 +156,7 @@
     "pkg/clientset/versioned/typed/release/v1alpha1/fake",
   ]
   pruneopts = "UT"
-  revision = "7f178f7ebd4566ad4eb1dd5a8f83ede5b20ba978"
+  revision = "8c3ef80abe83a1b10557b8c2891c85eb4b4eb061"
 
 [[projects]]
   branch = "master"
@@ -354,12 +354,11 @@
   revision = "c91a5899eae8867e7966df734f4cccbba450c841"
 
 [[projects]]
-  digest = "1:9db6e7ab54d909d92bebfec495fd679bd3af1a6ba0b22d7da72edb23347dddb9"
+  digest = "1:83a37f3bd4ccd13469775ef771e943e6c7cfaba6926decff6c83135e56512f08"
   name = "github.com/go-kit/kit"
   packages = [
     "endpoint",
     "log",
-    "transport",
     "transport/http",
   ]
   pruneopts = "UT"
