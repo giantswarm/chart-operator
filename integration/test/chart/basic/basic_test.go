@@ -9,6 +9,7 @@ import (
 
 	"github.com/giantswarm/e2e-harness/pkg/release"
 	"github.com/giantswarm/e2etemplates/pkg/chartvalues"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
 	"github.com/giantswarm/chart-operator/integration/key"
 )
@@ -70,6 +71,21 @@ func TestChartLifecycle(t *testing.T) {
 		}
 
 		config.Logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("release %#q is deployed", key.TestAppReleaseName()))
+	}
+
+	// Check chart CR status.
+	{
+		config.Logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("checking status for chart CR %#q", key.TestAppReleaseName()))
+
+		cr, err := config.K8sClients.G8sClient().ApplicationV1alpha1().Charts("giantswarm").Get(key.TestAppReleaseName(), metav1.GetOptions{})
+		if err != nil {
+			t.Fatalf("expected %#v got %#v", nil, err)
+		}
+		if cr.Status.Release.Status != "DEPLOYED" {
+			t.Fatalf("expected CR release status %#q got %#q", "DEPLOYED", cr.Status.Release.Status)
+		}
+
+		config.Logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("checked status for chart CR %#q", key.TestAppReleaseName()))
 	}
 
 	// Test update.
