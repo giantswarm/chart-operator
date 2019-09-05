@@ -15,6 +15,13 @@ func (r *Resource) ApplyDeleteChange(ctx context.Context, obj, deleteChange inte
 		return microerror.Mask(err)
 	}
 
+	// chartconfig CR has been migrated to an app CR and can be safely deleted
+	// without deleting the related Helm release.
+	if chartState.DeleteCustomResourceOnly {
+		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("deleting custom resource %#q but not release", chartState.ReleaseName))
+		return nil
+	}
+
 	if chartState.ReleaseName != "" {
 		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("deleting release %#q", chartState.ReleaseName))
 

@@ -12,6 +12,11 @@ func VersionBundle() versionbundle.Bundle {
 				Description: "Check cordon annotations in chart resource to avoid any further update.",
 				Kind:        versionbundle.KindAdded,
 			},
+			{
+				Component:   "chart-operator",
+				Description: "Add delete annotation support for chartconfig to app CR migration.",
+				Kind:        versionbundle.KindAdded,
+			},
 		},
 		Components: []versionbundle.Component{},
 		Name:       "chart-operator",
