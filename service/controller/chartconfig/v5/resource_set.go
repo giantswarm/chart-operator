@@ -9,6 +9,7 @@ import (
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/micrologger"
 	"github.com/giantswarm/operatorkit/controller"
+	"github.com/giantswarm/operatorkit/resource"
 	"github.com/giantswarm/operatorkit/resource/wrapper/metricsresource"
 	"github.com/giantswarm/operatorkit/resource/wrapper/retryresource"
 	"github.com/spf13/afero"
@@ -59,7 +60,7 @@ func NewResourceSet(config ResourceSetConfig) (*controller.ResourceSet, error) {
 		return nil, microerror.Maskf(invalidConfigError, "%T.ProjectName must not be empty", config)
 	}
 
-	var chartResource controller.Resource
+	var chartResource resource.Interface
 	{
 		c := chart.Config{
 			ApprClient: config.ApprClient,
@@ -80,7 +81,7 @@ func NewResourceSet(config ResourceSetConfig) (*controller.ResourceSet, error) {
 		}
 	}
 
-	var chartStatusResource controller.Resource
+	var chartStatusResource resource.Interface
 	{
 		c := chartstatus.Config{
 			G8sClient:  config.G8sClient,
@@ -94,7 +95,7 @@ func NewResourceSet(config ResourceSetConfig) (*controller.ResourceSet, error) {
 		}
 	}
 
-	var tillerResource controller.Resource
+	var tillerResource resource.Interface
 	{
 		c := tiller.Config{
 			HelmClient: config.HelmClient,
@@ -107,7 +108,7 @@ func NewResourceSet(config ResourceSetConfig) (*controller.ResourceSet, error) {
 		}
 	}
 
-	resources := []controller.Resource{
+	resources := []resource.Interface{
 		tillerResource,
 		chartResource,
 		chartStatusResource,
