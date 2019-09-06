@@ -125,7 +125,7 @@ func Test_Resource_Chart_newDeleteChange(t *testing.T) {
 					t.Fatalf("expected '%T', got '%T'", deleteChange, result)
 				}
 				if deleteChange.ChartName != "" && deleteChange.ChartName != tc.expectedDeleteChange.ChartName {
-					t.Fatalf("expected %s, got %s", tc.expectedDeleteChange, deleteChange.ChartName)
+					t.Fatalf("expected %#q, got %#q", tc.expectedDeleteChange.ChartName, deleteChange.ChartName)
 				}
 			}
 		})

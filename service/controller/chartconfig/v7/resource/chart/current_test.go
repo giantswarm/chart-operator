@@ -11,6 +11,7 @@ import (
 	"github.com/giantswarm/helmclient"
 	"github.com/giantswarm/helmclient/helmclienttest"
 	"github.com/giantswarm/micrologger/microloggertest"
+	"github.com/google/go-cmp/cmp"
 	"github.com/spf13/afero"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes/fake"
@@ -181,7 +182,7 @@ func Test_CurrentState(t *testing.T) {
 			}
 
 			if !reflect.DeepEqual(chartState, tc.expectedState) {
-				t.Fatalf("ChartState == %q, want %q", chartState, tc.expectedState)
+				t.Fatalf("want matching ChartState \n %s", cmp.Diff(chartState, tc.expectedState))
 			}
 		})
 	}
