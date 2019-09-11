@@ -55,12 +55,15 @@ func (r *Resource) GetDesiredState(ctx context.Context, obj interface{}) (interf
 	}
 
 	chartState := &ChartState{
-		ChannelName:    key.ChannelName(customObject),
-		ChartName:      key.ChartName(customObject),
-		ChartValues:    chartValues,
-		ReleaseName:    key.ReleaseName(customObject),
-		ReleaseStatus:  releaseStatusDeployed,
-		ReleaseVersion: releaseVersion,
+		ChannelName: key.ChannelName(customObject),
+		ChartName:   key.ChartName(customObject),
+		ChartValues: chartValues,
+		// DeleteCustomResourceOnly is set when the chartconfig CR has been
+		// migrated to an app CR and can be safely deleted.
+		DeleteCustomResourceOnly: key.HasDeleteCROnlyAnnotation(customObject),
+		ReleaseName:              key.ReleaseName(customObject),
+		ReleaseStatus:            releaseStatusDeployed,
+		ReleaseVersion:           releaseVersion,
 	}
 
 	return chartState, nil
