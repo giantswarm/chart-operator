@@ -10,7 +10,6 @@ import (
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
-	"github.com/giantswarm/chart-operator/pkg/annotation"
 	"github.com/giantswarm/chart-operator/service/controller/chartconfig/v7/key"
 )
 
@@ -55,15 +54,13 @@ func (r *Resource) GetDesiredState(ctx context.Context, obj interface{}) (interf
 		return nil, microerror.Mask(err)
 	}
 
-	// Delete annotation is set when the chartconfig CR has been migrated to an
-	// app CR and can be safely deleted.
-	_, hasDeleteAnnotation := customObject.Annotations[annotation.DeleteCustomResourceOnly]
-
 	chartState := &ChartState{
-		ChannelName:              key.ChannelName(customObject),
-		ChartName:                key.ChartName(customObject),
-		ChartValues:              chartValues,
-		DeleteCustomResourceOnly: hasDeleteAnnotation,
+		ChannelName: key.ChannelName(customObject),
+		ChartName:   key.ChartName(customObject),
+		ChartValues: chartValues,
+		// DeleteCustomResourceOnly is set when the chartconfig CR has been
+		// migrated to an app CR and can be safely deleted.
+		DeleteCustomResourceOnly: key.HasDeleteCROnlyAnnotation(customObject),
 		ReleaseName:              key.ReleaseName(customObject),
 		ReleaseStatus:            releaseStatusDeployed,
 		ReleaseVersion:           releaseVersion,
