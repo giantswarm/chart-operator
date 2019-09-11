@@ -33,6 +33,20 @@ func CordonUntil(customObject v1alpha1.ChartConfig) string {
 	return customObject.GetAnnotations()[annotation.CordonUntilDate]
 }
 
+func HasDeleteCROnlyAnnotation(customObject v1alpha1.ChartConfig) bool {
+	val, ok := customObject.Annotations[annotation.DeleteCustomResourceOnly]
+	if !ok {
+		return false
+	}
+
+	result, err := strconv.ParseBool(val)
+	if err != nil {
+		return false
+	}
+
+	return result
+}
+
 func HasForceUpgradeAnnotation(customObject v1alpha1.ChartConfig) (bool, error) {
 	val, ok := customObject.Annotations["chart-operator.giantswarm.io/force-helm-upgrade"]
 	if !ok {

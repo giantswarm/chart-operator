@@ -8,7 +8,6 @@ import (
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/operatorkit/controller/context/resourcecanceledcontext"
 
-	"github.com/giantswarm/chart-operator/pkg/annotation"
 	"github.com/giantswarm/chart-operator/service/controller/chartconfig/v7/key"
 )
 
@@ -18,11 +17,10 @@ func (r *Resource) GetCurrentState(ctx context.Context, obj interface{}) (interf
 		return nil, microerror.Mask(err)
 	}
 
-	// Delete annotation is set when the chartconfig CR has been migrated to an
-	// app CR and can be safely deleted.
-	_, hasDeleteAnnotation := customObject.Annotations[annotation.DeleteCustomResourceOnly]
-
-	if key.IsCordoned(customObject) && !hasDeleteAnnotation {
+	// Cordon annotation is set to prevent any changes to the chartconfig CR.
+	// Delete annotation is set to indicate the chartconfig CR has been
+	// migrated to an app CR and can be deleted.
+	if key.IsCordoned(customObject) && !key.HasDeleteCROnlyAnnotation(customObject) {
 		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("chart %#q has been cordoned until %#q due to reason %#q ", key.ChartName(customObject), key.CordonUntil(customObject), key.CordonReason(customObject)))
 
 		resourcecanceledcontext.SetCanceled(ctx)
