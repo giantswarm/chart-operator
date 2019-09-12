@@ -3,6 +3,8 @@ package chart
 import (
 	"reflect"
 	"testing"
+
+	"github.com/google/go-cmp/cmp"
 )
 
 func Test_toChartState(t *testing.T) {
@@ -52,7 +54,7 @@ func Test_toChartState(t *testing.T) {
 			}
 
 			if !reflect.DeepEqual(result, tc.expectedState) {
-				t.Fatalf("ChartState == %q, want %q", result, tc.expectedState)
+				t.Fatalf("want matching ChartState \n %s", cmp.Diff(result, tc.expectedState))
 			}
 		})
 	}

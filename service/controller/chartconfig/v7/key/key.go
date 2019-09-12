@@ -70,7 +70,6 @@ func IsCordoned(customObject v1alpha1.ChartConfig) bool {
 	} else {
 		return false
 	}
-
 }
 
 func Namespace(customObject v1alpha1.ChartConfig) string {
