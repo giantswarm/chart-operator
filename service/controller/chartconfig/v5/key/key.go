@@ -1,8 +1,12 @@
 package key
 
 import (
+	"strconv"
+
 	"github.com/giantswarm/apiextensions/pkg/apis/core/v1alpha1"
 	"github.com/giantswarm/microerror"
+
+	"github.com/giantswarm/chart-operator/pkg/annotation"
 )
 
 func ChartName(customObject v1alpha1.ChartConfig) string {
@@ -19,6 +23,39 @@ func ConfigMapName(customObject v1alpha1.ChartConfig) string {
 
 func ConfigMapNamespace(customObject v1alpha1.ChartConfig) string {
 	return customObject.Spec.Chart.ConfigMap.Namespace
+}
+
+func CordonReason(customObject v1alpha1.ChartConfig) string {
+	return customObject.GetAnnotations()[annotation.CordonReason]
+}
+
+func CordonUntil(customObject v1alpha1.ChartConfig) string {
+	return customObject.GetAnnotations()[annotation.CordonUntilDate]
+}
+
+func HasDeleteCROnlyAnnotation(customObject v1alpha1.ChartConfig) bool {
+	val, ok := customObject.Annotations[annotation.DeleteCustomResourceOnly]
+	if !ok {
+		return false
+	}
+
+	result, err := strconv.ParseBool(val)
+	if err != nil {
+		return false
+	}
+
+	return result
+}
+
+func IsCordoned(customObject v1alpha1.ChartConfig) bool {
+	_, reasonOk := customObject.Annotations[annotation.CordonReason]
+	_, untilOk := customObject.Annotations[annotation.CordonUntilDate]
+
+	if reasonOk && untilOk {
+		return true
+	} else {
+		return false
+	}
 }
 
 func Namespace(customObject v1alpha1.ChartConfig) string {
