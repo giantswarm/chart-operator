@@ -14,10 +14,6 @@ import (
 	apiextensionsclient "k8s.io/apiextensions-apiserver/pkg/client/clientset/clientset"
 	"k8s.io/client-go/kubernetes"
 
-	v1 "github.com/giantswarm/chart-operator/service/controller/chartconfig/v1"
-	v2 "github.com/giantswarm/chart-operator/service/controller/chartconfig/v2"
-	v3 "github.com/giantswarm/chart-operator/service/controller/chartconfig/v3"
-	v4 "github.com/giantswarm/chart-operator/service/controller/chartconfig/v4"
 	v5 "github.com/giantswarm/chart-operator/service/controller/chartconfig/v5"
 	v6 "github.com/giantswarm/chart-operator/service/controller/chartconfig/v6"
 	v7 "github.com/giantswarm/chart-operator/service/controller/chartconfig/v7"
@@ -94,76 +90,6 @@ func NewChartConfig(config Config) (*ChartConfig, error) {
 		}
 	}
 
-	var resourceSetV1 *controller.ResourceSet
-	{
-		c := v1.ResourceSetConfig{
-			ApprClient:  config.ApprClient,
-			Fs:          config.Fs,
-			HelmClient:  config.HelmClient,
-			K8sClient:   config.K8sClient,
-			Logger:      config.Logger,
-			ProjectName: config.ProjectName,
-		}
-
-		resourceSetV1, err = v1.NewResourceSet(c)
-		if err != nil {
-			return nil, microerror.Mask(err)
-		}
-	}
-
-	var resourceSetV2 *controller.ResourceSet
-	{
-		c := v2.ResourceSetConfig{
-			ApprClient:  config.ApprClient,
-			Fs:          config.Fs,
-			HelmClient:  config.HelmClient,
-			K8sClient:   config.K8sClient,
-			Logger:      config.Logger,
-			ProjectName: config.ProjectName,
-		}
-
-		resourceSetV2, err = v2.NewResourceSet(c)
-		if err != nil {
-			return nil, microerror.Mask(err)
-		}
-	}
-
-	var resourceSetV3 *controller.ResourceSet
-	{
-		c := v3.ResourceSetConfig{
-			ApprClient:  config.ApprClient,
-			Fs:          config.Fs,
-			G8sClient:   config.G8sClient,
-			HelmClient:  config.HelmClient,
-			K8sClient:   config.K8sClient,
-			Logger:      config.Logger,
-			ProjectName: config.ProjectName,
-		}
-
-		resourceSetV3, err = v3.NewResourceSet(c)
-		if err != nil {
-			return nil, microerror.Mask(err)
-		}
-	}
-
-	var resourceSetV4 *controller.ResourceSet
-	{
-		c := v4.ResourceSetConfig{
-			ApprClient:  config.ApprClient,
-			Fs:          config.Fs,
-			G8sClient:   config.G8sClient,
-			HelmClient:  config.HelmClient,
-			K8sClient:   config.K8sClient,
-			Logger:      config.Logger,
-			ProjectName: config.ProjectName,
-		}
-
-		resourceSetV4, err = v4.NewResourceSet(c)
-		if err != nil {
-			return nil, microerror.Mask(err)
-		}
-	}
-
 	var resourceSetV5 *controller.ResourceSet
 	{
 		c := v5.ResourceSetConfig{
@@ -226,10 +152,6 @@ func NewChartConfig(config Config) (*ChartConfig, error) {
 			Informer:  newInformer,
 			Logger:    config.Logger,
 			ResourceSets: []*controller.ResourceSet{
-				resourceSetV1,
-				resourceSetV2,
-				resourceSetV3,
-				resourceSetV4,
 				resourceSetV5,
 				resourceSetV6,
 				resourceSetV7,
