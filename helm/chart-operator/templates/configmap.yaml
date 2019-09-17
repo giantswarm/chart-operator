@@ -16,9 +16,9 @@ data:
         address: 'http://0.0.0.0:{{ .Values.pod.port }}'
     service:
       cnr:
-        address: '{{ .Values.resource.cnr.address }}'
+        address: '{{ .Values.cnr.address }}'
       helm:
-        tillerNamespace:  '{{ .Values.resource.tiller.namespace }}'
+        tillerNamespace:  '{{ .Values.tiller.namespace }}'
       kubernetes:
         incluster: true
         watch:
