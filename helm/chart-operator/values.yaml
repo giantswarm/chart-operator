@@ -1,8 +1,13 @@
 clusterDNSIP: 172.31.0.10
+  
+cnr:
+  address: https://quay.io
+
 image:
   registry: "quay.io"
   repository: "giantswarm/chart-operator"
   tag: "[[ .Version ]]"
+
 pod:
   user:
     id: 1000
@@ -10,8 +15,10 @@ pod:
     id: 1000
   port: 8000
   replicas: 1
+
 project:
   name: "chart-operator"
+
 # Resource names are truncated to 47 characters. Kubernetes allows 63 characters
 # limit for resource names. When pods for deployments are created they have
 # additional 16 characters suffix, e.g. "-957c9d6ff-pkzgw" and we want to have
@@ -24,12 +31,11 @@ project:
 #     {{ tpl .Values.resource.default.name . }}.
 #
 resource:
-  cnr:
-    address: https://quay.io
   default:
     name: '{{ .Release.Name | replace "." "-" | trunc 47 }}'
     namespace: "giantswarm"
   psp:
     name: '{{ .Release.Name | replace "." "-" | trunc 47 }}-psp'
-  tiller:
-    namespace: "kube-system"
+
+tiller:
+  namespace: "kube-system"
