@@ -49,7 +49,7 @@ rules:
 kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: {{ tpl .Values.resource.default.name . }}-psp
+  name: {{ tpl .Values.resource.default.name . }}-psp-user
   labels:
     app: {{ .Values.project.name }}
     giantswarm.io/service-type: "managed"
