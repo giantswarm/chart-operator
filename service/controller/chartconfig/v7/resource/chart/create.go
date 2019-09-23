@@ -28,10 +28,15 @@ func (r *Resource) ApplyCreateChange(ctx context.Context, obj, createChange inte
 		channel := key.ChannelName(customObject)
 		ns := key.Namespace(customObject)
 
+		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("pulling chart %#q from channel %#q", name, channel))
+
 		tarballPath, err := r.apprClient.PullChartTarball(ctx, name, channel)
 		if err != nil {
 			return microerror.Mask(err)
 		}
+
+		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("pulled tarball %#q", tarballPath))
+
 		defer func() {
 			err := r.fs.Remove(tarballPath)
 			if err != nil {
