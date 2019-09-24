@@ -1,4 +1,4 @@
 apiVersion: v1
 description: A Helm chart for the chart-operator
 name: chart-operator
-version: [[ .Version ]]
+version: 1.0.0

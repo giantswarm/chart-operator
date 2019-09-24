@@ -48,7 +48,7 @@ spec:
       dnsConfig:
         nameservers:
         - {{ .Values.clusterDNSIP }}
-        - 8.8.8.8
+        - {{ .Values.externalDNSIP }}
         searches:
         - giantswarm.svc.cluster.local
         - svc.cluster.local
@@ -59,7 +59,10 @@ spec:
       initContainers:
       - name: wait-for-quay
         image: quay.io/giantswarm/alpine:3.10-giantswarm
-        command: ['sh', '-c', 'until nslookup quay.io; do echo waiting for quay.io; sleep 2; done;']
+        command: 
+        - sh
+        - -c
+        - until nslookup quay.io {{ .Values.externalDNSIP }}; do echo waiting for quay.io; sleep 2; done;
         securityContext:
           runAsUser: {{ .Values.pod.user.id }}
           runAsGroup: {{ .Values.pod.group.id }}

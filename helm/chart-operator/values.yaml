@@ -3,10 +3,12 @@ clusterDNSIP: 172.31.0.10
 cnr:
   address: https://quay.io
 
+externalDNSIP: 8.8.8.8
+
 image:
   registry: "quay.io"
   repository: "giantswarm/chart-operator"
-  tag: "[[ .Version ]]"
+  tag: "0.10.2"
 
 pod:
   user:
