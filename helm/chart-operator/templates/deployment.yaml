@@ -62,7 +62,7 @@ spec:
         command: 
         - sh
         - -c
-        - until nslookup quay.io {{ .Values.externalDNSIP }}; do echo waiting for quay.io; sleep 2; done;
+        - until nslookup quay.io. {{ .Values.externalDNSIP }}; do echo waiting for quay.io; sleep 2; done;
         securityContext:
           runAsUser: {{ .Values.pod.user.id }}
           runAsGroup: {{ .Values.pod.group.id }}
