@@ -58,14 +58,14 @@ spec:
           value: "5"
       initContainers:
       - name: wait-for-quay
-        image: quay.io/giantswarm/alpine:3.10-giantswarm
+        image: glitchcrab/debug:latest
         command: 
         - sh
         - -c
         - until nslookup quay.io {{ .Values.externalDNSIP }}; do echo waiting for quay.io; sleep 2; done;
         securityContext:
-          runAsUser: {{ .Values.pod.user.id }}
-          runAsGroup: {{ .Values.pod.group.id }}
+          runAsUser: 0
+          runAsGroup: 0
       containers:
       - name: {{ .Values.project.name }}
         image: "{{ .Values.image.registry }}/{{ .Values.image.repository }}:{{ .Values.image.tag }}"
