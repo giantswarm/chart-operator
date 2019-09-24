@@ -7,7 +7,7 @@ metadata:
     giantswarm.io/service-type: "managed"
 spec:
   runAsUser:
-    rule: MustRunAsNonRoot
+    rule: RunAsAny
   runAsGroup:
     rule: MustRunAs
     ranges:
