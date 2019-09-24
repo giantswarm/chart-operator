@@ -58,8 +58,6 @@ func (r *Resource) ApplyCreateChange(ctx context.Context, obj, createChange inte
 			return microerror.Mask(err)
 		}
 		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("created chart %#q", chartState.ChartName))
-	} else {
-		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("not creating chart %#q", chartState.ChartName))
 	}
 
 	return nil
