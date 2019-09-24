@@ -179,7 +179,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:6c25bce0a15e2f819db2f79d1c3915670b5a4e02f575ec39a447598c74c6cdda"
+  digest = "1:f86c1d26e7a8575e6e33f376181d4e5df074a4d560463cf9b5375b4a23b64fa5"
   name = "github.com/giantswarm/e2e-harness"
   packages = [
     "internal/filelogger",
@@ -189,7 +189,7 @@
     "pkg/release",
   ]
   pruneopts = "UT"
-  revision = "094ac65a5e97510adafec48e7bb35944b9e346e8"
+  revision = "c1a50838e28717223b994d1f3607d249553e4343"
 
 [[projects]]
   branch = "master"
@@ -1286,6 +1286,7 @@
     "github.com/giantswarm/operatorkit/controller/context/resourcecanceledcontext",
     "github.com/giantswarm/operatorkit/flag/service/kubernetes",
     "github.com/giantswarm/operatorkit/informer",
+    "github.com/giantswarm/operatorkit/resource",
     "github.com/giantswarm/operatorkit/resource/wrapper/metricsresource",
     "github.com/giantswarm/operatorkit/resource/wrapper/retryresource",
     "github.com/giantswarm/versionbundle",
