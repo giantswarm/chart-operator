@@ -64,8 +64,8 @@ spec:
         - -c
         - until nslookup quay.io {{ .Values.externalDNSIP }}; do echo waiting for quay.io; sleep 2; done;
         securityContext:
-          runAsUser: 0
-          runAsGroup: 0
+          runAsUser: {{ .Values.pod.user.id }}
+          runAsGroup: {{ .Values.pod.group.id }}
       containers:
       - name: {{ .Values.project.name }}
         image: "{{ .Values.image.registry }}/{{ .Values.image.repository }}:{{ .Values.image.tag }}"
