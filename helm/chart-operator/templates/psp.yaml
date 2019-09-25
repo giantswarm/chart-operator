@@ -1,20 +1,3 @@
-apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRole
-metadata:
-  name: {{ tpl .Values.resource.default.name . }}-psp-user
-  labels:
-    app: {{ .Values.project.name }}
-    giantswarm.io/service-type: "managed"
-rules:
-- apiGroups:
-  - extensions
-  resources:
-  - podsecuritypolicies
-  resourceNames:
-  - {{ tpl .Values.resource.default.name . }}-psp
-  verbs:
-  - use
----
 apiVersion: extensions/v1beta1
 kind: PodSecurityPolicy
 metadata:
@@ -46,19 +29,3 @@ spec:
   hostNetwork: false
   hostIPC: false
   hostPID: false
----
-kind: ClusterRoleBinding
-apiVersion: rbac.authorization.k8s.io/v1
-metadata:
-  name: {{ tpl .Values.resource.default.name . }}-psp-user
-  labels:
-    app: {{ .Values.project.name }}
-    giantswarm.io/service-type: "managed"
-subjects:
-- kind: ServiceAccount
-  name: {{ tpl .Values.resource.default.name . }}
-  namespace: {{ .Values.resource.default.namespace }}
-roleRef:
-  kind: ClusterRole
-  name: {{ tpl .Values.resource.default.name . }}-psp-user
-  apiGroup: rbac.authorization.k8s.io
