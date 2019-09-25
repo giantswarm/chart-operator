@@ -1,7 +1,6 @@
 package env
 
 import (
-	"fmt"
 	"os"
 )
 
@@ -44,16 +43,12 @@ var (
 
 func init() {
 	circleCI = os.Getenv(EnvVarCircleCI)
+	circleSHA = os.Getenv(EnvVarCircleSHA)
 	keepResources = os.Getenv(EnvVarKeepResources)
 
 	kubeconfig = os.Getenv(EnvVarE2EKubeconfig)
 	if kubeconfig == "" {
 		kubeconfig = e2eHarnessDefaultKubeconfig
-	}
-
-	circleSHA = os.Getenv(EnvVarCircleSHA)
-	if circleSHA == "" {
-		panic(fmt.Sprintf("env var '%s' must not be empty", EnvVarCircleSHA))
 	}
 }
 
