@@ -35,7 +35,7 @@ func (r *Resource) GetCurrentState(ctx context.Context, obj interface{}) (interf
 		return nil, microerror.Mask(err)
 	}
 
-	if releaseContent.Status == "FAILED" && releaseContent.Name == "chart-operator" {
+	if releaseContent.Status == "FAILED" && releaseContent.Name == r.projectName {
 		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("not updating release %#q since it's bootstrap from app-operator", releaseContent.Name))
 
 		resourcecanceledcontext.SetCanceled(ctx)
