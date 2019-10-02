@@ -77,6 +77,8 @@ func Test_Resource_Release_newDeleteChange(t *testing.T) {
 			HelmClient: helmclienttest.New(helmclienttest.Config{}),
 			K8sClient:  k8sfake.NewSimpleClientset(),
 			Logger:     microloggertest.New(),
+
+			ProjectName: "chart-operator",
 		}
 
 		newResource, err = New(c)

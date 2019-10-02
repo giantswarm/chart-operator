@@ -332,6 +332,8 @@ func Test_DesiredState(t *testing.T) {
 				HelmClient: helmClient,
 				K8sClient:  k8sfake.NewSimpleClientset(objs...),
 				Logger:     microloggertest.New(),
+
+				ProjectName: "chart-operator",
 			}
 			r, err := New(c)
 			if err != nil {

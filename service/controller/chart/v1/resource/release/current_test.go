@@ -147,6 +147,8 @@ func Test_CurrentState(t *testing.T) {
 				HelmClient: helmClient,
 				K8sClient:  k8sfake.NewSimpleClientset(),
 				Logger:     microloggertest.New(),
+
+				ProjectName: "chart-operator",
 			}
 
 			r, err := New(c)
