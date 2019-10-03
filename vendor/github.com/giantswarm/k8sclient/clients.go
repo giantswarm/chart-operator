@@ -14,7 +14,10 @@ import (
 type ClientsConfig struct {
 	Logger micrologger.Logger
 
+	// KubeConfigPath and RestConfig are mutually exclusive.
 	KubeConfigPath string
+	// RestConfig and KubeConfigPath are mutually exclusive.
+	RestConfig *rest.Config
 }
 
 type Clients struct {
@@ -32,15 +35,25 @@ func NewClients(config ClientsConfig) (*Clients, error) {
 		return nil, microerror.Maskf(invalidConfigError, "%T.Logger must not be empty", config)
 	}
 
-	if config.KubeConfigPath == "" {
-		config.KubeConfigPath = e2eHarnessDefaultKubeconfig
+	if config.KubeConfigPath == "" && config.RestConfig == nil {
+		return nil, microerror.Maskf(invalidConfigError, "%T.KubeConfigPath or %T.RestConfig must not be empty", config, config)
+	}
+	if config.KubeConfigPath != "" && config.RestConfig != nil {
+		return nil, microerror.Maskf(invalidConfigError, "%T.KubeConfigPath and %T.RestConfig must not be set at the same time", config, config)
 	}
 
 	var err error
 
-	restConfig, err := clientcmd.BuildConfigFromFlags("", config.KubeConfigPath)
-	if err != nil {
-		return nil, microerror.Mask(err)
+	var restConfig *rest.Config
+	{
+		if config.RestConfig != nil {
+			restConfig = config.RestConfig
+		} else {
+			restConfig, err = clientcmd.BuildConfigFromFlags("", config.KubeConfigPath)
+			if err != nil {
+				return nil, microerror.Mask(err)
+			}
+		}
 	}
 
 	var dynClient dynamic.Interface
