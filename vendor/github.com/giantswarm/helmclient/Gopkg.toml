@@ -55,7 +55,7 @@ required = [
   name = "github.com/giantswarm/errors"
 
 [[constraint]]
-  branch = "kubernetes-1.15.4"
+  branch = "master"
   name = "github.com/giantswarm/k8sportforward"
 
 [[constraint]]
