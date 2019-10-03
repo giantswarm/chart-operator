@@ -119,7 +119,7 @@ func (t *TillerMaxHistory) Describe(ch chan<- *prometheus.Desc) error {
 }
 
 func (t *TillerMaxHistory) getTillerMaxHistory() (float64, error) {
-	deploy, err := t.k8sClient.ExtensionsV1beta1().Deployments(t.tillerNamespace).Get(key.TillerDeploymentName(), metav1.GetOptions{})
+	deploy, err := t.k8sClient.AppsV1().Deployments(t.tillerNamespace).Get(key.TillerDeploymentName(), metav1.GetOptions{})
 	if apierrors.IsNotFound(err) {
 		return 0, nil
 	} else if err != nil {
