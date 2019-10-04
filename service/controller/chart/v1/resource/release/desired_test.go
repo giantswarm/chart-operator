@@ -16,6 +16,8 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	k8sfake "k8s.io/client-go/kubernetes/fake"
+
+	"github.com/giantswarm/chart-operator/pkg/project"
 )
 
 func Test_DesiredState(t *testing.T) {
@@ -333,7 +335,7 @@ func Test_DesiredState(t *testing.T) {
 				K8sClient:  k8sfake.NewSimpleClientset(objs...),
 				Logger:     microloggertest.New(),
 
-				ProjectName: "chart-operator",
+				ProjectName: project.Name(),
 			}
 			r, err := New(c)
 			if err != nil {
