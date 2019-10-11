@@ -58,10 +58,8 @@ func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange inte
 			return microerror.Mask(err)
 		}
 		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("updated chart %#q", chartState.ChartName))
-
-	} else {
-		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("chart %#q does not need to be updated", chartState.ChartName))
 	}
+
 	return nil
 }
 

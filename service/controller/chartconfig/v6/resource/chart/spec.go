@@ -11,6 +11,9 @@ type ChartState struct {
 	// ChannelName is the CNR channel to reconcile against.
 	// e.g. 0.1-beta
 	ChannelName string
+	// DeleteCustomResource is set to true once the chartconfig CR has been
+	// migrated. The CR is deleted but not the Helm release.
+	DeleteCustomResourceOnly bool
 	// ReleaseName is the name of the Helm release when the chart is deployed.
 	// e.g. chart-operator
 	ReleaseName string

@@ -95,12 +95,21 @@ rules:
   - serviceaccounts
   verbs:
   - "create"
+  - "get"
 - apiGroups:
   - networking.k8s.io
   resources:
   - networkpolicies
   verbs:
   - create
+- apiGroups:
+  - apps
+  resources:
+  - deployments
+  verbs:
+  - "create"
+  - "get"
+  - "update"
 - apiGroups:
   - extensions
   resources:

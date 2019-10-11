@@ -64,11 +64,15 @@ func NewResourceSet(config ResourceSetConfig) (*controller.ResourceSet, error) {
 	var releaseResource resource.Interface
 	{
 		c := release.Config{
+			// Dependencies
 			Fs:         config.Fs,
 			G8sClient:  config.G8sClient,
 			HelmClient: config.HelmClient,
 			K8sClient:  config.K8sClient,
 			Logger:     config.Logger,
+
+			// Settings.
+			ProjectName: config.ProjectName,
 		}
 
 		ops, err := release.New(c)

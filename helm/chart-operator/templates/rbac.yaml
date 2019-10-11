@@ -95,12 +95,21 @@ rules:
   - serviceaccounts
   verbs:
   - "create"
+  - "get"
 - apiGroups:
   - networking.k8s.io
   resources:
   - networkpolicies
   verbs:
   - create
+- apiGroups:
+  - apps
+  resources:
+  - deployments
+  verbs:
+  - "create"
+  - "get"
+  - "update"
 - apiGroups:
   - extensions
   resources:
@@ -151,7 +160,7 @@ rules:
 kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: {{ tpl .Values.resource.psp.name . }}
+  name: {{ tpl .Values.resource.psp.name . }}-user
   labels:
     app: {{ .Values.project.name }}
     giantswarm.io/service-type: "managed"
