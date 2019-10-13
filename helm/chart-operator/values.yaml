@@ -7,7 +7,7 @@ externalDNSIP: 8.8.8.8
 
 image:
   registry: "quay.io"
-  repository: "giantswarm/chart-operator"
+  name: "giantswarm/chart-operator"
   tag: "[[ .Version ]]"
 
 pod:
