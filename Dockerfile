@@ -1,8 +1,9 @@
-FROM quay.io/giantswarm/alpine:3.9-giantswarm
+FROM quay.io/giantswarm/alpine:3.10-giantswarm
 
 USER root
 
-RUN apk add --no-cache ca-certificates
+# bind-tools is required by the init container to use dig.
+RUN apk add --no-cache ca-certificates bind-tools
 
 USER giantswarm
 
