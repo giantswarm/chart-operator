@@ -120,7 +120,7 @@ func (c *CRDClient) ensureStatusSubresourceCreated(ctx context.Context, customRe
 		return nil
 	} else {
 		c.logger.LogCtx(ctx, "level", "debug", "message", "Subresource is not nil")
-		c.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("Name: #%s, spec: %#v", customResource.Name, customResource.Spec.Subresources))
+		c.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("Name: %#s, spec: %#v", customResource.Name, customResource.Spec.Subresources))
 	}
 
 	operation := func() error {
@@ -129,12 +129,10 @@ func (c *CRDClient) ensureStatusSubresourceCreated(ctx context.Context, customRe
 			return microerror.Mask(err)
 		}
 
-		if manifest.Spec.Subresources == nil || manifest.Spec.Subresources.Status == nil {
-			customResource.SetResourceVersion(manifest.ResourceVersion)
-			_, err = c.k8sExtClient.ApiextensionsV1beta1().CustomResourceDefinitions().UpdateStatus(customResource)
-			if err != nil {
-				return microerror.Mask(err)
-			}
+		customResource.SetResourceVersion(manifest.ResourceVersion)
+		_, err = c.k8sExtClient.ApiextensionsV1beta1().CustomResourceDefinitions().UpdateStatus(customResource)
+		if err != nil {
+			return microerror.Mask(err)
 		}
 
 		return nil
