@@ -1,6 +1,7 @@
 package k8scrdclient
 
 import (
+	"fmt"
 	"context"
 
 	"github.com/giantswarm/backoff"
@@ -117,6 +118,9 @@ func (c *CRDClient) ensureStatusSubresourceCreated(ctx context.Context, customRe
 		// Nothing to do.
 		c.logger.LogCtx(ctx, "level", "debug", "message", "Subresource is nil")
 		return nil
+	} else {
+		c.logger.LogCtx(ctx, "level", "debug", "message", "Subresource is not nil")
+		c.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("Name: #%s, spec: %#v", customResource.Name, customResource.Spec))
 	}
 
 	operation := func() error {
