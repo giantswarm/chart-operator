@@ -120,7 +120,7 @@ func (c *CRDClient) ensureStatusSubresourceCreated(ctx context.Context, customRe
 		return nil
 	} else {
 		c.logger.LogCtx(ctx, "level", "debug", "message", "Subresource is not nil")
-		c.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("Name: #%s, spec: %#v", customResource.Name, customResource.Spec))
+		c.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("Name: #%s, spec: %#v", customResource.Name, customResource.Spec.Subresources))
 	}
 
 	operation := func() error {
