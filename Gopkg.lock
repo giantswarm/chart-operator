@@ -409,7 +409,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:a20261f33e19d5b869342e85f9c71eb6c41cd842ab14cc7ff3f916a223ff3aaf"
+  digest = "1:de223f1ed7c1c6661d346c849b28c07318e82cb7f2a749521cd9fa18c252a068"
   name = "github.com/giantswarm/operatorkit"
   packages = [
     "client/k8scrdclient",
@@ -430,7 +430,7 @@
     "resource/wrapper/retryresource",
   ]
   pruneopts = "UT"
-  revision = "c193ea196181c42e5c54f30ba2f2d6055b3742b2"
+  revision = "20c6c74138f3aff0d753dbc2d88578b4a5eecab4"
 
 [[projects]]
   branch = "master"
@@ -441,12 +441,11 @@
   revision = "c91a5899eae8867e7966df734f4cccbba450c841"
 
 [[projects]]
-  digest = "1:9db6e7ab54d909d92bebfec495fd679bd3af1a6ba0b22d7da72edb23347dddb9"
+  digest = "1:83a37f3bd4ccd13469775ef771e943e6c7cfaba6926decff6c83135e56512f08"
   name = "github.com/go-kit/kit"
   packages = [
     "endpoint",
     "log",
-    "transport",
     "transport/http",
   ]
   pruneopts = "UT"

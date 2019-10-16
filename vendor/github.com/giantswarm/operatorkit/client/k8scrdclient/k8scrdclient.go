@@ -1,7 +1,6 @@
 package k8scrdclient
 
 import (
-	"fmt"
 	"context"
 
 	"github.com/giantswarm/backoff"
@@ -116,11 +115,7 @@ func (c *CRDClient) EnsureDeleted(ctx context.Context, customResource *apiextens
 func (c *CRDClient) ensureStatusSubresourceCreated(ctx context.Context, customResource *apiextensionsv1beta1.CustomResourceDefinition, backOff backoff.Interface) error {
 	if customResource.Spec.Subresources == nil || customResource.Spec.Subresources.Status == nil {
 		// Nothing to do.
-		c.logger.LogCtx(ctx, "level", "debug", "message", "Subresource is nil")
 		return nil
-	} else {
-		c.logger.LogCtx(ctx, "level", "debug", "message", "Subresource is not nil")
-		c.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("Name: %#s, spec: %#v", customResource.Name, customResource.Spec.Subresources))
 	}
 
 	operation := func() error {
@@ -129,10 +124,12 @@ func (c *CRDClient) ensureStatusSubresourceCreated(ctx context.Context, customRe
 			return microerror.Mask(err)
 		}
 
-		customResource.SetResourceVersion(manifest.ResourceVersion)
-		_, err = c.k8sExtClient.ApiextensionsV1beta1().CustomResourceDefinitions().Update(customResource)
-		if err != nil {
-		return microerror.Mask(err)
+		if manifest.Spec.Subresources == nil || manifest.Spec.Subresources.Status == nil {
+			customResource.SetResourceVersion(manifest.ResourceVersion)
+			_, err = c.k8sExtClient.ApiextensionsV1beta1().CustomResourceDefinitions().Update(customResource)
+			if err != nil {
+				return microerror.Mask(err)
+			}
 		}
 
 		return nil
