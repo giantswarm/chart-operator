@@ -115,6 +115,7 @@ func (c *CRDClient) EnsureDeleted(ctx context.Context, customResource *apiextens
 func (c *CRDClient) ensureStatusSubresourceCreated(ctx context.Context, customResource *apiextensionsv1beta1.CustomResourceDefinition, backOff backoff.Interface) error {
 	if customResource.Spec.Subresources == nil || customResource.Spec.Subresources.Status == nil {
 		// Nothing to do.
+		c.logger.LogCtx(ctx, "level", "debug", "message", "Subresource is nil")
 		return nil
 	}
 
