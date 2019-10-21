@@ -186,8 +186,10 @@ workflows:
           password_envar: "ALIYUN_PASSWORD"
           requires:
             - build
-          # Needed to trigger job also on git tag.
+          # Needed to trigger job only on git tag.
           filters:
+            branches:
+              only: master
             tags:
               only: /^v.*/
 
@@ -198,7 +200,6 @@ workflows:
           chart: "chart-operator"
           requires:
             - push-chart-operator-to-quay
-            - push-chart-operator-to-aliyun
           # Needed to trigger job also on git tag.
           filters:
             tags:
