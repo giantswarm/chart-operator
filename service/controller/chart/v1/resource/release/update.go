@@ -47,6 +47,9 @@ func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange inte
 			helm.UpgradeForce(upgradeForce))
 		if err != nil {
 			releaseContent, err := r.helmClient.GetReleaseContent(ctx, releaseState.Name)
+			if err != nil {
+				return microerror.Mask(err)
+			}
 			if releaseContent.Status == helmFailedStatus {
 				r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("failed to update release %#q", releaseContent.Name))
 

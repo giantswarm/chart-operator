@@ -44,6 +44,9 @@ func (r *Resource) ApplyCreateChange(ctx context.Context, obj, createChange inte
 		err = r.helmClient.InstallReleaseFromTarball(ctx, tarballPath, ns, helm.ReleaseName(releaseState.Name), helm.ValueOverrides(releaseState.ValuesYAML))
 		if err != nil {
 			releaseContent, err := r.helmClient.GetReleaseContent(ctx, releaseState.Name)
+			if err != nil {
+				return microerror.Mask(err)
+			}
 			if releaseContent.Status == helmFailedStatus {
 				r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("failed to update release %#q", releaseContent.Name))
 
