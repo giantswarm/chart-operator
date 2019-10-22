@@ -6,6 +6,7 @@ import (
 
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/operatorkit/controller"
+	"github.com/giantswarm/operatorkit/controller/context/resourcecanceledcontext"
 	"k8s.io/helm/pkg/helm"
 
 	"github.com/giantswarm/chart-operator/service/controller/chart/v1/key"
@@ -45,6 +46,18 @@ func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange inte
 			helm.UpdateValueOverrides(releaseState.ValuesYAML),
 			helm.UpgradeForce(upgradeForce))
 		if err != nil {
+			releaseContent, err := r.helmClient.GetReleaseContent(ctx, releaseState.Name)
+			if err != nil {
+				return microerror.Mask(err)
+			}
+			if releaseContent.Status == helmFailedStatus {
+				r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("failed to update release %#q", releaseContent.Name))
+
+				resourcecanceledcontext.SetCanceled(ctx)
+				r.logger.LogCtx(ctx, "level", "debug", "message", "canceling resource")
+
+				return nil
+			}
 			return microerror.Mask(err)
 		}
 
