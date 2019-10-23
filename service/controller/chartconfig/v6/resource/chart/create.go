@@ -6,6 +6,7 @@ import (
 	"fmt"
 
 	"github.com/giantswarm/microerror"
+	"github.com/giantswarm/operatorkit/controller/context/resourcecanceledcontext"
 	"k8s.io/helm/pkg/helm"
 
 	"github.com/giantswarm/chart-operator/service/controller/chartconfig/v6/key"
@@ -54,6 +55,18 @@ func (r *Resource) ApplyCreateChange(ctx context.Context, obj, createChange inte
 		//
 		err = r.helmClient.InstallReleaseFromTarball(ctx, tarballPath, ns, helm.ReleaseName(chartState.ReleaseName), helm.ValueOverrides(values))
 		if err != nil {
+			releaseContent, err := r.helmClient.GetReleaseContent(ctx, chartState.ReleaseName)
+			if err != nil {
+				return microerror.Mask(err)
+			}
+			if releaseContent.Status == releaseStatusFailed {
+				r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("failed to update release %#q", releaseContent.Name))
+
+				resourcecanceledcontext.SetCanceled(ctx)
+				r.logger.LogCtx(ctx, "level", "debug", "message", "canceling resource")
+
+				return nil
+			}
 			return microerror.Mask(err)
 		}
 		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("created chart %s", chartState.ChartName))
