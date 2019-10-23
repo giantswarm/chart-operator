@@ -16,6 +16,7 @@ const (
 	Name = "chartv7"
 
 	releaseStatusDeployed = "DEPLOYED"
+	releaseStatusFailed   = "FAILED"
 )
 
 var (
