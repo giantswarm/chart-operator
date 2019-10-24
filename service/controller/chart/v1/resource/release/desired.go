@@ -8,6 +8,7 @@ import (
 	"github.com/giantswarm/apiextensions/pkg/apis/application/v1alpha1"
 	"github.com/giantswarm/helmclient"
 	"github.com/giantswarm/microerror"
+	"github.com/giantswarm/operatorkit/controller/context/resourcecanceledcontext"
 	yaml "gopkg.in/yaml.v2"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -27,7 +28,12 @@ func (r *Resource) GetDesiredState(ctx context.Context, obj interface{}) (interf
 
 	tarballPath, err := r.helmClient.PullChartTarball(ctx, tarballURL)
 	if err != nil {
-		return nil, microerror.Mask(err)
+		r.logger.LogCtx(ctx, "level", "error", "message", "pulling chart failed", "stack", microerror.Stack(err))
+
+		resourcecanceledcontext.SetCanceled(ctx)
+		r.logger.LogCtx(ctx, "level", "debug", "message", "canceling resource")
+
+		return nil, nil
 	}
 
 	defer func() {
