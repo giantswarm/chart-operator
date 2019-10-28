@@ -17,6 +17,12 @@ func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange inte
 	if err != nil {
 		return microerror.Mask(err)
 	}
+	if key.IsDeleted(cr) {
+		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("release %#q would be deleted, no need to update it", key.ReleaseName(cr)))
+
+		resourcecanceledcontext.SetCanceled(ctx)
+		r.logger.LogCtx(ctx, "level", "debug", "message", "canceling resource")
+	}
 	releaseState, err := toReleaseState(updateChange)
 	if err != nil {
 		return microerror.Mask(err)
