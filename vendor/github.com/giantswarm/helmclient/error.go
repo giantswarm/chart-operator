@@ -86,6 +86,15 @@ func IsNotFound(err error) bool {
 	return microerror.Cause(err) == notFoundError
 }
 
+var pullChartFailedError = &microerror.Error{
+	Kind: "pullChartFailedError",
+}
+
+// IsPullChartFailedError asserts pullChartFailedError.
+func IsPullChartFailedError(err error) bool {
+	return microerror.Cause(err) == pullChartFailedError
+}
+
 var (
 	releaseAlreadyExistsRegexp = regexp.MustCompile(`release named \S+ already exists`)
 )
