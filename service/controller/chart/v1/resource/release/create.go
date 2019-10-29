@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/giantswarm/helmclient"
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/operatorkit/controller/context/resourcecanceledcontext"
 	"k8s.io/helm/pkg/helm"
@@ -28,7 +29,14 @@ func (r *Resource) ApplyCreateChange(ctx context.Context, obj, createChange inte
 		tarballURL := key.TarballURL(cr)
 
 		tarballPath, err := r.helmClient.PullChartTarball(ctx, tarballURL)
-		if err != nil {
+		if helmclient.IsPullChartFailedError(err) {
+			r.logger.LogCtx(ctx, "level", "warning", "message", "pulling chart failed", "stack", microerror.Stack(err))
+
+			resourcecanceledcontext.SetCanceled(ctx)
+			r.logger.LogCtx(ctx, "level", "debug", "message", "canceling resource")
+
+			return nil
+		} else if err != nil {
 			return microerror.Mask(err)
 		}
 
