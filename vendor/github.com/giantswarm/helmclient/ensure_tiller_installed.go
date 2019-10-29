@@ -261,10 +261,10 @@ func (c *Client) EnsureTillerInstalledWithValues(ctx context.Context, values []s
 
 		o := func() error {
 			t, err := c.newTunnel()
-			if !installTiller && IsTillerNotFound(err) {
-				return backoff.Permanent(microerror.Mask(err))
-			} else if err != nil {
+			if IsTillerNotFound(err) || IsTooManyResults(err) || IsTillerInvalidVersion(err) {
 				return microerror.Mask(err)
+			} else if err != nil {
+				return backoff.Permanent(microerror.Maskf(tillerNotRunningError, "can't establish tunnel to tiller pod with error %#q", err))
 			}
 			defer c.closeTunnel(ctx, t)
 
