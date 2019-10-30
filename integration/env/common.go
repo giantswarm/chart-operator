@@ -1,8 +1,12 @@
+// +build k8srequired
+
 package env
 
 import (
 	"fmt"
 	"os"
+
+	"github.com/giantswarm/chart-operator/service"
 )
 
 const (
@@ -21,14 +25,18 @@ const (
 	// EnvVarTestedVersion is the process environment variable representing the
 	// E2E_TESTED_VERSION env var.
 	EnvVarTestedVersion = "E2E_TESTED_VERSION"
+	// EnvVarVersionBundleVersion is the process environment variable representing the
+	// E2E_VERSION_BUNDLE_VERSION env var.
+	EnvVarVersionBundleVersion = "VERSION_BUNDLE_VERSION"
 )
 
 var (
-	circleCI      string
-	circleSHA     string
-	githubToken   string
-	keepResources string
-	testedVersion string
+	circleCI             string
+	circleSHA            string
+	githubToken          string
+	keepResources        string
+	testedVersion        string
+	versionBundleVersion string
 )
 
 func init() {
@@ -43,6 +51,18 @@ func init() {
 	// Optional environment variables only needed for chartconfig tests.
 	githubToken = os.Getenv(EnvVarGithubBotToken)
 	testedVersion = os.Getenv(EnvVarTestedVersion)
+
+	{
+		switch testedVersion {
+		case "latest", "wip":
+			vbs := service.NewVersionBundles()
+			versionBundleVersion = vbs[len(vbs)-1].Version
+		case "previous", "current":
+			vbs := service.NewVersionBundles()
+			versionBundleVersion = vbs[len(vbs)-2].Version
+		}
+	}
+	os.Setenv(EnvVarVersionBundleVersion, VersionBundleVersion())
 }
 
 func CircleCI() string {
@@ -63,4 +83,8 @@ func KeepResources() string {
 
 func TestedVersion() string {
 	return testedVersion
+}
+
+func VersionBundleVersion() string {
+	return versionBundleVersion
 }

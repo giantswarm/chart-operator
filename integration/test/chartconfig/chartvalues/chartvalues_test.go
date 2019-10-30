@@ -33,17 +33,12 @@ func TestChartValues(t *testing.T) {
 		},
 	}
 
-	versionBundleVersion, err := chartconfig.VersionBundleVersion(env.GithubToken(), env.TestedVersion())
-	if err != nil {
-		t.Fatalf("could not get version bundle version %v", err)
-	}
-
 	chartConfigValues := e2etemplates.ApiextensionsChartConfigValues{
 		Channel:              "1-0-beta",
 		Name:                 "tb-chart",
 		Namespace:            "giantswarm",
 		Release:              "tb-release",
-		VersionBundleVersion: versionBundleVersion,
+		VersionBundleVersion: env.VersionBundleVersion(),
 	}
 	err = cnr.Push(ctx, config.K8sClients, charts)
 	if err != nil {
