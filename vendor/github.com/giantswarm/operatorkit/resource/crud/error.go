@@ -1,4 +1,4 @@
-package metricsresource
+package crud
 
 import (
 	"github.com/giantswarm/microerror"
