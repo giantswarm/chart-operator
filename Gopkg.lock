@@ -273,13 +273,11 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:f86c1d26e7a8575e6e33f376181d4e5df074a4d560463cf9b5375b4a23b64fa5"
+  digest = "1:abc89f581e7fc13b6b841c9e4e21d5657b43ce5f51818eff7c6c9f69a6d85396"
   name = "github.com/giantswarm/e2e-harness"
   packages = [
     "internal/filelogger",
-    "pkg/framework",
     "pkg/framework/resource",
-    "pkg/harness",
     "pkg/release",
   ]
   pruneopts = "UT"
@@ -409,7 +407,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:31573428fc4f1335bca11f5a31638e7903fd16aaa1be4b6b8ceafd08b412bda6"
+  digest = "1:5904c3d7589542ee71957fa4ac388eaa656a974a6d9a9be85a188680854b90b2"
   name = "github.com/giantswarm/operatorkit"
   packages = [
     "client/k8scrdclient",
@@ -425,12 +423,13 @@
     "informer",
     "informer/collector",
     "resource",
+    "resource/crud",
     "resource/wrapper/internal",
     "resource/wrapper/metricsresource",
     "resource/wrapper/retryresource",
   ]
   pruneopts = "UT"
-  revision = "c24ca2ec84447f801c1d9752dbde4524bfd88ee4"
+  revision = "e8903a09b84da1b764da51ed34659e490b66a385"
 
 [[projects]]
   branch = "master"
@@ -570,22 +569,6 @@
   pruneopts = "UT"
   revision = "3af367b6b30c263d47e8895973edcca9a49cf029"
   version = "v0.2.0"
-
-[[projects]]
-  digest = "1:664e1bc8d2f651e1e5234a7bd52d6bbc1704a90e7787d29c56aa212a46d860f0"
-  name = "github.com/google/go-github"
-  packages = ["github"]
-  pruneopts = "UT"
-  revision = "361256aa6e01256279b0805586b6c491ff2045d9"
-  version = "v25.1.3"
-
-[[projects]]
-  digest = "1:a63cff6b5d8b95638bfe300385d93b2a6d9d687734b863da8e09dc834510a690"
-  name = "github.com/google/go-querystring"
-  packages = ["query"]
-  pruneopts = "UT"
-  revision = "44c6ddd0a2342c386950e880b658017258da92fc"
-  version = "v1.0.0"
 
 [[projects]]
   digest = "1:a6181aca1fd5e27103f9a920876f29ac72854df7345a39f3b01e61c8c94cc8af"
@@ -1641,22 +1624,6 @@
   version = "v1.0.0"
 
 [[projects]]
-  digest = "1:0e555835526bba435306c1ff447b144032c0f9fbe179b084646f8520ae2d08cc"
-  name = "k8s.io/kube-aggregator"
-  packages = [
-    "pkg/apis/apiregistration",
-    "pkg/apis/apiregistration/v1",
-    "pkg/apis/apiregistration/v1beta1",
-    "pkg/client/clientset_generated/clientset",
-    "pkg/client/clientset_generated/clientset/scheme",
-    "pkg/client/clientset_generated/clientset/typed/apiregistration/v1",
-    "pkg/client/clientset_generated/clientset/typed/apiregistration/v1beta1",
-  ]
-  pruneopts = "UT"
-  revision = "c3a845f1fbb2d2013df91cdf0687fe14b9cb5319"
-  version = "kubernetes-1.15.4"
-
-[[projects]]
   branch = "master"
   digest = "1:3188bdb4e63be10aca224beb643f586a2348af69e19163346294b3892fbccb13"
   name = "k8s.io/kube-openapi"
@@ -1852,7 +1819,6 @@
     "github.com/giantswarm/apiextensions/pkg/clientset/versioned/fake",
     "github.com/giantswarm/apprclient",
     "github.com/giantswarm/apprclient/apprclienttest",
-    "github.com/giantswarm/e2e-harness/pkg/framework",
     "github.com/giantswarm/e2e-harness/pkg/framework/resource",
     "github.com/giantswarm/e2e-harness/pkg/release",
     "github.com/giantswarm/e2esetup/chart/env",
