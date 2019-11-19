@@ -6,6 +6,7 @@ import (
 	"github.com/giantswarm/helmclient"
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/micrologger"
+	"github.com/giantswarm/operatorkit/controller/context/reconciliationcanceledcontext"
 )
 
 const (
@@ -56,7 +57,12 @@ func (r *Resource) ensureTillerInstalled(ctx context.Context) error {
 		"spec.template.spec.tolerations[0].operator=Exists",
 	}
 	err := r.helmClient.EnsureTillerInstalledWithValues(ctx, values)
-	if err != nil {
+	if helmclient.IsTooManyResults(err) {
+		r.logger.LogCtx(ctx, "level", "debug", "message", "currently too many tiller pods")
+		r.logger.LogCtx(ctx, "level", "debug", "message", "canceling reconciliation")
+		reconciliationcanceledcontext.SetCanceled(ctx)
+		return nil
+	} else if err != nil {
 		return microerror.Mask(err)
 	}
 
