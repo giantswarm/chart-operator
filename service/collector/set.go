@@ -90,6 +90,22 @@ func NewSet(config SetConfig) (*Set, error) {
 		}
 	}
 
+	var tillerRunningPodsCollector *TillerRunningPods
+	{
+		c := TillerRunningPodsConfig{
+			G8sClient:  config.G8sClient,
+			HelmClient: config.HelmClient,
+			Logger:     config.Logger,
+
+			TillerNamespace: config.TillerNamespace,
+		}
+
+		tillerRunningPodsCollector, err = NewTillerRunningPods(c)
+		if err != nil {
+			return nil, microerror.Mask(err)
+		}
+	}
+
 	var collectorSet *collector.Set
 	{
 		c := collector.SetConfig{
@@ -97,6 +113,7 @@ func NewSet(config SetConfig) (*Set, error) {
 				chartConfigResourceCollector,
 				tillerMaxHistoryCollector,
 				tillerReachableCollector,
+				tillerRunningPodsCollector,
 			},
 			Logger: config.Logger,
 		}
