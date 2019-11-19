@@ -58,7 +58,7 @@ func (r *Resource) ensureTillerInstalled(ctx context.Context) error {
 	}
 	err := r.helmClient.EnsureTillerInstalledWithValues(ctx, values)
 	if helmclient.IsTooManyResults(err) {
-		r.logger.LogCtx(ctx, "level", "debug", "message", "currently too many tiller pods")
+		r.logger.LogCtx(ctx, "level", "debug", "message", "currently too many tiller pods due to upgrade")
 		r.logger.LogCtx(ctx, "level", "debug", "message", "canceling reconciliation")
 		reconciliationcanceledcontext.SetCanceled(ctx)
 		return nil
