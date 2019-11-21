@@ -324,14 +324,14 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:86c1fae5c75f44088cc84dd542822d7bd9d4a41879af73553dfadc5d75c3b221"
+  digest = "1:c9ed9ad3b6f0727084cea6ac59a48cb32e566bbd908cd0b86f3222ce5807d9b1"
   name = "github.com/giantswarm/helmclient"
   packages = [
     ".",
     "helmclienttest",
   ]
   pruneopts = "UT"
-  revision = "d5a225ce01e6ea8db08349c26e2669e9a0afbf4b"
+  revision = "386916cdcc22ddd332022e045d26d0e345562116"
 
 [[projects]]
   branch = "master"
@@ -1842,6 +1842,7 @@
     "github.com/giantswarm/operatorkit/client/k8scrdclient",
     "github.com/giantswarm/operatorkit/client/k8srestconfig",
     "github.com/giantswarm/operatorkit/controller",
+    "github.com/giantswarm/operatorkit/controller/context/reconciliationcanceledcontext",
     "github.com/giantswarm/operatorkit/controller/context/resourcecanceledcontext",
     "github.com/giantswarm/operatorkit/flag/service/kubernetes",
     "github.com/giantswarm/operatorkit/informer",
