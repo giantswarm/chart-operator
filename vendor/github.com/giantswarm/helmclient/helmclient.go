@@ -279,8 +279,8 @@ func (c *Client) getReleaseHistory(ctx context.Context, releaseName string) (*Re
 		}
 	}
 
-	if len(resp.Releases) > 1 {
-		return nil, microerror.Maskf(tooManyResultsError, "%d releases found, expected 1", len(resp.Releases))
+	if len(resp.Releases) == 0 {
+		return nil, nil
 	}
 
 	var history *ReleaseHistory
