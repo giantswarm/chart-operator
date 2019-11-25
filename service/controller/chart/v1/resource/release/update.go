@@ -56,7 +56,7 @@ func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange inte
 		if err != nil {
 			releaseContent, err := r.helmClient.GetReleaseContent(ctx, releaseState.Name)
 			if helmclient.IsReleaseNotFound(err) {
-				r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("helm release not found %#q", releaseContent.Name))
+				r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("helm release %#q not found", releaseContent.Name))
 				r.logger.LogCtx(ctx, "level", "debug", "message", "canceling resource")
 				resourcecanceledcontext.SetCanceled(ctx)
 				return nil
