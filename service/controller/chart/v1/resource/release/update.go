@@ -55,15 +55,18 @@ func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange inte
 			helm.UpgradeForce(upgradeForce))
 		if err != nil {
 			releaseContent, err := r.helmClient.GetReleaseContent(ctx, releaseState.Name)
-			if err != nil {
+			if helmclient.IsReleaseNotFound(err) {
+				r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("helm release %#q not found", releaseContent.Name))
+				r.logger.LogCtx(ctx, "level", "debug", "message", "canceling resource")
+				resourcecanceledcontext.SetCanceled(ctx)
+				return nil
+			} else if err != nil {
 				return microerror.Mask(err)
 			}
 			if releaseContent.Status == helmFailedStatus {
 				r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("failed to update release %#q", releaseContent.Name))
-
-				resourcecanceledcontext.SetCanceled(ctx)
 				r.logger.LogCtx(ctx, "level", "debug", "message", "canceling resource")
-
+				resourcecanceledcontext.SetCanceled(ctx)
 				return nil
 			}
 			return microerror.Mask(err)
