@@ -32,10 +32,8 @@ func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange inte
 		tarballPath, err := r.helmClient.PullChartTarball(ctx, tarballURL)
 		if helmclient.IsPullChartFailedError(err) {
 			r.logger.LogCtx(ctx, "level", "warning", "message", "pulling chart failed", "stack", microerror.Stack(err))
-
-			resourcecanceledcontext.SetCanceled(ctx)
 			r.logger.LogCtx(ctx, "level", "debug", "message", "canceling resource")
-
+			resourcecanceledcontext.SetCanceled(ctx)
 			return nil
 		} else if err != nil {
 			return microerror.Mask(err)

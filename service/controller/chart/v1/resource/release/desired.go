@@ -29,10 +29,8 @@ func (r *Resource) GetDesiredState(ctx context.Context, obj interface{}) (interf
 	tarballPath, err := r.helmClient.PullChartTarball(ctx, tarballURL)
 	if helmclient.IsPullChartFailedError(err) {
 		r.logger.LogCtx(ctx, "level", "warning", "message", "pulling chart failed", "stack", microerror.Stack(err))
-
-		resourcecanceledcontext.SetCanceled(ctx)
 		r.logger.LogCtx(ctx, "level", "debug", "message", "canceling resource")
-
+		resourcecanceledcontext.SetCanceled(ctx)
 		return nil, nil
 	} else if err != nil {
 		return nil, microerror.Mask(err)
