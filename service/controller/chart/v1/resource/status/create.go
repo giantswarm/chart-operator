@@ -38,6 +38,10 @@ func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
 
 		// Return early. We will retry on the next execution.
 		return nil
+	} else if helmclient.IsReleaseNameInvalid(err) {
+		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("release name %#q is invalid", key.ReleaseName(cr)), "stack", fmt.Sprintf("%#v", err))
+		r.logger.LogCtx(ctx, "level", "debug", "message", "canceling resource")
+		return nil
 	} else if err != nil {
 		return microerror.Mask(err)
 	}

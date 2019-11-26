@@ -31,6 +31,10 @@ func (r *Resource) GetCurrentState(ctx context.Context, obj interface{}) (interf
 	if helmclient.IsReleaseNotFound(err) {
 		// Return early as release is not installed.
 		return nil, nil
+	} else if helmclient.IsReleaseNameInvalid(err) {
+		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("release name %#q is invalid", key.ReleaseName(cr)), "stack", fmt.Sprintf("%#v", err))
+		// Return early as release is not installed.
+		return nil, nil
 	} else if err != nil {
 		return nil, microerror.Mask(err)
 	}
