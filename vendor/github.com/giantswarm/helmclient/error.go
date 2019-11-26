@@ -122,6 +122,36 @@ func IsReleaseAlreadyExists(err error) bool {
 }
 
 const (
+	releaseNameInvalidErrorPrefix = "invalid release name, must match regex"
+	releaseNameInvalidErrorSuffix = "and the length must not be longer than 53"
+)
+
+var releaseNameInvalidError = &microerror.Error{
+	Kind: "releaseNameInvalidError",
+}
+
+// IsReleaseNameInvalid asserts releaseNameInvalidError.
+func IsReleaseNameInvalid(err error) bool {
+	if err == nil {
+		return false
+	}
+
+	c := microerror.Cause(err)
+
+	if strings.HasPrefix(c.Error(), releaseNameInvalidErrorPrefix) {
+		return true
+	}
+	if strings.HasSuffix(c.Error(), releaseNameInvalidErrorSuffix) {
+		return true
+	}
+	if c == releaseNameInvalidError {
+		return true
+	}
+
+	return false
+}
+
+const (
 	releaseNotFoundErrorPrefix = "No such release:"
 	releaseNotFoundErrorSuffix = "not found"
 )

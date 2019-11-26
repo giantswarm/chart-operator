@@ -205,7 +205,7 @@ func (c *Client) getReleaseContent(ctx context.Context, releaseName string) (*Re
 
 			return nil
 		}
-		b := backoff.NewMaxRetries(10, 5*time.Second)
+		b := backoff.NewMaxRetries(3, 5*time.Second)
 		n := backoff.NewNotifier(c.logger, ctx)
 
 		err := backoff.RetryNotify(o, b, n)
@@ -262,7 +262,7 @@ func (c *Client) getReleaseHistory(ctx context.Context, releaseName string) (*Re
 
 			return nil
 		}
-		b := backoff.NewMaxRetries(10, 5*time.Second)
+		b := backoff.NewMaxRetries(3, 5*time.Second)
 
 		n := backoff.NewNotifier(c.logger, ctx)
 
