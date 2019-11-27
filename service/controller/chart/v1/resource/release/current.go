@@ -19,10 +19,8 @@ func (r *Resource) GetCurrentState(ctx context.Context, obj interface{}) (interf
 
 	if key.IsCordoned(cr) {
 		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("release %#q has been cordoned until %#q due to reason %#q ", key.ReleaseName(cr), key.CordonUntil(cr), key.CordonReason(cr)))
-
-		resourcecanceledcontext.SetCanceled(ctx)
 		r.logger.LogCtx(ctx, "level", "debug", "message", "canceling resource")
-
+		resourcecanceledcontext.SetCanceled(ctx)
 		return nil, nil
 	}
 
@@ -41,10 +39,8 @@ func (r *Resource) GetCurrentState(ctx context.Context, obj interface{}) (interf
 
 	if releaseContent.Status == "FAILED" && releaseContent.Name == r.projectName {
 		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("not updating own release %#q since it's %#q", releaseContent.Name, releaseContent.Status))
-
-		resourcecanceledcontext.SetCanceled(ctx)
 		r.logger.LogCtx(ctx, "level", "debug", "message", "canceling resource")
-
+		resourcecanceledcontext.SetCanceled(ctx)
 		return nil, nil
 	}
 
