@@ -14,6 +14,7 @@ import (
 	apiextensionsclient "k8s.io/apiextensions-apiserver/pkg/client/clientset/clientset"
 	"k8s.io/client-go/kubernetes"
 
+	"github.com/giantswarm/chart-operator/pkg/project"
 	v5 "github.com/giantswarm/chart-operator/service/controller/chartconfig/v5"
 	v6 "github.com/giantswarm/chart-operator/service/controller/chartconfig/v6"
 	v7 "github.com/giantswarm/chart-operator/service/controller/chartconfig/v7"
@@ -30,7 +31,6 @@ type Config struct {
 	K8sExtClient apiextensionsclient.Interface
 	Logger       micrologger.Logger
 
-	ProjectName    string
 	WatchNamespace string
 }
 
@@ -55,10 +55,6 @@ func NewChartConfig(config Config) (*ChartConfig, error) {
 	}
 	if config.Logger == nil {
 		return nil, microerror.Maskf(invalidConfigError, "%T.Logger must not be empty", config)
-	}
-
-	if config.ProjectName == "" {
-		return nil, microerror.Maskf(invalidConfigError, "%T.ProjectName must not be empty", config)
 	}
 
 	var crdClient *k8scrdclient.CRDClient
@@ -93,13 +89,12 @@ func NewChartConfig(config Config) (*ChartConfig, error) {
 	var resourceSetV5 *controller.ResourceSet
 	{
 		c := v5.ResourceSetConfig{
-			ApprClient:  config.ApprClient,
-			Fs:          config.Fs,
-			G8sClient:   config.G8sClient,
-			HelmClient:  config.HelmClient,
-			K8sClient:   config.K8sClient,
-			Logger:      config.Logger,
-			ProjectName: config.ProjectName,
+			ApprClient: config.ApprClient,
+			Fs:         config.Fs,
+			G8sClient:  config.G8sClient,
+			HelmClient: config.HelmClient,
+			K8sClient:  config.K8sClient,
+			Logger:     config.Logger,
 		}
 
 		resourceSetV5, err = v5.NewResourceSet(c)
@@ -111,13 +106,12 @@ func NewChartConfig(config Config) (*ChartConfig, error) {
 	var resourceSetV6 *controller.ResourceSet
 	{
 		c := v6.ResourceSetConfig{
-			ApprClient:  config.ApprClient,
-			Fs:          config.Fs,
-			G8sClient:   config.G8sClient,
-			HelmClient:  config.HelmClient,
-			K8sClient:   config.K8sClient,
-			Logger:      config.Logger,
-			ProjectName: config.ProjectName,
+			ApprClient: config.ApprClient,
+			Fs:         config.Fs,
+			G8sClient:  config.G8sClient,
+			HelmClient: config.HelmClient,
+			K8sClient:  config.K8sClient,
+			Logger:     config.Logger,
 		}
 
 		resourceSetV6, err = v6.NewResourceSet(c)
@@ -129,13 +123,12 @@ func NewChartConfig(config Config) (*ChartConfig, error) {
 	var resourceSetV7 *controller.ResourceSet
 	{
 		c := v7.ResourceSetConfig{
-			ApprClient:  config.ApprClient,
-			Fs:          config.Fs,
-			G8sClient:   config.G8sClient,
-			HelmClient:  config.HelmClient,
-			K8sClient:   config.K8sClient,
-			Logger:      config.Logger,
-			ProjectName: config.ProjectName,
+			ApprClient: config.ApprClient,
+			Fs:         config.Fs,
+			G8sClient:  config.G8sClient,
+			HelmClient: config.HelmClient,
+			K8sClient:  config.K8sClient,
+			Logger:     config.Logger,
 		}
 
 		resourceSetV7, err = v7.NewResourceSet(c)
@@ -158,7 +151,7 @@ func NewChartConfig(config Config) (*ChartConfig, error) {
 			},
 			RESTClient: config.G8sClient.CoreV1alpha1().RESTClient(),
 
-			Name: config.ProjectName + chartConfigControllerSuffix,
+			Name: project.Name() + chartConfigControllerSuffix,
 		}
 
 		chartConfigController, err = controller.New(c)

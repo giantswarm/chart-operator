@@ -35,7 +35,6 @@ type ResourceSetConfig struct {
 
 	// Settings.
 	HandledVersionBundles []string
-	ProjectName           string
 }
 
 // NewResourceSet returns a configured ChartConfig controller ResourceSet.
@@ -54,11 +53,6 @@ func NewResourceSet(config ResourceSetConfig) (*controller.ResourceSet, error) {
 	}
 	if config.Logger == nil {
 		return nil, microerror.Maskf(invalidConfigError, "%T.Logger must not be empty", config)
-	}
-
-	// Settings.
-	if config.ProjectName == "" {
-		return nil, microerror.Maskf(invalidConfigError, "%T.ProjectName must not be empty", config)
 	}
 
 	var chartResource resource.Interface
