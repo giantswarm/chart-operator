@@ -4,17 +4,16 @@ import (
 	"context"
 	"sync"
 
-	"github.com/giantswarm/apiextensions/pkg/clientset/versioned"
+	"github.com/giantswarm/apiextensions/pkg/apis/application/v1alpha1"
 	"github.com/giantswarm/apprclient"
 	"github.com/giantswarm/helmclient"
+	"github.com/giantswarm/k8sclient"
 	"github.com/giantswarm/k8sclient/k8srestconfig"
 	"github.com/giantswarm/microendpoint/service/version"
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/micrologger"
 	"github.com/spf13/afero"
 	"github.com/spf13/viper"
-	apiextensionsclient "k8s.io/apiextensions-apiserver/pkg/client/clientset/clientset"
-	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
 
 	"github.com/giantswarm/chart-operator/flag"
@@ -83,19 +82,19 @@ func New(config Config) (*Service, error) {
 		}
 	}
 
-	g8sClient, err := versioned.NewForConfig(restConfig)
-	if err != nil {
-		return nil, microerror.Mask(err)
-	}
+	var k8sClient k8sclient.Interface
+	{
+		c := k8sclient.ClientsConfig{
+			AddToScheme: v1alpha1.AddToScheme,
+			Logger:      config.Logger,
 
-	k8sClient, err := kubernetes.NewForConfig(restConfig)
-	if err != nil {
-		return nil, microerror.Mask(err)
-	}
+			RestConfig: restConfig,
+		}
 
-	k8sExtClient, err := apiextensionsclient.NewForConfig(restConfig)
-	if err != nil {
-		return nil, microerror.Mask(err)
+		k8sClient, err = k8sclient.NewClients(c)
+		if err != nil {
+			return nil, microerror.Mask(err)
+		}
 	}
 
 	fs := afero.NewOsFs()
@@ -118,7 +117,7 @@ func New(config Config) (*Service, error) {
 	var helmClient *helmclient.Client
 	{
 		c := helmclient.Config{
-			K8sClient: k8sClient,
+			K8sClient: k8sClient.K8sClient(),
 			Logger:    config.Logger,
 
 			RestConfig:          restConfig,
@@ -135,12 +134,10 @@ func New(config Config) (*Service, error) {
 	var chartController *chart.Chart
 	{
 		c := chart.Config{
-			Fs:           fs,
-			HelmClient:   helmClient,
-			G8sClient:    g8sClient,
-			Logger:       config.Logger,
-			K8sClient:    k8sClient,
-			K8sExtClient: k8sExtClient,
+			Fs:         fs,
+			HelmClient: helmClient,
+			Logger:     config.Logger,
+			K8sClient:  k8sClient,
 
 			WatchNamespace: config.Viper.GetString(config.Flag.Service.Kubernetes.Watch.Namespace),
 		}
@@ -154,13 +151,11 @@ func New(config Config) (*Service, error) {
 	var chartConfigController *chartconfig.ChartConfig
 	{
 		c := chartconfig.Config{
-			ApprClient:   apprClient,
-			Fs:           fs,
-			HelmClient:   helmClient,
-			G8sClient:    g8sClient,
-			Logger:       config.Logger,
-			K8sClient:    k8sClient,
-			K8sExtClient: k8sExtClient,
+			ApprClient: apprClient,
+			Fs:         fs,
+			HelmClient: helmClient,
+			Logger:     config.Logger,
+			K8sClient:  k8sClient,
 
 			WatchNamespace: config.Viper.GetString(config.Flag.Service.Kubernetes.Watch.Namespace),
 		}
@@ -174,7 +169,6 @@ func New(config Config) (*Service, error) {
 	var operatorCollector *collector.Set
 	{
 		c := collector.SetConfig{
-			G8sClient:  g8sClient,
 			HelmClient: helmClient,
 			K8sClient:  k8sClient,
 			Logger:     config.Logger,

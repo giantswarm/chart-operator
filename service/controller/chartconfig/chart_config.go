@@ -2,17 +2,14 @@ package chartconfig
 
 import (
 	"github.com/giantswarm/apiextensions/pkg/apis/core/v1alpha1"
-	"github.com/giantswarm/apiextensions/pkg/clientset/versioned"
 	"github.com/giantswarm/apprclient"
 	"github.com/giantswarm/helmclient"
-	"github.com/giantswarm/k8sclient/k8scrdclient"
+	"github.com/giantswarm/k8sclient"
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/micrologger"
 	"github.com/giantswarm/operatorkit/controller"
-	"github.com/giantswarm/operatorkit/informer"
 	"github.com/spf13/afero"
-	apiextensionsclient "k8s.io/apiextensions-apiserver/pkg/client/clientset/clientset"
-	"k8s.io/client-go/kubernetes"
+	"k8s.io/apimachinery/pkg/runtime"
 
 	"github.com/giantswarm/chart-operator/pkg/project"
 	v5 "github.com/giantswarm/chart-operator/service/controller/chartconfig/v5"
@@ -23,13 +20,11 @@ import (
 const chartConfigControllerSuffix = "-chartconfig"
 
 type Config struct {
-	ApprClient   apprclient.Interface
-	Fs           afero.Fs
-	G8sClient    versioned.Interface
-	HelmClient   helmclient.Interface
-	K8sClient    kubernetes.Interface
-	K8sExtClient apiextensionsclient.Interface
-	Logger       micrologger.Logger
+	ApprClient apprclient.Interface
+	Fs         afero.Fs
+	HelmClient helmclient.Interface
+	K8sClient  k8sclient.Interface
+	Logger     micrologger.Logger
 
 	WatchNamespace string
 }
@@ -44,43 +39,24 @@ func NewChartConfig(config Config) (*ChartConfig, error) {
 	if config.Fs == nil {
 		return nil, microerror.Maskf(invalidConfigError, "%T.Fs must not be empty", config)
 	}
-	if config.G8sClient == nil {
-		return nil, microerror.Maskf(invalidConfigError, "%T.G8sClient must not be empty", config)
-	}
 	if config.K8sClient == nil {
 		return nil, microerror.Maskf(invalidConfigError, "%T.K8sClient must not be empty", config)
-	}
-	if config.K8sExtClient == nil {
-		return nil, microerror.Maskf(invalidConfigError, "%T.K8sExtClient must not be empty", config)
 	}
 	if config.Logger == nil {
 		return nil, microerror.Maskf(invalidConfigError, "%T.Logger must not be empty", config)
 	}
 
-	var crdClient *k8scrdclient.CRDClient
+	// Create a new k8sClient so the legacy scheme can be configured.
+	var k8sClient k8sclient.Interface
 	{
-		c := k8scrdclient.Config{
-			K8sExtClient: config.K8sExtClient,
-			Logger:       config.Logger,
+		c := k8sclient.ClientsConfig{
+			AddToScheme: v1alpha1.AddToScheme,
+			Logger:      config.Logger,
+
+			RestConfig: config.K8sClient.RESTConfig(),
 		}
 
-		crdClient, err = k8scrdclient.New(c)
-		if err != nil {
-			return nil, microerror.Mask(err)
-		}
-	}
-
-	var newInformer *informer.Informer
-	{
-		c := informer.Config{
-			Logger:  config.Logger,
-			Watcher: config.G8sClient.CoreV1alpha1().ChartConfigs(config.WatchNamespace),
-
-			RateWait:     informer.DefaultRateWait,
-			ResyncPeriod: informer.DefaultResyncPeriod,
-		}
-
-		newInformer, err = informer.New(c)
+		k8sClient, err = k8sclient.NewClients(c)
 		if err != nil {
 			return nil, microerror.Mask(err)
 		}
@@ -91,9 +67,9 @@ func NewChartConfig(config Config) (*ChartConfig, error) {
 		c := v5.ResourceSetConfig{
 			ApprClient: config.ApprClient,
 			Fs:         config.Fs,
-			G8sClient:  config.G8sClient,
+			G8sClient:  k8sClient.G8sClient(),
 			HelmClient: config.HelmClient,
-			K8sClient:  config.K8sClient,
+			K8sClient:  k8sClient.K8sClient(),
 			Logger:     config.Logger,
 		}
 
@@ -108,9 +84,9 @@ func NewChartConfig(config Config) (*ChartConfig, error) {
 		c := v6.ResourceSetConfig{
 			ApprClient: config.ApprClient,
 			Fs:         config.Fs,
-			G8sClient:  config.G8sClient,
+			G8sClient:  k8sClient.G8sClient(),
 			HelmClient: config.HelmClient,
-			K8sClient:  config.K8sClient,
+			K8sClient:  k8sClient.K8sClient(),
 			Logger:     config.Logger,
 		}
 
@@ -125,9 +101,9 @@ func NewChartConfig(config Config) (*ChartConfig, error) {
 		c := v7.ResourceSetConfig{
 			ApprClient: config.ApprClient,
 			Fs:         config.Fs,
-			G8sClient:  config.G8sClient,
+			G8sClient:  k8sClient.G8sClient(),
 			HelmClient: config.HelmClient,
-			K8sClient:  config.K8sClient,
+			K8sClient:  k8sClient.K8sClient(),
 			Logger:     config.Logger,
 		}
 
@@ -141,15 +117,16 @@ func NewChartConfig(config Config) (*ChartConfig, error) {
 	{
 		c := controller.Config{
 			CRD:       v1alpha1.NewChartConfigCRD(),
-			CRDClient: crdClient,
-			Informer:  newInformer,
+			K8sClient: config.K8sClient,
 			Logger:    config.Logger,
 			ResourceSets: []*controller.ResourceSet{
 				resourceSetV5,
 				resourceSetV6,
 				resourceSetV7,
 			},
-			RESTClient: config.G8sClient.CoreV1alpha1().RESTClient(),
+			NewRuntimeObjectFunc: func() runtime.Object {
+				return new(v1alpha1.ChartConfig)
+			},
 
 			Name: project.Name() + chartConfigControllerSuffix,
 		}
