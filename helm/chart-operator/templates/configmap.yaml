@@ -19,6 +19,8 @@ data:
         address: '{{ .Values.cnr.address }}'
       helm:
         tillerNamespace:  '{{ .Values.tiller.namespace }}'
+      image:
+        registry: '{{ .Values.image.registry }}'
       kubernetes:
         incluster: true
         watch:
