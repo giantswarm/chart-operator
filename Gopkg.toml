@@ -93,7 +93,7 @@ required = [
   name = "github.com/giantswarm/micrologger"
 
 [[constraint]]
-  branch = "master"
+  branch = "cluster-controller"
   name = "github.com/giantswarm/operatorkit"
 
 [[constraint]]
@@ -118,10 +118,6 @@ required = [
 
 [[constraint]]
   name = "k8s.io/api"
-  version = "kubernetes-1.15.4"
-
-[[constraint]]
-  name = "k8s.io/apiextensions-apiserver"
   version = "kubernetes-1.15.4"
 
 [[constraint]]
@@ -155,6 +151,10 @@ required = [
 [[override]]
   name = "github.com/ghodss/yaml"
   branch = "master"
+
+[[override]]
+  source = "gopkg.in/fsnotify/fsnotify.v1"
+  name = "gopkg.in/fsnotify.v1"
 
 
 
