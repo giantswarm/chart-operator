@@ -31,7 +31,7 @@ func Push(ctx context.Context, k8sClients *k8sclient.Clients, charts []Chart) er
 	var forwarder *k8sportforward.Forwarder
 	{
 		c := k8sportforward.ForwarderConfig{
-			RestConfig: k8sClients.RestConfig(),
+			RestConfig: k8sClients.RESTConfig(),
 		}
 
 		forwarder, err = k8sportforward.NewForwarder(c)
