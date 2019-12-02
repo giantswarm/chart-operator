@@ -8,6 +8,7 @@ import (
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/operatorkit/controller/context/resourcecanceledcontext"
 
+	"github.com/giantswarm/chart-operator/pkg/project"
 	"github.com/giantswarm/chart-operator/service/controller/chart/v1/key"
 )
 
@@ -33,7 +34,7 @@ func (r *Resource) GetCurrentState(ctx context.Context, obj interface{}) (interf
 		return nil, microerror.Mask(err)
 	}
 
-	if releaseContent.Status == "FAILED" && releaseContent.Name == r.projectName {
+	if releaseContent.Status == "FAILED" && releaseContent.Name == project.Name() {
 		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("not updating own release %#q since it's %#q", releaseContent.Name, releaseContent.Status))
 		r.logger.LogCtx(ctx, "level", "debug", "message", "canceling resource")
 		resourcecanceledcontext.SetCanceled(ctx)
