@@ -126,8 +126,9 @@ func New(config Config) (*Service, error) {
 			K8sClient: k8sClient,
 			Logger:    config.Logger,
 
-			RestConfig:      restConfig,
-			TillerNamespace: config.Viper.GetString(config.Flag.Service.Helm.TillerNamespace),
+			RestConfig:          restConfig,
+			TillerImageRegistry: config.Viper.GetString(config.Flag.Service.Image.Registry),
+			TillerNamespace:     config.Viper.GetString(config.Flag.Service.Helm.TillerNamespace),
 		}
 
 		helmClient, err = helmclient.New(c)
