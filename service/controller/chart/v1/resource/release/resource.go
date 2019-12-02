@@ -48,9 +48,6 @@ type Config struct {
 	HelmClient helmclient.Interface
 	K8sClient  kubernetes.Interface
 	Logger     micrologger.Logger
-
-	// Settings.
-	ProjectName string
 }
 
 // Resource implements the chart resource.
@@ -61,9 +58,6 @@ type Resource struct {
 	helmClient helmclient.Interface
 	k8sClient  kubernetes.Interface
 	logger     micrologger.Logger
-
-	// Settings.
-	projectName string
 }
 
 // New creates a new configured chart resource.
@@ -85,11 +79,6 @@ func New(config Config) (*Resource, error) {
 		return nil, microerror.Maskf(invalidConfigError, "%T.Logger must not be empty", config)
 	}
 
-	// Settings.
-	if config.ProjectName == "" {
-		return nil, microerror.Maskf(invalidConfigError, "%T.ProjectName must not be empty", config)
-	}
-
 	r := &Resource{
 		// Dependencies.
 		fs:         config.Fs,
@@ -97,9 +86,6 @@ func New(config Config) (*Resource, error) {
 		helmClient: config.HelmClient,
 		k8sClient:  config.K8sClient,
 		logger:     config.Logger,
-
-		// Settings.
-		projectName: config.ProjectName,
 	}
 
 	return r, nil

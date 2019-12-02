@@ -60,12 +60,6 @@ func Test_Service_New(t *testing.T) {
 					Flag:   flag.New(),
 					Logger: microloggertest.New(),
 					Viper:  viper.New(),
-
-					Description: "test",
-					GitCommit:   "test",
-					ProjectName: "chart-operator",
-					Source:      "test",
-					Version:     "test",
 				}
 
 				c.Viper.Set(c.Flag.Service.CNR.Address, "https://127.0.0.1:5555")
