@@ -10,6 +10,7 @@ import (
 	"github.com/giantswarm/micrologger"
 	"github.com/spf13/viper"
 
+	"github.com/giantswarm/chart-operator/pkg/project"
 	"github.com/giantswarm/chart-operator/server/endpoint"
 	"github.com/giantswarm/chart-operator/service"
 )
@@ -18,9 +19,8 @@ import (
 type Config struct {
 	Logger  micrologger.Logger
 	Service *service.Service
-	Viper   *viper.Viper
 
-	ProjectName string
+	Viper *viper.Viper
 }
 
 // New creates a new server object with given configuration.
@@ -33,12 +33,9 @@ func New(config Config) (microserver.Server, error) {
 	if config.Service == nil {
 		return nil, microerror.Maskf(invalidConfigError, "%T.Service must not be empty", config)
 	}
+
 	if config.Viper == nil {
 		return nil, microerror.Maskf(invalidConfigError, "%T.Viper must not be empty", config)
-	}
-
-	if config.ProjectName == "" {
-		return nil, microerror.Maskf(invalidConfigError, "%T.ProjectName must not be empty", config)
 	}
 
 	var endpointCollection *endpoint.Endpoint
@@ -62,7 +59,7 @@ func New(config Config) (microserver.Server, error) {
 		bootOnce: sync.Once{},
 		config: microserver.Config{
 			Logger:      config.Logger,
-			ServiceName: config.ProjectName,
+			ServiceName: project.Name(),
 			Viper:       config.Viper,
 			Endpoints: []microserver.Endpoint{
 				endpointCollection.Healthz,
