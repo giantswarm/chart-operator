@@ -4,7 +4,6 @@ import (
 	"github.com/giantswarm/e2e-harness/pkg/framework/resource"
 	"github.com/giantswarm/e2e-harness/pkg/release"
 	"github.com/giantswarm/e2esetup/chart/env"
-	"github.com/giantswarm/e2esetup/k8s"
 	"github.com/giantswarm/helmclient"
 	"github.com/giantswarm/k8sclient"
 	"github.com/giantswarm/microerror"
@@ -18,7 +17,7 @@ const (
 
 type Config struct {
 	HelmClient *helmclient.Client
-	K8s        *k8s.Setup
+	K8s        *k8sclient.Setup
 	K8sClients *k8sclient.Clients
 	Logger     micrologger.Logger
 	Release    *release.Release
@@ -52,14 +51,14 @@ func NewConfig() (Config, error) {
 		}
 	}
 
-	var k8sSetup *k8s.Setup
+	var k8sSetup *k8sclient.Setup
 	{
-		c := k8s.SetupConfig{
+		c := k8sclient.SetupConfig{
 			Clients: cpK8sClients,
 			Logger:  logger,
 		}
 
-		k8sSetup, err = k8s.NewSetup(c)
+		k8sSetup, err = k8sclient.NewSetup(c)
 		if err != nil {
 			return Config{}, microerror.Mask(err)
 		}
@@ -70,7 +69,7 @@ func NewConfig() (Config, error) {
 		c := helmclient.Config{
 			Logger:          logger,
 			K8sClient:       cpK8sClients.K8sClient(),
-			RestConfig:      cpK8sClients.RestConfig(),
+			RestConfig:      cpK8sClients.RESTConfig(),
 			TillerNamespace: tillerNamespace,
 		}
 		helmClient, err = helmclient.New(c)
