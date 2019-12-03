@@ -4,7 +4,8 @@ import (
 	"context"
 	"sync"
 
-	"github.com/giantswarm/apiextensions/pkg/apis/application/v1alpha1"
+	applicationv1alpha1 "github.com/giantswarm/apiextensions/pkg/apis/application/v1alpha1"
+	corev1alpha1 "github.com/giantswarm/apiextensions/pkg/apis/core/v1alpha1"
 	"github.com/giantswarm/apprclient"
 	"github.com/giantswarm/helmclient"
 	"github.com/giantswarm/k8sclient"
@@ -14,6 +15,7 @@ import (
 	"github.com/giantswarm/micrologger"
 	"github.com/spf13/afero"
 	"github.com/spf13/viper"
+	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/client-go/rest"
 
 	"github.com/giantswarm/chart-operator/flag"
@@ -85,8 +87,19 @@ func New(config Config) (*Service, error) {
 	var k8sClient k8sclient.Interface
 	{
 		c := k8sclient.ClientsConfig{
-			AddToScheme: v1alpha1.AddToScheme,
-			Logger:      config.Logger,
+			AddToScheme: func(s *runtime.Scheme) error {
+				err := corev1alpha1.AddToScheme(s)
+				if err != nil {
+					return microerror.Mask(err)
+				}
+				err = applicationv1alpha1.AddToScheme(s)
+				if err != nil {
+					return microerror.Mask(err)
+				}
+
+				return nil
+			},
+			Logger: config.Logger,
 
 			RestConfig: restConfig,
 		}

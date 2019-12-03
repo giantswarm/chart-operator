@@ -46,30 +46,14 @@ func NewChartConfig(config Config) (*ChartConfig, error) {
 		return nil, microerror.Maskf(invalidConfigError, "%T.Logger must not be empty", config)
 	}
 
-	// Create a new k8sClient so the legacy scheme can be configured.
-	var k8sClient k8sclient.Interface
-	{
-		c := k8sclient.ClientsConfig{
-			AddToScheme: v1alpha1.AddToScheme,
-			Logger:      config.Logger,
-
-			RestConfig: config.K8sClient.RESTConfig(),
-		}
-
-		k8sClient, err = k8sclient.NewClients(c)
-		if err != nil {
-			return nil, microerror.Mask(err)
-		}
-	}
-
 	var resourceSetV5 *controller.ResourceSet
 	{
 		c := v5.ResourceSetConfig{
 			ApprClient: config.ApprClient,
 			Fs:         config.Fs,
-			G8sClient:  k8sClient.G8sClient(),
+			G8sClient:  config.K8sClient.G8sClient(),
 			HelmClient: config.HelmClient,
-			K8sClient:  k8sClient.K8sClient(),
+			K8sClient:  config.K8sClient.K8sClient(),
 			Logger:     config.Logger,
 		}
 
@@ -84,9 +68,9 @@ func NewChartConfig(config Config) (*ChartConfig, error) {
 		c := v6.ResourceSetConfig{
 			ApprClient: config.ApprClient,
 			Fs:         config.Fs,
-			G8sClient:  k8sClient.G8sClient(),
+			G8sClient:  config.K8sClient.G8sClient(),
 			HelmClient: config.HelmClient,
-			K8sClient:  k8sClient.K8sClient(),
+			K8sClient:  config.K8sClient.K8sClient(),
 			Logger:     config.Logger,
 		}
 
@@ -101,9 +85,9 @@ func NewChartConfig(config Config) (*ChartConfig, error) {
 		c := v7.ResourceSetConfig{
 			ApprClient: config.ApprClient,
 			Fs:         config.Fs,
-			G8sClient:  k8sClient.G8sClient(),
+			G8sClient:  config.K8sClient.G8sClient(),
 			HelmClient: config.HelmClient,
-			K8sClient:  k8sClient.K8sClient(),
+			K8sClient:  config.K8sClient.K8sClient(),
 			Logger:     config.Logger,
 		}
 
