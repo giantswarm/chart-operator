@@ -45,19 +45,19 @@ required = [
   name = "github.com/docker/distribution"
 
 [[constraint]]
-  branch = "k8s-1-16"
+  branch = "master"
   name = "github.com/giantswarm/apiextensions"
 
 [[constraint]]
-  branch = "k8s-1-16"
+  branch = "master"
   name = "github.com/giantswarm/apprclient"
 
 [[constraint]]
-  branch = "k8s-1-16"
+  branch = "master"
   name = "github.com/giantswarm/e2e-harness"
 
 [[constraint]]
-  branch = "k8s-1-16"
+  branch = "master"
   name = "github.com/giantswarm/e2esetup"
 
 [[constraint]]
@@ -65,15 +65,15 @@ required = [
   name = "github.com/giantswarm/e2etemplates"
 
 [[constraint]]
-  branch = "k8s-1-16"
+  branch = "master"
   name = "github.com/giantswarm/helmclient"
 
 [[constraint]]
-  branch = "k8s-1-16"
+  branch = "master"
   name = "github.com/giantswarm/k8sclient"
 
 [[constraint]]
-  branch = "k8s-1-16"
+  branch = "master"
   name = "github.com/giantswarm/k8sportforward"
 
 [[constraint]]
@@ -93,7 +93,7 @@ required = [
   name = "github.com/giantswarm/micrologger"
 
 [[constraint]]
-  branch = "k8s-1-16"
+  branch = "master"
   name = "github.com/giantswarm/operatorkit"
 
 [[constraint]]
