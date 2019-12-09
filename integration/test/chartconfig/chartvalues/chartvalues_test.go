@@ -5,21 +5,23 @@ package chartvalues
 import (
 	"context"
 	"fmt"
-	"github.com/giantswarm/e2e-harness/pkg/release"
 	"testing"
 
+	"github.com/giantswarm/e2e-harness/pkg/release"
 	"github.com/giantswarm/e2etemplates/pkg/e2etemplates"
 
 	"github.com/giantswarm/chart-operator/integration/chartconfig"
 	"github.com/giantswarm/chart-operator/integration/cnr"
 	"github.com/giantswarm/chart-operator/integration/env"
+	"github.com/giantswarm/chart-operator/integration/key"
 )
 
 func TestChartValues(t *testing.T) {
-	const cr = "apiextensions-chart-config-e2e"
 
 	ctx := context.Background()
 
+	cr := key.CustomResourceReleaseName()
+	chartInfo := release.NewStableChartInfo(cr)
 	err := chartconfig.InstallResources(ctx, config)
 	if err != nil {
 		t.Fatalf("could not install resources %v", err)
@@ -52,8 +54,6 @@ func TestChartValues(t *testing.T) {
 	if err != nil {
 		t.Fatalf("could not template chart values %q %v", chartValues, err)
 	}
-
-	chartInfo := release.NewStableChartInfo(cr)
 
 	err = config.Release.Install(ctx, cr, chartInfo, chartValues)
 	if err != nil {
