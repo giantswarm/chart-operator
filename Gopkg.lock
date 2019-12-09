@@ -343,11 +343,11 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:42649fa57594fd0dd202a5cf01d9cae946ff99e0e8f87bc9c145860a2e57c17a"
+  digest = "1:72f7cc0f53c6e4da489b19288ba4cbcd6b8c2031b8184615ec57ac537bc2e478"
   name = "github.com/giantswarm/k8sportforward"
   packages = ["."]
   pruneopts = "UT"
-  revision = "676e7106283c008acc4c07c0cfc903c18cdbeda3"
+  revision = "21368288d82d86aeefb191825df98e7f71e96bb1"
 
 [[projects]]
   branch = "master"
