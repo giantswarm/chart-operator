@@ -13,10 +13,10 @@ import (
 	"github.com/giantswarm/chart-operator/integration/chartconfig"
 	"github.com/giantswarm/chart-operator/integration/cnr"
 	"github.com/giantswarm/chart-operator/integration/env"
+	"github.com/giantswarm/chart-operator/integration/key"
 )
 
 const (
-	cr          = "apiextensions-chart-config-e2e"
 	testRelease = "tb-release"
 )
 
@@ -24,6 +24,8 @@ func TestChartLifecycle(t *testing.T) {
 	ctx := context.Background()
 
 	// Setup
+	cr := key.CustomResourceReleaseName()
+	chartInfo := release.NewStableChartInfo(cr)
 	err := chartconfig.InstallResources(ctx, config)
 	if err != nil {
 		t.Fatalf("could not install resources %v", err)
@@ -50,8 +52,6 @@ func TestChartLifecycle(t *testing.T) {
 			t.Fatalf("expected %#v got %#v", nil, err)
 		}
 	}
-
-	chartInfo := release.NewStableChartInfo(cr)
 
 	// Test Creation
 	var chartConfigValues e2etemplates.ApiextensionsChartConfigValues

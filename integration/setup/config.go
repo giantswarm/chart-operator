@@ -20,7 +20,6 @@ type Config struct {
 	K8sClients *k8sclient.Clients
 	Logger     micrologger.Logger
 	Release    *release.Release
-	//Resource   *release.Resource
 }
 
 func NewConfig() (Config, error) {

@@ -5,6 +5,7 @@ package chartvalues
 import (
 	"context"
 	"fmt"
+	"github.com/giantswarm/e2e-harness/pkg/release"
 	"testing"
 
 	"github.com/giantswarm/e2etemplates/pkg/e2etemplates"
@@ -51,7 +52,10 @@ func TestChartValues(t *testing.T) {
 	if err != nil {
 		t.Fatalf("could not template chart values %q %v", chartValues, err)
 	}
-	err = config.Release.Install(cr, chartValues, "stable")
+
+	chartInfo := release.NewStableChartInfo(cr)
+
+	err = config.Release.Install(ctx, cr, chartInfo, chartValues)
 	if err != nil {
 		t.Fatalf("could not install %q %v", cr, err)
 	}
