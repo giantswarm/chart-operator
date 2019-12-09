@@ -11,8 +11,6 @@ import (
 	"github.com/giantswarm/micrologger/microloggertest"
 	"github.com/spf13/afero"
 	k8sfake "k8s.io/client-go/kubernetes/fake"
-
-	"github.com/giantswarm/chart-operator/pkg/project"
 )
 
 func Test_Resource_Release_newDeleteChange(t *testing.T) {
@@ -79,8 +77,6 @@ func Test_Resource_Release_newDeleteChange(t *testing.T) {
 			HelmClient: helmclienttest.New(helmclienttest.Config{}),
 			K8sClient:  k8sfake.NewSimpleClientset(),
 			Logger:     microloggertest.New(),
-
-			ProjectName: project.Name(),
 		}
 
 		newResource, err = New(c)
