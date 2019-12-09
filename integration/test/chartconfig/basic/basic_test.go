@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/giantswarm/e2e-harness/pkg/release"
 	"github.com/giantswarm/e2etemplates/pkg/e2etemplates"
 
 	"github.com/giantswarm/chart-operator/integration/chartconfig"
@@ -50,6 +51,8 @@ func TestChartLifecycle(t *testing.T) {
 		}
 	}
 
+	chartInfo := release.NewStableChartInfo(cr)
+
 	// Test Creation
 	var chartConfigValues e2etemplates.ApiextensionsChartConfigValues
 	{
@@ -67,20 +70,20 @@ func TestChartLifecycle(t *testing.T) {
 			t.Fatalf("expected %#v got %#v", nil, err)
 		}
 
-		err = config.Resource.Install(cr, chartValues, "stable")
+		err = config.Release.Install(ctx, cr, chartInfo, chartValues)
 		if err != nil {
 			t.Fatalf("expected %#v got %#v", nil, err)
 		}
 
-		err = config.Resource.WaitForStatus(cr, "DEPLOYED")
+		err = config.Release.WaitForStatus(ctx, cr, "DEPLOYED")
 		if err != nil {
 			t.Fatalf("expected %#v got %#v", nil, err)
 		}
 		config.Logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("%#q succesfully deployed", cr))
 
-		err = config.Resource.WaitForStatus(testRelease, "DEPLOYED")
+		err = config.Release.WaitForStatus(ctx, testRelease, "DEPLOYED")
 		if err != nil {
-			err = config.Resource.WaitForStatus(testRelease, "DEPLOYED")
+			err = config.Release.WaitForStatus(ctx, testRelease, "DEPLOYED")
 			if err != nil {
 				t.Fatalf("expected %#v got %#v", nil, err)
 			}
@@ -96,12 +99,13 @@ func TestChartLifecycle(t *testing.T) {
 		if err != nil {
 			t.Fatalf("expected %#v got %#v", nil, err)
 		}
-		err = config.Resource.Update(cr, chartValues, "stable")
+
+		err = config.Release.Update(ctx, cr, chartInfo, chartValues)
 		if err != nil {
 			t.Fatalf("expected %#v got %#v", nil, err)
 		}
 
-		err = config.Resource.WaitForVersion(testRelease, "5.6.0")
+		err = config.Release.WaitForChartInfo(ctx, testRelease, "5.6.0")
 		if err != nil {
 			t.Fatalf("expected %#v got %#v", nil, err)
 		}
@@ -111,12 +115,12 @@ func TestChartLifecycle(t *testing.T) {
 	// Test Deletion
 	{
 		config.Logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("deleting %#q", cr))
-		err := config.Resource.Delete(cr)
+		err := config.Release.Delete(ctx, cr)
 		if err != nil {
 			t.Fatalf("expected %#v got %#v", nil, err)
 		}
 
-		err = config.Resource.WaitForStatus(testRelease, "DELETED")
+		err = config.Release.WaitForStatus(ctx, testRelease, "DELETED")
 		if err != nil {
 			t.Fatalf("expected %#v got %#v", nil, err)
 		}

@@ -51,7 +51,7 @@ func TestChartValues(t *testing.T) {
 	if err != nil {
 		t.Fatalf("could not template chart values %q %v", chartValues, err)
 	}
-	err = config.Resource.Install(cr, chartValues, "stable")
+	err = config.Release.Install(cr, chartValues, "stable")
 	if err != nil {
 		t.Fatalf("could not install %q %v", cr, err)
 	}
