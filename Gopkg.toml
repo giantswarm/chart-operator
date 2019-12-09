@@ -160,6 +160,10 @@ required = [
   name = "github.com/ghodss/yaml"
   branch = "master"
 
+[[override]]
+  source = "gopkg.in/fsnotify/fsnotify.v1"
+  name = "gopkg.in/fsnotify.v1"
+
 
 
 [prune]
