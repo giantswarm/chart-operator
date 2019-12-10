@@ -31,7 +31,7 @@ func TestChartLifecycle(t *testing.T) {
 
 	// Test creation.
 	{
-		config.Logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("creating chart %#q", key.CustomResourceReleaseName()))
+		config.Logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("creating chart %#q", key.ChartReleaseName()))
 
 		c := chartvalues.APIExtensionsChartE2EConfig{
 			Chart: chartvalues.APIExtensionsChartE2EConfigChart{
@@ -50,18 +50,18 @@ func TestChartLifecycle(t *testing.T) {
 			t.Fatalf("expected %#v got %#v", nil, err)
 		}
 
-		chartInfo := release.NewStableChartInfo(key.CustomResourceReleaseName())
-		err = config.Release.Install(ctx, key.CustomResourceReleaseName(), chartInfo, chartValues)
+		chartInfo := release.NewStableChartInfo(key.ChartReleaseName())
+		err = config.Release.Install(ctx, key.ChartReleaseName(), chartInfo, chartValues)
 		if err != nil {
 			t.Fatalf("expected %#v got %#v", nil, err)
 		}
 
-		err = config.Release.WaitForStatus(ctx, fmt.Sprintf("%s-%s", "giantswarm", key.CustomResourceReleaseName()), "DEPLOYED")
+		err = config.Release.WaitForStatus(ctx, fmt.Sprintf("%s-%s", "giantswarm", key.ChartReleaseName()), "DEPLOYED")
 		if err != nil {
 			t.Fatalf("expected %#v got %#v", nil, err)
 		}
 
-		config.Logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("created chart %#q", key.CustomResourceReleaseName()))
+		config.Logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("created chart %#q", key.ChartReleaseName()))
 
 		config.Logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("checking release %#q is deployed", key.TestAppReleaseName()))
 
@@ -90,7 +90,7 @@ func TestChartLifecycle(t *testing.T) {
 
 	// Test update.
 	{
-		config.Logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("updating chart %#q", key.CustomResourceReleaseName()))
+		config.Logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("updating chart %#q", key.ChartReleaseName()))
 
 		c := chartvalues.APIExtensionsChartE2EConfig{
 			Chart: chartvalues.APIExtensionsChartE2EConfigChart{
@@ -110,18 +110,18 @@ func TestChartLifecycle(t *testing.T) {
 			t.Fatalf("expected %#v got %#v", nil, err)
 		}
 
-		chartInfo := release.NewStableChartInfo(key.CustomResourceReleaseName())
-		err = config.Release.Update(ctx, key.CustomResourceReleaseName(), chartInfo, updatedValues)
+		chartInfo := release.NewStableChartInfo(key.ChartReleaseName())
+		err = config.Release.Update(ctx, key.ChartReleaseName(), chartInfo, updatedValues)
 		if err != nil {
 			t.Fatalf("expected %#v got %#v", nil, err)
 		}
 
-		err = config.Release.WaitForStatus(ctx, fmt.Sprintf("%s-%s", "giantswarm", key.CustomResourceReleaseName()), "DEPLOYED")
+		err = config.Release.WaitForStatus(ctx, fmt.Sprintf("%s-%s", "giantswarm", key.ChartReleaseName()), "DEPLOYED")
 		if err != nil {
 			t.Fatalf("expected %#v got %#v", nil, err)
 		}
 
-		config.Logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("updated chart %#q", key.CustomResourceReleaseName()))
+		config.Logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("updated chart %#q", key.ChartReleaseName()))
 
 		config.Logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("checking release %#q is updated", key.TestAppReleaseName()))
 
@@ -135,19 +135,19 @@ func TestChartLifecycle(t *testing.T) {
 
 	// Test deletion.
 	{
-		config.Logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("deleting chart %#q", key.CustomResourceReleaseName()))
+		config.Logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("deleting chart %#q", key.ChartReleaseName()))
 
-		err := config.Release.Delete(ctx, key.CustomResourceReleaseName())
+		err := config.Release.Delete(ctx, key.ChartReleaseName())
 		if err != nil {
 			t.Fatalf("expected %#v got %#v", nil, err)
 		}
 
-		err = config.Release.WaitForStatus(ctx, fmt.Sprintf("%s-%s", "giantswarm", key.CustomResourceReleaseName()), "DELETED")
+		err = config.Release.WaitForStatus(ctx, fmt.Sprintf("%s-%s", "giantswarm", key.ChartReleaseName()), "DELETED")
 		if err != nil {
 			t.Fatalf("expected %#v got %#v", nil, err)
 		}
 
-		config.Logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("deleted chart %#q", key.CustomResourceReleaseName()))
+		config.Logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("deleted chart %#q", key.ChartReleaseName()))
 
 		config.Logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("checking release %#q is deleted", key.TestAppReleaseName()))
 

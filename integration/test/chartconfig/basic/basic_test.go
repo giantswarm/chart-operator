@@ -24,7 +24,7 @@ func TestChartLifecycle(t *testing.T) {
 	ctx := context.Background()
 
 	// Setup
-	cr := key.CustomResourceReleaseName()
+	cr := key.ChartConfigReleaseName()
 	chartInfo := release.NewStableChartInfo(cr)
 	err := chartconfig.InstallResources(ctx, config)
 	if err != nil {
