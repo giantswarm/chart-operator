@@ -4,11 +4,7 @@ func ChartOperatorReleaseName() string {
 	return "chart-operator"
 }
 
-func ChartConfigReleaseName() string {
-	return "apiextensions-chart-config-e2e-chart"
-}
-
-func ChartReleaseName() string {
+func CustomResourceReleaseName() string {
 	return "apiextensions-chart-e2e-chart"
 }
 

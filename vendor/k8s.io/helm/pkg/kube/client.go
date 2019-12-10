@@ -26,12 +26,11 @@ import (
 	"log"
 	"sort"
 	"strings"
-	"sync"
 	"time"
 
 	"k8s.io/apimachinery/pkg/api/meta"
 
-	jsonpatch "github.com/evanphx/json-patch"
+	"github.com/evanphx/json-patch"
 	appsv1 "k8s.io/api/apps/v1"
 	appsv1beta1 "k8s.io/api/apps/v1beta1"
 	appsv1beta2 "k8s.io/api/apps/v1beta2"
@@ -42,7 +41,6 @@ import (
 	apiequality "k8s.io/apimachinery/pkg/api/equality"
 	"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/apimachinery/pkg/fields"
 	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
@@ -53,12 +51,12 @@ import (
 	"k8s.io/cli-runtime/pkg/genericclioptions"
 	"k8s.io/cli-runtime/pkg/resource"
 	"k8s.io/client-go/kubernetes/scheme"
-	cachetools "k8s.io/client-go/tools/cache"
 	watchtools "k8s.io/client-go/tools/watch"
-	cmdutil "k8s.io/kubectl/pkg/cmd/util"
-	"k8s.io/kubectl/pkg/validation"
+	"k8s.io/kubernetes/pkg/api/legacyscheme"
 	"k8s.io/kubernetes/pkg/apis/core"
 	"k8s.io/kubernetes/pkg/kubectl/cmd/get"
+	cmdutil "k8s.io/kubernetes/pkg/kubectl/cmd/util"
+	"k8s.io/kubernetes/pkg/kubectl/validation"
 )
 
 // MissingGetHeader is added to Get's output when a resource is not found.
@@ -217,8 +215,6 @@ func (c *Client) Get(namespace string, reader io.Reader) (string, error) {
 	// Since we don't know what order the objects come in, let's group them by the types and then sort them, so
 	// that when we print them, they come out looking good (headers apply to subgroups, etc.).
 	objs := make(map[string](map[string]runtime.Object))
-	mux := &sync.Mutex{}
-
 	infos, err := c.BuildUnstructured(namespace, reader)
 	if err != nil {
 		return "", err
@@ -228,8 +224,6 @@ func (c *Client) Get(namespace string, reader io.Reader) (string, error) {
 
 	missing := []string{}
 	err = perform(infos, func(info *resource.Info) error {
-		mux.Lock()
-		defer mux.Unlock()
 		c.Log("Doing get for %s: %q", info.Mapping.GroupVersionKind.Kind, info.Name)
 		if err := info.Get(); err != nil {
 			c.Log("WARNING: Failed Get for resource %q: %s", info.Name, err)
@@ -268,7 +262,7 @@ func (c *Client) Get(namespace string, reader io.Reader) (string, error) {
 		for i := range podItems {
 			pod := &core.Pod{}
 
-			scheme.Scheme.Convert(&podItems[i], pod, nil)
+			legacyscheme.Scheme.Convert(&podItems[i], pod, nil)
 			if objs[key+"(related)"] == nil {
 				objs[key+"(related)"] = make(map[string]runtime.Object)
 			}
@@ -320,14 +314,7 @@ func (c *Client) Get(namespace string, reader io.Reader) (string, error) {
 	return buf.String(), nil
 }
 
-// Update reads the current configuration and a target configuration from io.reader
-// and creates resources that don't already exist, updates resources that have been modified
-// in the target configuration and deletes resources from the current configuration that are
-// not present in the target configuration.
-//
-// Namespace will set the namespaces.
-//
-// Deprecated: use UpdateWithOptions instead.
+// Deprecated; use UpdateWithOptions instead
 func (c *Client) Update(namespace string, originalReader, targetReader io.Reader, force bool, recreate bool, timeout int64, shouldWait bool) error {
 	return c.UpdateWithOptions(namespace, originalReader, targetReader, UpdateOptions{
 		Force:      force,
@@ -347,13 +334,12 @@ type UpdateOptions struct {
 	CleanupOnFail bool
 }
 
-// UpdateWithOptions reads the current configuration and a target configuration from io.reader
-// and creates resources that don't already exist, updates resources that have been modified
+// UpdateWithOptions reads in the current configuration and a target configuration from io.reader
+// and creates resources that don't already exists, updates resources that have been modified
 // in the target configuration and deletes resources from the current configuration that are
 // not present in the target configuration.
 //
-// Namespace will set the namespaces. UpdateOptions provides additional parameters to control
-// update behavior.
+// Namespace will set the namespaces.
 func (c *Client) UpdateWithOptions(namespace string, originalReader, targetReader io.Reader, opts UpdateOptions) error {
 	original, err := c.BuildUnstructured(namespace, originalReader)
 	if err != nil {
@@ -566,7 +552,7 @@ func (c *Client) WatchUntilReady(namespace string, reader io.Reader, timeout int
 	return perform(infos, c.watchTimeout(time.Duration(timeout)*time.Second))
 }
 
-// WaitUntilCRDEstablished polls the given CRD until it reaches the established
+// WatchUntilCRDEstablished polls the given CRD until it reaches the established
 // state. A CRD needs to reach the established state before CRs can be created.
 //
 // If a naming conflict condition is found, this function will return an error.
@@ -620,33 +606,12 @@ func perform(infos Result, fn ResourceActorFunc) error {
 		return ErrNoObjectsVisited
 	}
 
-	errs := make(chan error)
-	go batchPerform(infos, fn, errs)
-
-	for range infos {
-		err := <-errs
-		if err != nil {
+	for _, info := range infos {
+		if err := fn(info); err != nil {
 			return err
 		}
 	}
 	return nil
-}
-
-func batchPerform(infos Result, fn ResourceActorFunc, errs chan<- error) {
-	var kind string
-	var wg sync.WaitGroup
-	for _, info := range infos {
-		currentKind := info.Object.GetObjectKind().GroupVersionKind().Kind
-		if kind != currentKind {
-			wg.Wait()
-			kind = currentKind
-		}
-		wg.Add(1)
-		go func(i *resource.Info) {
-			errs <- fn(i)
-			wg.Done()
-		}(info)
-	}
 }
 
 func createResource(info *resource.Info) error {
@@ -685,7 +650,7 @@ func createPatch(target *resource.Info, current runtime.Object) ([]byte, types.P
 	// Get a versioned object
 	versionedObject, err := asVersioned(target)
 
-	// Unstructured objects, such as CRDs, may not have a not registered error
+	// Unstructured objects, such as CRDs, may not have an not registered error
 	// returned from ConvertToVersion. Anything that's unstructured should
 	// use the jsonpatch.CreateMergePatch. Strategic Merge Patch is not supported
 	// on objects like CRDs.
@@ -837,13 +802,10 @@ func getSelectorFromObject(obj runtime.Object) (map[string]string, bool) {
 }
 
 func (c *Client) watchUntilReady(timeout time.Duration, info *resource.Info) error {
-	// Use a selector on the name of the resource. This should be unique for the
-	// given version and kind
-	selector, err := fields.ParseSelector(fmt.Sprintf("metadata.name=%s", info.Name))
+	w, err := resource.NewHelper(info.Client, info.Mapping).WatchSingle(info.Namespace, info.Name, info.ResourceVersion)
 	if err != nil {
 		return err
 	}
-	lw := cachetools.NewListWatchFromClient(info.Client, info.Mapping.Resource.Resource, info.Namespace, selector)
 
 	kind := info.Mapping.GroupVersionKind.Kind
 	c.Log("Watching for changes to %s %s with timeout of %v", kind, info.Name, timeout)
@@ -856,7 +818,7 @@ func (c *Client) watchUntilReady(timeout time.Duration, info *resource.Info) err
 
 	ctx, cancel := watchtools.ContextWithOptionalTimeout(context.Background(), timeout)
 	defer cancel()
-	_, err = watchtools.ListWatchUntil(ctx, lw, func(e watch.Event) (bool, error) {
+	_, err = watchtools.UntilWithoutRetry(ctx, w, func(e watch.Event) (bool, error) {
 		switch e.Type {
 		case watch.Added, watch.Modified:
 			// For things like a secret or a config map, this is the best indicator
@@ -887,7 +849,7 @@ func (c *Client) watchUntilReady(timeout time.Duration, info *resource.Info) err
 // This operates on an event returned from a watcher.
 func (c *Client) waitForJob(e watch.Event, name string) (bool, error) {
 	job := &batch.Job{}
-	err := scheme.Scheme.Convert(e.Object, job, nil)
+	err := legacyscheme.Scheme.Convert(e.Object, job, nil)
 	if err != nil {
 		return true, err
 	}
@@ -944,30 +906,19 @@ func (c *Client) WaitAndGetCompletedPodPhase(namespace string, reader io.Reader,
 }
 
 func (c *Client) watchPodUntilComplete(timeout time.Duration, info *resource.Info) error {
-	lw := cachetools.NewListWatchFromClient(info.Client, info.Mapping.Resource.Resource, info.Namespace, fields.ParseSelectorOrDie(fmt.Sprintf("metadata.name=%s", info.Name)))
+	w, err := resource.NewHelper(info.Client, info.Mapping).WatchSingle(info.Namespace, info.Name, info.ResourceVersion)
+	if err != nil {
+		return err
+	}
 
 	c.Log("Watching pod %s for completion with timeout of %v", info.Name, timeout)
 	ctx, cancel := watchtools.ContextWithOptionalTimeout(context.Background(), timeout)
 	defer cancel()
-	_, err := watchtools.ListWatchUntil(ctx, lw, func(e watch.Event) (bool, error) {
+	_, err = watchtools.UntilWithoutRetry(ctx, w, func(e watch.Event) (bool, error) {
 		return isPodComplete(e)
 	})
 
 	return err
-}
-
-// GetPodLogs takes pod name and namespace and returns the current logs (streaming is NOT enabled).
-func (c *Client) GetPodLogs(name, ns string) (io.ReadCloser, error) {
-	client, err := c.KubernetesClientSet()
-	if err != nil {
-		return nil, err
-	}
-	req := client.CoreV1().Pods(ns).GetLogs(name, &v1.PodLogOptions{})
-	logReader, err := req.Stream()
-	if err != nil {
-		return nil, fmt.Errorf("error in opening log stream, got: %s", err)
-	}
-	return logReader, nil
 }
 
 func isPodComplete(event watch.Event) (bool, error) {
@@ -1048,5 +999,5 @@ func asVersioned(info *resource.Info) (runtime.Object, error) {
 
 func asInternal(info *resource.Info) (runtime.Object, error) {
 	groupVersioner := info.Mapping.GroupVersionKind.GroupKind().WithVersion(runtime.APIVersionInternal).GroupVersion()
-	return scheme.Scheme.ConvertToVersion(info.Object, groupVersioner)
+	return legacyscheme.Scheme.ConvertToVersion(info.Object, groupVersioner)
 }

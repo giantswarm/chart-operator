@@ -81,13 +81,13 @@ const (
 	// ordering constraints. When a scale operation is performed with this
 	// strategy, new Pods will be created from the specification version indicated
 	// by the StatefulSet's updateRevision.
-	RollingUpdateStatefulSetStrategyType StatefulSetUpdateStrategyType = "RollingUpdate"
+	RollingUpdateStatefulSetStrategyType = "RollingUpdate"
 	// OnDeleteStatefulSetStrategyType triggers the legacy behavior. Version
 	// tracking and ordered rolling restarts are disabled. Pods are recreated
 	// from the StatefulSetSpec when they are manually deleted. When a scale
 	// operation is performed with this strategy,specification version indicated
 	// by the StatefulSet's currentRevision.
-	OnDeleteStatefulSetStrategyType StatefulSetUpdateStrategyType = "OnDelete"
+	OnDeleteStatefulSetStrategyType = "OnDelete"
 )
 
 // RollingUpdateStatefulSetStrategy is used to communicate parameter for RollingUpdateStatefulSetStrategyType.
@@ -198,7 +198,6 @@ type StatefulSetStatus struct {
 	Conditions []StatefulSetCondition
 }
 
-// StatefulSetConditionType describes the condition types of StatefulSets.
 type StatefulSetConditionType string
 
 // TODO: Add valid condition types for Statefulsets.
@@ -238,7 +237,7 @@ type StatefulSetList struct {
 type ControllerRevision struct {
 	metav1.TypeMeta
 	// Standard object's metadata.
-	// More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata
+	// More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#metadata
 	// +optional
 	metav1.ObjectMeta
 
@@ -263,7 +262,6 @@ type ControllerRevisionList struct {
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 
-// Deployment provides declarative updates for Pods and ReplicaSets.
 type Deployment struct {
 	metav1.TypeMeta
 	// +optional
@@ -278,7 +276,6 @@ type Deployment struct {
 	Status DeploymentStatus
 }
 
-// DeploymentSpec specifies the state of a Deployment.
 type DeploymentSpec struct {
 	// Number of desired pods. This is a pointer to distinguish between explicit
 	// zero and not specified. Defaults to 1.
@@ -345,7 +342,6 @@ type DeploymentRollback struct {
 	RollbackTo RollbackConfig
 }
 
-// RollbackConfig specifies the state of a revision to roll back to.
 // DEPRECATED.
 type RollbackConfig struct {
 	// The revision to rollback to. If set to 0, rollback to the last revision.
@@ -360,8 +356,6 @@ const (
 	DefaultDeploymentUniqueLabelKey string = "pod-template-hash"
 )
 
-// DeploymentStrategy stores information about the strategy and rolling-update
-// behavior of a deployment.
 type DeploymentStrategy struct {
 	// Type of deployment. Can be "Recreate" or "RollingUpdate". Default is RollingUpdate.
 	// +optional
@@ -376,7 +370,6 @@ type DeploymentStrategy struct {
 	RollingUpdate *RollingUpdateDeployment
 }
 
-// DeploymentStrategyType defines strategies with a deployment.
 type DeploymentStrategyType string
 
 const (
@@ -416,7 +409,6 @@ type RollingUpdateDeployment struct {
 	MaxSurge intstr.IntOrString
 }
 
-// DeploymentStatus holds information about the observed status of a deployment.
 type DeploymentStatus struct {
 	// The generation observed by the deployment controller.
 	// +optional
@@ -454,7 +446,6 @@ type DeploymentStatus struct {
 	CollisionCount *int32
 }
 
-// DeploymentConditionType defines conditions of a deployment.
 type DeploymentConditionType string
 
 // These are valid conditions of a deployment.
@@ -490,7 +481,6 @@ type DeploymentCondition struct {
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 
-// DeploymentList defines multiple deployments.
 type DeploymentList struct {
 	metav1.TypeMeta
 	// +optional
@@ -500,7 +490,6 @@ type DeploymentList struct {
 	Items []Deployment
 }
 
-// DaemonSetUpdateStrategy defines a strategy to update a daemon set.
 type DaemonSetUpdateStrategy struct {
 	// Type of daemon set update. Can be "RollingUpdate" or "OnDelete".
 	// Default is OnDelete.
@@ -516,8 +505,6 @@ type DaemonSetUpdateStrategy struct {
 	RollingUpdate *RollingUpdateDaemonSet
 }
 
-// DaemonSetUpdateStrategyType is a strategy according to which a daemon set
-// gets updated.
 type DaemonSetUpdateStrategyType string
 
 const (
@@ -636,7 +623,6 @@ type DaemonSetStatus struct {
 	Conditions []DaemonSetCondition
 }
 
-// DaemonSetConditionType defines a daemon set condition.
 type DaemonSetConditionType string
 
 // TODO: Add valid condition types of a DaemonSet.
@@ -661,12 +647,12 @@ type DaemonSetCondition struct {
 type DaemonSet struct {
 	metav1.TypeMeta
 	// Standard object's metadata.
-	// More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata
+	// More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#metadata
 	// +optional
 	metav1.ObjectMeta
 
 	// The desired behavior of this daemon set.
-	// More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#spec-and-status
+	// More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#spec-and-status
 	// +optional
 	Spec DaemonSetSpec
 
@@ -674,7 +660,7 @@ type DaemonSet struct {
 	// out of date by some window of time.
 	// Populated by the system.
 	// Read-only.
-	// More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#spec-and-status
+	// More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#spec-and-status
 	// +optional
 	Status DaemonSetStatus
 }
@@ -693,7 +679,7 @@ const (
 type DaemonSetList struct {
 	metav1.TypeMeta
 	// Standard list metadata.
-	// More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata
+	// More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#metadata
 	// +optional
 	metav1.ListMeta
 
@@ -782,7 +768,6 @@ type ReplicaSetStatus struct {
 	Conditions []ReplicaSetCondition
 }
 
-// ReplicaSetConditionType is a condition of a replica set.
 type ReplicaSetConditionType string
 
 // These are valid conditions of a replica set.
