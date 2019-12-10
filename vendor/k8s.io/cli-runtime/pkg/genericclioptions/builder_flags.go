@@ -130,10 +130,6 @@ func (o *ResourceBuilderFlags) ToBuilder(restClientGetter RESTClientGetter, reso
 	builder := resource.NewBuilder(restClientGetter).
 		NamespaceParam(namespace).DefaultNamespace()
 
-	if o.AllNamespaces != nil {
-		builder.AllNamespaces(*o.AllNamespaces)
-	}
-
 	if o.Scheme != nil {
 		builder.WithScheme(o.Scheme, o.Scheme.PrioritizedVersionsAllGroups()...)
 	} else {

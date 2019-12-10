@@ -147,8 +147,7 @@ func (i IndexFile) SortEntries() {
 
 // Get returns the ChartVersion for the given name.
 //
-// If version is empty, this will return the chart with the latest stable version,
-// prerelease versions will be skipped.
+// If version is empty, this will return the chart with the highest version.
 func (i IndexFile) Get(name, version string) (*ChartVersion, error) {
 	vs, ok := i.Entries[name]
 	if !ok {

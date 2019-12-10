@@ -22,7 +22,7 @@ import (
 	appsv1 "k8s.io/api/apps/v1"
 	appsv1beta1 "k8s.io/api/apps/v1beta1"
 	appsv1beta2 "k8s.io/api/apps/v1beta2"
-	v1 "k8s.io/api/core/v1"
+	"k8s.io/api/core/v1"
 	extensions "k8s.io/api/extensions/v1beta1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/fields"
@@ -71,10 +71,6 @@ func (c *Client) waitForResources(timeout time.Duration, created Result) error {
 				if err != nil {
 					return false, err
 				}
-				// If paused deployment will never be ready
-				if currentDeployment.Spec.Paused {
-					continue
-				}
 				// Find RS associated with deployment
 				newReplicaSet, err := deploymentutil.GetNewReplicaSet(currentDeployment, kcs.AppsV1())
 				if err != nil || newReplicaSet == nil {
@@ -89,10 +85,6 @@ func (c *Client) waitForResources(timeout time.Duration, created Result) error {
 				currentDeployment, err := kcs.AppsV1().Deployments(value.Namespace).Get(value.Name, metav1.GetOptions{})
 				if err != nil {
 					return false, err
-				}
-				// If paused deployment will never be ready
-				if currentDeployment.Spec.Paused {
-					continue
 				}
 				// Find RS associated with deployment
 				newReplicaSet, err := deploymentutil.GetNewReplicaSet(currentDeployment, kcs.AppsV1())
@@ -109,10 +101,6 @@ func (c *Client) waitForResources(timeout time.Duration, created Result) error {
 				if err != nil {
 					return false, err
 				}
-				// If paused deployment will never be ready
-				if currentDeployment.Spec.Paused {
-					continue
-				}
 				// Find RS associated with deployment
 				newReplicaSet, err := deploymentutil.GetNewReplicaSet(currentDeployment, kcs.AppsV1())
 				if err != nil || newReplicaSet == nil {
@@ -127,10 +115,6 @@ func (c *Client) waitForResources(timeout time.Duration, created Result) error {
 				currentDeployment, err := kcs.AppsV1().Deployments(value.Namespace).Get(value.Name, metav1.GetOptions{})
 				if err != nil {
 					return false, err
-				}
-				// If paused deployment will never be ready
-				if currentDeployment.Spec.Paused {
-					continue
 				}
 				// Find RS associated with deployment
 				newReplicaSet, err := deploymentutil.GetNewReplicaSet(currentDeployment, kcs.AppsV1())

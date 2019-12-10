@@ -24,7 +24,6 @@ import (
 	"sync"
 
 	"github.com/golang/protobuf/ptypes/timestamp"
-	"golang.org/x/net/context"
 	"k8s.io/helm/pkg/chartutil"
 	"k8s.io/helm/pkg/manifest"
 	"k8s.io/helm/pkg/proto/hapi/chart"
@@ -85,16 +84,6 @@ func (c *FakeClient) ListReleases(opts ...ReleaseListOption) (*rls.ListReleasesR
 // InstallRelease creates a new release and returns a InstallReleaseResponse containing that release
 func (c *FakeClient) InstallRelease(chStr, ns string, opts ...InstallOption) (*rls.InstallReleaseResponse, error) {
 	chart := &chart.Chart{}
-	return c.InstallReleaseFromChart(chart, ns, opts...)
-}
-
-// InstallReleaseWithContext creates a new release and returns a InstallReleaseResponse containing that release and accepts a context
-func (c *FakeClient) InstallReleaseWithContext(ctx context.Context, chStr, ns string, opts ...InstallOption) (*rls.InstallReleaseResponse, error) {
-	return c.InstallRelease(chStr, ns, opts...)
-}
-
-// InstallReleaseFromChartWithContext adds a new MockRelease to the fake client and returns a InstallReleaseResponse containing that release and accepts a context
-func (c *FakeClient) InstallReleaseFromChartWithContext(ctx context.Context, chart *chart.Chart, ns string, opts ...InstallOption) (*rls.InstallReleaseResponse, error) {
 	return c.InstallReleaseFromChart(chart, ns, opts...)
 }
 
@@ -164,16 +153,6 @@ func (c *FakeClient) GetVersion(opts ...VersionOption) (*rls.GetVersionResponse,
 // UpdateRelease returns an UpdateReleaseResponse containing the updated release, if it exists
 func (c *FakeClient) UpdateRelease(rlsName string, chStr string, opts ...UpdateOption) (*rls.UpdateReleaseResponse, error) {
 	return c.UpdateReleaseFromChart(rlsName, &chart.Chart{}, opts...)
-}
-
-// UpdateReleaseWithContext returns an UpdateReleaseResponse containing the updated release, if it exists and accepts a context
-func (c *FakeClient) UpdateReleaseWithContext(ctx context.Context, rlsName string, chStr string, opts ...UpdateOption) (*rls.UpdateReleaseResponse, error) {
-	return c.UpdateRelease(rlsName, chStr, opts...)
-}
-
-// UpdateReleaseFromChartWithContext returns an UpdateReleaseResponse containing the updated release, if it exists and accepts a context
-func (c *FakeClient) UpdateReleaseFromChartWithContext(ctx context.Context, rlsName string, newChart *chart.Chart, opts ...UpdateOption) (*rls.UpdateReleaseResponse, error) {
-	return c.UpdateReleaseFromChart(rlsName, newChart, opts...)
 }
 
 // UpdateReleaseFromChart returns an UpdateReleaseResponse containing the updated release, if it exists
@@ -250,22 +229,7 @@ func (c *FakeClient) ReleaseContent(rlsName string, opts ...ContentOption) (resp
 
 // ReleaseHistory returns a release's revision history.
 func (c *FakeClient) ReleaseHistory(rlsName string, opts ...HistoryOption) (*rls.GetHistoryResponse, error) {
-	reqOpts := c.Opts
-	for _, opt := range opts {
-		opt(&reqOpts)
-	}
-	maxLen := int(reqOpts.histReq.Max)
-
-	var resp rls.GetHistoryResponse
-	for _, rel := range c.Rels {
-		if maxLen > 0 && len(resp.Releases) >= maxLen {
-			return &resp, nil
-		}
-		if rel.Name == rlsName {
-			resp.Releases = append(resp.Releases, rel)
-		}
-	}
-	return &resp, nil
+	return &rls.GetHistoryResponse{Releases: c.Rels}, nil
 }
 
 // RunReleaseTest executes a pre-defined tests on a release

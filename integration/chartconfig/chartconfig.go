@@ -17,7 +17,7 @@ import (
 )
 
 func DeleteResources(ctx context.Context, config setup.Config) error {
-	items := []string{"cnr-server", "giantswarm-apiextensions-chart-config-e2e-chart"}
+	items := []string{"cnr-server", "apiextensions-chart-config-e2e"}
 
 	for _, item := range items {
 		err := config.HelmClient.DeleteRelease(ctx, item, helm.DeletePurge(true))
