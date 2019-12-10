@@ -20,7 +20,7 @@ func TestChartValues(t *testing.T) {
 
 	ctx := context.Background()
 
-	cr := key.ChartReleaseName()
+	cr := key.ChartConfigReleaseName()
 	chartInfo := release.NewStableChartInfo(cr)
 	err := chartconfig.InstallResources(ctx, config)
 	if err != nil {
