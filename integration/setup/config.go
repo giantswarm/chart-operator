@@ -1,7 +1,6 @@
 package setup
 
 import (
-	"github.com/giantswarm/e2e-harness/pkg/framework/resource"
 	"github.com/giantswarm/e2e-harness/pkg/release"
 	"github.com/giantswarm/e2esetup/chart/env"
 	"github.com/giantswarm/helmclient"
@@ -21,7 +20,6 @@ type Config struct {
 	K8sClients *k8sclient.Clients
 	Logger     micrologger.Logger
 	Release    *release.Release
-	Resource   *resource.Resource
 }
 
 func NewConfig() (Config, error) {
@@ -96,27 +94,12 @@ func NewConfig() (Config, error) {
 		}
 	}
 
-	var newResource *resource.Resource
-	{
-		c := resource.Config{
-			Logger:     logger,
-			HelmClient: helmClient,
-			Namespace:  namespace,
-		}
-		newResource, err = resource.New(c)
-		if err != nil {
-			return Config{}, microerror.Mask(err)
-		}
-	}
-
 	c := Config{
 		HelmClient: helmClient,
 		K8s:        k8sSetup,
 		K8sClients: cpK8sClients,
 		Logger:     logger,
 		Release:    newRelease,
-		// Resource is deprecated and used by legacy chartconfig tests.
-		Resource: newResource,
 	}
 
 	return c, nil
