@@ -17,6 +17,7 @@ import (
 )
 
 const (
+	namespace   = "giantswarm"
 	testRelease = "tb-release"
 )
 
@@ -75,7 +76,7 @@ func TestChartLifecycle(t *testing.T) {
 			t.Fatalf("expected %#v got %#v", nil, err)
 		}
 
-		err = config.Release.WaitForStatus(ctx, cr, "DEPLOYED")
+		err = config.Release.WaitForStatus(ctx, fmt.Sprintf("%s-%s", namespace, cr), "DEPLOYED")
 		if err != nil {
 			t.Fatalf("expected %#v got %#v", nil, err)
 		}
