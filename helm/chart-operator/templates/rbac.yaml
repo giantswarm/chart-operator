@@ -88,6 +88,7 @@ rules:
   - clusterroles
   verbs:
   - "bind"
+  - "create"
 - apiGroups:
   - ""
   resources:
@@ -118,6 +119,13 @@ rules:
   - "create"
   - "get"
   - "update"
+- apiGroups:
+  - policy
+  resources:
+  - podsecuritypolicies
+  verbs:
+  - "create"
+  - "use"
 - nonResourceURLs:
   - "/"
   - "/healthz"
