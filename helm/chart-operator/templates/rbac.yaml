@@ -1,4 +1,4 @@
-apiVersion: rbac.authorization.k8s.io/v1beta1
+apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   name: {{ tpl .Values.resource.default.name  . }}
@@ -88,6 +88,7 @@ rules:
   - clusterroles
   verbs:
   - "bind"
+  - "create"
 - apiGroups:
   - ""
   resources:
@@ -118,13 +119,20 @@ rules:
   - "create"
   - "get"
   - "update"
+- apiGroups:
+  - policy
+  resources:
+  - podsecuritypolicies
+  verbs:
+  - "create"
+  - "use"
 - nonResourceURLs:
   - "/"
   - "/healthz"
   verbs:
     - get
 ---
-apiVersion: rbac.authorization.k8s.io/v1beta1
+apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
   name: {{ tpl .Values.resource.default.name  . }}

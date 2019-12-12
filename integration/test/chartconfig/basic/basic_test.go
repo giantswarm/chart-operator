@@ -7,15 +7,17 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/giantswarm/e2e-harness/pkg/release"
 	"github.com/giantswarm/e2etemplates/pkg/e2etemplates"
 
 	"github.com/giantswarm/chart-operator/integration/chartconfig"
 	"github.com/giantswarm/chart-operator/integration/cnr"
 	"github.com/giantswarm/chart-operator/integration/env"
+	"github.com/giantswarm/chart-operator/integration/key"
 )
 
 const (
-	cr          = "apiextensions-chart-config-e2e"
+	namespace   = "giantswarm"
 	testRelease = "tb-release"
 )
 
@@ -23,6 +25,8 @@ func TestChartLifecycle(t *testing.T) {
 	ctx := context.Background()
 
 	// Setup
+	cr := key.ChartConfigReleaseName()
+	chartInfo := release.NewStableChartInfo(cr)
 	err := chartconfig.InstallResources(ctx, config)
 	if err != nil {
 		t.Fatalf("could not install resources %v", err)
@@ -67,20 +71,20 @@ func TestChartLifecycle(t *testing.T) {
 			t.Fatalf("expected %#v got %#v", nil, err)
 		}
 
-		err = config.Resource.Install(cr, chartValues, "stable")
+		err = config.Release.Install(ctx, cr, chartInfo, chartValues)
 		if err != nil {
 			t.Fatalf("expected %#v got %#v", nil, err)
 		}
 
-		err = config.Resource.WaitForStatus(cr, "DEPLOYED")
+		err = config.Release.WaitForStatus(ctx, fmt.Sprintf("%s-%s", namespace, cr), "DEPLOYED")
 		if err != nil {
 			t.Fatalf("expected %#v got %#v", nil, err)
 		}
 		config.Logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("%#q succesfully deployed", cr))
 
-		err = config.Resource.WaitForStatus(testRelease, "DEPLOYED")
+		err = config.Release.WaitForStatus(ctx, testRelease, "DEPLOYED")
 		if err != nil {
-			err = config.Resource.WaitForStatus(testRelease, "DEPLOYED")
+			err = config.Release.WaitForStatus(ctx, testRelease, "DEPLOYED")
 			if err != nil {
 				t.Fatalf("expected %#v got %#v", nil, err)
 			}
@@ -96,12 +100,13 @@ func TestChartLifecycle(t *testing.T) {
 		if err != nil {
 			t.Fatalf("expected %#v got %#v", nil, err)
 		}
-		err = config.Resource.Update(cr, chartValues, "stable")
+
+		err = config.Release.Update(ctx, cr, chartInfo, chartValues)
 		if err != nil {
 			t.Fatalf("expected %#v got %#v", nil, err)
 		}
 
-		err = config.Resource.WaitForVersion(testRelease, "5.6.0")
+		err = config.Release.WaitForChartInfo(ctx, testRelease, "5.6.0")
 		if err != nil {
 			t.Fatalf("expected %#v got %#v", nil, err)
 		}
@@ -111,12 +116,12 @@ func TestChartLifecycle(t *testing.T) {
 	// Test Deletion
 	{
 		config.Logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("deleting %#q", cr))
-		err := config.Resource.Delete(cr)
+		err := config.Release.Delete(ctx, cr)
 		if err != nil {
 			t.Fatalf("expected %#v got %#v", nil, err)
 		}
 
-		err = config.Resource.WaitForStatus(testRelease, "DELETED")
+		err = config.Release.WaitForStatus(ctx, testRelease, "DELETED")
 		if err != nil {
 			t.Fatalf("expected %#v got %#v", nil, err)
 		}

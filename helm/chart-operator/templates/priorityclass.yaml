@@ -1,5 +1,5 @@
 {{ if .Values.e2e }}
-apiVersion: scheduling.k8s.io/v1beta1
+apiVersion: scheduling.k8s.io/v1
 description: This priority class is used by giantswarm kubernetes components.
 kind: PriorityClass
 metadata:
