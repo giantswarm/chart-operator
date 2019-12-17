@@ -52,7 +52,7 @@ func (c *Client) doFile(ctx context.Context, req *http.Request) (string, error) 
 			// Github pages 404 produces full HTML page which
 			// obscures the logs.
 			if resp.StatusCode == http.StatusNotFound {
-				return backoff.Permanent(microerror.Maskf(pullChartFailedError, fmt.Sprintf("got StatusCode %d for url %#q", resp.StatusCode, req.URL.String())))
+				return backoff.Permanent(microerror.Maskf(pullChartFailedError, fmt.Sprintf("got StatusCode %d for %s %#q %s\nHeaders: %v", resp.StatusCode, req.Method, req.URL.String(), req.Proto, req.Header)))
 			}
 			return microerror.Maskf(executionFailedError, fmt.Sprintf("got StatusCode %d for url %#q with body %s", resp.StatusCode, req.URL.String(), buf.String()))
 		}
