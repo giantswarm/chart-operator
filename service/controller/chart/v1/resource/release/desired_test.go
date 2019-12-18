@@ -16,6 +16,8 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	k8sfake "k8s.io/client-go/kubernetes/fake"
+
+	"github.com/giantswarm/chart-operator/service/controller/chart/v1/controllercontext"
 )
 
 func Test_DesiredState(t *testing.T) {
@@ -318,6 +320,12 @@ func Test_DesiredState(t *testing.T) {
 				objs = append(objs, tc.secret)
 			}
 
+			var ctx context.Context
+			{
+				c := controllercontext.Context{}
+				ctx = controllercontext.NewContext(context.Background(), c)
+			}
+
 			var helmClient helmclient.Interface
 			{
 				c := helmclienttest.Config{
@@ -338,7 +346,7 @@ func Test_DesiredState(t *testing.T) {
 				t.Fatalf("error == %#v, want nil", err)
 			}
 
-			result, err := r.GetDesiredState(context.TODO(), tc.obj)
+			result, err := r.GetDesiredState(ctx, tc.obj)
 			switch {
 			case err != nil && tc.errorMatcher == nil:
 				t.Fatalf("error == %#v, want nil", err)
