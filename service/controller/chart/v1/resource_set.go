@@ -15,6 +15,7 @@ import (
 	"github.com/spf13/afero"
 	"k8s.io/client-go/kubernetes"
 
+	"github.com/giantswarm/chart-operator/service/controller/chart/v1/controllercontext"
 	"github.com/giantswarm/chart-operator/service/controller/chart/v1/key"
 	"github.com/giantswarm/chart-operator/service/controller/chart/v1/resource/release"
 	"github.com/giantswarm/chart-operator/service/controller/chart/v1/resource/status"
@@ -131,6 +132,9 @@ func NewResourceSet(config ResourceSetConfig) (*controller.ResourceSet, error) {
 	}
 
 	initCtxFunc := func(ctx context.Context, obj interface{}) (context.Context, error) {
+		cc := controllercontext.Context{}
+		ctx = controllercontext.NewContext(ctx, cc)
+
 		return ctx, nil
 	}
 
