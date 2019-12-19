@@ -119,6 +119,13 @@ rules:
   - "create"
   - "get"
   - "update"
+- apiGroups:
+  - policy
+  resources:
+  - podsecuritypolicies
+  verbs:
+  - "create"
+  - "use"
 - nonResourceURLs:
   - "/"
   - "/healthz"
