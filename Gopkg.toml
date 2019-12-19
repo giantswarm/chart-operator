@@ -53,7 +53,7 @@ required = [
   name = "github.com/giantswarm/apprclient"
 
 [[constraint]]
-  branch = "master"
+  branch = "set-host-header"
   name = "github.com/giantswarm/e2e-harness"
 
 [[constraint]]
@@ -65,7 +65,7 @@ required = [
   name = "github.com/giantswarm/e2etemplates"
 
 [[constraint]]
-  branch = "master"
+  branch = "set-host-header"
   name = "github.com/giantswarm/helmclient"
 
 [[constraint]]
@@ -118,10 +118,6 @@ required = [
 
 [[constraint]]
   name = "k8s.io/api"
-  version = "kubernetes-1.16.3"
-
-[[constraint]]
-  name = "k8s.io/apiextensions-apiserver"
   version = "kubernetes-1.16.3"
 
 [[constraint]]

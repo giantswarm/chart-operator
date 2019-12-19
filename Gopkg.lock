@@ -272,7 +272,7 @@
   revision = "4dd4911251929a0ac4c4f3d8c4bda482a9e09f30"
 
 [[projects]]
-  branch = "master"
+  branch = "set-host-header"
   digest = "1:e83800c0f3c424b5232ff2900d93d8ef0ce47615f780c19561f8aef4273cbad5"
   name = "github.com/giantswarm/e2e-harness"
   packages = [
@@ -280,7 +280,7 @@
     "pkg/release",
   ]
   pruneopts = "UT"
-  revision = "b2048d8645c15ac583a270c57b95855426e48958"
+  revision = "67f4a96390ab706cba134969a7abef22f3be5019"
 
 [[projects]]
   branch = "master"
@@ -319,15 +319,15 @@
   revision = "9749deade60f7624620aa7158a4f38c87ea23795"
 
 [[projects]]
-  branch = "master"
-  digest = "1:04800286af6404ba25666bc07576c0b95b95cf8853a0985eaca0fae4f61076d2"
+  branch = "set-host-header"
+  digest = "1:f9b40290aae5c4eb042de522eacc2d2517ce80ef2537a455e69ecfe057f2e896"
   name = "github.com/giantswarm/helmclient"
   packages = [
     ".",
     "helmclienttest",
   ]
   pruneopts = "UT"
-  revision = "d1325340c4534d015b8e5abdae581883b030ec41"
+  revision = "064e98a050d860a5598591414ca59c54639ed580"
 
 [[projects]]
   branch = "master"
