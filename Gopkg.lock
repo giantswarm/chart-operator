@@ -327,7 +327,7 @@
     "helmclienttest",
   ]
   pruneopts = "UT"
-  revision = "474c46cff71f66ea0c293f19d22a1b38e7dcd74c"
+  revision = "a4199ffd94b4499937d03de16d592d2503e65f0c"
 
 [[projects]]
   branch = "master"
