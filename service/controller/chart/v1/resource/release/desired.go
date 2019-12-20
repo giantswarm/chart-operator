@@ -37,7 +37,7 @@ func (r *Resource) GetDesiredState(ctx context.Context, obj interface{}) (interf
 		cc.Status = controllercontext.Status{
 			Reason: fmt.Sprintf("Pulling chart %#q failed", tarballURL),
 			Release: controllercontext.Release{
-				Status: "Not installed",
+				Status: releaseNotInstalledStatus,
 			},
 		}
 
@@ -52,7 +52,7 @@ func (r *Resource) GetDesiredState(ctx context.Context, obj interface{}) (interf
 		cc.Status = controllercontext.Status{
 			Reason: fmt.Sprintf("Chart %#q not found", tarballURL),
 			Release: controllercontext.Release{
-				Status: "Not installed",
+				Status: releaseNotInstalledStatus,
 			},
 		}
 

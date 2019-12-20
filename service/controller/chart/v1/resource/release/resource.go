@@ -27,6 +27,9 @@ const (
 	helmDeployedStatus = "DEPLOYED"
 	// helmFailedStatus is the failed status for Helm Releases.
 	helmFailedStatus = "FAILED"
+	// releaseNotInstalledStatus is set in the CR status when there is no Helm
+	// Release to check.
+	releaseNotInstalledStatus = "Not installed"
 )
 
 var (
