@@ -104,6 +104,12 @@ rules:
   verbs:
   - create
 - apiGroups:
+  - networking.k8s.io
+  resources:
+  - networkpolicies
+  verbs:
+  - create
+- apiGroups:
   - apps
   resources:
   - deployments
