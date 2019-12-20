@@ -104,6 +104,12 @@ rules:
   verbs:
   - create
 - apiGroups:
+  - scheduling.k8s.io
+  resources:
+  - priorityclass
+  verbs:
+  - create
+- apiGroups:
   - apps
   resources:
   - deployments
