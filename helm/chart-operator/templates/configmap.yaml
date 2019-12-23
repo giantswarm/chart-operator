@@ -15,13 +15,9 @@ data:
       listen:
         address: 'http://0.0.0.0:{{ .Values.pod.port }}'
     service:
-      cnr:
-        address: '{{ .Values.cnr.address }}'
       helm:
         tillerNamespace:  '{{ .Values.tiller.namespace }}'
       image:
         registry: '{{ .Values.image.registry }}'
       kubernetes:
         incluster: true
-        watch:
-          namespace: '{{ tpl .Values.resource.default.namespace . }}'

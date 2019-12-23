@@ -106,8 +106,6 @@ func mainWithError() error {
 
 	daemonCommand := newCommand.DaemonCommand().CobraCommand()
 
-	daemonCommand.PersistentFlags().String(f.Service.CNR.Address, "https://quay.io", "Address used to connect to CNR, defaults to quay's managed offering.")
-	daemonCommand.PersistentFlags().String(f.Service.CNR.Organization, "giantswarm", "CNR organization.")
 	daemonCommand.PersistentFlags().String(f.Service.Helm.TillerNamespace, "giantswarm", "Namespace for the Tiller pod.")
 	daemonCommand.PersistentFlags().String(f.Service.Image.Registry, "quay.io", "Container image registry.")
 	daemonCommand.PersistentFlags().String(f.Service.Kubernetes.Address, "", "Address used to connect to Kubernetes. When empty in-cluster config is created.")
@@ -116,7 +114,6 @@ func mainWithError() error {
 	daemonCommand.PersistentFlags().String(f.Service.Kubernetes.TLS.CAFile, "", "Certificate authority file path to use to authenticate with Kubernetes.")
 	daemonCommand.PersistentFlags().String(f.Service.Kubernetes.TLS.CrtFile, "", "Certificate file path to use to authenticate with Kubernetes.")
 	daemonCommand.PersistentFlags().String(f.Service.Kubernetes.TLS.KeyFile, "", "Key file path to use to authenticate with Kubernetes.")
-	daemonCommand.PersistentFlags().String(f.Service.Kubernetes.Watch.Namespace, "", "Namespace for watching for Kubernetes resources.")
 
 	newCommand.CobraCommand().Execute()
 

@@ -15,11 +15,7 @@ data:
       listen:
         address: 'http://0.0.0.0:{{ .Values.port }}'
     service:
-      cnr:
-        address: '{{ .Values.cnr.address }}'
       helm:
         tillerNamespace:  '{{ .Values.tiller.namespace }}'
       kubernetes:
         incluster: true
-        watch:
-          namespace: '{{ .Values.namespace }}'
