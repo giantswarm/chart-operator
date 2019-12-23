@@ -11,7 +11,7 @@ import (
 	"github.com/prometheus/client_golang/prometheus"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
-	"github.com/giantswarm/chart-operator/service/controller/chartconfig/v7/key"
+	"github.com/giantswarm/chart-operator/service/collector/key"
 )
 
 var (
