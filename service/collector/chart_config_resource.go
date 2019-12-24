@@ -71,7 +71,10 @@ func (c *ChartConfigResource) Collect(ch chan<- prometheus.Metric) error {
 	c.logger.Log("level", "debug", "message", "collecting metrics for ChartConfigs")
 
 	chartConfigs, err := c.g8sClient.CoreV1alpha1().ChartConfigs("").List(metav1.ListOptions{})
-	if err != nil {
+	if IsChartConfigNotInstalled(err) {
+		c.logger.Log("level", "debug", "message", "ChartConfig CRD not installed")
+		return nil
+	} else if err != nil {
 		return microerror.Mask(err)
 	}
 
@@ -122,12 +125,12 @@ func convertToTime(datetime string) (time.Time, error) {
 
 	split := strings.Split(datetime, ".")
 	if len(split) == 0 {
-		return time.Time{}, microerror.Maskf(invalidExecutionError, "%#q must have at least one item in order to collect metrics for the cordon expiration", datetime)
+		return time.Time{}, microerror.Maskf(executionFailedError, "%#q must have at least one item in order to collect metrics for the cordon expiration", datetime)
 	}
 
 	t, err := time.Parse(layout, split[0])
 	if err != nil {
-		return time.Time{}, microerror.Maskf(invalidExecutionError, "unavailable to %#q parsing: %#v", split[0], err.Error())
+		return time.Time{}, microerror.Maskf(executionFailedError, "unavailable to %#q parsing: %#v", split[0], err.Error())
 	}
 
 	return t, nil

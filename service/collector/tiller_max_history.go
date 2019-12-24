@@ -128,7 +128,7 @@ func (t *TillerMaxHistory) getTillerMaxHistory() (float64, error) {
 
 	containers := deploy.Spec.Template.Spec.Containers
 	if len(containers) != 1 {
-		return 0, microerror.Maskf(invalidExecutionError, "tiller container not found expected 1 got %d", len(containers))
+		return 0, microerror.Maskf(executionFailedError, "tiller container not found expected 1 got %d", len(containers))
 	}
 
 	for _, envVar := range containers[0].Env {
@@ -142,5 +142,5 @@ func (t *TillerMaxHistory) getTillerMaxHistory() (float64, error) {
 		}
 	}
 
-	return 0, microerror.Maskf(invalidExecutionError, "tiller env var %#q not found", key.TillerMaxHistoryEnvVarName())
+	return 0, microerror.Maskf(executionFailedError, "tiller env var %#q not found", key.TillerMaxHistoryEnvVarName())
 }
