@@ -254,12 +254,9 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:fe3ba448f9659ab2715dd027bf576213a8ff1e8b67fb44b81ad66f34c73fecae"
+  digest = "1:4785ddc3959327f4136359a2fb03e893c725c575cd6abc0a9b7f54f69b5951e6"
   name = "github.com/giantswarm/apprclient"
-  packages = [
-    ".",
-    "apprclienttest",
-  ]
+  packages = ["."]
   pruneopts = "UT"
   revision = "36fe75c19a1b1a37d15a3e48af66385b321811a5"
 
@@ -292,12 +289,11 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:c2991f6c5deabfa17b3e0f1ebd4dcda47515219ab313a089d73de9a7702f7007"
+  digest = "1:b021b7b052d0cf2f6b5551ead37907db1d67400c4c7797c588569660ccca2e90"
   name = "github.com/giantswarm/e2etemplates"
   packages = [
     "internal/render",
     "pkg/chartvalues",
-    "pkg/e2etemplates",
   ]
   pruneopts = "UT"
   revision = "115e721c4fee6a177f6cc0df12b6a3c2649585fd"
@@ -1866,24 +1862,19 @@
   analyzer-version = 1
   input-imports = [
     "github.com/Azure/go-autorest/autorest",
-    "github.com/cenkalti/backoff",
     "github.com/docker/distribution/reference",
     "github.com/giantswarm/apiextensions/pkg/apis/application/v1alpha1",
     "github.com/giantswarm/apiextensions/pkg/apis/core/v1alpha1",
     "github.com/giantswarm/apiextensions/pkg/clientset/versioned",
     "github.com/giantswarm/apiextensions/pkg/clientset/versioned/fake",
-    "github.com/giantswarm/apprclient",
-    "github.com/giantswarm/apprclient/apprclienttest",
     "github.com/giantswarm/e2e-harness/pkg/release",
     "github.com/giantswarm/e2esetup/chart/env",
     "github.com/giantswarm/e2etemplates/pkg/chartvalues",
-    "github.com/giantswarm/e2etemplates/pkg/e2etemplates",
     "github.com/giantswarm/exporterkit/collector",
     "github.com/giantswarm/helmclient",
     "github.com/giantswarm/helmclient/helmclienttest",
     "github.com/giantswarm/k8sclient",
     "github.com/giantswarm/k8sclient/k8srestconfig",
-    "github.com/giantswarm/k8sportforward",
     "github.com/giantswarm/microendpoint/endpoint/healthz",
     "github.com/giantswarm/microendpoint/endpoint/version",
     "github.com/giantswarm/microendpoint/service/version",

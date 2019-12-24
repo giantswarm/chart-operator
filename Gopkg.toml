@@ -50,10 +50,6 @@ required = [
 
 [[constraint]]
   branch = "master"
-  name = "github.com/giantswarm/apprclient"
-
-[[constraint]]
-  branch = "master"
   name = "github.com/giantswarm/e2e-harness"
 
 [[constraint]]
@@ -71,10 +67,6 @@ required = [
 [[constraint]]
   branch = "master"
   name = "github.com/giantswarm/k8sclient"
-
-[[constraint]]
-  branch = "master"
-  name = "github.com/giantswarm/k8sportforward"
 
 [[constraint]]
   branch = "master"
