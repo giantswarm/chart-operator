@@ -7,6 +7,7 @@ const (
 
 const (
 	labelChart         = "chart_name"
+	labelConfigMap     = "configmap_name"
 	labelChannel       = "channel_name"
 	labelRelease       = "release_name"
 	labelReleaseStatus = "release_status"
