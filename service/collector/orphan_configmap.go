@@ -49,6 +49,7 @@ func NewOrphanConfigMap(config OrphanConfigMapConfig) (*OrphanConfigMap, error) 
 
 	oc := &OrphanConfigMap{
 		g8sClient: config.G8sClient,
+		k8sClient: config.K8sClient,
 		logger:    config.Logger,
 	}
 
