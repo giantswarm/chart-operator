@@ -58,6 +58,8 @@ func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange inte
 			helm.UpdateValueOverrides(releaseState.ValuesYAML),
 			helm.UpgradeForce(upgradeForce))
 		if err != nil {
+			r.logger.LogCtx(ctx, "level", "debug", "message", "helm release %#q failed", "stack", microerror.Stack(err))
+
 			releaseContent, err := r.helmClient.GetReleaseContent(ctx, releaseState.Name)
 			if helmclient.IsReleaseNotFound(err) {
 				// Add the status to the controller context. It will be used to set the
