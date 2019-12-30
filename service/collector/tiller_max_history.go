@@ -107,7 +107,7 @@ func (t *TillerMaxHistory) Collect(ch chan<- prometheus.Metric) error {
 		t.tillerNamespace,
 	)
 
-	t.logger.Log("level", "debug", "message", "finished collecting Tiller max history")
+	t.logger.Log("level", "debug", "message", "collected Tiller max history")
 
 	return nil
 }

@@ -100,7 +100,7 @@ func (oc *OrphanConfigMap) Collect(ch chan<- prometheus.Metric) error {
 		oc.logger.Log("level", "debug", "message", fmt.Sprintf("found %d orphan configmaps %s", len(orphanConfigMaps), strings.Join(orphanConfigMaps, " ")))
 	}
 
-	oc.logger.Log("level", "debug", "message", "finished collecting metrics for orphan configmaps")
+	oc.logger.Log("level", "debug", "message", "collected metrics for orphan configmaps")
 
 	return nil
 }
