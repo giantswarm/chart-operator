@@ -21,8 +21,6 @@ type Config struct {
 	HelmClient helmclient.Interface
 	K8sClient  k8sclient.Interface
 	Logger     micrologger.Logger
-
-	WatchNamespace string
 }
 
 type Chart struct {

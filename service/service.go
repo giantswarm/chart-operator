@@ -143,8 +143,6 @@ func New(config Config) (*Service, error) {
 			HelmClient: helmClient,
 			Logger:     config.Logger,
 			K8sClient:  k8sClient,
-
-			WatchNamespace: config.Viper.GetString(config.Flag.Service.Kubernetes.Watch.Namespace),
 		}
 
 		chartController, err = chart.NewChart(c)
@@ -161,8 +159,6 @@ func New(config Config) (*Service, error) {
 			HelmClient: helmClient,
 			Logger:     config.Logger,
 			K8sClient:  k8sClient,
-
-			WatchNamespace: config.Viper.GetString(config.Flag.Service.Kubernetes.Watch.Namespace),
 		}
 
 		chartConfigController, err = chartconfig.NewChartConfig(c)
