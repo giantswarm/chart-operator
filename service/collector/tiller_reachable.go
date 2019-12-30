@@ -110,7 +110,7 @@ func (t *TillerReachable) Collect(ch chan<- prometheus.Metric) error {
 		t.tillerNamespace,
 	)
 
-	t.logger.Log("level", "debug", "message", "finished collecting Tiller reachability")
+	t.logger.Log("level", "debug", "message", "collected Tiller reachability")
 
 	return nil
 }
