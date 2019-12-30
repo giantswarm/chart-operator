@@ -64,11 +64,10 @@ func (oc *OrphanConfigMap) Collect(ch chan<- prometheus.Metric) error {
 		return microerror.Mask(err)
 	}
 
-	desiredConfigMaps := make(map[string]bool)
+	desiredConfigMaps := make(map[[2]string]bool)
 
-	for _, cr := range charts.Items {
-		key := fmt.Sprintf("%s.%s", key.ConfigMapNamespace(cr), key.ConfigMapName(cr))
-		desiredConfigMaps[key] = true
+	for _, chart := range charts.Items {
+		desiredConfigMaps[[2]string{key.ConfigMapNamespace(chart), key.ConfigMapName(chart)}] = true
 	}
 
 	lo := metav1.ListOptions{
@@ -82,11 +81,8 @@ func (oc *OrphanConfigMap) Collect(ch chan<- prometheus.Metric) error {
 	var orphanConfigMaps []string
 
 	for _, cm := range configMaps.Items {
-		key := fmt.Sprintf("%s.%s", cm.Namespace, cm.Name)
-
-		exists, _ := desiredConfigMaps[key]
-		if !exists {
-			orphanConfigMaps = append(orphanConfigMaps, key)
+		if !desiredConfigMaps[[2]string{cm.Namespace, cm.Name}] {
+			orphanConfigMaps = append(orphanConfigMaps, fmt.Sprintf("%s.%s", cm.Namespace, cm.Name))
 		}
 	}
 
