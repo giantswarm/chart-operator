@@ -116,7 +116,6 @@ func mainWithError() error {
 	daemonCommand.PersistentFlags().String(f.Service.Kubernetes.TLS.CAFile, "", "Certificate authority file path to use to authenticate with Kubernetes.")
 	daemonCommand.PersistentFlags().String(f.Service.Kubernetes.TLS.CrtFile, "", "Certificate file path to use to authenticate with Kubernetes.")
 	daemonCommand.PersistentFlags().String(f.Service.Kubernetes.TLS.KeyFile, "", "Key file path to use to authenticate with Kubernetes.")
-	daemonCommand.PersistentFlags().String(f.Service.Kubernetes.Watch.Namespace, "", "Namespace for watching for Kubernetes resources.")
 
 	newCommand.CobraCommand().Execute()
 
