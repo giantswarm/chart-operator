@@ -55,7 +55,8 @@ func (r *Resource) ApplyCreateChange(ctx context.Context, obj, createChange inte
 		// use the default values and prevent errors on nested values.
 		err = r.helmClient.InstallReleaseFromTarball(ctx, tarballPath, ns, helm.ReleaseName(releaseState.Name), helm.ValueOverrides(releaseState.ValuesYAML))
 		if err != nil {
-			r.logger.LogCtx(ctx, "level", "debug", "message", "r.helmClient.InstallReleaseFromTarball failed", "stack", microerror.Stack(err))
+			r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("helm release %#q failed", releaseState.Name), "stack", microerror.Stack(err))
+
 			releaseContent, err := r.helmClient.GetReleaseContent(ctx, releaseState.Name)
 			if helmclient.IsReleaseNotFound(err) {
 				// Add the status to the controller context. It will be used to set the
