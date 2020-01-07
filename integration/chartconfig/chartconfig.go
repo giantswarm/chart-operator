@@ -100,7 +100,7 @@ func installCNR(ctx context.Context, config setup.Config) error {
 			},
 		}
 
-		_, err = config.K8sClients.K8sClient().AppsV1().Deployments(metav1.NamespaceDefault).Create(deployment)
+		_, err = config.K8sClients.K8sClient().AppsV1().Deployments("giantswarm").Create(deployment)
 		if apierrors.IsAlreadyExists(err) {
 			// fall through
 		} else if err != nil {
@@ -136,7 +136,7 @@ func installCNR(ctx context.Context, config setup.Config) error {
 			},
 		}
 
-		_, err = config.K8sClients.K8sClient().CoreV1().Services(metav1.NamespaceDefault).Create(service)
+		_, err = config.K8sClients.K8sClient().CoreV1().Services("giantswarm").Create(service)
 		if apierrors.IsAlreadyExists(err) {
 			// fall through
 		} else if err != nil {
