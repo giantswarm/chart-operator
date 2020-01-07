@@ -193,7 +193,7 @@ workflows:
             tags:
               only: /^v.*/
       - architect/push-to-docker-legacy:
-          name: push-chart-operator-legacy
+          name: push-chart-operator-to-aliyun-legacy
           image: "registry-intl.cn-shanghai.aliyuncs.com/giantswarm/cert-exporter"
           username_envar: "ALIYUN_USERNAME"
           password_envar: "ALIYUN_PASSWORD"
@@ -276,7 +276,7 @@ workflows:
           - e2eTestChartConfigWIPBasicMaster
           - e2eTestChartConfigCurChartValuesMaster
           - e2eTestChartConfigWIPChartValuesMaster
-          - push-chart-operator-legacy
+          - push-chart-operator-to-aliyun-legacy
 
       - publish_to_stable:
           filters:
