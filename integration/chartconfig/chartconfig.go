@@ -7,10 +7,12 @@ import (
 	"context"
 	"html/template"
 
-	"github.com/giantswarm/apprclient"
 	"github.com/giantswarm/e2etemplates/pkg/e2etemplates"
 	"github.com/giantswarm/microerror"
-	"github.com/spf13/afero"
+	appsv1 "k8s.io/api/apps/v1"
+	corev1 "k8s.io/api/core/v1"
+	apierrors "k8s.io/apimachinery/pkg/api/errors"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/helm/pkg/helm"
 
 	"github.com/giantswarm/chart-operator/integration/setup"
@@ -59,27 +61,87 @@ func initializeCNR(ctx context.Context, config setup.Config) error {
 }
 
 func installCNR(ctx context.Context, config setup.Config) error {
-	c := apprclient.Config{
-		Fs:     afero.NewOsFs(),
-		Logger: config.Logger,
+	var err error
 
-		Address:      "https://quay.io",
-		Organization: "giantswarm",
+	{
+		replicas := int32(1)
+		deployment := &appsv1.Deployment{
+			ObjectMeta: metav1.ObjectMeta{
+				Name:      "cnr-server",
+				Namespace: metav1.NamespaceDefault,
+				Labels: map[string]string{
+					"app": "cnr-server",
+				},
+			},
+			Spec: appsv1.DeploymentSpec{
+				Selector: &metav1.LabelSelector{
+					MatchLabels: map[string]string{
+						"app": "cnr-server",
+					},
+				},
+				Replicas: &replicas,
+				Template: corev1.PodTemplateSpec{
+					ObjectMeta: metav1.ObjectMeta{
+						Name: "cnr-server",
+						Labels: map[string]string{
+							"app": "cnr-server",
+						},
+					},
+					Spec: corev1.PodSpec{
+						Containers: []corev1.Container{
+							{
+								Name:            "cnr-server",
+								Image:           "quay.io/giantswarm/cnr-server:latest",
+								ImagePullPolicy: corev1.PullIfNotPresent,
+							},
+						},
+					},
+				},
+			},
+		}
+
+		_, err := config.K8sClients.K8sClient().AppsV1().Deployments(metav1.NamespaceDefault).Create(deployment)
+		if apierrors.IsAlreadyExists(err) {
+			// fall through
+		} else if err != nil {
+			return microerror.Mask(err)
+		}
 	}
 
-	a, err := apprclient.New(c)
-	if err != nil {
-		return microerror.Mask(err)
-	}
+	{
+		service := &corev1.Service{
+			TypeMeta: metav1.TypeMeta{
+				Kind:       "service",
+				APIVersion: "v1",
+			},
+			ObjectMeta: metav1.ObjectMeta{
+				Name:      "cnr-server",
+				Namespace: metav1.NamespaceDefault,
+				Labels: map[string]string{
+					"app": "cnr-server",
+				},
+			},
+			Spec: corev1.ServiceSpec{
+				Type: corev1.ServiceTypeClusterIP,
+				Ports: []corev1.ServicePort{
+					{
+						Name:     "cnr-server",
+						Port:     int32(5000),
+						Protocol: "TCP",
+					},
+				},
+				Selector: map[string]string{
+					"app": "cnr-server",
+				},
+			},
+		}
 
-	tarball, err := a.PullChartTarball(ctx, "cnr-server-chart", "stable")
-	if err != nil {
-		return microerror.Mask(err)
-	}
-
-	err = config.HelmClient.InstallReleaseFromTarball(ctx, tarball, "giantswarm", helm.ReleaseName("cnr-server"), helm.ValueOverrides([]byte("{}")), helm.InstallWait(true))
-	if err != nil {
-		return microerror.Mask(err)
+		_, err := config.K8sClients.K8sClient().CoreV1().Services(metav1.NamespaceDefault).Create(service)
+		if apierrors.IsAlreadyExists(err) {
+			// fall through
+		} else if err != nil {
+			return microerror.Mask(err)
+		}
 	}
 
 	return nil
