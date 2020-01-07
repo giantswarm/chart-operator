@@ -105,7 +105,7 @@ func (c *ChartConfigResource) Collect(ch chan<- prometheus.Metric) error {
 		)
 	}
 
-	c.logger.Log("level", "debug", "message", "finished collecting metrics for ChartConfigs")
+	c.logger.Log("level", "debug", "message", "collected metrics for ChartConfigs")
 
 	return nil
 }

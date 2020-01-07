@@ -67,7 +67,6 @@ func Test_Service_New(t *testing.T) {
 				c.Viper.Set(c.Flag.Service.Helm.TillerNamespace, "giantswarm")
 				c.Viper.Set(c.Flag.Service.Kubernetes.Address, ts.URL)
 				c.Viper.Set(c.Flag.Service.Kubernetes.InCluster, false)
-				c.Viper.Set(c.Flag.Service.Kubernetes.Watch.Namespace, "giantswarm")
 
 				return c
 			},

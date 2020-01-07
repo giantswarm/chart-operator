@@ -10,6 +10,7 @@ import (
 	"github.com/giantswarm/operatorkit/resource/crud"
 	"k8s.io/helm/pkg/helm"
 
+	"github.com/giantswarm/chart-operator/service/controller/chart/v1/controllercontext"
 	"github.com/giantswarm/chart-operator/service/controller/chart/v1/key"
 )
 
@@ -18,6 +19,11 @@ func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange inte
 	if err != nil {
 		return microerror.Mask(err)
 	}
+	cc, err := controllercontext.FromContext(ctx)
+	if err != nil {
+		return microerror.Mask(err)
+	}
+
 	releaseState, err := toReleaseState(updateChange)
 	if err != nil {
 		return microerror.Mask(err)
@@ -52,15 +58,28 @@ func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange inte
 			helm.UpdateValueOverrides(releaseState.ValuesYAML),
 			helm.UpgradeForce(upgradeForce))
 		if err != nil {
+			r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("helm release %#q failed", releaseState.Name), "stack", microerror.Stack(err))
+
 			releaseContent, err := r.helmClient.GetReleaseContent(ctx, releaseState.Name)
 			if helmclient.IsReleaseNotFound(err) {
-				r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("helm release %#q not found", releaseContent.Name))
+				// Add the status to the controller context. It will be used to set the
+				// CR status in the status resource.
+				cc.Status = controllercontext.Status{
+					Reason: fmt.Sprintf("Release %#q not found", releaseState.Name),
+					Release: controllercontext.Release{
+						Status: releaseNotInstalledStatus,
+					},
+				}
+
+				r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("helm release %#q not found", releaseState.Name))
 				r.logger.LogCtx(ctx, "level", "debug", "message", "canceling resource")
 				resourcecanceledcontext.SetCanceled(ctx)
 				return nil
+
 			} else if err != nil {
 				return microerror.Mask(err)
 			}
+			// Release is failed so the status resource will check the Helm release.
 			if releaseContent.Status == helmFailedStatus {
 				r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("failed to update release %#q", releaseContent.Name))
 				r.logger.LogCtx(ctx, "level", "debug", "message", "canceling resource")

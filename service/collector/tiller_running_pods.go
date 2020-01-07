@@ -110,7 +110,7 @@ func (t *TillerRunningPods) Collect(ch chan<- prometheus.Metric) error {
 		t.tillerNamespace,
 	)
 
-	t.logger.Log("level", "debug", "message", "finished collecting Tiller running pods")
+	t.logger.Log("level", "debug", "message", "collected Tiller running pods")
 
 	return nil
 }

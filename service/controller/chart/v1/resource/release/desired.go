@@ -13,6 +13,7 @@ import (
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
+	"github.com/giantswarm/chart-operator/service/controller/chart/v1/controllercontext"
 	"github.com/giantswarm/chart-operator/service/controller/chart/v1/key"
 )
 
@@ -21,17 +22,45 @@ func (r *Resource) GetDesiredState(ctx context.Context, obj interface{}) (interf
 	if err != nil {
 		return nil, microerror.Mask(err)
 	}
+	cc, err := controllercontext.FromContext(ctx)
+	if err != nil {
+		return nil, microerror.Mask(err)
+	}
 
 	releaseName := key.ReleaseName(cr)
-
 	tarballURL := key.TarballURL(cr)
 
 	tarballPath, err := r.helmClient.PullChartTarball(ctx, tarballURL)
 	if helmclient.IsPullChartFailedError(err) {
-		r.logger.LogCtx(ctx, "level", "warning", "message", "pulling chart failed", "stack", microerror.Stack(err))
+		// Add the status to the controller context. It will be used to set the
+		// CR status in the status resource.
+		cc.Status = controllercontext.Status{
+			Reason: fmt.Sprintf("Pulling chart %#q failed", tarballURL),
+			Release: controllercontext.Release{
+				Status: releaseNotInstalledStatus,
+			},
+		}
+
+		r.logger.LogCtx(ctx, "level", "warning", "message", fmt.Sprintf("pulling chart %#q failed", tarballURL), "stack", microerror.Stack(err))
 		r.logger.LogCtx(ctx, "level", "debug", "message", "canceling resource")
 		resourcecanceledcontext.SetCanceled(ctx)
 		return nil, nil
+
+	} else if helmclient.IsPullChartNotFound(err) {
+		// Add the status to the controller context. It will be used to set the
+		// CR status in the status resource.
+		cc.Status = controllercontext.Status{
+			Reason: fmt.Sprintf("Chart %#q not found", tarballURL),
+			Release: controllercontext.Release{
+				Status: releaseNotInstalledStatus,
+			},
+		}
+
+		r.logger.LogCtx(ctx, "level", "warning", "message", fmt.Sprintf("chart %#q not found", tarballURL), "stack", microerror.Stack(err))
+		r.logger.LogCtx(ctx, "level", "debug", "message", "canceling resource")
+		resourcecanceledcontext.SetCanceled(ctx)
+		return nil, nil
+
 	} else if err != nil {
 		return nil, microerror.Mask(err)
 	}

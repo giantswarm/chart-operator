@@ -70,6 +70,7 @@ rules:
   - secrets
   verbs:
   - "get"
+  - "list"
 - apiGroups:
   - ""
   resources:
@@ -101,6 +102,12 @@ rules:
   - networking.k8s.io
   resources:
   - networkpolicies
+  verbs:
+  - create
+- apiGroups:
+  - scheduling.k8s.io
+  resources:
+  - priorityclass
   verbs:
   - create
 - apiGroups:

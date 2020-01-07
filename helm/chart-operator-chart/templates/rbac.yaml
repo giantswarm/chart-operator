@@ -70,6 +70,7 @@ rules:
   - secrets
   verbs:
   - "get"
+  - "list"
 - apiGroups:
   - ""
   resources:
@@ -88,6 +89,7 @@ rules:
   - clusterroles
   verbs:
   - "bind"
+  - "create"
 - apiGroups:
   - ""
   resources:
@@ -96,6 +98,12 @@ rules:
   verbs:
   - "create"
   - "get"
+- apiGroups:
+  - networking.k8s.io
+  resources:
+  - networkpolicies
+  verbs:
+  - create
 - apiGroups:
   - networking.k8s.io
   resources:
@@ -118,6 +126,13 @@ rules:
   - "create"
   - "get"
   - "update"
+- apiGroups:
+  - policy
+  resources:
+  - podsecuritypolicies
+  verbs:
+  - "create"
+  - "use"
 - nonResourceURLs:
   - "/"
   - "/healthz"
