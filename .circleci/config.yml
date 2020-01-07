@@ -49,7 +49,7 @@ e2eTest: &e2eTest
 
 version: 2.1
 orbs:
-  architect: giantswarm/architect@0.4.3
+  architect: giantswarm/architect@0.4.5
 
 jobs:
   build:
@@ -192,7 +192,13 @@ workflows:
               only: master
             tags:
               only: /^v.*/
-
+      - architect/push-to-docker-legacy:
+          name: push-chart-operator-legacy
+          image: "registry-intl.cn-shanghai.aliyuncs.com/giantswarm/cert-exporter"
+          username_envar: "ALIYUN_USERNAME"
+          password_envar: "ALIYUN_PASSWORD"
+          requires:
+            - build
       - architect/push-to-app-catalog:
           name: push-chart-operator-to-app-catalog
           app_catalog: "default-catalog"
@@ -270,6 +276,7 @@ workflows:
           - e2eTestChartConfigWIPBasicMaster
           - e2eTestChartConfigCurChartValuesMaster
           - e2eTestChartConfigWIPChartValuesMaster
+          - push-chart-operator-legacy
 
       - publish_to_stable:
           filters:
