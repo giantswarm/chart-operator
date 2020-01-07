@@ -60,7 +60,11 @@ spec:
           value: "5"
       initContainers:
       - name: wait-for-quay
+        {{ if (.Values.Installation) }}
+        image: "{{ .Values.Installation.V1.Registry.Domain }}/{{ .Values.image.name }}:{{ .Values.image.tag }}"
+        {{ else }}
         image: "{{ .Values.image.registry }}/{{ .Values.image.name }}:{{ .Values.image.tag }}"
+        {{ end }}
         command: 
         - sh
         - -c
@@ -70,7 +74,11 @@ spec:
           runAsGroup: {{ .Values.pod.group.id }}
       containers:
       - name: {{ .Values.project.name }}
+        {{ if (.Values.Installation) }}
+        image: "{{ .Values.Installation.V1.Registry.Domain }}/{{ .Values.image.name }}:{{ .Values.image.tag }}"
+        {{ else }}
         image: "{{ .Values.image.registry }}/{{ .Values.image.name }}:{{ .Values.image.tag }}"
+        {{ end }}
         volumeMounts:
         - name: {{  .Values.project.name }}
           mountPath: /var/run/{{ .Values.project.name }}/configmap/
