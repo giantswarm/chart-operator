@@ -68,7 +68,7 @@ func installCNR(ctx context.Context, config setup.Config) error {
 		deployment := &appsv1.Deployment{
 			ObjectMeta: metav1.ObjectMeta{
 				Name:      "cnr-server",
-				Namespace: metav1.NamespaceDefault,
+				Namespace: "giantswarm",
 				Labels: map[string]string{
 					"app": "cnr-server",
 				},
@@ -116,7 +116,7 @@ func installCNR(ctx context.Context, config setup.Config) error {
 			},
 			ObjectMeta: metav1.ObjectMeta{
 				Name:      "cnr-server",
-				Namespace: metav1.NamespaceDefault,
+				Namespace: "giantswarm",
 				Labels: map[string]string{
 					"app": "cnr-server",
 				},
