@@ -194,7 +194,7 @@ workflows:
               only: /^v.*/
       - architect/push-to-docker-legacy:
           name: push-chart-operator-to-aliyun-legacy
-          image: "registry-intl.cn-shanghai.aliyuncs.com/giantswarm/cert-exporter"
+          image: "registry-intl.cn-shanghai.aliyuncs.com/giantswarm/chart-operator"
           username_envar: "ALIYUN_USERNAME"
           password_envar: "ALIYUN_PASSWORD"
           requires:
