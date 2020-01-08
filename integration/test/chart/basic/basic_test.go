@@ -37,7 +37,7 @@ func TestChartLifecycle(t *testing.T) {
 			Chart: chartvalues.APIExtensionsChartE2EConfigChart{
 				Name:       key.TestAppReleaseName(),
 				Namespace:  "giantswarm",
-				TarballURL: "https://giantswarm.github.com/sample-catalog/kubernetes-test-app-chart-0.5.3.tgz",
+				TarballURL: "https://giantswarm.github.com/sample-catalog/kubernetes-test-app-chart-0.7.0.tgz",
 			},
 			ChartOperator: chartvalues.APIExtensionsChartE2EConfigChartOperator{
 				Version: "1.0.0",
@@ -97,7 +97,7 @@ func TestChartLifecycle(t *testing.T) {
 				Name:      key.TestAppReleaseName(),
 				Namespace: "giantswarm",
 				// Newer version of the tarball is deployed.
-				TarballURL: "https://giantswarm.github.com/sample-catalog/kubernetes-test-app-chart-0.6.8.tgz",
+				TarballURL: "https://giantswarm.github.com/sample-catalog/kubernetes-test-app-chart-0.7.1.tgz",
 			},
 			ChartOperator: chartvalues.APIExtensionsChartE2EConfigChartOperator{
 				Version: "1.0.0",
@@ -125,7 +125,7 @@ func TestChartLifecycle(t *testing.T) {
 
 		config.Logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("checking release %#q is updated", key.TestAppReleaseName()))
 
-		err = config.Release.WaitForChartInfo(ctx, key.TestAppReleaseName(), "0.6.8")
+		err = config.Release.WaitForChartInfo(ctx, key.TestAppReleaseName(), "0.7.1")
 		if err != nil {
 			t.Fatalf("expected %#v got %#v", nil, err)
 		}
