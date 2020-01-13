@@ -8,6 +8,7 @@ import (
 
 	"github.com/giantswarm/apiextensions/pkg/apis/application/v1alpha1"
 	"github.com/giantswarm/apiextensions/pkg/clientset/versioned/fake"
+	"github.com/giantswarm/chart-operator/service/controller/chart/v1/controllercontext"
 	"github.com/giantswarm/helmclient"
 	"github.com/giantswarm/helmclient/helmclienttest"
 	"github.com/giantswarm/micrologger/microloggertest"
@@ -131,6 +132,12 @@ func Test_CurrentState(t *testing.T) {
 
 	for i, tc := range testCases {
 		t.Run(strconv.Itoa(i), func(t *testing.T) {
+			var ctx context.Context
+			{
+				c := controllercontext.Context{}
+				ctx = controllercontext.NewContext(context.Background(), c)
+			}
+
 			var helmClient helmclient.Interface
 			{
 				c := helmclienttest.Config{
@@ -154,7 +161,7 @@ func Test_CurrentState(t *testing.T) {
 				t.Fatalf("error == %#v, want nil", err)
 			}
 
-			result, err := r.GetCurrentState(context.TODO(), tc.obj)
+			result, err := r.GetCurrentState(ctx, tc.obj)
 			switch {
 			case err != nil && !tc.expectedError:
 				t.Fatalf("error == %#v, want nil", err)
