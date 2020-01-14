@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"sync"
+	"time"
 
 	applicationv1alpha1 "github.com/giantswarm/apiextensions/pkg/apis/application/v1alpha1"
 	corev1alpha1 "github.com/giantswarm/apiextensions/pkg/apis/core/v1alpha1"
@@ -124,10 +125,11 @@ func New(config Config) (*Service, error) {
 			K8sClient: k8sClient.K8sClient(),
 			Logger:    config.Logger,
 
-			RestConfig:           restConfig,
-			TillerImageRegistry:  config.Viper.GetString(config.Flag.Service.Image.Registry),
-			TillerNamespace:      config.Viper.GetString(config.Flag.Service.Helm.TillerNamespace),
-			TillerUpgradeEnabled: true,
+			EnsureTillerInstalledMaxWait: 30 * time.Second,
+			RestConfig:                   restConfig,
+			TillerImageRegistry:          config.Viper.GetString(config.Flag.Service.Image.Registry),
+			TillerNamespace:              config.Viper.GetString(config.Flag.Service.Helm.TillerNamespace),
+			TillerUpgradeEnabled:         true,
 		}
 
 		helmClient, err = helmclient.New(c)

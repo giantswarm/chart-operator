@@ -76,9 +76,10 @@ func (r *Resource) ApplyCreateChange(ctx context.Context, obj, createChange inte
 			} else if err != nil {
 				return microerror.Mask(err)
 			}
+
 			// Release is failed so the status resource will check the Helm release.
 			if releaseContent.Status == helmFailedStatus {
-				r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("failed to update release %#q", releaseContent.Name))
+				r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("failed to create release %#q", releaseContent.Name))
 				r.logger.LogCtx(ctx, "level", "debug", "message", "canceling resource")
 				resourcecanceledcontext.SetCanceled(ctx)
 				return nil
