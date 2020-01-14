@@ -9,11 +9,16 @@ import (
 	"github.com/giantswarm/operatorkit/controller/context/resourcecanceledcontext"
 
 	"github.com/giantswarm/chart-operator/pkg/project"
+	"github.com/giantswarm/chart-operator/service/controller/chart/v1/controllercontext"
 	"github.com/giantswarm/chart-operator/service/controller/chart/v1/key"
 )
 
 func (r *Resource) GetCurrentState(ctx context.Context, obj interface{}) (interface{}, error) {
 	cr, err := key.ToCustomResource(obj)
+	if err != nil {
+		return nil, microerror.Mask(err)
+	}
+	cc, err := controllercontext.FromContext(ctx)
 	if err != nil {
 		return nil, microerror.Mask(err)
 	}
@@ -30,6 +35,21 @@ func (r *Resource) GetCurrentState(ctx context.Context, obj interface{}) (interf
 	if helmclient.IsReleaseNotFound(err) {
 		// Return early as release is not installed.
 		return nil, nil
+	} else if helmclient.IsReleaseNameInvalid(err) {
+		// Add the status to the controller context. It will be used to set the
+		// CR status in the status resource.
+		cc.Status = controllercontext.Status{
+			Reason: fmt.Sprintf("Release name %#q is invalid", releaseName),
+			Release: controllercontext.Release{
+				Status: releaseNotInstalledStatus,
+			},
+		}
+
+		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("release name %#q is invalid", releaseName))
+		r.logger.LogCtx(ctx, "level", "debug", "message", "canceling resource")
+		resourcecanceledcontext.SetCanceled(ctx)
+		return nil, nil
+
 	} else if err != nil {
 		return nil, microerror.Mask(err)
 	}

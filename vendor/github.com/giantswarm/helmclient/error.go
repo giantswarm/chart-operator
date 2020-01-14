@@ -33,6 +33,32 @@ func IsCannotReuseRelease(err error) bool {
 	return false
 }
 
+var (
+	emptyChartTemplatesRegexp = regexp.MustCompile(`release \S+ failed: no objects visited`)
+)
+
+var emptyChartTemplatesError = &microerror.Error{
+	Kind: "emptyChartTemplatesError",
+}
+
+// IsEmptyChartTemplates asserts emptyChartTemplatesError.
+func IsEmptyChartTemplates(err error) bool {
+	if err == nil {
+		return false
+	}
+
+	c := microerror.Cause(err)
+
+	if c == emptyChartTemplatesError {
+		return true
+	}
+	if emptyChartTemplatesRegexp.MatchString(c.Error()) {
+		return true
+	}
+
+	return false
+}
+
 var executionFailedError = &microerror.Error{
 	Kind: "executionFailedError",
 }
@@ -124,6 +150,62 @@ func IsReleaseAlreadyExists(err error) bool {
 		return true
 	}
 	if releaseAlreadyExistsRegexp.MatchString(c.Error()) {
+		return true
+	}
+
+	return false
+}
+
+const (
+	releaseNameInvalidErrorPrefix = "invalid release name"
+	releaseNameInvalidErrorSuffix = "and the length must not be longer than 53"
+)
+
+var releaseNameInvalidError = &microerror.Error{
+	Kind: "releaseNameInvalidError",
+}
+
+// IsReleaseNameInvalid asserts releaseNameInvalidError.
+func IsReleaseNameInvalid(err error) bool {
+	if err == nil {
+		return false
+	}
+
+	c := microerror.Cause(err)
+
+	if strings.HasPrefix(c.Error(), releaseNameInvalidErrorPrefix) {
+		return true
+	}
+	if strings.HasSuffix(c.Error(), releaseNameInvalidErrorSuffix) {
+		return true
+	}
+	if c == releaseNameInvalidError {
+		return true
+	}
+
+	return false
+}
+
+const (
+	releaseNotDeployedErrorSuffix = "has no deployed releases"
+)
+
+var releaseNotDeployedError = &microerror.Error{
+	Kind: "releaseNotDeployedError",
+}
+
+// IsReleaseNotDeployed asserts releaseNotDeployedError.
+func IsReleaseNotDeployed(err error) bool {
+	if err == nil {
+		return false
+	}
+
+	c := microerror.Cause(err)
+
+	if strings.HasSuffix(c.Error(), releaseNotDeployedErrorSuffix) {
+		return true
+	}
+	if c == releaseNotDeployedError {
 		return true
 	}
 
