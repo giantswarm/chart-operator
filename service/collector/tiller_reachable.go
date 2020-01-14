@@ -73,8 +73,6 @@ func (t *TillerReachable) Collect(ch chan<- prometheus.Metric) error {
 
 	ctx := context.Background()
 
-	t.logger.Log("level", "debug", "message", "collecting Tiller reachability")
-
 	charts, err := t.g8sClient.ApplicationV1alpha1().Charts("").List(metav1.ListOptions{})
 	if err != nil {
 		return microerror.Mask(err)
@@ -109,8 +107,6 @@ func (t *TillerReachable) Collect(ch chan<- prometheus.Metric) error {
 		value,
 		t.tillerNamespace,
 	)
-
-	t.logger.Log("level", "debug", "message", "collected Tiller reachability")
 
 	return nil
 }
