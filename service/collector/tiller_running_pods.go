@@ -73,8 +73,6 @@ func (t *TillerRunningPods) Collect(ch chan<- prometheus.Metric) error {
 
 	ctx := context.Background()
 
-	t.logger.Log("level", "debug", "message", "collecting Tiller running pods")
-
 	charts, err := t.g8sClient.ApplicationV1alpha1().Charts("").List(metav1.ListOptions{})
 	if err != nil {
 		return microerror.Mask(err)
@@ -109,8 +107,6 @@ func (t *TillerRunningPods) Collect(ch chan<- prometheus.Metric) error {
 		value,
 		t.tillerNamespace,
 	)
-
-	t.logger.Log("level", "debug", "message", "collected Tiller running pods")
 
 	return nil
 }

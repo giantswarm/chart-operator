@@ -74,8 +74,6 @@ func NewTillerMaxHistory(config TillerMaxHistoryConfig) (*TillerMaxHistory, erro
 func (t *TillerMaxHistory) Collect(ch chan<- prometheus.Metric) error {
 	var value float64
 
-	t.logger.Log("level", "debug", "message", "collecting Tiller max history")
-
 	charts, err := t.g8sClient.ApplicationV1alpha1().Charts("").List(metav1.ListOptions{})
 	if err != nil {
 		return microerror.Mask(err)
@@ -106,8 +104,6 @@ func (t *TillerMaxHistory) Collect(ch chan<- prometheus.Metric) error {
 		value,
 		t.tillerNamespace,
 	)
-
-	t.logger.Log("level", "debug", "message", "collected Tiller max history")
 
 	return nil
 }

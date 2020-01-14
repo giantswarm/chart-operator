@@ -68,8 +68,6 @@ func NewChartConfigResource(config ChartConfigResourceConfig) (*ChartConfigResou
 }
 
 func (c *ChartConfigResource) Collect(ch chan<- prometheus.Metric) error {
-	c.logger.Log("level", "debug", "message", "collecting metrics for ChartConfigs")
-
 	chartConfigs, err := c.g8sClient.CoreV1alpha1().ChartConfigs("").List(metav1.ListOptions{})
 	if err != nil {
 		return microerror.Mask(err)
@@ -104,8 +102,6 @@ func (c *ChartConfigResource) Collect(ch chan<- prometheus.Metric) error {
 			key.ChartName(chartConfig),
 		)
 	}
-
-	c.logger.Log("level", "debug", "message", "collected metrics for ChartConfigs")
 
 	return nil
 }
