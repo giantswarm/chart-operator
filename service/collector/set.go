@@ -67,6 +67,20 @@ func NewSet(config SetConfig) (*Set, error) {
 		}
 	}
 
+	var orphanSecretCollector *OrphanSecret
+	{
+		c := OrphanSecretConfig{
+			G8sClient: config.K8sClient.G8sClient(),
+			K8sClient: config.K8sClient.K8sClient(),
+			Logger:    config.Logger,
+		}
+
+		orphanSecretCollector, err = NewOrphanSecret(c)
+		if err != nil {
+			return nil, microerror.Mask(err)
+		}
+	}
+
 	var tillerMaxHistoryCollector *TillerMaxHistory
 	{
 		c := TillerMaxHistoryConfig{
@@ -121,6 +135,7 @@ func NewSet(config SetConfig) (*Set, error) {
 			Collectors: []collector.Interface{
 				chartConfigResourceCollector,
 				orphanConfigMapCollector,
+				orphanSecretCollector,
 				tillerMaxHistoryCollector,
 				tillerReachableCollector,
 				tillerRunningPodsCollector,
