@@ -105,9 +105,9 @@ rules:
   verbs:
   - create
 - apiGroups:
-  - networking.k8s.io
+  - scheduling.k8s.io
   resources:
-  - networkpolicies
+  - priorityclass
   verbs:
   - create
 - apiGroups:
