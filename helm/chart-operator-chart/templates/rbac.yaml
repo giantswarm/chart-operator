@@ -108,7 +108,7 @@ rules:
   - scheduling.k8s.io
   resources:
   - priorityclasses
-  verb:
+  verbs:
   - create
 - apiGroups:
   - apps
