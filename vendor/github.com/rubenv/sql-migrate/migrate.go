@@ -2,6 +2,7 @@ package migrate
 
 import (
 	"bytes"
+	"os"
 	"database/sql"
 	"errors"
 	"fmt"
@@ -31,6 +32,11 @@ type MigrationSet struct {
 	TableName string
 	// SchemaName schema that the migration table be referenced.
 	SchemaName string
+	// IgnoreUnknown skips the check to see if there is a migration
+	// ran in the database that is not in MigrationSource.
+	//
+	// This should be used sparingly as it is removing a safety check.
+	IgnoreUnknown bool
 }
 
 var migSet = MigrationSet{}
@@ -98,6 +104,14 @@ func SetSchema(name string) {
 	if name != "" {
 		migSet.SchemaName = name
 	}
+}
+
+// SetIgnoreUnknown sets the flag that skips database check to see if there is a
+// migration in the database that is not in migration source.
+//
+// This should be used sparingly as it is removing a safety check.
+func SetIgnoreUnknown(v bool) {
+	migSet.IgnoreUnknown = v
 }
 
 type Migration struct {
@@ -228,14 +242,9 @@ func findMigrations(dir http.FileSystem) ([]*Migration, error) {
 
 	for _, info := range files {
 		if strings.HasSuffix(info.Name(), ".sql") {
-			file, err := dir.Open(info.Name())
+			migration, err := migrationFromFile(dir, info)
 			if err != nil {
-				return nil, fmt.Errorf("Error while opening %s: %s", info.Name(), err)
-			}
-
-			migration, err := ParseMigration(info.Name(), file)
-			if err != nil {
-				return nil, fmt.Errorf("Error while parsing %s: %s", info.Name(), err)
+				return nil, err
 			}
 
 			migrations = append(migrations, migration)
@@ -246,6 +255,20 @@ func findMigrations(dir http.FileSystem) ([]*Migration, error) {
 	sort.Sort(byId(migrations))
 
 	return migrations, nil
+}
+
+func migrationFromFile(dir http.FileSystem, info os.FileInfo) (*Migration, error) {
+	file, err := dir.Open(info.Name())
+	if err != nil {
+		return nil, fmt.Errorf("Error while opening %s: %s", info.Name(), err)
+	}
+	defer func () { _ = file.Close() }()
+
+	migration, err := ParseMigration(info.Name(), file)
+	if err != nil {
+		return nil, fmt.Errorf("Error while parsing %s: %s", info.Name(), err)
+	}
+	return migration, nil
 }
 
 // Migrations from a bindata asset set.
@@ -500,13 +523,15 @@ func (ms MigrationSet) PlanMigration(db *sql.DB, dialect string, m MigrationSour
 
 	// Make sure all migrations in the database are among the found migrations which
 	// are to be applied.
-	migrationsSearch := make(map[string]struct{})
-	for _, migration := range migrations {
-		migrationsSearch[migration.Id] = struct{}{}
-	}
-	for _, existingMigration := range existingMigrations {
-		if _, ok := migrationsSearch[existingMigration.Id]; !ok {
-			return nil, nil, newPlanError(existingMigration, "unknown migration in database")
+	if !ms.IgnoreUnknown {
+		migrationsSearch := make(map[string]struct{})
+		for _, migration := range migrations {
+			migrationsSearch[migration.Id] = struct{}{}
+		}
+		for _, existingMigration := range existingMigrations {
+			if _, ok := migrationsSearch[existingMigration.Id]; !ok {
+				return nil, nil, newPlanError(existingMigration, "unknown migration in database")
+			}
 		}
 	}
 
