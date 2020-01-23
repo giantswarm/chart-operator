@@ -10,6 +10,7 @@ import (
 
 	"github.com/Masterminds/semver"
 	"github.com/giantswarm/backoff"
+	"github.com/giantswarm/errors/tenant"
 	"github.com/giantswarm/k8sportforward"
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/micrologger"
@@ -204,6 +205,8 @@ func (c *Client) getReleaseContent(ctx context.Context, releaseName string) (*Re
 			} else if IsEmptyChartTemplates(err) {
 				return backoff.Permanent(microerror.Mask(err))
 			} else if IsReleaseNameInvalid(err) {
+				return backoff.Permanent(microerror.Mask(err))
+			} else if tenant.IsAPINotAvailable(err) {
 				return backoff.Permanent(microerror.Mask(err))
 			} else if err != nil {
 				return microerror.Mask(err)
