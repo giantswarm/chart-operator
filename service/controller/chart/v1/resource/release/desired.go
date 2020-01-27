@@ -61,6 +61,21 @@ func (r *Resource) GetDesiredState(ctx context.Context, obj interface{}) (interf
 		resourcecanceledcontext.SetCanceled(ctx)
 		return nil, nil
 
+	} else if helmclient.IsPullChartTimeout(err) {
+		// Add the status to the controller context. It will be used to set the
+		// CR status in the status resource.
+		cc.Status = controllercontext.Status{
+			Reason: fmt.Sprintf("Chart %#q timeout", tarballURL),
+			Release: controllercontext.Release{
+				Status: releaseNotInstalledStatus,
+			},
+		}
+
+		r.logger.LogCtx(ctx, "level", "warning", "message", fmt.Sprintf("chart %#q timeout", tarballURL), "stack", microerror.Stack(err))
+		r.logger.LogCtx(ctx, "level", "debug", "message", "canceling resource")
+		resourcecanceledcontext.SetCanceled(ctx)
+		return nil, nil
+
 	} else if err != nil {
 		return nil, microerror.Mask(err)
 	}
