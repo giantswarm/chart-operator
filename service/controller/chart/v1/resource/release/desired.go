@@ -65,7 +65,7 @@ func (r *Resource) GetDesiredState(ctx context.Context, obj interface{}) (interf
 		// Add the status to the controller context. It will be used to set the
 		// CR status in the status resource.
 		cc.Status = controllercontext.Status{
-			Reason: fmt.Sprintf("Chart %#q timeout", tarballURL),
+			Reason: fmt.Sprintf("Timeout pulling %#q", tarballURL),
 			Release: controllercontext.Release{
 				Status: releaseNotInstalledStatus,
 			},
