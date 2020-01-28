@@ -323,14 +323,14 @@
 
 [[projects]]
   branch = "pull-chart"
-  digest = "1:704c1188f3d0f1f1a20a086c6479e201be16590dc9119f118547add590fa4be4"
+  digest = "1:a10b3393ba04a9dd4e2b6b177dfe15930a98f06c499a51affc3dd1b70bbe8102"
   name = "github.com/giantswarm/helmclient"
   packages = [
     ".",
     "helmclienttest",
   ]
   pruneopts = "UT"
-  revision = "0fb6fc88923b045e8556031aa92eaebbe3f7fc6a"
+  revision = "1ca254928925f393dbbbd492ba1e894bd2a05fc4"
 
 [[projects]]
   branch = "master"
