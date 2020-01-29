@@ -2,6 +2,7 @@ package helmclient
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"time"
 
@@ -13,7 +14,7 @@ import (
 	policyv1beta1 "k8s.io/api/policy/v1beta1"
 	rbacv1 "k8s.io/api/rbac/v1"
 	schedulingv1 "k8s.io/api/scheduling/v1"
-	"k8s.io/apimachinery/pkg/api/errors"
+	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/util/intstr"
 	"k8s.io/helm/cmd/helm/installer"
@@ -35,6 +36,9 @@ func (c *Client) EnsureTillerInstalled(ctx context.Context) error {
 func (c *Client) EnsureTillerInstalledWithValues(ctx context.Context, values []string) error {
 	// Check if Tiller is already present and return early if so.
 	{
+		ctx, cancel := context.WithTimeout(ctx, 10*time.Second)
+		defer cancel()
+
 		c.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("finding if tiller is installed in namespace %#q", c.tillerNamespace))
 
 		t, err := c.newTunnel()
@@ -48,6 +52,10 @@ func (c *Client) EnsureTillerInstalledWithValues(ctx context.Context, values []s
 				c.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("found that tiller is installed in namespace %#q", c.tillerNamespace))
 				return nil
 			}
+		}
+		if errors.Is(ctx.Err(), context.DeadlineExceeded) {
+			c.logger.LogCtx(ctx, "level", "debug", "message", "timeout finding if tiller is installed")
+			return microerror.Maskf(tillerNotFoundError, ctx.Err().Error())
 		}
 	}
 
@@ -70,7 +78,7 @@ func (c *Client) EnsureTillerInstalledWithValues(ctx context.Context, values []s
 		}
 
 		_, err := c.k8sClient.CoreV1().ServiceAccounts(namespace).Create(serviceAccont)
-		if errors.IsAlreadyExists(err) {
+		if apierrors.IsAlreadyExists(err) {
 			c.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("serviceaccount %#q in namespace %#q already exists", name, namespace))
 			// fall through
 		} else if tenant.IsAPINotAvailable(err) {
@@ -114,7 +122,7 @@ func (c *Client) EnsureTillerInstalledWithValues(ctx context.Context, values []s
 		}
 
 		_, err := c.k8sClient.RbacV1().ClusterRoleBindings().Create(i)
-		if errors.IsAlreadyExists(err) {
+		if apierrors.IsAlreadyExists(err) {
 			c.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("clusterrolebinding %#q already exists", name))
 			// fall through
 		} else if err != nil {
@@ -157,7 +165,7 @@ func (c *Client) EnsureTillerInstalledWithValues(ctx context.Context, values []s
 		}
 
 		_, err := c.k8sClient.RbacV1().ClusterRoles().Create(cr)
-		if errors.IsAlreadyExists(err) {
+		if apierrors.IsAlreadyExists(err) {
 			c.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("clusterrole %#q already exists", name))
 			// fall through
 		} else if err != nil {
@@ -199,7 +207,7 @@ func (c *Client) EnsureTillerInstalledWithValues(ctx context.Context, values []s
 		}
 
 		_, err := c.k8sClient.RbacV1().ClusterRoleBindings().Create(crb)
-		if errors.IsAlreadyExists(err) {
+		if apierrors.IsAlreadyExists(err) {
 			c.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("clusterrolebinding %#q already exists", name))
 			// fall through
 		} else if err != nil {
@@ -263,7 +271,7 @@ func (c *Client) EnsureTillerInstalledWithValues(ctx context.Context, values []s
 		}
 
 		_, err := c.k8sClient.PolicyV1beta1().PodSecurityPolicies().Create(psp)
-		if errors.IsAlreadyExists(err) {
+		if apierrors.IsAlreadyExists(err) {
 			c.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("podsecuritypolicy %#q already exists", name))
 			// fall through
 		} else if err != nil {
@@ -330,7 +338,7 @@ func (c *Client) EnsureTillerInstalledWithValues(ctx context.Context, values []s
 		}
 
 		_, err := c.k8sClient.NetworkingV1().NetworkPolicies(networkPolicyNamespace).Create(np)
-		if errors.IsAlreadyExists(err) {
+		if apierrors.IsAlreadyExists(err) {
 			c.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("networkpolicy %#q already exists", name))
 			// fall through
 		} else if err != nil {
@@ -360,7 +368,7 @@ func (c *Client) EnsureTillerInstalledWithValues(ctx context.Context, values []s
 		}
 
 		_, err := c.k8sClient.SchedulingV1().PriorityClasses().Create(pc)
-		if errors.IsAlreadyExists(err) {
+		if apierrors.IsAlreadyExists(err) {
 			c.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("priorityclass %#q already exists", priorityClassName))
 			// fall through
 		} else if err != nil {
@@ -487,7 +495,7 @@ func (c *Client) installTiller(ctx context.Context, installerOptions *installer.
 
 	o := func() error {
 		err := installer.Install(c.k8sClient, installerOptions)
-		if errors.IsAlreadyExists(err) {
+		if apierrors.IsAlreadyExists(err) {
 			c.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("tiller in namespace %#q already exists", c.tillerNamespace))
 			// fall through
 		} else if err != nil {
