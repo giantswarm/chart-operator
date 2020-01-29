@@ -152,11 +152,7 @@ func IsPullChartTimeout(err error) bool {
 		return false
 	}
 
-	if netErr.Timeout() {
-		return true
-	}
-
-	return false
+	return netErr.Timeout()
 }
 
 var (
