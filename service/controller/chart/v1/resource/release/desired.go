@@ -32,46 +32,28 @@ func (r *Resource) GetDesiredState(ctx context.Context, obj interface{}) (interf
 
 	tarballPath, err := r.helmClient.PullChartTarball(ctx, tarballURL)
 	if helmclient.IsPullChartFailedError(err) {
-		// Add the status to the controller context. It will be used to set the
-		// CR status in the status resource.
-		cc.Status = controllercontext.Status{
-			Reason: fmt.Sprintf("Pulling chart %#q failed", tarballURL),
-			Release: controllercontext.Release{
-				Status: releaseNotInstalledStatus,
-			},
-		}
+		reason := fmt.Sprintf("pulling chart %#q failed", tarballURL)
+		addStatusToContext(cc, reason, releaseNotInstalledStatus)
 
-		r.logger.LogCtx(ctx, "level", "warning", "message", fmt.Sprintf("pulling chart %#q failed", tarballURL), "stack", microerror.Stack(err))
+		r.logger.LogCtx(ctx, "level", "warning", "message", reason, "stack", microerror.Stack(err))
 		r.logger.LogCtx(ctx, "level", "debug", "message", "canceling resource")
 		resourcecanceledcontext.SetCanceled(ctx)
 		return nil, nil
 
 	} else if helmclient.IsPullChartNotFound(err) {
-		// Add the status to the controller context. It will be used to set the
-		// CR status in the status resource.
-		cc.Status = controllercontext.Status{
-			Reason: fmt.Sprintf("Chart %#q not found", tarballURL),
-			Release: controllercontext.Release{
-				Status: releaseNotInstalledStatus,
-			},
-		}
+		reason := fmt.Sprintf("chart %#q not found", tarballURL)
+		addStatusToContext(cc, reason, releaseNotInstalledStatus)
 
-		r.logger.LogCtx(ctx, "level", "warning", "message", fmt.Sprintf("chart %#q not found", tarballURL), "stack", microerror.Stack(err))
+		r.logger.LogCtx(ctx, "level", "warning", "message", reason, "stack", microerror.Stack(err))
 		r.logger.LogCtx(ctx, "level", "debug", "message", "canceling resource")
 		resourcecanceledcontext.SetCanceled(ctx)
 		return nil, nil
 
 	} else if helmclient.IsPullChartTimeout(err) {
-		// Add the status to the controller context. It will be used to set the
-		// CR status in the status resource.
-		cc.Status = controllercontext.Status{
-			Reason: fmt.Sprintf("Timeout pulling %#q", tarballURL),
-			Release: controllercontext.Release{
-				Status: releaseNotInstalledStatus,
-			},
-		}
+		reason := fmt.Sprintf("timeout pulling %#q", tarballURL)
+		addStatusToContext(cc, reason, releaseNotInstalledStatus)
 
-		r.logger.LogCtx(ctx, "level", "warning", "message", fmt.Sprintf("chart %#q timeout", tarballURL), "stack", microerror.Stack(err))
+		r.logger.LogCtx(ctx, "level", "warning", "message", reason, "stack", microerror.Stack(err))
 		r.logger.LogCtx(ctx, "level", "debug", "message", "canceling resource")
 		resourcecanceledcontext.SetCanceled(ctx)
 		return nil, nil

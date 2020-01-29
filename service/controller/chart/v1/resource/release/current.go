@@ -36,16 +36,10 @@ func (r *Resource) GetCurrentState(ctx context.Context, obj interface{}) (interf
 		// Return early as release is not installed.
 		return nil, nil
 	} else if helmclient.IsReleaseNameInvalid(err) {
-		// Add the status to the controller context. It will be used to set the
-		// CR status in the status resource.
-		cc.Status = controllercontext.Status{
-			Reason: fmt.Sprintf("Release name %#q is invalid", releaseName),
-			Release: controllercontext.Release{
-				Status: releaseNotInstalledStatus,
-			},
-		}
+		reason := fmt.Sprintf("release name %#q is invalid", releaseName)
+		addStatusToContext(cc, reason, releaseNotInstalledStatus)
 
-		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("release name %#q is invalid", releaseName))
+		r.logger.LogCtx(ctx, "level", "warning", "message", reason, "stack", microerror.Stack(err))
 		r.logger.LogCtx(ctx, "level", "debug", "message", "canceling resource")
 		resourcecanceledcontext.SetCanceled(ctx)
 		return nil, nil

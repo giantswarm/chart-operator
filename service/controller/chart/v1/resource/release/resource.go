@@ -16,6 +16,7 @@ import (
 	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/client-go/kubernetes"
 
+	"github.com/giantswarm/chart-operator/service/controller/chart/v1/controllercontext"
 	"github.com/giantswarm/chart-operator/service/controller/chart/v1/key"
 )
 
@@ -147,6 +148,17 @@ func (r *Resource) patchAnnotations(ctx context.Context, cr v1alpha1.Chart, rele
 	}
 
 	return nil
+}
+
+// addStatusToContext adds the status to the controller context. It will be
+// used to set the CR status in the status resource.
+func addStatusToContext(cc *controllercontext.Context, reason, status string) {
+	cc.Status = controllercontext.Status{
+		Reason: reason,
+		Release: controllercontext.Release{
+			Status: status,
+		},
+	}
 }
 
 // equals asseses the equality of ReleaseStates with regards to distinguishing fields.
