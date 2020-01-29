@@ -323,14 +323,14 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:991c219b7dfbab75f7aba893d581f7f24e9eea37c6fdb4b3856c4d97268ccc19"
+  digest = "1:1b299f0c7bcba3e845541ee4201200a188b3ae9a7493cf3a16b14f91bf0924b0"
   name = "github.com/giantswarm/helmclient"
   packages = [
     ".",
     "helmclienttest",
   ]
   pruneopts = "UT"
-  revision = "31b69ea684193307663277dd36a69ed0e0ef3822"
+  revision = "fcf7a5811f1327ac20182f1a6125fc99b4a82d28"
 
 [[projects]]
   branch = "master"
@@ -448,12 +448,11 @@
   revision = "460177a461bd8069a25d3628aad821052410fd9b"
 
 [[projects]]
-  digest = "1:9db6e7ab54d909d92bebfec495fd679bd3af1a6ba0b22d7da72edb23347dddb9"
+  digest = "1:83a37f3bd4ccd13469775ef771e943e6c7cfaba6926decff6c83135e56512f08"
   name = "github.com/go-kit/kit"
   packages = [
     "endpoint",
     "log",
-    "transport",
     "transport/http",
   ]
   pruneopts = "UT"

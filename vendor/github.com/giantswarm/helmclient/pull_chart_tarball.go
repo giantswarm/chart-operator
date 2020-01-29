@@ -11,12 +11,28 @@ import (
 
 	"github.com/giantswarm/backoff"
 	"github.com/giantswarm/microerror"
+	"github.com/prometheus/client_golang/prometheus"
 	"github.com/spf13/afero"
 )
 
 // PullChartTarball downloads a tarball from the provided tarball URL,
 // returning the file path.
 func (c *Client) PullChartTarball(ctx context.Context, tarballURL string) (string, error) {
+	eventName := "pull_chart_tarball"
+
+	t := prometheus.NewTimer(histogram.WithLabelValues(eventName))
+	defer t.ObserveDuration()
+
+	chartTarballPath, err := c.pullChartTarball(ctx, tarballURL)
+	if err != nil {
+		errorGauge.WithLabelValues(eventName).Inc()
+		return "", microerror.Mask(err)
+	}
+
+	return chartTarballPath, nil
+}
+
+func (c *Client) pullChartTarball(ctx context.Context, tarballURL string) (string, error) {
 	req, err := c.newRequest("GET", tarballURL)
 	if err != nil {
 		return "", microerror.Mask(err)
@@ -47,6 +63,8 @@ func (c *Client) doFile(ctx context.Context, req *http.Request) (string, error) 
 		resp, err := c.httpClient.Do(req)
 		if isNoSuchHostError(err) {
 			return backoff.Permanent(microerror.Maskf(pullChartFailedError, "no such host %#q", req.Host))
+		} else if IsPullChartTimeout(err) {
+			return backoff.Permanent(microerror.Maskf(pullChartTimeoutError, "%#q timeout for %#q", req.Method, req.URL.String()))
 		} else if err != nil {
 			return microerror.Mask(err)
 		}

@@ -1,6 +1,7 @@
 package helmclient
 
 import (
+	"net"
 	"regexp"
 	"strings"
 
@@ -128,6 +129,30 @@ var pullChartNotFoundError = &microerror.Error{
 // IsPullChartNotFound asserts pullChartNotFoundError.
 func IsPullChartNotFound(err error) bool {
 	return microerror.Cause(err) == pullChartNotFoundError
+}
+
+var pullChartTimeoutError = &microerror.Error{
+	Kind: "pullChartTimeoutError",
+}
+
+// IsPullChartTimeout asserts pullChartTimeoutError.
+func IsPullChartTimeout(err error) bool {
+	if err == nil {
+		return false
+	}
+
+	c := microerror.Cause(err)
+
+	if c == pullChartTimeoutError {
+		return true
+	}
+
+	netErr, ok := err.(net.Error)
+	if !ok {
+		return false
+	}
+
+	return netErr.Timeout()
 }
 
 var (

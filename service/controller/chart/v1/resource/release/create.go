@@ -59,16 +59,10 @@ func (r *Resource) ApplyCreateChange(ctx context.Context, obj, createChange inte
 
 			releaseContent, err := r.helmClient.GetReleaseContent(ctx, releaseState.Name)
 			if helmclient.IsReleaseNotFound(err) {
-				// Add the status to the controller context. It will be used to set the
-				// CR status in the status resource.
-				cc.Status = controllercontext.Status{
-					Reason: fmt.Sprintf("Release %#q not found", releaseState.Name),
-					Release: controllercontext.Release{
-						Status: releaseNotInstalledStatus,
-					},
-				}
+				reason := fmt.Sprintf("release %#q not found", releaseState.Name)
+				addStatusToContext(cc, reason, releaseNotInstalledStatus)
 
-				r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("helm release %#q not found", releaseState.Name))
+				r.logger.LogCtx(ctx, "level", "warning", "message", reason, "stack", microerror.Stack(err))
 				r.logger.LogCtx(ctx, "level", "debug", "message", "canceling resource")
 				resourcecanceledcontext.SetCanceled(ctx)
 				return nil
