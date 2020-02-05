@@ -48,8 +48,6 @@ require (
 	k8s.io/apimachinery v0.16.5-beta.1
 	k8s.io/client-go v0.16.4
 	k8s.io/helm v2.16.1+incompatible
-	k8s.io/kube-openapi v0.0.0-20200121204235-bf4fb3bd569c // indirect
-	k8s.io/kubernetes v1.16.6 // indirect
 )
 
 replace (
