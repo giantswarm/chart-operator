@@ -37,7 +37,7 @@ func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange inte
 		tarballURL := key.TarballURL(cr)
 		tarballPath, err := r.helmClient.PullChartTarball(ctx, tarballURL)
 		if helmclient.IsPullChartFailedError(err) {
-			r.logger.LogCtx(ctx, "level", "warning", "message", "pulling chart failed", "stack", microerror.Stack(err))
+			r.logger.LogCtx(ctx, "level", "warning", "message", "pulling chart failed", "stack", microerror.JSON(err))
 			r.logger.LogCtx(ctx, "level", "debug", "message", "canceling resource")
 			resourcecanceledcontext.SetCanceled(ctx)
 			return nil
@@ -58,14 +58,14 @@ func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange inte
 			helm.UpdateValueOverrides(releaseState.ValuesYAML),
 			helm.UpgradeForce(upgradeForce))
 		if err != nil {
-			r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("helm release %#q failed", releaseState.Name), "stack", microerror.Stack(err))
+			r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("helm release %#q failed", releaseState.Name), "stack", microerror.JSON(err))
 
 			releaseContent, err := r.helmClient.GetReleaseContent(ctx, releaseState.Name)
 			if helmclient.IsReleaseNotFound(err) {
 				reason := fmt.Sprintf("release %#q not found", releaseState.Name)
 				addStatusToContext(cc, reason, releaseNotInstalledStatus)
 
-				r.logger.LogCtx(ctx, "level", "warning", "message", reason, "stack", microerror.Stack(err))
+				r.logger.LogCtx(ctx, "level", "warning", "message", reason, "stack", microerror.JSON(err))
 				r.logger.LogCtx(ctx, "level", "debug", "message", "canceling resource")
 				resourcecanceledcontext.SetCanceled(ctx)
 				return nil

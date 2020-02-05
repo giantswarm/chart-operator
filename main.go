@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"os"
 
 	"github.com/giantswarm/microerror"
@@ -24,7 +23,7 @@ var (
 func main() {
 	err := mainWithError()
 	if err != nil {
-		panic(fmt.Sprintf("%#v\n", err))
+		panic(microerror.JSON(err))
 	}
 }
 
@@ -41,7 +40,7 @@ func mainWithError() error {
 		}
 		newLogger, err = micrologger.New(c)
 		if err != nil {
-			return microerror.Maskf(err, "micrologger.New")
+			return microerror.Mask(err)
 		}
 	}
 
@@ -59,7 +58,7 @@ func mainWithError() error {
 			}
 			newService, err = service.New(c)
 			if err != nil {
-				panic(fmt.Sprintf("%#v\n", microerror.Maskf(err, "service.New")))
+				panic(microerror.JSON(err))
 			}
 
 			go newService.Boot(ctx)
@@ -77,7 +76,7 @@ func mainWithError() error {
 
 			newServer, err = server.New(c)
 			if err != nil {
-				panic(fmt.Sprintf("%#v\n", microerror.Maskf(err, "server.New")))
+				panic(microerror.JSON(err))
 			}
 		}
 
@@ -100,7 +99,7 @@ func mainWithError() error {
 
 		newCommand, err = command.New(c)
 		if err != nil {
-			return microerror.Maskf(err, "command.New")
+			return microerror.Mask(err)
 		}
 	}
 
