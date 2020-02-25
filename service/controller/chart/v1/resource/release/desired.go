@@ -30,6 +30,15 @@ func (r *Resource) GetDesiredState(ctx context.Context, obj interface{}) (interf
 	releaseName := key.ReleaseName(cr)
 	tarballURL := key.TarballURL(cr)
 
+	if key.IsDeleted(cr) {
+		r.logger.LogCtx(ctx, "level", "debug", "message", "deleting chart. skip pulling chart tarball")
+		releaseState := &ReleaseState{
+			Name:   releaseName,
+			Status: helmDeployedStatus,
+		}
+		return releaseState, nil
+	}
+
 	tarballPath, err := r.helmClient.PullChartTarball(ctx, tarballURL)
 	if helmclient.IsPullChartFailedError(err) {
 		reason := fmt.Sprintf("pulling chart %#q failed", tarballURL)
