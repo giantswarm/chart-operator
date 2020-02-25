@@ -16,13 +16,13 @@ import (
 // TestChartLifecycle tests a Helm release can be created, updated and deleted
 // uaing a chart CR processed by chart-operator.
 //
-// - Create chart CR using apiextensions-chart-e2e-chart.
-// - Ensure test app specfied in the chart CR is deployed.
+// - Create chart CR.
+// - Ensure test app specified in the chart CR is deployed.
 //
-// - Update chart CR using apiextensions-chart-e2e-chart.
+// - Update chart CR.
 // - Ensure test app is redeployed using updated chart tarball.
 //
-// - Delete apiextensions-chart-e2e-chart.
+// - Delete chart CR.
 // - Ensure test app is deleted.
 //
 func TestChartLifecycle(t *testing.T) {
