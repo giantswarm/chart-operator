@@ -22,6 +22,7 @@ import (
 // TestChartMigration tests chartconfig CR is deleted once it has been migrated
 // to a chart CR.
 //
+// Create chartconfig CRD.
 // Create chartconfig CR.
 // Create chart CR.
 //
@@ -35,6 +36,18 @@ import (
 //
 func TestChartMigration(t *testing.T) {
 	ctx := context.Background()
+
+	// Create legacy chartconfig CRD.
+	{
+		config.Logger.LogCtx(ctx, "level", "debug", "message", "creating chartconfig CRD")
+
+		err := config.K8sClients.CRDClient().EnsureCreated(ctx, corev1alpha1.NewChartConfigCRD(), backoff.NewMaxRetries(7, 1*time.Second))
+		if err != nil {
+			t.Fatalf("expected %#v got %#v", nil, err)
+		}
+
+		config.Logger.LogCtx(ctx, "level", "debug", "message", "created chartconfig CRD")
+	}
 
 	// Create legacy chartconfig CR.
 	{
