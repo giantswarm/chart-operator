@@ -12,6 +12,7 @@ chart:
       name: "{{ .Chart.Config.Secret.Name }}"
       namespace: "{{ .Chart.Config.Secret.Namespace }}"
   tarballURL: "{{ .Chart.TarballURL }}"
+  version: "{{ .Chart.Version }}" 
 
 chartOperator:
   version: "{{ .ChartOperator.Version }}"

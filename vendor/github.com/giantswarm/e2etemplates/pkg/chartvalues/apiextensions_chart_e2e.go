@@ -18,6 +18,7 @@ type APIExtensionsChartE2EConfigChart struct {
 	Name       string
 	Namespace  string
 	TarballURL string
+	Version    string
 }
 
 type APIExtensionsChartE2EConfigChartConfig struct {
