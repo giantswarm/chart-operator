@@ -98,13 +98,14 @@ func NewChartConfig(config Config) (*ChartConfig, error) {
 	var chartConfigController *controller.Controller
 	{
 		c := controller.Config{
-			CRD:       v1alpha1.NewChartConfigCRD(),
-			K8sClient: config.K8sClient,
-			Logger:    config.Logger,
+			CRD:          v1alpha1.NewChartConfigCRD(),
+			K8sClient:    config.K8sClient,
+			Logger:       config.Logger,
 			ResourceSets: []*controller.ResourceSet{
-				resourceSetV5,
-				resourceSetV6,
-				resourceSetV7,
+				// Just disable resource sets for now.
+				// resourceSetV5,
+				// resourceSetV6,
+				// resourceSetV7,
 			},
 			NewRuntimeObjectFunc: func() runtime.Object {
 				return new(v1alpha1.ChartConfig)
