@@ -221,6 +221,6 @@ func (s *Service) Boot(ctx context.Context) {
 
 		// Start the controllers
 		go s.chartController.Boot(ctx)
-		go s.chartConfigController.Boot(ctx)
+		// go s.chartConfigController.Boot(ctx)
 	})
 }
