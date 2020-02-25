@@ -221,6 +221,8 @@ func (s *Service) Boot(ctx context.Context) {
 
 		// Start the controllers
 		go s.chartController.Boot(ctx)
-		go s.chartConfigController.Boot(ctx)
+
+		// Disable chartconfig controller. It will be removed separately.
+		// go s.chartConfigController.Boot(ctx)
 	})
 }
