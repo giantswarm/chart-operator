@@ -31,7 +31,7 @@ func (r *Resource) GetDesiredState(ctx context.Context, obj interface{}) (interf
 	tarballURL := key.TarballURL(cr)
 
 	if key.IsDeleted(cr) {
-		r.logger.LogCtx(ctx, "level", "debug", "message", "CR deletion only, skipping pulling a helm chart")
+		r.logger.LogCtx(ctx, "level", "debug", "message", "deleting chart. skip pulling chart tarball")
 		releaseState := &ReleaseState{
 			Name:   releaseName,
 			Status: helmDeployedStatus,
