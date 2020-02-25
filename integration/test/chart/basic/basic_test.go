@@ -44,7 +44,6 @@ func TestChartLifecycle(t *testing.T) {
 				Name:       "1.0.0",
 				Namespace:  "giantswarm",
 				TarballURL: "https://giantswarm.github.com/sample-catalog/kubernetes-test-app-chart-0.7.0.tgz",
-				Version:    "0.7.0",
 			},
 		}
 		_, err := config.K8sClients.G8sClient().ApplicationV1alpha1().Charts("giantswarm").Create(cr)
@@ -89,7 +88,6 @@ func TestChartLifecycle(t *testing.T) {
 		}
 
 		cr.Spec.TarballURL = "https://giantswarm.github.com/sample-catalog/kubernetes-test-app-chart-0.7.1.tgz"
-		cr.Spec.Version = "0.7.1"
 
 		_, err = config.K8sClients.G8sClient().ApplicationV1alpha1().Charts("giantswarm").Update(cr)
 		if err != nil {
