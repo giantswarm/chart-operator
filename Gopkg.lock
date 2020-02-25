@@ -275,7 +275,7 @@
   revision = "4dd4911251929a0ac4c4f3d8c4bda482a9e09f30"
 
 [[projects]]
-  branch = "master"
+  branch = "vendor-helmclient"
   digest = "1:e83800c0f3c424b5232ff2900d93d8ef0ce47615f780c19561f8aef4273cbad5"
   name = "github.com/giantswarm/e2e-harness"
   packages = [
@@ -283,7 +283,7 @@
     "pkg/release",
   ]
   pruneopts = "UT"
-  revision = "b2048d8645c15ac583a270c57b95855426e48958"
+  revision = "087250b3a9e932589ad42d0bc087c2038da9d788"
 
 [[projects]]
   branch = "master"
@@ -322,15 +322,15 @@
   revision = "9749deade60f7624620aa7158a4f38c87ea23795"
 
 [[projects]]
-  branch = "master"
-  digest = "1:1b299f0c7bcba3e845541ee4201200a188b3ae9a7493cf3a16b14f91bf0924b0"
+  branch = "retry-pull-chart"
+  digest = "1:fc2341b19203050c3ec69647511267d84e1e54e62b51a19aa16e13de8f0c15e2"
   name = "github.com/giantswarm/helmclient"
   packages = [
     ".",
     "helmclienttest",
   ]
   pruneopts = "UT"
-  revision = "fcf7a5811f1327ac20182f1a6125fc99b4a82d28"
+  revision = "e4c74f275cc053e6eaa7fe0e4f67438ec948995f"
 
 [[projects]]
   branch = "master"
