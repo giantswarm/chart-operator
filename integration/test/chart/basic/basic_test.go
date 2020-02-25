@@ -30,11 +30,11 @@ func TestChartLifecycle(t *testing.T) {
 
 	// Test creation.
 	{
-		config.Logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("creating chart %#q", key.ChartReleaseName()))
+		config.Logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("creating chart %#q", key.TestAppReleaseName()))
 
-		cr := v1alpha1.Chart{
+		cr := &v1alpha1.Chart{
 			ObjectMeta: metav1.ObjectMeta{
-				Name:      "1.0.0",
+				Name:      key.TestAppReleaseName(),
 				Namespace: "giantswarm",
 				Labels: map[string]string{
 					"chart-operator.giantswarm.io/version": "1.0.0",
@@ -47,12 +47,12 @@ func TestChartLifecycle(t *testing.T) {
 				Version:    "0.7.0",
 			},
 		}
-		_, err := setup.K8sClients.G8sClient().ApplicationV1alpha1().Charts("giantswarm").Create(cr)
+		_, err := config.K8sClients.G8sClient().ApplicationV1alpha1().Charts("giantswarm").Create(cr)
 		if err != nil {
 			t.Fatalf("expected %#v got %#v", nil, err)
 		}
 
-		config.Logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("created chart %#q", key.ChartReleaseName()))
+		config.Logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("created chart %#q", key.TestAppReleaseName()))
 
 		config.Logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("checking release %#q is deployed", key.TestAppReleaseName()))
 
@@ -112,7 +112,7 @@ func TestChartLifecycle(t *testing.T) {
 	{
 		config.Logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("deleting chart %#q", key.TestAppReleaseName()))
 
-		_, err = config.K8sClients.G8sClient().ApplicationV1alpha1().Charts("giantswarm").Delete(key.TestAppReleaseName(), &metav1.DeleteOptions{})
+		err := config.K8sClients.G8sClient().ApplicationV1alpha1().Charts("giantswarm").Delete(key.TestAppReleaseName(), &metav1.DeleteOptions{})
 		if err != nil {
 			t.Fatalf("expected %#v got %#v", nil, err)
 		}
