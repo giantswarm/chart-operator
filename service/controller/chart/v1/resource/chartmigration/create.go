@@ -30,15 +30,26 @@ func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
 
 	if key.HasDeleteCROnlyAnnotation(chartConfig) {
 		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("chartconfig %#q has been migrated", cr.Name))
-		r.logger.LogCtx(ctx, "level", "debug", "message", "removing finalizers")
+		r.logger.LogCtx(ctx, "level", "debug", "message", "removing finalizer")
 
-		chartConfig.ObjectMeta.Finalizers = []string{}
+		finalizers := []string{}
+
+		for _, f := range chartConfig.ObjectMeta.Finalizers {
+			if f == "operatorkit.giantswarm.io/chart-operator-chartconfig" {
+				r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("removing finalizer %#q", f))
+			} else {
+				r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("keeping finalizer %#q", f))
+				finalizers = append(finalizers, f)
+			}
+		}
+
+		chartConfig.ObjectMeta.Finalizers = finalizers
 		_, err = r.g8sClient.CoreV1alpha1().ChartConfigs("giantswarm").Update(chartConfig)
 		if err != nil {
 			return microerror.Mask(err)
 		}
 
-		r.logger.LogCtx(ctx, "level", "debug", "message", "removed finalizers")
+		r.logger.LogCtx(ctx, "level", "debug", "message", "removed finalizer")
 	} else {
 		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("chartconfig %#q has not been migrated", cr.Name))
 		r.logger.LogCtx(ctx, "level", "debug", "message", "canceling resource")
