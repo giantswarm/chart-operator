@@ -130,7 +130,12 @@ func TestChartMigration(t *testing.T) {
 			t.Fatalf("expected %#v got %#v", nil, err)
 		}
 
-		annotations := chartConfig.Annotations
+		annotations := []string{}
+
+		if chartConfig.Annotations != nil && len(chartConfig.Annotations) > 0 {
+			annotations = chartConfig.Annotations
+		}
+
 		annotations[annotation.DeleteCustomResourceOnly] = "true"
 		chartConfig.Annotations = annotations
 
