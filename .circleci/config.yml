@@ -106,18 +106,6 @@ jobs:
       E2E_TESTED_VERSION: "current"
     <<: *e2eTest
 
-  e2eTestChartConfigWIPBasicPR:
-    environment:
-      E2E_TEST_DIR: "integration/test/chartconfig/basic"
-      E2E_TESTED_VERSION: "wip"
-    <<: *e2eTest
-
-  e2eTestChartConfigWIPBasicMaster:
-    environment:
-      E2E_TEST_DIR: "integration/test/chartconfig/basic"
-      E2E_TESTED_VERSION: "wip"
-    <<: *e2eTest
-
   e2eTestChartConfigCurChartValuesPR:
     environment:
       E2E_TEST_DIR: "integration/test/chartconfig/chartvalues"
@@ -128,18 +116,6 @@ jobs:
     environment:
       E2E_TEST_DIR: "integration/test/chartconfig/chartvalues"
       E2E_TESTED_VERSION: "current"
-    <<: *e2eTest
-
-  e2eTestChartConfigWIPChartValuesPR:
-    environment:
-      E2E_TEST_DIR: "integration/test/chartconfig/chartvalues"
-      E2E_TESTED_VERSION: "wip"
-    <<: *e2eTest
-
-  e2eTestChartConfigWIPChartValuesMaster:
-    environment:
-      E2E_TEST_DIR: "integration/test/chartconfig/chartvalues"
-      E2E_TESTED_VERSION: "wip"
     <<: *e2eTest
 
   deploy:
@@ -254,33 +230,11 @@ workflows:
           requires:
           - build
 
-      - e2eTestChartConfigWIPBasicPR:
-          requires:
-          - build
-
-      - e2eTestChartConfigWIPBasicMaster:
-          filters:
-            branches:
-              only: master
-          requires:
-          - build
-
       - e2eTestChartConfigCurChartValuesPR:
           requires:
           - build
 
       - e2eTestChartConfigCurChartValuesMaster:
-          filters:
-            branches:
-              only: master
-          requires:
-          - build
-
-      - e2eTestChartConfigWIPChartValuesPR:
-          requires:
-          - build
-
-      - e2eTestChartConfigWIPChartValuesMaster:
           filters:
             branches:
               only: master
@@ -295,9 +249,7 @@ workflows:
           - e2eTestChartBasicMaster
           - e2eTestChartMigrationMaster
           - e2eTestChartConfigCurBasicMaster
-          - e2eTestChartConfigWIPBasicMaster
           - e2eTestChartConfigCurChartValuesMaster
-          - e2eTestChartConfigWIPChartValuesMaster
           - push-chart-operator-to-aliyun-legacy
 
       - publish_to_stable:
