@@ -232,7 +232,7 @@ workflows:
           requires:
           - build
 
-       - e2eTestChartMigrationPR:
+      - e2eTestChartMigrationPR:
           requires:
           - build
 
