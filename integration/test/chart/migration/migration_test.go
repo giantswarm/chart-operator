@@ -96,7 +96,7 @@ func TestChartMigration(t *testing.T) {
 				},
 			},
 			Spec: v1alpha1.ChartSpec{
-				Name:       "1.0.0",
+				Name:       key.TestAppReleaseName(),
 				Namespace:  "giantswarm",
 				TarballURL: "https://giantswarm.github.com/sample-catalog/kubernetes-test-app-chart-0.7.0.tgz",
 			},
