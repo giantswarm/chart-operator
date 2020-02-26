@@ -130,7 +130,7 @@ func TestChartMigration(t *testing.T) {
 			t.Fatalf("expected %#v got %#v", nil, err)
 		}
 
-		annotations := []string{}
+		annotations := map[string]string{}
 
 		if chartConfig.Annotations != nil && len(chartConfig.Annotations) > 0 {
 			annotations = chartConfig.Annotations
