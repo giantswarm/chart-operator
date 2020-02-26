@@ -89,7 +89,10 @@ func TestChartLifecycle(t *testing.T) {
 		}
 
 		cr.Spec.TarballURL = "https://giantswarm.github.com/sample-catalog/kubernetes-test-app-chart-0.7.1.tgz"
+<<<<<<< HEAD
 		cr.Spec.Version = "0.7.1"
+=======
+>>>>>>> master
 
 		_, err = config.K8sClients.G8sClient().ApplicationV1alpha1().Charts("giantswarm").Update(cr)
 		if err != nil {
