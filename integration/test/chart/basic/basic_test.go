@@ -7,8 +7,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/giantswarm/e2e-harness/pkg/release"
-	"github.com/giantswarm/e2etemplates/pkg/chartvalues"
+	"github.com/giantswarm/apiextensions/pkg/apis/application/v1alpha1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
 	"github.com/giantswarm/chart-operator/integration/key"
@@ -17,13 +16,13 @@ import (
 // TestChartLifecycle tests a Helm release can be created, updated and deleted
 // uaing a chart CR processed by chart-operator.
 //
-// - Create chart CR using apiextensions-chart-e2e-chart.
-// - Ensure test app specfied in the chart CR is deployed.
+// - Create chart CR.
+// - Ensure test app specified in the chart CR is deployed.
 //
-// - Update chart CR using apiextensions-chart-e2e-chart.
+// - Update chart CR.
 // - Ensure test app is redeployed using updated chart tarball.
 //
-// - Delete apiextensions-chart-e2e-chart.
+// - Delete chart CR.
 // - Ensure test app is deleted.
 //
 func TestChartLifecycle(t *testing.T) {
@@ -31,37 +30,28 @@ func TestChartLifecycle(t *testing.T) {
 
 	// Test creation.
 	{
-		config.Logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("creating chart %#q", key.ChartReleaseName()))
+		config.Logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("creating chart %#q", key.TestAppReleaseName()))
 
-		c := chartvalues.APIExtensionsChartE2EConfig{
-			Chart: chartvalues.APIExtensionsChartE2EConfigChart{
+		cr := &v1alpha1.Chart{
+			ObjectMeta: metav1.ObjectMeta{
+				Name:      key.TestAppReleaseName(),
+				Namespace: "giantswarm",
+				Labels: map[string]string{
+					"chart-operator.giantswarm.io/version": "1.0.0",
+				},
+			},
+			Spec: v1alpha1.ChartSpec{
 				Name:       key.TestAppReleaseName(),
 				Namespace:  "giantswarm",
 				TarballURL: "https://giantswarm.github.com/sample-catalog/kubernetes-test-app-chart-0.7.0.tgz",
 			},
-			ChartOperator: chartvalues.APIExtensionsChartE2EConfigChartOperator{
-				Version: "1.0.0",
-			},
-			Namespace: "giantswarm",
 		}
-
-		chartValues, err := chartvalues.NewAPIExtensionsChartE2E(c)
+		_, err := config.K8sClients.G8sClient().ApplicationV1alpha1().Charts("giantswarm").Create(cr)
 		if err != nil {
 			t.Fatalf("expected %#v got %#v", nil, err)
 		}
 
-		chartInfo := release.NewStableChartInfo(key.ChartReleaseName())
-		err = config.Release.Install(ctx, key.ChartReleaseName(), chartInfo, chartValues)
-		if err != nil {
-			t.Fatalf("expected %#v got %#v", nil, err)
-		}
-
-		err = config.Release.WaitForStatus(ctx, fmt.Sprintf("%s-%s", "giantswarm", key.ChartReleaseName()), "DEPLOYED")
-		if err != nil {
-			t.Fatalf("expected %#v got %#v", nil, err)
-		}
-
-		config.Logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("created chart %#q", key.ChartReleaseName()))
+		config.Logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("created chart %#q", key.TestAppReleaseName()))
 
 		config.Logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("checking release %#q is deployed", key.TestAppReleaseName()))
 
@@ -90,38 +80,21 @@ func TestChartLifecycle(t *testing.T) {
 
 	// Test update.
 	{
-		config.Logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("updating chart %#q", key.ChartReleaseName()))
+		config.Logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("updating chart %#q", key.TestAppReleaseName()))
 
-		c := chartvalues.APIExtensionsChartE2EConfig{
-			Chart: chartvalues.APIExtensionsChartE2EConfigChart{
-				Name:      key.TestAppReleaseName(),
-				Namespace: "giantswarm",
-				// Newer version of the tarball is deployed.
-				TarballURL: "https://giantswarm.github.com/sample-catalog/kubernetes-test-app-chart-0.7.1.tgz",
-			},
-			ChartOperator: chartvalues.APIExtensionsChartE2EConfigChartOperator{
-				Version: "1.0.0",
-			},
-			Namespace: "giantswarm",
-		}
-
-		updatedValues, err := chartvalues.NewAPIExtensionsChartE2E(c)
+		cr, err := config.K8sClients.G8sClient().ApplicationV1alpha1().Charts("giantswarm").Get(key.TestAppReleaseName(), metav1.GetOptions{})
 		if err != nil {
 			t.Fatalf("expected %#v got %#v", nil, err)
 		}
 
-		chartInfo := release.NewStableChartInfo(key.ChartReleaseName())
-		err = config.Release.Update(ctx, key.ChartReleaseName(), chartInfo, updatedValues)
+		cr.Spec.TarballURL = "https://giantswarm.github.com/sample-catalog/kubernetes-test-app-chart-0.7.1.tgz"
+
+		_, err = config.K8sClients.G8sClient().ApplicationV1alpha1().Charts("giantswarm").Update(cr)
 		if err != nil {
 			t.Fatalf("expected %#v got %#v", nil, err)
 		}
 
-		err = config.Release.WaitForStatus(ctx, fmt.Sprintf("%s-%s", "giantswarm", key.ChartReleaseName()), "DEPLOYED")
-		if err != nil {
-			t.Fatalf("expected %#v got %#v", nil, err)
-		}
-
-		config.Logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("updated chart %#q", key.ChartReleaseName()))
+		config.Logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("updated chart %#q", key.TestAppReleaseName()))
 
 		config.Logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("checking release %#q is updated", key.TestAppReleaseName()))
 
@@ -135,19 +108,14 @@ func TestChartLifecycle(t *testing.T) {
 
 	// Test deletion.
 	{
-		config.Logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("deleting chart %#q", key.ChartReleaseName()))
+		config.Logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("deleting chart %#q", key.TestAppReleaseName()))
 
-		err := config.Release.Delete(ctx, key.ChartReleaseName())
+		err := config.K8sClients.G8sClient().ApplicationV1alpha1().Charts("giantswarm").Delete(key.TestAppReleaseName(), &metav1.DeleteOptions{})
 		if err != nil {
 			t.Fatalf("expected %#v got %#v", nil, err)
 		}
 
-		err = config.Release.WaitForStatus(ctx, fmt.Sprintf("%s-%s", "giantswarm", key.ChartReleaseName()), "DELETED")
-		if err != nil {
-			t.Fatalf("expected %#v got %#v", nil, err)
-		}
-
-		config.Logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("deleted chart %#q", key.ChartReleaseName()))
+		config.Logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("deleted chart %#q", key.TestAppReleaseName()))
 
 		config.Logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("checking release %#q is deleted", key.TestAppReleaseName()))
 
