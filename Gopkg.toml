@@ -53,7 +53,7 @@ required = [
   name = "github.com/giantswarm/apprclient"
 
 [[constraint]]
-  branch = "vendor-helmclient"
+  branch = "master"
   name = "github.com/giantswarm/e2e-harness"
 
 [[constraint]]
@@ -61,11 +61,11 @@ required = [
   name = "github.com/giantswarm/e2esetup"
 
 [[constraint]]
-  branch = "chart-version"
+  branch = "master"
   name = "github.com/giantswarm/e2etemplates"
 
 [[constraint]]
-  branch = "retry-pull-chart"
+  branch = "master"
   name = "github.com/giantswarm/helmclient"
 
 [[constraint]]
