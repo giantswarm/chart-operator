@@ -84,6 +84,16 @@ jobs:
       E2E_TEST_DIR: "integration/test/chart/basic"
     <<: *e2eTest
 
+  e2eTestChartMigrationPR:
+    environment:
+      E2E_TEST_DIR: "integration/test/chart/migration"
+    <<: *e2eTest
+  
+  e2eTestChartMigrationMaster:
+    environment:
+      E2E_TEST_DIR: "integration/test/chart/migration"
+    <<: *e2eTest
+
   e2eTestChartConfigCurBasicPR:
     environment:
       E2E_TEST_DIR: "integration/test/chartconfig/basic"
@@ -222,6 +232,17 @@ workflows:
           requires:
           - build
 
+       - e2eTestChartMigrationPR:
+          requires:
+          - build
+
+      - e2eTestChartMigrationMaster:
+          filters:
+            branches:
+              only: master
+          requires:
+          - build
+
       - e2eTestChartConfigCurBasicPR:
           requires:
           - build
@@ -272,6 +293,7 @@ workflows:
               only: master
           requires:
           - e2eTestChartBasicMaster
+          - e2eTestChartMigrationMaster
           - e2eTestChartConfigCurBasicMaster
           - e2eTestChartConfigWIPBasicMaster
           - e2eTestChartConfigCurChartValuesMaster
