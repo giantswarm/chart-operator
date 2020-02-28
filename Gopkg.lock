@@ -226,7 +226,7 @@
   revision = "25d852aebe32c875e9c044af3eef9c7dc6bc777f"
 
 [[projects]]
-  branch = "chart-version"
+  branch = "master"
   digest = "1:31f48ad703db700be30d2174c61004db804850ab7c8491908ef68ad1fce7efe3"
   name = "github.com/giantswarm/apiextensions"
   packages = [
@@ -253,7 +253,7 @@
     "pkg/clientset/versioned/typed/release/v1alpha1/fake",
   ]
   pruneopts = "UT"
-  revision = "7223e2a624cc507b539075923ffeb33c4ba82b50"
+  revision = "95ba5a91cb4431ab8e6dee2eb9e372616573b1b4"
 
 [[projects]]
   branch = "master"
