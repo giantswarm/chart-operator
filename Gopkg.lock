@@ -227,7 +227,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:5dddf1342f30cbdda064c87827164becfead1b5a35ef9029190cc3cb6d73376f"
+  digest = "1:31f48ad703db700be30d2174c61004db804850ab7c8491908ef68ad1fce7efe3"
   name = "github.com/giantswarm/apiextensions"
   packages = [
     "pkg/apis/application/v1alpha1",
@@ -253,7 +253,7 @@
     "pkg/clientset/versioned/typed/release/v1alpha1/fake",
   ]
   pruneopts = "UT"
-  revision = "3fdfe37ee131b55cdcd2e395a770eb92c2422d01"
+  revision = "95ba5a91cb4431ab8e6dee2eb9e372616573b1b4"
 
 [[projects]]
   branch = "master"
@@ -295,15 +295,14 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:a18514ee6d33992c9fe9c828ae041fca1f2479cac978d4b19bcc3d091b8c5c67"
+  digest = "1:7735c348d056d16c55b0a896a412b06c25b96d662c3db0186cf632fa0a1e2331"
   name = "github.com/giantswarm/e2etemplates"
   packages = [
     "internal/render",
-    "pkg/chartvalues",
     "pkg/e2etemplates",
   ]
   pruneopts = "UT"
-  revision = "2ae756e2f2832a8211e12a222227188cf13c5d17"
+  revision = "d9b582bb77554ca3a14bcf1226c38b67ed42660f"
 
 [[projects]]
   branch = "master"
@@ -323,14 +322,14 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:1b299f0c7bcba3e845541ee4201200a188b3ae9a7493cf3a16b14f91bf0924b0"
+  digest = "1:fc2341b19203050c3ec69647511267d84e1e54e62b51a19aa16e13de8f0c15e2"
   name = "github.com/giantswarm/helmclient"
   packages = [
     ".",
     "helmclienttest",
   ]
   pruneopts = "UT"
-  revision = "fcf7a5811f1327ac20182f1a6125fc99b4a82d28"
+  revision = "09cc8424cb4930b685bf53e0c0856bf3727fa41d"
 
 [[projects]]
   branch = "master"
@@ -1884,7 +1883,6 @@
     "github.com/giantswarm/apprclient/apprclienttest",
     "github.com/giantswarm/e2e-harness/pkg/release",
     "github.com/giantswarm/e2esetup/chart/env",
-    "github.com/giantswarm/e2etemplates/pkg/chartvalues",
     "github.com/giantswarm/e2etemplates/pkg/e2etemplates",
     "github.com/giantswarm/exporterkit/collector",
     "github.com/giantswarm/helmclient",

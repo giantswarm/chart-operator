@@ -8,77 +8,15 @@ import (
 	"github.com/giantswarm/apiextensions/pkg/apis/application/v1alpha1"
 	"github.com/giantswarm/helmclient"
 	"github.com/giantswarm/microerror"
-	"github.com/giantswarm/operatorkit/controller/context/resourcecanceledcontext"
 	yaml "gopkg.in/yaml.v2"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
-	"github.com/giantswarm/chart-operator/service/controller/chart/v1/controllercontext"
 	"github.com/giantswarm/chart-operator/service/controller/chart/v1/key"
 )
 
 func (r *Resource) GetDesiredState(ctx context.Context, obj interface{}) (interface{}, error) {
 	cr, err := key.ToCustomResource(obj)
-	if err != nil {
-		return nil, microerror.Mask(err)
-	}
-	cc, err := controllercontext.FromContext(ctx)
-	if err != nil {
-		return nil, microerror.Mask(err)
-	}
-
-	releaseName := key.ReleaseName(cr)
-	tarballURL := key.TarballURL(cr)
-
-	if key.IsDeleted(cr) {
-		r.logger.LogCtx(ctx, "level", "debug", "message", "deleting chart. skip pulling chart tarball")
-		releaseState := &ReleaseState{
-			Name:   releaseName,
-			Status: helmDeployedStatus,
-		}
-		return releaseState, nil
-	}
-
-	tarballPath, err := r.helmClient.PullChartTarball(ctx, tarballURL)
-	if helmclient.IsPullChartFailedError(err) {
-		reason := fmt.Sprintf("pulling chart %#q failed", tarballURL)
-		addStatusToContext(cc, reason, releaseNotInstalledStatus)
-
-		r.logger.LogCtx(ctx, "level", "warning", "message", reason, "stack", microerror.Stack(err))
-		r.logger.LogCtx(ctx, "level", "debug", "message", "canceling resource")
-		resourcecanceledcontext.SetCanceled(ctx)
-		return nil, nil
-
-	} else if helmclient.IsPullChartNotFound(err) {
-		reason := fmt.Sprintf("chart %#q not found", tarballURL)
-		addStatusToContext(cc, reason, releaseNotInstalledStatus)
-
-		r.logger.LogCtx(ctx, "level", "warning", "message", reason, "stack", microerror.Stack(err))
-		r.logger.LogCtx(ctx, "level", "debug", "message", "canceling resource")
-		resourcecanceledcontext.SetCanceled(ctx)
-		return nil, nil
-
-	} else if helmclient.IsPullChartTimeout(err) {
-		reason := fmt.Sprintf("timeout pulling %#q", tarballURL)
-		addStatusToContext(cc, reason, releaseNotInstalledStatus)
-
-		r.logger.LogCtx(ctx, "level", "warning", "message", reason, "stack", microerror.Stack(err))
-		r.logger.LogCtx(ctx, "level", "debug", "message", "canceling resource")
-		resourcecanceledcontext.SetCanceled(ctx)
-		return nil, nil
-
-	} else if err != nil {
-		return nil, microerror.Mask(err)
-	}
-
-	defer func() {
-		err := r.fs.Remove(tarballPath)
-		if err != nil {
-			r.logger.LogCtx(ctx, "level", "error", "message", fmt.Sprintf("deletion of %#q failed", tarballPath), "stack", fmt.Sprintf("%#v", err))
-		}
-	}()
-
-	chart, err := r.helmClient.LoadChart(ctx, tarballPath)
 	if err != nil {
 		return nil, microerror.Mask(err)
 	}
@@ -116,11 +54,11 @@ func (r *Resource) GetDesiredState(ctx context.Context, obj interface{}) (interf
 	}
 
 	releaseState := &ReleaseState{
-		Name:              releaseName,
+		Name:              key.ReleaseName(cr),
 		Status:            helmDeployedStatus,
 		ValuesMD5Checksum: valuesMD5Checksum,
 		ValuesYAML:        valuesYAML,
-		Version:           chart.Version,
+		Version:           key.Version(cr),
 	}
 
 	return releaseState, nil

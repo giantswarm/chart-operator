@@ -63,8 +63,6 @@ func (c *Client) doFile(ctx context.Context, req *http.Request) (string, error) 
 		resp, err := c.httpClient.Do(req)
 		if isNoSuchHostError(err) {
 			return backoff.Permanent(microerror.Maskf(pullChartFailedError, "no such host %#q", req.Host))
-		} else if IsPullChartTimeout(err) {
-			return backoff.Permanent(microerror.Maskf(pullChartTimeoutError, "%#q timeout for %#q", req.Method, req.URL.String()))
 		} else if err != nil {
 			return microerror.Mask(err)
 		}
