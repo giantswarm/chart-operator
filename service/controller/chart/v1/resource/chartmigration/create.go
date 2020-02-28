@@ -2,12 +2,18 @@ package chartmigration
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
+	"strings"
 
-	"github.com/giantswarm/chart-operator/service/controller/chart/v1/key"
+	"github.com/giantswarm/apiextensions/pkg/apis/core/v1alpha1"
 	"github.com/giantswarm/microerror"
-	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/types"
+
+	"github.com/giantswarm/chart-operator/pkg/annotation"
+	"github.com/giantswarm/chart-operator/pkg/label"
+	"github.com/giantswarm/chart-operator/service/controller/chart/v1/key"
 )
 
 func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
@@ -16,15 +22,34 @@ func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
 		return microerror.Mask(err)
 	}
 
-	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("finding chartconfig %#q", cr.Name))
+	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("finding chartconfig for chart %#q", cr.Name))
 
-	chartConfig, err := r.g8sClient.CoreV1alpha1().ChartConfigs(cr.Namespace).Get(cr.Name, metav1.GetOptions{})
-	if apierrors.IsNotFound(err) {
-		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("did not find chartconfig %#q. nothing to do.", cr.Name))
+	lo := metav1.ListOptions{
+		LabelSelector: fmt.Sprintf("%s=%s", label.App, cr.Labels[label.App]),
+	}
+	res, err := r.g8sClient.CoreV1alpha1().ChartConfigs(cr.Namespace).List(lo)
+	if isChartConfigNotInstalled(err) {
+		r.logger.LogCtx(ctx, "level", "debug", "message", "no chartconfig CRD. nothing to do.")
 		return nil
+	} else if isChartConfigNotAvailable(err) {
+		r.logger.LogCtx(ctx, "level", "debug", "message", "chartconfig CRs not avaiable.")
+		r.logger.LogCtx(ctx, "level", "debug", "message", "canceling resource.")
+		return nil
+	} else if err != nil {
+		return microerror.Mask(err)
 	}
 
-	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("found chartconfig %#q", cr.Name))
+	var chartConfig v1alpha1.ChartConfig
+
+	if len(res.Items) == 1 {
+		chartConfig = res.Items[0]
+		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("found chartconfig for chart %#q", cr.Name))
+	} else if len(res.Items) == 0 {
+		r.logger.LogCtx(ctx, "level", "debug", "message", "no chartconfig CR. nothing to do.")
+		return nil
+	} else {
+		return microerror.Maskf(executionFailedError, "expected 1 chartconfig CR but found %d", len(res.Items))
+	}
 
 	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("checking if chartconfig %#q has been migrated", cr.Name))
 
@@ -32,19 +57,7 @@ func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
 		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("chartconfig %#q has been migrated", cr.Name))
 		r.logger.LogCtx(ctx, "level", "debug", "message", "removing finalizer")
 
-		finalizers := []string{}
-
-		for _, f := range chartConfig.ObjectMeta.Finalizers {
-			if f == "operatorkit.giantswarm.io/chart-operator-chartconfig" {
-				r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("removing finalizer %#q", f))
-			} else {
-				r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("keeping finalizer %#q", f))
-				finalizers = append(finalizers, f)
-			}
-		}
-
-		chartConfig.ObjectMeta.Finalizers = finalizers
-		_, err = r.g8sClient.CoreV1alpha1().ChartConfigs("giantswarm").Update(chartConfig)
+		err = r.removeFinalizer(ctx, chartConfig)
 		if err != nil {
 			return microerror.Mask(err)
 		}
@@ -57,4 +70,45 @@ func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
 	}
 
 	return nil
+}
+
+// removeFinalizer removes the operatorkit finalizer for the chartconfig CR.
+// Finalizers are a JSON array so we need to get the index and remove it using a
+// JSON Patch operation.
+func (r *Resource) removeFinalizer(ctx context.Context, chartConfig v1alpha1.ChartConfig) error {
+	patches := []patch{}
+
+	if len(chartConfig.Finalizers) == 0 {
+		// Return early as nothing to do.
+		return nil
+	}
+
+	var index int
+
+	for i, val := range chartConfig.Finalizers {
+		if val == annotation.DeleteCustomResourceOnly {
+			index = i
+			break
+		}
+	}
+
+	patches = append(patches, patch{
+		Op:   "remove",
+		Path: fmt.Sprintf("/metadata/finalizers/%d", index),
+	})
+	bytes, err := json.Marshal(patches)
+	if err != nil {
+		return microerror.Mask(err)
+	}
+
+	_, err = r.g8sClient.CoreV1alpha1().ChartConfigs(chartConfig.Namespace).Patch(chartConfig.Name, types.JSONPatchType, bytes)
+	if err != nil {
+		return microerror.Mask(err)
+	}
+
+	return nil
+}
+
+func replaceToEscape(from string) string {
+	return strings.Replace(from, "/", "~1", -1)
 }

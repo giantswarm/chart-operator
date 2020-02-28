@@ -45,7 +45,7 @@ func CordonUntil(customResource v1alpha1.Chart) string {
 // HasDeleteCROnlyAnnotation returns true if the legacy chartconfig CR has the
 // delete custom resource only annotation added by cluster-operator to signal
 // that the migration to chart CR is complete.
-func HasDeleteCROnlyAnnotation(customResource *corev1alpha1.ChartConfig) bool {
+func HasDeleteCROnlyAnnotation(customResource corev1alpha1.ChartConfig) bool {
 	val, ok := customResource.Annotations[annotation.DeleteCustomResourceOnly]
 	if !ok {
 		return false
