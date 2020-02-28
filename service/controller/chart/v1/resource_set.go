@@ -17,6 +17,7 @@ import (
 
 	"github.com/giantswarm/chart-operator/service/controller/chart/v1/controllercontext"
 	"github.com/giantswarm/chart-operator/service/controller/chart/v1/key"
+	"github.com/giantswarm/chart-operator/service/controller/chart/v1/resource/chartmigration"
 	"github.com/giantswarm/chart-operator/service/controller/chart/v1/resource/release"
 	"github.com/giantswarm/chart-operator/service/controller/chart/v1/resource/status"
 	"github.com/giantswarm/chart-operator/service/controller/chart/v1/resource/tiller"
@@ -55,6 +56,19 @@ func NewResourceSet(config ResourceSetConfig) (*controller.ResourceSet, error) {
 	}
 	if config.Logger == nil {
 		return nil, microerror.Maskf(invalidConfigError, "%T.Logger must not be empty", config)
+	}
+
+	var chartMigrationResource resource.Interface
+	{
+		c := chartmigration.Config{
+			G8sClient: config.G8sClient,
+			Logger:    config.Logger,
+		}
+
+		chartMigrationResource, err = chartmigration.New(c)
+		if err != nil {
+			return nil, microerror.Mask(err)
+		}
 	}
 
 	var releaseResource resource.Interface
@@ -107,6 +121,7 @@ func NewResourceSet(config ResourceSetConfig) (*controller.ResourceSet, error) {
 	}
 
 	resources := []resource.Interface{
+		chartMigrationResource,
 		tillerResource,
 		releaseResource,
 		statusResource,
