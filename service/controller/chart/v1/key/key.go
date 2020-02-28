@@ -136,6 +136,10 @@ func ValuesMD5ChecksumAnnotation(customResource v1alpha1.Chart) string {
 	}
 }
 
+func Version(customResource v1alpha1.Chart) string {
+	return customResource.Spec.Version
+}
+
 // VersionLabel returns the label value to determine if the custom resource is
 // supported by this version of the operatorkit resource.
 func VersionLabel(customResource v1alpha1.Chart) string {
