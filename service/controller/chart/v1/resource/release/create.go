@@ -74,14 +74,14 @@ func (r *Resource) ApplyCreateChange(ctx context.Context, obj, createChange inte
 		// use the default values and prevent errors on nested values.
 		err = r.helmClient.InstallReleaseFromTarball(ctx, tarballPath, ns, helm.ReleaseName(releaseState.Name), helm.ValueOverrides(releaseState.ValuesYAML))
 		if err != nil {
+			reason := err.Error()
 			r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("helm release %#q failed", releaseState.Name), "stack", microerror.Stack(err))
 
 			releaseContent, err := r.helmClient.GetReleaseContent(ctx, releaseState.Name)
 			if helmclient.IsReleaseNotFound(err) {
-				reason := fmt.Sprintf("release %#q not found", releaseState.Name)
+				reason = fmt.Sprintf("helm error: (%s)", reason)
 				addStatusToContext(cc, reason, releaseNotInstalledStatus)
 
-				r.logger.LogCtx(ctx, "level", "warning", "message", reason, "stack", microerror.Stack(err))
 				r.logger.LogCtx(ctx, "level", "debug", "message", "canceling resource")
 				resourcecanceledcontext.SetCanceled(ctx)
 				return nil
