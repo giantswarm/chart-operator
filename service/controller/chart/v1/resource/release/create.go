@@ -36,7 +36,26 @@ func (r *Resource) ApplyCreateChange(ctx context.Context, obj, createChange inte
 
 		tarballPath, err := r.helmClient.PullChartTarball(ctx, tarballURL)
 		if helmclient.IsPullChartFailedError(err) {
-			r.logger.LogCtx(ctx, "level", "warning", "message", "pulling chart failed", "stack", microerror.Stack(err))
+			reason := fmt.Sprintf("pulling chart %#q failed", tarballURL)
+			addStatusToContext(cc, reason, releaseNotInstalledStatus)
+
+			r.logger.LogCtx(ctx, "level", "warning", "message", reason, "stack", microerror.Stack(err))
+			r.logger.LogCtx(ctx, "level", "debug", "message", "canceling resource")
+			resourcecanceledcontext.SetCanceled(ctx)
+			return nil
+		} else if helmclient.IsPullChartNotFound(err) {
+			reason := fmt.Sprintf("chart %#q not found", tarballURL)
+			addStatusToContext(cc, reason, releaseNotInstalledStatus)
+
+			r.logger.LogCtx(ctx, "level", "warning", "message", reason, "stack", microerror.Stack(err))
+			r.logger.LogCtx(ctx, "level", "debug", "message", "canceling resource")
+			resourcecanceledcontext.SetCanceled(ctx)
+			return nil
+		} else if helmclient.IsPullChartTimeout(err) {
+			reason := fmt.Sprintf("timeout pulling %#q", tarballURL)
+			addStatusToContext(cc, reason, releaseNotInstalledStatus)
+
+			r.logger.LogCtx(ctx, "level", "warning", "message", reason, "stack", microerror.Stack(err))
 			r.logger.LogCtx(ctx, "level", "debug", "message", "canceling resource")
 			resourcecanceledcontext.SetCanceled(ctx)
 			return nil

@@ -7,7 +7,6 @@ import (
 
 	"github.com/giantswarm/apiextensions/pkg/apis/application/v1alpha1"
 	"github.com/giantswarm/apiextensions/pkg/clientset/versioned/fake"
-	"github.com/giantswarm/helmclient"
 	"github.com/giantswarm/helmclient/helmclienttest"
 	"github.com/giantswarm/micrologger/microloggertest"
 	"github.com/google/go-cmp/cmp"
@@ -25,7 +24,6 @@ func Test_DesiredState(t *testing.T) {
 		name          string
 		obj           *v1alpha1.Chart
 		configMap     *apiv1.ConfigMap
-		helmChart     helmclient.Chart
 		secret        *apiv1.Secret
 		expectedState ReleaseState
 		errorMatcher  func(error) bool
@@ -34,11 +32,9 @@ func Test_DesiredState(t *testing.T) {
 			name: "case 0: basic match",
 			obj: &v1alpha1.Chart{
 				Spec: v1alpha1.ChartSpec{
-					Name: "chart-operator-chart",
+					Name:    "chart-operator-chart",
+					Version: "0.1.2",
 				},
-			},
-			helmChart: helmclient.Chart{
-				Version: "0.1.2",
 			},
 			expectedState: ReleaseState{
 				Name:              "chart-operator-chart",
@@ -59,6 +55,7 @@ func Test_DesiredState(t *testing.T) {
 							Namespace: "giantswarm",
 						},
 					},
+					Version: "1.2.3",
 				},
 			},
 			configMap: &apiv1.ConfigMap{
@@ -67,9 +64,6 @@ func Test_DesiredState(t *testing.T) {
 					Namespace: "giantswarm",
 				},
 				Data: map[string]string{},
-			},
-			helmChart: helmclient.Chart{
-				Version: "1.2.3",
 			},
 			expectedState: ReleaseState{
 				Name:              "chart-operator-chart",
@@ -90,6 +84,7 @@ func Test_DesiredState(t *testing.T) {
 							Namespace: "giantswarm",
 						},
 					},
+					Version: "0.1.2",
 				},
 			},
 			configMap: &apiv1.ConfigMap{
@@ -100,9 +95,6 @@ func Test_DesiredState(t *testing.T) {
 				Data: map[string]string{
 					"values": `test: test`,
 				},
-			},
-			helmChart: helmclient.Chart{
-				Version: "0.1.2",
 			},
 			expectedState: ReleaseState{
 				Name:              "chart-operator-chart",
@@ -123,6 +115,7 @@ func Test_DesiredState(t *testing.T) {
 							Namespace: "giantswarm",
 						},
 					},
+					Version: "0.1.2",
 				},
 			},
 			configMap: &apiv1.ConfigMap{
@@ -133,9 +126,6 @@ func Test_DesiredState(t *testing.T) {
 				Data: map[string]string{
 					"values": `"provider": "azure"
 "replicas": 2`},
-			},
-			helmChart: helmclient.Chart{
-				Version: "0.1.2",
 			},
 			expectedState: ReleaseState{
 				Name:              "chart-operator-chart",
@@ -156,6 +146,7 @@ func Test_DesiredState(t *testing.T) {
 							Namespace: "giantswarm",
 						},
 					},
+					Version: "0.1.2",
 				},
 			},
 			configMap: &apiv1.ConfigMap{
@@ -163,9 +154,6 @@ func Test_DesiredState(t *testing.T) {
 					Name:      "missing-values-configmap",
 					Namespace: "giantswarm",
 				},
-			},
-			helmChart: helmclient.Chart{
-				Version: "0.1.2",
 			},
 			errorMatcher: IsNotFound,
 		},
@@ -180,10 +168,8 @@ func Test_DesiredState(t *testing.T) {
 							Namespace: "giantswarm",
 						},
 					},
+					Version: "0.1.2",
 				},
-			},
-			helmChart: helmclient.Chart{
-				Version: "0.1.2",
 			},
 			secret: &apiv1.Secret{
 				ObjectMeta: metav1.ObjectMeta{
@@ -213,10 +199,8 @@ func Test_DesiredState(t *testing.T) {
 							Namespace: "giantswarm",
 						},
 					},
+					Version: "0.1.2",
 				},
-			},
-			helmChart: helmclient.Chart{
-				Version: "0.1.2",
 			},
 			secret: &apiv1.Secret{
 				ObjectMeta: metav1.ObjectMeta{
@@ -247,10 +231,8 @@ func Test_DesiredState(t *testing.T) {
 							Namespace: "giantswarm",
 						},
 					},
+					Version: "0.1.2",
 				},
-			},
-			helmChart: helmclient.Chart{
-				Version: "0.1.2",
 			},
 			secret: &apiv1.Secret{
 				ObjectMeta: metav1.ObjectMeta{
@@ -275,6 +257,7 @@ func Test_DesiredState(t *testing.T) {
 							Namespace: "giantswarm",
 						},
 					},
+					Version: "0.1.2",
 				},
 			},
 			configMap: &apiv1.ConfigMap{
@@ -286,9 +269,6 @@ func Test_DesiredState(t *testing.T) {
 					"values": `"username": "admin"
 "replicas": 2`,
 				},
-			},
-			helmChart: helmclient.Chart{
-				Version: "0.1.2",
 			},
 			secret: &apiv1.Secret{
 				ObjectMeta: metav1.ObjectMeta{
@@ -326,18 +306,10 @@ func Test_DesiredState(t *testing.T) {
 				ctx = controllercontext.NewContext(context.Background(), c)
 			}
 
-			var helmClient helmclient.Interface
-			{
-				c := helmclienttest.Config{
-					LoadChartResponse: tc.helmChart,
-				}
-				helmClient = helmclienttest.New(c)
-			}
-
 			c := Config{
 				Fs:         afero.NewMemMapFs(),
 				G8sClient:  fake.NewSimpleClientset(),
-				HelmClient: helmClient,
+				HelmClient: helmclienttest.New(helmclienttest.Config{}),
 				K8sClient:  k8sfake.NewSimpleClientset(objs...),
 				Logger:     microloggertest.New(),
 			}
