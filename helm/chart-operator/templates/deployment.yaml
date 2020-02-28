@@ -52,9 +52,9 @@ spec:
         - {{ . }}
         {{- end }}
         searches:
-        - giantswarm.svc.cluster.local
-        - svc.cluster.local
-        - cluster.local
+        - giantswarm.svc.{{ .Values.cluster.kubernetes.domain }}
+        - svc.{{ .Values.cluster.kubernetes.domain }}
+        - {{ .Values.cluster.kubernetes.domain }}
         options:
         - name: ndots
           value: "5"
