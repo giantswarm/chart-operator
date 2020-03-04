@@ -23,7 +23,10 @@ func (r *Resource) ApplyDeleteChange(ctx context.Context, obj, deleteChange inte
 		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("deleting release %#q", releaseState.Name))
 
 		err = r.helmClient.DeleteRelease(ctx, releaseState.Name, helm.DeletePurge(true))
-		if err != nil {
+		if helmclient.IsReleaseNotFound(err) {
+			// Fall through.
+			return nil
+		} else if err != nil {
 			return microerror.Mask(err)
 		}
 
@@ -33,8 +36,8 @@ func (r *Resource) ApplyDeleteChange(ctx context.Context, obj, deleteChange inte
 				rel, err = r.helmClient.GetReleaseContent(ctx, releaseState.Name)
 				if rel != nil {
 					return microerror.Maskf(waitError, "release %#q still exists", releaseState.Name)
-				} else if helmclient.IsNotFound(err) {
-					// Fall through as release is deleted.
+				} else if helmclient.IsReleaseNotFound(err) {
+					// Fall through.
 					return nil
 				} else if err != nil {
 					return microerror.Mask(err)
