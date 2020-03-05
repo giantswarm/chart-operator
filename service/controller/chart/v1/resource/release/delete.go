@@ -34,9 +34,13 @@ func (r *Resource) ApplyDeleteChange(ctx context.Context, obj, deleteChange inte
 			// Release still exists. We cancel the resource and keep the finalizer.
 			// We will retry the delete in the next reconciliation loop.
 			r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("release %#q still exists", releaseState.Name))
-			r.logger.LogCtx(ctx, "level", "debug", "message", "canceling resource")
-			resourcecanceledcontext.SetCanceled(ctx)
+
 			finalizerskeptcontext.SetKept(ctx)
+			r.logger.LogCtx(ctx, "level", "debug", "message", "keeping finalizers")
+
+			resourcecanceledcontext.SetCanceled(ctx)
+			r.logger.LogCtx(ctx, "level", "debug", "message", "canceling resource")
+
 			return nil
 		} else if helmclient.IsReleaseNotFound(err) {
 			r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("deleted release %#q", releaseState.Name))
