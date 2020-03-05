@@ -41,7 +41,6 @@ func (r *Resource) ApplyDeleteChange(ctx context.Context, obj, deleteChange inte
 		} else if err != nil {
 			return microerror.Mask(err)
 		}
-
 	} else {
 		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("not deleting release %#q", releaseState.Name))
 	}
