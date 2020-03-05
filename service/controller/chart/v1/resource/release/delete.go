@@ -3,11 +3,10 @@ package release
 import (
 	"context"
 	"fmt"
-	"time"
 
-	"github.com/giantswarm/backoff"
 	"github.com/giantswarm/helmclient"
 	"github.com/giantswarm/microerror"
+	"github.com/giantswarm/operatorkit/controller/context/finalizerskeptcontext"
 	"github.com/giantswarm/operatorkit/controller/context/resourcecanceledcontext"
 	"github.com/giantswarm/operatorkit/resource/crud"
 	"k8s.io/helm/pkg/helm"
@@ -24,46 +23,30 @@ func (r *Resource) ApplyDeleteChange(ctx context.Context, obj, deleteChange inte
 
 		err = r.helmClient.DeleteRelease(ctx, releaseState.Name, helm.DeletePurge(true))
 		if helmclient.IsReleaseNotFound(err) {
-			// Fall through.
+			r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("release %#q already deleted", releaseState.Name))
 			return nil
 		} else if err != nil {
 			return microerror.Mask(err)
 		}
 
-		var rel *helmclient.ReleaseContent
-		{
-			o := func() error {
-				rel, err = r.helmClient.GetReleaseContent(ctx, releaseState.Name)
-				if rel != nil {
-					return microerror.Maskf(waitError, "release %#q still exists", releaseState.Name)
-				} else if helmclient.IsReleaseNotFound(err) {
-					// Fall through.
-					return nil
-				} else if err != nil {
-					return microerror.Mask(err)
-				}
+		rel, err := r.helmClient.GetReleaseContent(ctx, releaseState.Name)
+		if rel != nil {
+			// Release still exists. We cancel the resource and keep the finalizer.
+			// We will retry the delete in the next reconciliation loop.
+			r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("release %#q still exists", releaseState.Name))
 
-				return nil
-			}
-			b := backoff.NewMaxRetries(3, 5*time.Second)
-			n := backoff.NewNotifier(r.logger, ctx)
+			finalizerskeptcontext.SetKept(ctx)
+			r.logger.LogCtx(ctx, "level", "debug", "message", "keeping finalizers")
 
-			err := backoff.RetryNotify(o, b, n)
-			if IsWait(err) {
-				// We timed out and the helm release still exists. We cancel the
-				// resource and keep the finalizer. We will retry the delete in
-				// the next reconciliation loop.
-				r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("failed to delete release %#q", releaseState.Name))
-				r.logger.LogCtx(ctx, "level", "debug", "message", "canceling resource")
-				resourcecanceledcontext.SetCanceled(ctx)
-				return nil
-			} else if err != nil {
-				return microerror.Mask(err)
-			}
+			resourcecanceledcontext.SetCanceled(ctx)
+			r.logger.LogCtx(ctx, "level", "debug", "message", "canceling resource")
 
+			return nil
+		} else if helmclient.IsReleaseNotFound(err) {
 			r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("deleted release %#q", releaseState.Name))
+		} else if err != nil {
+			return microerror.Mask(err)
 		}
-
 	} else {
 		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("not deleting release %#q", releaseState.Name))
 	}
