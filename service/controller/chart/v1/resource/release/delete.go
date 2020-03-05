@@ -6,6 +6,7 @@ import (
 
 	"github.com/giantswarm/helmclient"
 	"github.com/giantswarm/microerror"
+	"github.com/giantswarm/operatorkit/controller/context/finalizerskeptcontext"
 	"github.com/giantswarm/operatorkit/controller/context/resourcecanceledcontext"
 	"github.com/giantswarm/operatorkit/resource/crud"
 	"k8s.io/helm/pkg/helm"
@@ -35,6 +36,7 @@ func (r *Resource) ApplyDeleteChange(ctx context.Context, obj, deleteChange inte
 			r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("release %#q still exists", releaseState.Name))
 			r.logger.LogCtx(ctx, "level", "debug", "message", "canceling resource")
 			resourcecanceledcontext.SetCanceled(ctx)
+			finalizerskeptcontext.SetKept(ctx)
 			return nil
 		} else if helmclient.IsReleaseNotFound(err) {
 			r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("deleted release %#q", releaseState.Name))
