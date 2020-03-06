@@ -23,6 +23,9 @@ func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
 		return microerror.Mask(err)
 	}
 
+	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("DEBUG Status Context %#v", cc))
+	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("DEBUG Status Reason %#q", cc.Status.Reason))
+
 	// If a reason was added to the controller context something went wrong.
 	// So we set the CR status and return early.
 	if cc.Status.Reason != "" {
@@ -54,6 +57,8 @@ func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
 		return microerror.Mask(err)
 	}
 
+	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("DEBUG Status releaseContent %#v", releaseContent))
+
 	releaseHistory, err := r.helmClient.GetReleaseHistory(ctx, releaseName)
 	if helmclient.IsReleaseNotFound(err) {
 		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("did not get status for release %#q", releaseName))
@@ -64,6 +69,8 @@ func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
 	} else if err != nil {
 		return microerror.Mask(err)
 	}
+
+	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("DEBUG Status releaseHistory %#v", releaseHistory))
 
 	var status, reason string
 	{
@@ -87,6 +94,9 @@ func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
 		},
 		Version: releaseHistory.Version,
 	}
+
+	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("DEBUG Desired Status %#v", desiredStatus))
+	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("DEBUG CR Status %#v", key.ChartStatus(cr)))
 
 	if !equals(desiredStatus, key.ChartStatus(cr)) {
 		err = r.setStatus(ctx, cr, desiredStatus)
