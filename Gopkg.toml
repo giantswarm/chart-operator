@@ -53,7 +53,7 @@ required = [
   name = "github.com/giantswarm/apprclient"
 
 [[constraint]]
-  branch = "vendor-helmclient"
+  branch = "master"
   name = "github.com/giantswarm/e2e-harness"
 
 [[constraint]]
@@ -65,7 +65,7 @@ required = [
   name = "github.com/giantswarm/e2etemplates"
 
 [[constraint]]
-  branch = "retry-pull-chart"
+  branch = "master"
   name = "github.com/giantswarm/helmclient"
 
 [[constraint]]
@@ -77,8 +77,8 @@ required = [
   name = "github.com/giantswarm/k8sportforward"
 
 [[constraint]]
-  branch = "master"
   name = "github.com/giantswarm/microerror"
+  version = "~0.1.0"
 
 [[constraint]]
   branch = "master"
@@ -89,8 +89,8 @@ required = [
   name = "github.com/giantswarm/microkit"
 
 [[constraint]]
-  branch = "master"
   name = "github.com/giantswarm/micrologger"
+  version = "~0.1.0"
 
 [[constraint]]
   branch = "master"
