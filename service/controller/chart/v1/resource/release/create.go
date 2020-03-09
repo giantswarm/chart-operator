@@ -3,6 +3,7 @@ package release
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/giantswarm/helmclient"
 	"github.com/giantswarm/microerror"
@@ -70,9 +71,30 @@ func (r *Resource) ApplyCreateChange(ctx context.Context, obj, createChange inte
 			}
 		}()
 
-		// We need to pass the ValueOverrides option to make the install process
-		// use the default values and prevent errors on nested values.
-		err = r.helmClient.InstallReleaseFromTarball(ctx, tarballPath, ns, helm.ReleaseName(releaseState.Name), helm.ValueOverrides(releaseState.ValuesYAML))
+		ch := make(chan error)
+
+		// We create the helm release but with a short timeout so we don't
+		// block reconciling other CRs. This gives time to make the port
+		// forwarding connection to the Tiller API.
+		//
+		// If we do timeout the install will continue in the background.
+		// We will check the progress in the next reconciliation loop.
+		go func() {
+			// We need to pass the ValueOverrides option to make the install process
+			// use the default values and prevent errors on nested values.
+			err = r.helmClient.InstallReleaseFromTarball(ctx, tarballPath, ns, helm.ReleaseName(releaseState.Name), helm.ValueOverrides(releaseState.ValuesYAML))
+			close(ch)
+		}()
+
+		select {
+		case <-ch:
+			// Fall through.
+		case <-time.After(3 * time.Second):
+			r.logger.LogCtx(ctx, "level", "debug", "message", "release still being created")
+			r.logger.LogCtx(ctx, "level", "debug", "message", "canceling resource")
+			return nil
+		}
+
 		if err != nil {
 			reason := err.Error()
 			r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("helm release %#q failed", releaseState.Name), "stack", microerror.Stack(err))
@@ -85,7 +107,6 @@ func (r *Resource) ApplyCreateChange(ctx context.Context, obj, createChange inte
 				r.logger.LogCtx(ctx, "level", "debug", "message", "canceling resource")
 				resourcecanceledcontext.SetCanceled(ctx)
 				return nil
-
 			} else if err != nil {
 				return microerror.Mask(err)
 			}
