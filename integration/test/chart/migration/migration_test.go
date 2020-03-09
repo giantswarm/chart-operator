@@ -86,6 +86,9 @@ func TestChartMigration(t *testing.T) {
 					// chartconfig controller.
 					"operatorkit.giantswarm.io/chart-operator-chartconfig",
 				},
+				Labels: map[string]string{
+					"app": "test-app",
+				},
 			},
 			Spec: corev1alpha1.ChartConfigSpec{
 				Chart: corev1alpha1.ChartConfigSpecChart{
@@ -116,6 +119,7 @@ func TestChartMigration(t *testing.T) {
 				Name:      key.TestAppReleaseName(),
 				Namespace: "giantswarm",
 				Labels: map[string]string{
+					"app":                                  "test-app",
 					"chart-operator.giantswarm.io/version": "1.0.0",
 				},
 			},

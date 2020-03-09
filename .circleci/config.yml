@@ -94,30 +94,6 @@ jobs:
       E2E_TEST_DIR: "integration/test/chart/migration"
     <<: *e2eTest
 
-  e2eTestChartConfigCurBasicPR:
-    environment:
-      E2E_TEST_DIR: "integration/test/chartconfig/basic"
-      E2E_TESTED_VERSION: "current"
-    <<: *e2eTest
-
-  e2eTestChartConfigCurBasicMaster:
-    environment:
-      E2E_TEST_DIR: "integration/test/chartconfig/basic"
-      E2E_TESTED_VERSION: "current"
-    <<: *e2eTest
-
-  e2eTestChartConfigCurChartValuesPR:
-    environment:
-      E2E_TEST_DIR: "integration/test/chartconfig/chartvalues"
-      E2E_TESTED_VERSION: "current"
-    <<: *e2eTest
-
-  e2eTestChartConfigCurChartValuesMaster:
-    environment:
-      E2E_TEST_DIR: "integration/test/chartconfig/chartvalues"
-      E2E_TESTED_VERSION: "current"
-    <<: *e2eTest
-
   deploy:
     machine: true
     steps:
@@ -219,28 +195,6 @@ workflows:
           requires:
           - build
 
-      - e2eTestChartConfigCurBasicPR:
-          requires:
-          - build
-
-      - e2eTestChartConfigCurBasicMaster:
-          filters:
-            branches:
-              only: master
-          requires:
-          - build
-
-      - e2eTestChartConfigCurChartValuesPR:
-          requires:
-          - build
-
-      - e2eTestChartConfigCurChartValuesMaster:
-          filters:
-            branches:
-              only: master
-          requires:
-          - build
-
       - deploy:
           filters:
             branches:
@@ -248,8 +202,6 @@ workflows:
           requires:
           - e2eTestChartBasicMaster
           - e2eTestChartMigrationMaster
-          - e2eTestChartConfigCurBasicMaster
-          - e2eTestChartConfigCurChartValuesMaster
           - push-chart-operator-to-aliyun-legacy
 
       - publish_to_stable:
