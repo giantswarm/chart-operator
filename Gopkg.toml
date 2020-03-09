@@ -77,8 +77,8 @@ required = [
   name = "github.com/giantswarm/k8sportforward"
 
 [[constraint]]
-  branch = "master"
   name = "github.com/giantswarm/microerror"
+  version = "~0.1.0"
 
 [[constraint]]
   branch = "master"
@@ -89,8 +89,8 @@ required = [
   name = "github.com/giantswarm/microkit"
 
 [[constraint]]
-  branch = "master"
   name = "github.com/giantswarm/micrologger"
+  version = "~0.1.0"
 
 [[constraint]]
   branch = "master"
