@@ -255,42 +255,41 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:e9e6c4c2ae7f624a6eb1b768c582c05f200041de51faf5151b8e074eae917b57"
+  digest = "1:2673e930820371280627226d65918e45097a145a656fc1d7a92505f26610d3cf"
   name = "github.com/giantswarm/errors"
   packages = ["tenant"]
   pruneopts = "UT"
-  revision = "2640113be13f2eec85fe785ed74418a1a2852e5d"
+  revision = "924f9ee3873810de9f288da9bbab5246de195f41"
 
 [[projects]]
   branch = "master"
-  digest = "1:ca9ad5887021e13fca3a1aa33a58668a0061b3a03bd7dfc2d36c38dedf56f572"
+  digest = "1:640d18361eaa8641ce7d857b613a4e946b30c3d9f50d07adda07390d72e98122"
   name = "github.com/giantswarm/k8sclient"
   packages = [
     ".",
     "k8scrdclient",
   ]
   pruneopts = "UT"
-  revision = "6cb127468cd6b30eaf8030b875f796e34b481938"
+  revision = "f888a8ac48619e166eb78bd93fc7eb8a5a544cd4"
 
 [[projects]]
   branch = "master"
-  digest = "1:42649fa57594fd0dd202a5cf01d9cae946ff99e0e8f87bc9c145860a2e57c17a"
+  digest = "1:7b4402ea4cd2c0a5c1c0a7eb60a84fe06ee5c077adfeac9b4b1f2544c683f607"
   name = "github.com/giantswarm/k8sportforward"
   packages = ["."]
   pruneopts = "UT"
-  revision = "676e7106283c008acc4c07c0cfc903c18cdbeda3"
+  revision = "1c93e34022a6ac23a8763221340f5bb25fae32a8"
 
 [[projects]]
-  branch = "master"
-  digest = "1:d80347cb345b2986422040821735ae0efba8b8093b765b146b90796d926b85b4"
+  digest = "1:701a5f5a7297ced0c7b9aeeba6a40ef47663b956d56e7acd09fe0d1c31eb1e4b"
   name = "github.com/giantswarm/microerror"
   packages = ["."]
   pruneopts = "UT"
-  revision = "e0ebc4ecf5a515b8f2a33257d08962e387120a77"
+  revision = "e8fe0fa9c0097ca80d8b773e1d728843447f9233"
+  version = "v0.1.0"
 
 [[projects]]
-  branch = "master"
-  digest = "1:c313924ca7110c452a83502384552f4dd2ed25dd0f3ab8aa8a34707315243561"
+  digest = "1:4e616fe01d486048e77342e2c5e638f8744ec6da802335633740aafb057f50d8"
   name = "github.com/giantswarm/micrologger"
   packages = [
     ".",
@@ -298,7 +297,8 @@
     "microloggertest",
   ]
   pruneopts = "UT"
-  revision = "d866337f739365a54de5924b8a7b29df17693ef8"
+  revision = "c4d217562e3d493e3ff571707346a5a2653475cb"
+  version = "v0.1.1"
 
 [[projects]]
   digest = "1:0cfcded8689c2c964c223650009c5dd9e283c22d57f18f2335aafa16cc22acf1"
@@ -1584,6 +1584,7 @@
     "k8s.io/api/networking/v1",
     "k8s.io/api/policy/v1beta1",
     "k8s.io/api/rbac/v1",
+    "k8s.io/api/scheduling/v1",
     "k8s.io/apimachinery/pkg/api/errors",
     "k8s.io/apimachinery/pkg/apis/meta/v1",
     "k8s.io/apimachinery/pkg/util/intstr",
