@@ -2,9 +2,7 @@ package release
 
 import (
 	"context"
-	"errors"
 	"fmt"
-	"os"
 	"time"
 
 	"github.com/giantswarm/helmclient"
@@ -69,9 +67,7 @@ func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange inte
 
 		defer func() {
 			err := r.fs.Remove(tarballPath)
-			if errors.Is(err, os.ErrNotExist) {
-				r.logger.LogCtx(ctx, "level", "error", "message", fmt.Sprintf("file %#q already deleted", tarballPath))
-			} else if err != nil {
+			if err != nil {
 				r.logger.LogCtx(ctx, "level", "error", "message", fmt.Sprintf("deletion of %#q failed", tarballPath), "stack", fmt.Sprintf("%#v", err))
 			}
 		}()
