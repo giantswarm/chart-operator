@@ -227,7 +227,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:5dddf1342f30cbdda064c87827164becfead1b5a35ef9029190cc3cb6d73376f"
+  digest = "1:31f48ad703db700be30d2174c61004db804850ab7c8491908ef68ad1fce7efe3"
   name = "github.com/giantswarm/apiextensions"
   packages = [
     "pkg/apis/application/v1alpha1",
@@ -253,7 +253,7 @@
     "pkg/clientset/versioned/typed/release/v1alpha1/fake",
   ]
   pruneopts = "UT"
-  revision = "3fdfe37ee131b55cdcd2e395a770eb92c2422d01"
+  revision = "95ba5a91cb4431ab8e6dee2eb9e372616573b1b4"
 
 [[projects]]
   branch = "master"
@@ -295,15 +295,22 @@
 
 [[projects]]
   branch = "master"
+<<<<<<< HEAD
   digest = "1:9f8941cc4db352ee3ccdc78dc12b85ba14d64cbccf264ae4b09eb863a51ff7e3"
+=======
+  digest = "1:7735c348d056d16c55b0a896a412b06c25b96d662c3db0186cf632fa0a1e2331"
+>>>>>>> master
   name = "github.com/giantswarm/e2etemplates"
   packages = [
     "internal/render",
-    "pkg/chartvalues",
     "pkg/e2etemplates",
   ]
   pruneopts = "UT"
+<<<<<<< HEAD
   revision = "751eac7541c45f8f9b6f5af16f7e6bdaa3502385"
+=======
+  revision = "d9b582bb77554ca3a14bcf1226c38b67ed42660f"
+>>>>>>> master
 
 [[projects]]
   branch = "master"
@@ -323,14 +330,22 @@
 
 [[projects]]
   branch = "master"
+<<<<<<< HEAD
   digest = "1:2a16ccd0e4b3eabf74c2aae355cf680c18a5ea208085317b44b90a97d7a80055"
+=======
+  digest = "1:fc2341b19203050c3ec69647511267d84e1e54e62b51a19aa16e13de8f0c15e2"
+>>>>>>> master
   name = "github.com/giantswarm/helmclient"
   packages = [
     ".",
     "helmclienttest",
   ]
   pruneopts = "UT"
+<<<<<<< HEAD
   revision = "05391cd56d161138170ddd32d0b7d40678bb4d79"
+=======
+  revision = "09cc8424cb4930b685bf53e0c0856bf3727fa41d"
+>>>>>>> master
 
 [[projects]]
   branch = "master"
@@ -1885,7 +1900,6 @@
     "github.com/giantswarm/apprclient/apprclienttest",
     "github.com/giantswarm/e2e-harness/pkg/release",
     "github.com/giantswarm/e2esetup/chart/env",
-    "github.com/giantswarm/e2etemplates/pkg/chartvalues",
     "github.com/giantswarm/e2etemplates/pkg/e2etemplates",
     "github.com/giantswarm/exporterkit/collector",
     "github.com/giantswarm/helmclient",
