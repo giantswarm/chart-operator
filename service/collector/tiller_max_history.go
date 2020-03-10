@@ -79,14 +79,9 @@ func (t *TillerMaxHistory) Collect(ch chan<- prometheus.Metric) error {
 		return microerror.Mask(err)
 	}
 
-	chartConfigs, err := t.g8sClient.CoreV1alpha1().ChartConfigs("").List(metav1.ListOptions{})
-	if err != nil {
-		return microerror.Mask(err)
-	}
-
-	if len(charts.Items) == 0 && len(chartConfigs.Items) == 0 {
-		// Skip checking tiller when there are no custom resources,
-		// as tiller is only installed when there is at least one CR to reconcile.
+	if len(charts.Items) == 0 {
+		// Skip checking Tiller when there are no chart CRs,
+		// As Tiller is only installed when there is at least one CR to reconcile.
 		t.logger.Log("level", "debug", "message", "did not collect Tiller max history")
 		t.logger.Log("level", "debug", "message", "no Chart or ChartConfig CRs in the cluster")
 
