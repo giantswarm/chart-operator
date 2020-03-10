@@ -15,8 +15,6 @@ import (
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
-	"github.com/giantswarm/chart-operator/integration/chartconfig"
-	"github.com/giantswarm/chart-operator/integration/cnr"
 	"github.com/giantswarm/chart-operator/integration/key"
 	"github.com/giantswarm/chart-operator/pkg/annotation"
 )
@@ -38,28 +36,6 @@ import (
 //
 func TestChartMigration(t *testing.T) {
 	ctx := context.Background()
-
-	// Push chart to CNR.
-	{
-		err := chartconfig.InstallResources(ctx, config)
-		if err != nil {
-			t.Fatalf("could not install resources %v", err)
-		}
-
-		charts := []cnr.Chart{
-			{
-				Channel: "0-7-beta",
-				Release: "0.7.0",
-				Tarball: "/e2e/fixtures/kubernetes-test-app-chart-0.7.0.tgz",
-				Name:    "test-app",
-			},
-		}
-
-		err = cnr.Push(ctx, config.K8sClients, charts)
-		if err != nil {
-			t.Fatalf("expected %#v got %#v", nil, err)
-		}
-	}
 
 	// Create legacy chartconfig CRD.
 	{

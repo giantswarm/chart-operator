@@ -184,7 +184,6 @@ func (s *Service) Boot(ctx context.Context) {
 	s.bootOnce.Do(func() {
 		go s.operatorCollector.Boot(ctx)
 
-		// Start the controllers
 		go s.chartController.Boot(ctx)
 	})
 }

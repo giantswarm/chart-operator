@@ -62,8 +62,6 @@ func Test_Service_New(t *testing.T) {
 					Viper:  viper.New(),
 				}
 
-				c.Viper.Set(c.Flag.Service.CNR.Address, "https://127.0.0.1:5555")
-				c.Viper.Set(c.Flag.Service.CNR.Organization, "giantswarm")
 				c.Viper.Set(c.Flag.Service.Helm.TillerNamespace, "giantswarm")
 				c.Viper.Set(c.Flag.Service.Kubernetes.Address, ts.URL)
 				c.Viper.Set(c.Flag.Service.Kubernetes.InCluster, false)
