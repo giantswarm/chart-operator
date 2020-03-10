@@ -40,19 +40,6 @@ func NewSet(config SetConfig) (*Set, error) {
 
 	var err error
 
-	var chartConfigResourceCollector *ChartConfigResource
-	{
-		c := ChartConfigResourceConfig{
-			G8sClient: config.K8sClient.G8sClient(),
-			Logger:    config.Logger,
-		}
-
-		chartConfigResourceCollector, err = NewChartConfigResource(c)
-		if err != nil {
-			return nil, microerror.Mask(err)
-		}
-	}
-
 	var orphanConfigMapCollector *OrphanConfigMap
 	{
 		c := OrphanConfigMapConfig{
@@ -133,7 +120,6 @@ func NewSet(config SetConfig) (*Set, error) {
 	{
 		c := collector.SetConfig{
 			Collectors: []collector.Interface{
-				chartConfigResourceCollector,
 				orphanConfigMapCollector,
 				orphanSecretCollector,
 				tillerMaxHistoryCollector,

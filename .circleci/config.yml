@@ -27,8 +27,6 @@ e2eTest: &e2eTest
             -v $(pwd):/go/src/github.com/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME} \
             -e E2E_KUBECONFIG=/e2e/kubeconfig \
             -e CIRCLE_SHA1=${CIRCLE_SHA1} \
-            -e GITHUB_BOT_TOKEN=${GITHUB_BOT_TOKEN} \
-            -e E2E_TESTED_VERSION=${E2E_TESTED_VERSION} \
             -w /go/src/github.com/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME} \
             golang:1 go test -v -tags k8srequired ./${E2E_TEST_DIR}/
 
@@ -92,30 +90,6 @@ jobs:
   e2eTestChartMigrationMaster:
     environment:
       E2E_TEST_DIR: "integration/test/chart/migration"
-    <<: *e2eTest
-
-  e2eTestChartConfigCurBasicPR:
-    environment:
-      E2E_TEST_DIR: "integration/test/chartconfig/basic"
-      E2E_TESTED_VERSION: "current"
-    <<: *e2eTest
-
-  e2eTestChartConfigCurBasicMaster:
-    environment:
-      E2E_TEST_DIR: "integration/test/chartconfig/basic"
-      E2E_TESTED_VERSION: "current"
-    <<: *e2eTest
-
-  e2eTestChartConfigCurChartValuesPR:
-    environment:
-      E2E_TEST_DIR: "integration/test/chartconfig/chartvalues"
-      E2E_TESTED_VERSION: "current"
-    <<: *e2eTest
-
-  e2eTestChartConfigCurChartValuesMaster:
-    environment:
-      E2E_TEST_DIR: "integration/test/chartconfig/chartvalues"
-      E2E_TESTED_VERSION: "current"
     <<: *e2eTest
 
   deploy:
@@ -219,28 +193,6 @@ workflows:
           requires:
           - build
 
-      - e2eTestChartConfigCurBasicPR:
-          requires:
-          - build
-
-      - e2eTestChartConfigCurBasicMaster:
-          filters:
-            branches:
-              only: master
-          requires:
-          - build
-
-      - e2eTestChartConfigCurChartValuesPR:
-          requires:
-          - build
-
-      - e2eTestChartConfigCurChartValuesMaster:
-          filters:
-            branches:
-              only: master
-          requires:
-          - build
-
       - deploy:
           filters:
             branches:
@@ -248,8 +200,6 @@ workflows:
           requires:
           - e2eTestChartBasicMaster
           - e2eTestChartMigrationMaster
-          - e2eTestChartConfigCurBasicMaster
-          - e2eTestChartConfigCurChartValuesMaster
           - push-chart-operator-to-aliyun-legacy
 
       - publish_to_stable:

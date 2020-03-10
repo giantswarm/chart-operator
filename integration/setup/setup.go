@@ -8,7 +8,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/giantswarm/apiextensions/pkg/apis/core/v1alpha1"
+	"github.com/giantswarm/apiextensions/pkg/apis/application/v1alpha1"
 	"github.com/giantswarm/e2e-harness/pkg/release"
 	"github.com/giantswarm/microerror"
 
@@ -54,7 +54,7 @@ func installResources(ctx context.Context, config Config) error {
 	}
 
 	{
-		err = config.Release.InstallOperator(ctx, key.ChartOperatorReleaseName(), release.NewVersion(env.CircleSHA()), templates.ChartOperatorValues, v1alpha1.NewChartConfigCRD())
+		err = config.Release.InstallOperator(ctx, key.ChartOperatorReleaseName(), release.NewVersion(env.CircleSHA()), templates.ChartOperatorValues, v1alpha1.NewChartCRD())
 		if err != nil {
 			return microerror.Mask(err)
 		}

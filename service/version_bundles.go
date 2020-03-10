@@ -15,6 +15,8 @@ func NewVersionBundles() []versionbundle.Bundle {
 
 	versionBundles = append(versionBundles, chartv1.VersionBundle())
 
+	// Legacy chartconfig version bundles are kept for backwards compatibility.
+	// So existing releases appear.
 	versionBundles = append(versionBundles, chartconfigv5.VersionBundle())
 	versionBundles = append(versionBundles, chartconfigv6.VersionBundle())
 	versionBundles = append(versionBundles, chartconfigv7.VersionBundle())
