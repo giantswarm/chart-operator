@@ -79,7 +79,7 @@ func (t *TillerReachable) Collect(ch chan<- prometheus.Metric) error {
 	}
 
 	if len(charts.Items) == 0 {
-		// Skip pinging tiller when there are no chart CRs,
+		// Skip pinging tiller when there are no chart CRs.
 		// As Tiller is only installed when there is at least one CR to reconcile.
 		t.logger.Log("level", "debug", "message", "did not collect Tiller reachability")
 		t.logger.Log("level", "debug", "message", "no Chart or ChartConfig CRs in the cluster")
