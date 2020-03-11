@@ -85,6 +85,7 @@ workflows:
               only: master
             tags:
               only: /^v.*/
+
       - architect/push-to-docker-legacy:
           name: push-chart-operator-to-aliyun-legacy
           image: "registry-intl.cn-shanghai.aliyuncs.com/giantswarm/chart-operator"
@@ -92,6 +93,7 @@ workflows:
           password_envar: "ALIYUN_PASSWORD"
           requires:
             - build
+
       - architect/push-to-app-catalog:
           name: push-chart-operator-to-app-catalog
           app_catalog: "default-catalog"
@@ -99,8 +101,8 @@ workflows:
           chart: "chart-operator"
           requires:
             - push-chart-operator-to-quay
-          # Needed to trigger job also on git tag.
           filters:
+            # Needed to trigger job also on git tag.
             tags:
               only: /^v.*/
 
