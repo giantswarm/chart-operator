@@ -41,7 +41,7 @@ func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange inte
 			reason := fmt.Sprintf("pulling chart %#q failed", tarballURL)
 			addStatusToContext(cc, reason, releaseNotInstalledStatus)
 
-			r.logger.LogCtx(ctx, "level", "warning", "message", reason, "stack", microerror.Stack(err))
+			r.logger.LogCtx(ctx, "level", "warning", "message", reason, "stack", microerror.JSON(err))
 			r.logger.LogCtx(ctx, "level", "debug", "message", "canceling resource")
 			resourcecanceledcontext.SetCanceled(ctx)
 			return nil
@@ -49,7 +49,7 @@ func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange inte
 			reason := fmt.Sprintf("chart %#q not found", tarballURL)
 			addStatusToContext(cc, reason, releaseNotInstalledStatus)
 
-			r.logger.LogCtx(ctx, "level", "warning", "message", reason, "stack", microerror.Stack(err))
+			r.logger.LogCtx(ctx, "level", "warning", "message", reason, "stack", microerror.JSON(err))
 			r.logger.LogCtx(ctx, "level", "debug", "message", "canceling resource")
 			resourcecanceledcontext.SetCanceled(ctx)
 			return nil
@@ -57,7 +57,7 @@ func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange inte
 			reason := fmt.Sprintf("timeout pulling %#q", tarballURL)
 			addStatusToContext(cc, reason, releaseNotInstalledStatus)
 
-			r.logger.LogCtx(ctx, "level", "warning", "message", reason, "stack", microerror.Stack(err))
+			r.logger.LogCtx(ctx, "level", "warning", "message", reason, "stack", microerror.JSON(err))
 			r.logger.LogCtx(ctx, "level", "debug", "message", "canceling resource")
 			resourcecanceledcontext.SetCanceled(ctx)
 			return nil
@@ -99,14 +99,14 @@ func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange inte
 		}
 
 		if err != nil {
-			r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("helm release %#q failed", releaseState.Name), "stack", microerror.Stack(err))
+			r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("helm release %#q failed", releaseState.Name), "stack", microerror.JSON(err))
 
 			releaseContent, err := r.helmClient.GetReleaseContent(ctx, releaseState.Name)
 			if helmclient.IsReleaseNotFound(err) {
 				reason := fmt.Sprintf("release %#q not found", releaseState.Name)
 				addStatusToContext(cc, reason, releaseNotInstalledStatus)
 
-				r.logger.LogCtx(ctx, "level", "warning", "message", reason, "stack", microerror.Stack(err))
+				r.logger.LogCtx(ctx, "level", "warning", "message", reason, "stack", microerror.JSON(err))
 				r.logger.LogCtx(ctx, "level", "debug", "message", "canceling resource")
 				resourcecanceledcontext.SetCanceled(ctx)
 				return nil

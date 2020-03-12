@@ -40,7 +40,7 @@ func (r *Resource) ApplyCreateChange(ctx context.Context, obj, createChange inte
 			reason := fmt.Sprintf("pulling chart %#q failed", tarballURL)
 			addStatusToContext(cc, reason, releaseNotInstalledStatus)
 
-			r.logger.LogCtx(ctx, "level", "warning", "message", reason, "stack", microerror.Stack(err))
+			r.logger.LogCtx(ctx, "level", "warning", "message", reason, "stack", microerror.JSON(err))
 			r.logger.LogCtx(ctx, "level", "debug", "message", "canceling resource")
 			resourcecanceledcontext.SetCanceled(ctx)
 			return nil
@@ -48,7 +48,7 @@ func (r *Resource) ApplyCreateChange(ctx context.Context, obj, createChange inte
 			reason := fmt.Sprintf("chart %#q not found", tarballURL)
 			addStatusToContext(cc, reason, releaseNotInstalledStatus)
 
-			r.logger.LogCtx(ctx, "level", "warning", "message", reason, "stack", microerror.Stack(err))
+			r.logger.LogCtx(ctx, "level", "warning", "message", reason, "stack", microerror.JSON(err))
 			r.logger.LogCtx(ctx, "level", "debug", "message", "canceling resource")
 			resourcecanceledcontext.SetCanceled(ctx)
 			return nil
@@ -56,7 +56,7 @@ func (r *Resource) ApplyCreateChange(ctx context.Context, obj, createChange inte
 			reason := fmt.Sprintf("timeout pulling %#q", tarballURL)
 			addStatusToContext(cc, reason, releaseNotInstalledStatus)
 
-			r.logger.LogCtx(ctx, "level", "warning", "message", reason, "stack", microerror.Stack(err))
+			r.logger.LogCtx(ctx, "level", "warning", "message", reason, "stack", microerror.JSON(err))
 			r.logger.LogCtx(ctx, "level", "debug", "message", "canceling resource")
 			resourcecanceledcontext.SetCanceled(ctx)
 			return nil
@@ -97,7 +97,7 @@ func (r *Resource) ApplyCreateChange(ctx context.Context, obj, createChange inte
 
 		if err != nil {
 			reason := err.Error()
-			r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("helm release %#q failed", releaseState.Name), "stack", microerror.Stack(err))
+			r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("helm release %#q failed", releaseState.Name), "stack", microerror.JSON(err))
 
 			releaseContent, err := r.helmClient.GetReleaseContent(ctx, releaseState.Name)
 			if helmclient.IsReleaseNotFound(err) {
