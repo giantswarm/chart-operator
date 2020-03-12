@@ -71,4 +71,3 @@ details.
 [appr]: https://github.com/appr/appr
 [helm]: https://github.com/helm/helm
 [operatorkit]: https://github.com/giantswarm/operatorkit
-
