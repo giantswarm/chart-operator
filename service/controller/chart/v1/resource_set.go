@@ -21,7 +21,6 @@ import (
 	"github.com/giantswarm/chart-operator/service/controller/chart/v1/resource/chartmigration"
 	"github.com/giantswarm/chart-operator/service/controller/chart/v1/resource/release"
 	"github.com/giantswarm/chart-operator/service/controller/chart/v1/resource/status"
-	"github.com/giantswarm/chart-operator/service/controller/chart/v1/resource/tiller"
 )
 
 // ResourceSetConfig contains necessary dependencies and settings for
@@ -103,19 +102,6 @@ func NewResourceSet(config ResourceSetConfig) (*controller.ResourceSet, error) {
 		}
 
 		statusResource, err = status.New(c)
-		if err != nil {
-			return nil, microerror.Mask(err)
-		}
-	}
-
-	var tillerResource resource.Interface
-	{
-		c := tiller.Config{
-			HelmClient: config.HelmClient,
-			Logger:     config.Logger,
-		}
-
-		tillerResource, err = tiller.New(c)
 		if err != nil {
 			return nil, microerror.Mask(err)
 		}
