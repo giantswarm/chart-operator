@@ -8,13 +8,14 @@ import (
 	"os"
 	"testing"
 
-	"github.com/giantswarm/apiextensions/pkg/apis/application/v1alpha1"
-	"github.com/giantswarm/e2e-harness/pkg/release"
+	"github.com/giantswarm/appcatalog"
+	"github.com/giantswarm/helmclient"
 	"github.com/giantswarm/microerror"
+	"github.com/spf13/afero"
 
 	"github.com/giantswarm/chart-operator/integration/env"
 	"github.com/giantswarm/chart-operator/integration/key"
-	"github.com/giantswarm/chart-operator/integration/templates"
+	"github.com/giantswarm/chart-operator/pkg/project"
 )
 
 func Setup(m *testing.M, config Config) {
@@ -40,21 +41,48 @@ func installResources(ctx context.Context, config Config) error {
 	var err error
 
 	{
-		err := config.K8s.EnsureNamespaceCreated(ctx, namespace)
+		err := config.K8s.EnsureNamespaceCreated(ctx, key.Namespace())
+		if err != nil {
+			return microerror.Mask(err)
+		}
+	}
+
+	// TODO: Use project.Version() once the operator is flattened.
+	//
+	//	https://github.com/giantswarm/giantswarm/issues/7896
+	//
+	var chartOperatorLatestRelease string
+	{
+		chartOperatorLatestRelease, err = appcatalog.GetLatestVersion(ctx, key.DefaultCatalogStorageURL(), project.Name())
+		if err != nil {
+			return microerror.Mask(err)
+		}
+	}
+
+	var operatorTarballPath string
+	{
+		operatorVersion := fmt.Sprintf("%s-%s", chartOperatorLatestRelease, env.CircleSHA())
+		operatorTarballURL, err := appcatalog.NewTarballURL(key.DefaultTestCatalogStorageURL(), project.Name(), operatorVersion)
+		if err != nil {
+			return microerror.Mask(err)
+		}
+
+		operatorTarballPath, err = config.HelmClient.PullChartTarball(ctx, operatorTarballURL)
 		if err != nil {
 			return microerror.Mask(err)
 		}
 	}
 
 	{
-		err = config.HelmClient.EnsureTillerInstalled(ctx)
-		if err != nil {
-			return microerror.Mask(err)
-		}
-	}
+		defer func() {
+			fs := afero.NewOsFs()
+			err := fs.Remove(operatorTarballPath)
+			if err != nil {
+				config.Logger.LogCtx(ctx, "level", "error", "message", fmt.Sprintf("deletion of %#q failed", operatorTarballPath), "stack", fmt.Sprintf("%#v", err))
+			}
+		}()
 
-	{
-		err = config.Release.InstallOperator(ctx, key.ChartOperatorReleaseName(), release.NewVersion(env.CircleSHA()), templates.ChartOperatorValues, v1alpha1.NewChartCRD())
+		err = config.HelmClient.InstallReleaseFromTarball(ctx, operatorTarballPath, key.Namespace(), map[string]interface{}{}, helmclient.InstallOptions{})
 		if err != nil {
 			return microerror.Mask(err)
 		}
