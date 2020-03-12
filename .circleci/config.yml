@@ -1,53 +1,6 @@
-e2eTest: &e2eTest
-    machine: true
-    working_directory: /home/circleci/.go_workspace/src/github.com/giantswarm/chart-operator
-    steps:
-    - checkout
-
-    - attach_workspace:
-        at: .
-
-    - run:
-        name: Get e2ectl binary
-        command: |
-          wget -q $(curl -sS https://api.github.com/repos/giantswarm/e2ectl/releases/latest | grep browser_download_url | head -n 1 | cut -d '"' -f 4)
-          chmod +x ./e2ectl
-
-    - run:
-        name: Init cluster
-        command: |
-          ./e2ectl cluster create
-          cp $(./e2ectl kubeconfig path) ${E2E_TEST_DIR}/kubeconfig
-
-    - run:
-        name: Run test
-        command: |
-          docker run --rm --network host \
-            -v $(pwd)/${E2E_TEST_DIR}:/e2e \
-            -v $(pwd):/go/src/github.com/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME} \
-            -e E2E_KUBECONFIG=/e2e/kubeconfig \
-            -e CIRCLE_SHA1=${CIRCLE_SHA1} \
-            -w /go/src/github.com/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME} \
-            golang:1 go test -v -tags k8srequired ./${E2E_TEST_DIR}/
-
-    - run:
-        name: Export logs
-        command: |
-          ./e2ectl logs export --logs-dir=kind/logs
-        when: always
-
-    - store_artifacts:
-        path: kind/logs
-        destination: logs
-
-    - run:
-        name: Finish with cleanup, no matter if the test succeeded or not
-        command: ./e2ectl cluster delete
-        when: always
-
 version: 2.1
 orbs:
-  architect: giantswarm/architect@0.4.5
+  architect: giantswarm/architect@0.8.3
 
 jobs:
   build:
@@ -71,26 +24,6 @@ jobs:
         paths:
         - ./chart-operator
         - ./architect
-
-  e2eTestChartBasicPR:
-    environment:
-      E2E_TEST_DIR: "integration/test/chart/basic"
-    <<: *e2eTest
-  
-  e2eTestChartBasicMaster:
-    environment:
-      E2E_TEST_DIR: "integration/test/chart/basic"
-    <<: *e2eTest
-
-  e2eTestChartMigrationPR:
-    environment:
-      E2E_TEST_DIR: "integration/test/chart/migration"
-    <<: *e2eTest
-  
-  e2eTestChartMigrationMaster:
-    environment:
-      E2E_TEST_DIR: "integration/test/chart/migration"
-    <<: *e2eTest
 
   deploy:
     machine: true
@@ -152,6 +85,7 @@ workflows:
               only: master
             tags:
               only: /^v.*/
+
       - architect/push-to-docker-legacy:
           name: push-chart-operator-to-aliyun-legacy
           image: "registry-intl.cn-shanghai.aliyuncs.com/giantswarm/chart-operator"
@@ -159,6 +93,7 @@ workflows:
           password_envar: "ALIYUN_PASSWORD"
           requires:
             - build
+
       - architect/push-to-app-catalog:
           name: push-chart-operator-to-app-catalog
           app_catalog: "default-catalog"
@@ -166,30 +101,20 @@ workflows:
           chart: "chart-operator"
           requires:
             - push-chart-operator-to-quay
-          # Needed to trigger job also on git tag.
           filters:
+            # Needed to trigger job also on git tag.
             tags:
               only: /^v.*/
 
-      - e2eTestChartBasicPR:
+      - architect/integration-test:
+          name: basic-integration-test
+          test-dir: "integration/test/chart/basic"
           requires:
           - build
-
-      - e2eTestChartBasicMaster:
-          filters:
-            branches:
-              only: master
-          requires:
-          - build
-
-      - e2eTestChartMigrationPR:
-          requires:
-          - build
-
-      - e2eTestChartMigrationMaster:
-          filters:
-            branches:
-              only: master
+      
+      - architect/integration-test:
+          name: migration-integration-test
+          test-dir: "integration/test/chart/migration"
           requires:
           - build
 
@@ -198,8 +123,6 @@ workflows:
             branches:
               only: master
           requires:
-          - e2eTestChartBasicMaster
-          - e2eTestChartMigrationMaster
           - push-chart-operator-to-aliyun-legacy
 
       - publish_to_stable:
