@@ -90,6 +90,7 @@ rules:
   verbs:
   - "bind"
   - "create"
+  - "delete"
 - apiGroups:
   - ""
   resources:
@@ -97,6 +98,7 @@ rules:
   - serviceaccounts
   verbs:
   - "create"
+  - "delete"
   - "get"
 - apiGroups:
   - networking.k8s.io
@@ -104,18 +106,21 @@ rules:
   - networkpolicies
   verbs:
   - create
+  - delete
 - apiGroups:
   - scheduling.k8s.io
   resources:
   - priorityclasses
   verbs:
   - create
+  - delete
 - apiGroups:
   - apps
   resources:
   - deployments
   verbs:
   - "create"
+  - "delete"
   - "get"
   - "update"
 - apiGroups:
@@ -124,6 +129,7 @@ rules:
   - deployments
   verbs:
   - "create"
+  - "delete"
   - "get"
   - "update"
 - apiGroups:
@@ -132,6 +138,7 @@ rules:
   - podsecuritypolicies
   verbs:
   - "create"
+  - "delete"
   - "use"
 - nonResourceURLs:
   - "/"
