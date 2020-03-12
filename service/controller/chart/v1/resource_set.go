@@ -2,6 +2,7 @@ package v1
 
 import (
 	"context"
+	"github.com/giantswarm/chart-operator/service/controller/chart/v1/resource/tillermigration"
 
 	"github.com/giantswarm/apiextensions/pkg/clientset/versioned"
 	"github.com/giantswarm/helmclient"
@@ -120,9 +121,23 @@ func NewResourceSet(config ResourceSetConfig) (*controller.ResourceSet, error) {
 		}
 	}
 
+	var tillerMigrationResource resource.Interface
+	{
+		c := tillermigration.Config{
+			G8sClient: config.G8sClient,
+			K8sClient: config.K8sClient,
+			Logger:    config.Logger,
+		}
+
+		tillerMigrationResource, err = tillermigration.New(c)
+		if err != nil {
+			return nil, microerror.Mask(err)
+		}
+	}
+
 	resources := []resource.Interface{
 		chartMigrationResource,
-		tillerResource,
+		tillerMigrationResource,
 		releaseResource,
 		statusResource,
 	}
