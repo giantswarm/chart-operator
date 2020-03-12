@@ -34,13 +34,12 @@ func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
 	inProgress := map[string]bool{}
 	for _, chart := range charts.Items {
 		releaseName := key.ReleaseName(chart)
-		releaseNamespace := key.Namespace(chart)
 		lo := metav1.ListOptions{
 			LabelSelector: fmt.Sprintf("%s=%s,%s=%s", "NAME", releaseName, "OWNER", "TILLER"),
 		}
 
 		// Check whether it keep helm2 release configMaps
-		cms, err := r.k8sClient.CoreV1().ConfigMaps(releaseNamespace).List(lo)
+		cms, err := r.k8sClient.CoreV1().ConfigMaps("giantswarm").List(lo)
 		if err != nil {
 			return microerror.Mask(err)
 		}
@@ -54,7 +53,7 @@ func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
 		}
 
 		// Check whether it keep helm3 release secrets
-		secrets, err := r.k8sClient.CoreV1().Secrets(releaseNamespace).List(lo)
+		secrets, err := r.k8sClient.CoreV1().Secrets("kube-system").List(lo)
 		if err != nil {
 			return microerror.Mask(err)
 		}
