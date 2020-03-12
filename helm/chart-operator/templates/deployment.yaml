@@ -20,7 +20,7 @@ spec:
         app: {{ .Values.project.name }}
         giantswarm.io/service-type: "managed"
       annotations:
-        releasetime: {{ $.Release.Time }}
+        releaseRevision: {{ $.Release.Revision }}
     spec:
       affinity:
         nodeAffinity:
