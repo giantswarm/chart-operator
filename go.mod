@@ -20,8 +20,8 @@ require (
 	github.com/prometheus/client_golang v1.0.0
 	github.com/spf13/afero v1.2.2
 	github.com/spf13/viper v1.6.2
-	gopkg.in/yaml.v2 v2.2.8
 	k8s.io/api v0.17.3
 	k8s.io/apimachinery v0.17.3
 	k8s.io/client-go v0.17.3
+	sigs.k8s.io/yaml v1.1.0
 )
