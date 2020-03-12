@@ -53,7 +53,7 @@ func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
 		}
 
 		// Check whether it keep helm3 release secrets
-		secrets, err := r.k8sClient.CoreV1().Secrets("kube-system").List(lo)
+		secrets, err := r.k8sClient.CoreV1().Secrets(key.Namespace(cr)).List(lo)
 		if err != nil {
 			return microerror.Mask(err)
 		}
