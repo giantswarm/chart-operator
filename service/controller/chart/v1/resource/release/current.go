@@ -31,7 +31,7 @@ func (r *Resource) GetCurrentState(ctx context.Context, obj interface{}) (interf
 	}
 
 	releaseName := key.ReleaseName(cr)
-	releaseContent, err := r.helmClient.GetReleaseContent(ctx, releaseName)
+	releaseContent, err := r.helmClient.GetReleaseContent(ctx, key.Namespace(cr), releaseName)
 	if helmclient.IsReleaseNotFound(err) {
 		// Return early as release is not installed.
 		return nil, nil
@@ -55,7 +55,7 @@ func (r *Resource) GetCurrentState(ctx context.Context, obj interface{}) (interf
 		return nil, nil
 	}
 
-	releaseHistory, err := r.helmClient.GetReleaseHistory(ctx, releaseName)
+	releaseHistory, err := r.helmClient.GetReleaseHistory(ctx, key.Namespace(cr), releaseName)
 	if err != nil {
 		return nil, microerror.Mask(err)
 	}

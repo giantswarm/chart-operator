@@ -41,6 +41,9 @@ func (r *Resource) GetDesiredState(ctx context.Context, obj interface{}) (interf
 	var valuesMD5Checksum string
 
 	if len(values) > 0 {
+		// We serialize the values to YAML so we can generate the MD5 checksum.
+		// We use this for comparison because Helm may modify the values we get
+		// back from the Helm client.
 		valuesYAML, err = yaml.Marshal(values)
 		if err != nil {
 			return nil, microerror.Mask(err)
@@ -57,7 +60,7 @@ func (r *Resource) GetDesiredState(ctx context.Context, obj interface{}) (interf
 		Name:              key.ReleaseName(cr),
 		Status:            helmDeployedStatus,
 		ValuesMD5Checksum: valuesMD5Checksum,
-		ValuesYAML:        valuesYAML,
+		Values:            values,
 		Version:           key.Version(cr),
 	}
 

@@ -8,7 +8,6 @@ import (
 	"github.com/giantswarm/helmclient"
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/operatorkit/controller/context/resourcecanceledcontext"
-	"k8s.io/helm/pkg/helm"
 
 	"github.com/giantswarm/chart-operator/service/controller/chart/v1/controllercontext"
 	"github.com/giantswarm/chart-operator/service/controller/chart/v1/key"
@@ -80,9 +79,12 @@ func (r *Resource) ApplyCreateChange(ctx context.Context, obj, createChange inte
 		// If we do timeout the install will continue in the background.
 		// We will check the progress in the next reconciliation loop.
 		go func() {
+			opts := helmclient.InstallOptions{
+				ReleaseName: releaseState.Name,
+			}
 			// We need to pass the ValueOverrides option to make the install process
 			// use the default values and prevent errors on nested values.
-			err = r.helmClient.InstallReleaseFromTarball(ctx, tarballPath, ns, helm.ReleaseName(releaseState.Name), helm.ValueOverrides(releaseState.ValuesYAML))
+			err = r.helmClient.InstallReleaseFromTarball(ctx, tarballPath, ns, releaseState.Values, opts)
 			close(ch)
 		}()
 
@@ -99,7 +101,7 @@ func (r *Resource) ApplyCreateChange(ctx context.Context, obj, createChange inte
 			reason := err.Error()
 			r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("helm release %#q failed", releaseState.Name), "stack", microerror.JSON(err))
 
-			releaseContent, err := r.helmClient.GetReleaseContent(ctx, releaseState.Name)
+			releaseContent, err := r.helmClient.GetReleaseContent(ctx, ns, releaseState.Name)
 			if helmclient.IsReleaseNotFound(err) {
 				reason = fmt.Sprintf("helm error: (%s)", reason)
 				addStatusToContext(cc, reason, releaseNotInstalledStatus)

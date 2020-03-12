@@ -9,7 +9,6 @@ import (
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/operatorkit/controller/context/resourcecanceledcontext"
 	"github.com/giantswarm/operatorkit/resource/crud"
-	"k8s.io/helm/pkg/helm"
 
 	"github.com/giantswarm/chart-operator/service/controller/chart/v1/controllercontext"
 	"github.com/giantswarm/chart-operator/service/controller/chart/v1/key"
@@ -81,11 +80,18 @@ func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange inte
 		// If we do timeout the update will continue in the background.
 		// We will check the progress in the next reconciliation loop.
 		go func() {
+			opts := helmclient.UpdateOptions{
+				Force: upgradeForce,
+			}
+
 			// We need to pass the ValueOverrides option to make the update process
 			// use the default values and prevent errors on nested values.
-			err = r.helmClient.UpdateReleaseFromTarball(ctx, releaseState.Name, tarballPath,
-				helm.UpdateValueOverrides(releaseState.ValuesYAML),
-				helm.UpgradeForce(upgradeForce))
+			err = r.helmClient.UpdateReleaseFromTarball(ctx,
+				tarballPath,
+				key.Namespace(cr),
+				releaseState.Name,
+				releaseState.Values,
+				opts)
 			close(ch)
 		}()
 
@@ -101,7 +107,7 @@ func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange inte
 		if err != nil {
 			r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("helm release %#q failed", releaseState.Name), "stack", microerror.JSON(err))
 
-			releaseContent, err := r.helmClient.GetReleaseContent(ctx, releaseState.Name)
+			releaseContent, err := r.helmClient.GetReleaseContent(ctx, key.Namespace(cr), releaseState.Name)
 			if helmclient.IsReleaseNotFound(err) {
 				reason := fmt.Sprintf("release %#q not found", releaseState.Name)
 				addStatusToContext(cc, reason, releaseNotInstalledStatus)
