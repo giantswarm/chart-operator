@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/giantswarm/apiextensions/pkg/apis/application/v1alpha1"
 	"github.com/giantswarm/microerror"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
@@ -30,56 +31,70 @@ func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
 		return microerror.Mask(err)
 	}
 
-	notDeleted := map[string]bool{}
-	inProgress := map[string]bool{}
+	notStarted := []string{}
+	inProgress := []string{}
 	for _, chart := range charts.Items {
-		releaseName := key.ReleaseName(chart)
-		lo := metav1.ListOptions{
-			LabelSelector: fmt.Sprintf("%s=%s,%s=%s", "NAME", releaseName, "OWNER", "TILLER"),
-		}
-
-		// Check whether it keep helm2 release configMaps
-		cms, err := r.k8sClient.CoreV1().ConfigMaps("giantswarm").List(lo)
+		foundConfigMap, err := r.findHelmV2ConfigMaps(ctx, chart)
 		if err != nil {
 			return microerror.Mask(err)
 		}
 
-		if len(cms.Items) > 0 {
-			notDeleted[releaseName] = true
-		}
-
-		lo = metav1.ListOptions{
-			LabelSelector: fmt.Sprintf("%s=%s,%s=%s", "name", releaseName, "owner", "helm"),
-		}
-
-		// Check whether it keep helm3 release secrets
-		secrets, err := r.k8sClient.CoreV1().Secrets(key.Namespace(cr)).List(lo)
+		foundSecret, err := r.findHelmV3Secrets(ctx, chart)
 		if err != nil {
 			return microerror.Mask(err)
 		}
 
-		if len(secrets.Items) > 0 {
-			inProgress[releaseName] = true
+		if foundConfigMap && foundSecret {
+			inProgress = append(inProgress, chart.Name)
+		} else if foundConfigMap && !foundSecret {
+			notStarted = append(notStarted, chart.Name)
 		}
 	}
 
-	if len(notDeleted) == 0 {
-		r.logger.LogCtx(ctx, "level", "debug", "message", "no pending or in-progress helm release, deleting all tiller resource")
-		err := r.ensureTillerDeleted(ctx)
-		if err != nil {
-			return microerror.Mask(err)
-		}
-		r.logger.LogCtx(ctx, "level", "debug", "message", "deleted all tiller resource")
+	if len(notStarted) > 0 || len(inProgress) > 0 {
+		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("Following releases are not in migration step; %s", notStarted))
+		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("Following releases are in progress migration; %s", inProgress))
+
+		r.logger.LogCtx(ctx, "level", "debug", "message", "canceling resource.")
 		return nil
 	}
 
-	for name, _ := range notDeleted {
-		if inProgress[name] {
-			r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("migration of release %#q is still in progress", name))
-		} else {
-			r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("migration of release %#q is not started", name))
-		}
+	r.logger.LogCtx(ctx, "level", "debug", "message", "no pending or in-progress helm release, deleting all tiller resource")
+	err = r.ensureTillerDeleted(ctx)
+	if err != nil {
+		return microerror.Mask(err)
 	}
+	r.logger.LogCtx(ctx, "level", "debug", "message", "deleted all tiller resource")
 
 	return nil
+}
+
+func (r *Resource) findHelmV2ConfigMaps(ctx context.Context, chart v1alpha1.Chart) (bool, error) {
+	releaseName := key.ReleaseName(chart)
+	lo := metav1.ListOptions{
+		LabelSelector: fmt.Sprintf("%s=%s,%s=%s", "NAME", releaseName, "OWNER", "TILLER"),
+	}
+
+	// Check whether it keep helm2 release configMaps
+	cms, err := r.k8sClient.CoreV1().ConfigMaps("giantswarm").List(lo)
+	if err != nil {
+		return false, microerror.Mask(err)
+	}
+
+	return len(cms.Items) > 0, nil
+}
+
+func (r *Resource) findHelmV3Secrets(ctx context.Context, chart v1alpha1.Chart) (bool, error) {
+	releaseName := key.ReleaseName(chart)
+	lo := metav1.ListOptions{
+		LabelSelector: fmt.Sprintf("%s=%s,%s=%s", "name", releaseName, "owner", "helm"),
+	}
+
+	// Check whether it keep helm3 release secrets
+	secrets, err := r.k8sClient.CoreV1().Secrets(key.Namespace(chart)).List(lo)
+	if err != nil {
+		return false, microerror.Mask(err)
+	}
+
+	return len(secrets.Items) > 0, nil
 }
