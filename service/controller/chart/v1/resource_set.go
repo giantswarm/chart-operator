@@ -2,7 +2,6 @@ package v1
 
 import (
 	"context"
-	"github.com/giantswarm/chart-operator/service/controller/chart/v1/resource/tillermigration"
 
 	"github.com/giantswarm/apiextensions/pkg/clientset/versioned"
 	"github.com/giantswarm/helmclient"
@@ -21,6 +20,7 @@ import (
 	"github.com/giantswarm/chart-operator/service/controller/chart/v1/resource/chartmigration"
 	"github.com/giantswarm/chart-operator/service/controller/chart/v1/resource/release"
 	"github.com/giantswarm/chart-operator/service/controller/chart/v1/resource/status"
+	"github.com/giantswarm/chart-operator/service/controller/chart/v1/resource/tillermigration"
 )
 
 // ResourceSetConfig contains necessary dependencies and settings for
