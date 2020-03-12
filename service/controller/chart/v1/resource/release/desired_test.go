@@ -11,6 +11,7 @@ import (
 	"github.com/giantswarm/micrologger/microloggertest"
 	"github.com/google/go-cmp/cmp"
 	"github.com/spf13/afero"
+	yaml "gopkg.in/yaml.v2"
 	apiv1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -40,7 +41,7 @@ func Test_DesiredState(t *testing.T) {
 				Name:              "chart-operator-chart",
 				Status:            helmDeployedStatus,
 				ValuesMD5Checksum: "",
-				ValuesYAML:        []byte("{}"),
+				Values:            map[string]interface{}{},
 				Version:           "0.1.2",
 			},
 		},
@@ -69,7 +70,7 @@ func Test_DesiredState(t *testing.T) {
 				Name:              "chart-operator-chart",
 				Status:            helmDeployedStatus,
 				ValuesMD5Checksum: "",
-				ValuesYAML:        []byte("{}"),
+				Values:            map[string]interface{}{},
 				Version:           "1.2.3",
 			},
 		},
@@ -100,8 +101,10 @@ func Test_DesiredState(t *testing.T) {
 				Name:              "chart-operator-chart",
 				Status:            helmDeployedStatus,
 				ValuesMD5Checksum: "d27213d2ae2b24e8d1be0806469c564c",
-				ValuesYAML:        []byte("test: test\n"),
-				Version:           "0.1.2",
+				Values: map[string]interface{}{
+					"test": "test",
+				},
+				Version: "0.1.2",
 			},
 		},
 		{
@@ -131,8 +134,11 @@ func Test_DesiredState(t *testing.T) {
 				Name:              "chart-operator-chart",
 				Status:            helmDeployedStatus,
 				ValuesMD5Checksum: "dead3edde0c0c861d8bf4d83e2e4847a",
-				ValuesYAML:        []byte("provider: azure\nreplicas: 2\n"),
-				Version:           "0.1.2",
+				Values: map[string]interface{}{
+					"provider": "azure",
+					"replicas": 2,
+				},
+				Version: "0.1.2",
 			},
 		},
 		{
@@ -184,8 +190,10 @@ func Test_DesiredState(t *testing.T) {
 				Name:              "chart-operator-chart",
 				Status:            helmDeployedStatus,
 				ValuesMD5Checksum: "d27213d2ae2b24e8d1be0806469c564c",
-				ValuesYAML:        []byte("test: test\n"),
-				Version:           "0.1.2",
+				Values: map[string]interface{}{
+					"test": "test",
+				},
+				Version: "0.1.2",
 			},
 		},
 		{
@@ -216,8 +224,11 @@ func Test_DesiredState(t *testing.T) {
 				Name:              "chart-operator-chart",
 				Status:            helmDeployedStatus,
 				ValuesMD5Checksum: "8ccfa2ed7f5cb9a125b5f53254c296a8",
-				ValuesYAML:        []byte("secretnumber: 2\nsecretpassword: admin\n"),
-				Version:           "0.1.2",
+				Values: map[string]interface{}{
+					"secretnumber":   2,
+					"secretpassword": "admin",
+				},
+				Version: "0.1.2",
 			},
 		},
 		{
@@ -284,8 +295,12 @@ func Test_DesiredState(t *testing.T) {
 				Name:              "chart-operator-chart",
 				Status:            helmDeployedStatus,
 				ValuesMD5Checksum: "80c4411b068b4b415a94b2b775797891",
-				ValuesYAML:        []byte("replicas: 2\nsecretnumber: 2\nusername: admin\n"),
-				Version:           "0.1.2",
+				Values: map[string]interface{}{
+					"replicas":     2,
+					"secretnumber": 2,
+					"username":     "admin",
+				},
+				Version: "0.1.2",
 			},
 		},
 	}
@@ -333,10 +348,17 @@ func Test_DesiredState(t *testing.T) {
 				t.Fatalf("error == %#v, want nil", err)
 			}
 
-			if !cmp.Equal(releaseState.ValuesYAML, tc.expectedState.ValuesYAML) {
-				desiredYAML := string(releaseState.ValuesYAML)
-				expectedYAML := string(tc.expectedState.ValuesYAML)
+			desiredYAML, err := yaml.Marshal(releaseState.Values)
+			if err != nil {
+				t.Fatalf("error == %#v, want nil", err)
+			}
 
+			expectedYAML, err := yaml.Marshal(tc.expectedState.Values)
+			if err != nil {
+				t.Fatalf("error == %#v, want nil", err)
+			}
+
+			if !cmp.Equal(desiredYAML, expectedYAML) {
 				t.Fatalf("want matching ValuesYAML \n %s", cmp.Diff(desiredYAML, expectedYAML))
 			}
 
