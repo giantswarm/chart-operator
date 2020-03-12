@@ -1,5 +1,5 @@
 clusterDNSIP: 172.31.0.10
-  
+
 cnr:
   address: https://quay.io
 
