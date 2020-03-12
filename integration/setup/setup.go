@@ -85,7 +85,7 @@ func installResources(ctx context.Context, config Config) error {
 		opts := helmclient.InstallOptions{
 			ReleaseName: project.Name(),
 		}
-		err = config.HelmClient.InstallReleaseFromTarball(ctx, operatorTarballPath, key.Namespace(), map[string]interface{}{}, helmclient.InstallOptions{})
+		err = config.HelmClient.InstallReleaseFromTarball(ctx, operatorTarballPath, key.Namespace(), map[string]interface{}{}, opts)
 		if err != nil {
 			return microerror.Mask(err)
 		}
