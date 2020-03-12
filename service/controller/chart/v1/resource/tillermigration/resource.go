@@ -7,6 +7,7 @@ import (
 	"github.com/giantswarm/apiextensions/pkg/clientset/versioned"
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/micrologger"
+	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
 )
@@ -62,14 +63,18 @@ func (r *Resource) ensureTillerDeleted(ctx context.Context) error {
 
 	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("deleting serviceAccount %#q in namespace %#q", name, namespace))
 	err := r.k8sClient.CoreV1().ServiceAccounts(namespace).Delete(name, &metav1.DeleteOptions{})
-	if err != nil {
+	if apierrors.IsNotFound(err) {
+		// no-op
+	} else if err != nil {
 		return microerror.Mask(err)
 	}
 	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("deleted serviceAccount %#q in namespace %#q", name, namespace))
 
 	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("deleting clusterRoleBinding %#q", name))
 	err = r.k8sClient.RbacV1().ClusterRoleBindings().Delete(name, &metav1.DeleteOptions{})
-	if err != nil {
+	if apierrors.IsNotFound(err) {
+		// no-op
+	} else if err != nil {
 		return microerror.Mask(err)
 	}
 	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("deleted clusterRoleBinding %#q", name))
@@ -77,42 +82,53 @@ func (r *Resource) ensureTillerDeleted(ctx context.Context) error {
 	pspName := fmt.Sprintf("%s-psp", name)
 	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("deleting clusterRoleBinding %#q", pspName))
 	err = r.k8sClient.RbacV1().ClusterRoleBindings().Delete("tiller-giantswarm-psp", &metav1.DeleteOptions{})
-	if err != nil {
+	if apierrors.IsNotFound(err) {
+		// no-op
+	} else if err != nil {
 		return microerror.Mask(err)
 	}
 	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("deleted clusterRoleBinding %#q", pspName))
 
 	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("deleting clusterRole %#q", pspName))
-	err = r.k8sClient.RbacV1().ClusterRoles().Delete(pspName, &metav1.DeleteOptions{})
-	if err != nil {
+	if apierrors.IsNotFound(err) {
+		// no-op
+	} else if err != nil {
 		return microerror.Mask(err)
 	}
 	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("deleted clusterRole %#q", pspName))
 
 	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("deleting podSecurityPolicy %#q", pspName))
 	err = r.k8sClient.PolicyV1beta1().PodSecurityPolicies().Delete(pspName, &metav1.DeleteOptions{})
-	if err != nil {
+	if apierrors.IsNotFound(err) {
+		// no-op
+	} else if err != nil {
 		return microerror.Mask(err)
 	}
 	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("deleted podSecurityPolicy %#q", pspName))
 
 	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("deleting networkPolicy %#q in namespace %#q", pspName, namespace))
 	err = r.k8sClient.NetworkingV1().NetworkPolicies(namespace).Delete("tiller-giantswarm", &metav1.DeleteOptions{})
-	if err != nil {
+	if apierrors.IsNotFound(err) {
+		// no-op
+	} else if err != nil {
 		return microerror.Mask(err)
 	}
 	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("deleted networkPolicy %#q in namespace %#q", pspName, namespace))
 
 	r.logger.LogCtx(ctx, "level", "debug", "message", "deleting priorityClass `giantswarm-critical`")
 	err = r.k8sClient.SchedulingV1().PriorityClasses().Delete("giantswarm-critical", &metav1.DeleteOptions{})
-	if err != nil {
+	if apierrors.IsNotFound(err) {
+		// no-op
+	} else if err != nil {
 		return microerror.Mask(err)
 	}
 	r.logger.LogCtx(ctx, "level", "debug", "message", "deleted priorityClass `giantswarm-critical`")
 
 	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("deleting deployment `tiller-deploy` in namespace %#q", namespace))
 	err = r.k8sClient.AppsV1().Deployments(namespace).Delete("tiller-deploy", &metav1.DeleteOptions{})
-	if err != nil {
+	if apierrors.IsNotFound(err) {
+		// no-op
+	} else if err != nil {
 		return microerror.Mask(err)
 	}
 	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("deleted deployment `tiller-deploy` in namespace %#q", namespace))
