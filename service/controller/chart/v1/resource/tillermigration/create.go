@@ -43,14 +43,21 @@ func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
 			return microerror.Mask(err)
 		}
 
+		// If Helm v2 release configmap had not been deleted and Helm v3 release secret is there,
+		// It means helm release migration is in progress.
 		if foundConfigMap && foundSecret {
 			inProgress = append(inProgress, chart.Name)
-		} else if foundConfigMap && !foundSecret {
+		}
+
+		// If Helm v2 release configmap was not deleted and Helm v3 release secret was not created,
+		// It means helm v3 release migration is not started.
+		if foundConfigMap && !foundSecret {
 			notStarted = append(notStarted, chart.Name)
 		}
 	}
 
 	if len(notStarted) > 0 || len(inProgress) > 0 {
+		// If helm v3 migration was not started or in progress, we could not delete tiller resource.
 		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("following releases are not in migration step; %s", notStarted))
 		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("following releases are in progress migration; %s", inProgress))
 
