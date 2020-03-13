@@ -118,7 +118,7 @@ func TestChartMigration(t *testing.T) {
 	{
 		config.Logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("checking release %#q is deployed", key.TestAppReleaseName()))
 
-		err := config.Release.WaitForStatus(ctx, key.Namespace(), key.TestAppReleaseName(), "DEPLOYED")
+		err := config.Release.WaitForStatus(ctx, key.Namespace(), key.TestAppReleaseName(), "deployed")
 		if err != nil {
 			t.Fatalf("expected %#v got %#v", nil, err)
 		}
@@ -197,7 +197,7 @@ func TestChartMigration(t *testing.T) {
 	{
 		config.Logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("checking release %#q is deployed", key.TestAppReleaseName()))
 
-		err := config.Release.WaitForStatus(ctx, key.Namespace(), key.TestAppReleaseName(), "DEPLOYED")
+		err := config.Release.WaitForStatus(ctx, key.Namespace(), key.TestAppReleaseName(), "deployed")
 		if err != nil {
 			t.Fatalf("expected %#v got %#v", nil, err)
 		}

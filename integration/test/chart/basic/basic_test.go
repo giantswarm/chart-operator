@@ -43,8 +43,8 @@ func TestChartLifecycle(t *testing.T) {
 			Spec: v1alpha1.ChartSpec{
 				Name:       key.TestAppReleaseName(),
 				Namespace:  key.Namespace(),
-				TarballURL: "https://giantswarm.github.com/default-catalog/metrics-server-app-1.0.0.tgz",
-				Version:    "1.0.0",
+				TarballURL: "https://giantswarm.github.com/default-catalog/kube-state-metrics-app-1.0.3.tgz",
+				Version:    "1.0.3",
 			},
 		}
 		_, err := config.K8sClients.G8sClient().ApplicationV1alpha1().Charts(key.Namespace()).Create(cr)
@@ -56,7 +56,7 @@ func TestChartLifecycle(t *testing.T) {
 
 		config.Logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("checking release %#q is deployed", key.TestAppReleaseName()))
 
-		err = config.Release.WaitForStatus(ctx, key.Namespace(), key.TestAppReleaseName(), "DEPLOYED")
+		err = config.Release.WaitForStatus(ctx, key.Namespace(), key.TestAppReleaseName(), "deployed")
 		if err != nil {
 			t.Fatalf("expected %#v got %#v", nil, err)
 		}
@@ -72,8 +72,8 @@ func TestChartLifecycle(t *testing.T) {
 		if err != nil {
 			t.Fatalf("expected %#v got %#v", nil, err)
 		}
-		if cr.Status.Release.Status != "DEPLOYED" {
-			t.Fatalf("expected CR release status %#q got %#q", "DEPLOYED", cr.Status.Release.Status)
+		if cr.Status.Release.Status != "deployed" {
+			t.Fatalf("expected CR release status %#q got %#q", "deployed", cr.Status.Release.Status)
 		}
 
 		config.Logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("checked status for chart CR %#q", key.TestAppReleaseName()))
@@ -88,8 +88,8 @@ func TestChartLifecycle(t *testing.T) {
 			t.Fatalf("expected %#v got %#v", nil, err)
 		}
 
-		cr.Spec.TarballURL = "https://giantswarm.github.com/sample-catalog/kubernetes-test-app-chart-0.7.1.tgz"
-		cr.Spec.Version = "0.7.1"
+		cr.Spec.TarballURL = "https://giantswarm.github.com/default-catalog/kube-state-metrics-app-1.0.4.tgz"
+		cr.Spec.Version = "1.0.3"
 
 		_, err = config.K8sClients.G8sClient().ApplicationV1alpha1().Charts(key.Namespace()).Update(cr)
 		if err != nil {
@@ -100,7 +100,7 @@ func TestChartLifecycle(t *testing.T) {
 
 		config.Logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("checking release %#q is updated", key.TestAppReleaseName()))
 
-		err = config.Release.WaitForChartInfo(ctx, key.Namespace(), key.TestAppReleaseName(), "0.7.1")
+		err = config.Release.WaitForChartInfo(ctx, key.Namespace(), key.TestAppReleaseName(), "1.0.4")
 		if err != nil {
 			t.Fatalf("expected %#v got %#v", nil, err)
 		}
@@ -121,7 +121,7 @@ func TestChartLifecycle(t *testing.T) {
 
 		config.Logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("checking release %#q is deleted", key.TestAppReleaseName()))
 
-		err = config.Release.WaitForStatus(ctx, key.Namespace(), key.TestAppReleaseName(), "DELETED")
+		err = config.Release.WaitForStatus(ctx, key.Namespace(), key.TestAppReleaseName(), "uninstalled")
 		if err != nil {
 			t.Fatalf("expected %#v got %#v", nil, err)
 		}
