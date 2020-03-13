@@ -11,7 +11,7 @@ import (
 	"github.com/giantswarm/chart-operator/service/controller/chart/v1/key"
 )
 
-// EnsureCreated ensures Tiller is installed and the latest version.
+// EnsureCreated ensures tiller resources are deleted after all helm releases migrated into v3.
 func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
 	cr, err := key.ToCustomResource(obj)
 	if err != nil {
