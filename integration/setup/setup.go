@@ -102,7 +102,11 @@ func installResources(ctx context.Context, config Config) error {
 		opts := helmclient.InstallOptions{
 			ReleaseName: project.Name(),
 		}
-		err = config.HelmClient.InstallReleaseFromTarball(ctx, operatorTarballPath, key.Namespace(), map[string]interface{}{}, opts)
+		values := map[string]interface{}{
+			"clusterDNSIP": "10.96.0.10",
+			"e2e":          "true",
+		}
+		err = config.HelmClient.InstallReleaseFromTarball(ctx, operatorTarballPath, key.Namespace(), values, opts)
 		if err != nil {
 			return microerror.Mask(err)
 		}
