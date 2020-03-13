@@ -4,29 +4,28 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/giantswarm/apiextensions/pkg/apis/application/v1alpha1"
 	"github.com/giantswarm/microerror"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
+	"github.com/giantswarm/chart-operator/pkg/project"
 	"github.com/giantswarm/chart-operator/service/controller/chart/v1/key"
 )
 
-// EnsureCreated ensures tiller resources are deleted after all helm releases migrated into v3.
+// EnsureCreated ensures tiller resources are deleted once all helm releases are migrated to v3.
 func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
 	cr, err := key.ToCustomResource(obj)
 	if err != nil {
 		return microerror.Mask(err)
 	}
 
-	// Resource is used to remove tiller pod in tenant clusters.
-	// So for other charts we can skip this step.
-	if key.ReleaseName(cr) != key.ChartOperatorName {
-		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("no need to delete a tiller for %#q", key.ReleaseName(cr)))
+	// Resource is used to remove tiller. So for other charts we can skip this step.
+	if key.ReleaseName(cr) != project.Name() {
+		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("no need to delete tiller for %#q", key.ReleaseName(cr)))
 		r.logger.LogCtx(ctx, "level", "debug", "message", "canceling resource")
 		return nil
 	}
 
-	charts, err := r.g8sClient.ApplicationV1alpha1().Charts("giantswarm").List(metav1.ListOptions{})
+	charts, err := r.g8sClient.ApplicationV1alpha1().Charts("").List(metav1.ListOptions{})
 	if err != nil {
 		return microerror.Mask(err)
 	}
@@ -34,12 +33,12 @@ func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
 	notStarted := []string{}
 	inProgress := []string{}
 	for _, chart := range charts.Items {
-		foundConfigMap, err := r.findHelmV2ConfigMaps(ctx, chart)
+		foundConfigMap, err := r.findHelmV2ConfigMaps(ctx, key.ReleaseName(chart))
 		if err != nil {
 			return microerror.Mask(err)
 		}
 
-		foundSecret, err := r.findHelmV3Secrets(ctx, chart)
+		foundSecret, err := r.findHelmV3Secrets(ctx, key.ReleaseName(chart), key.Namespace(chart))
 		if err != nil {
 			return microerror.Mask(err)
 		}
@@ -52,8 +51,8 @@ func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
 	}
 
 	if len(notStarted) > 0 || len(inProgress) > 0 {
-		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("Following releases are not in migration step; %s", notStarted))
-		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("Following releases are in progress migration; %s", inProgress))
+		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("following releases are not in migration step; %s", notStarted))
+		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("following releases are in progress migration; %s", inProgress))
 
 		r.logger.LogCtx(ctx, "level", "debug", "message", "canceling resource.")
 		return nil
@@ -69,14 +68,13 @@ func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
 	return nil
 }
 
-func (r *Resource) findHelmV2ConfigMaps(ctx context.Context, chart v1alpha1.Chart) (bool, error) {
-	releaseName := key.ReleaseName(chart)
+func (r *Resource) findHelmV2ConfigMaps(ctx context.Context, releaseName string) (bool, error) {
 	lo := metav1.ListOptions{
 		LabelSelector: fmt.Sprintf("%s=%s,%s=%s", "NAME", releaseName, "OWNER", "TILLER"),
 	}
 
 	// Check whether it keep helm2 release configMaps
-	cms, err := r.k8sClient.CoreV1().ConfigMaps("giantswarm").List(lo)
+	cms, err := r.k8sClient.CoreV1().ConfigMaps(r.tillerNamespace).List(lo)
 	if err != nil {
 		return false, microerror.Mask(err)
 	}
@@ -84,14 +82,13 @@ func (r *Resource) findHelmV2ConfigMaps(ctx context.Context, chart v1alpha1.Char
 	return len(cms.Items) > 0, nil
 }
 
-func (r *Resource) findHelmV3Secrets(ctx context.Context, chart v1alpha1.Chart) (bool, error) {
-	releaseName := key.ReleaseName(chart)
+func (r *Resource) findHelmV3Secrets(ctx context.Context, releaseName, releaseNamespace string) (bool, error) {
 	lo := metav1.ListOptions{
 		LabelSelector: fmt.Sprintf("%s=%s,%s=%s", "name", releaseName, "owner", "helm"),
 	}
 
 	// Check whether it keep helm3 release secrets
-	secrets, err := r.k8sClient.CoreV1().Secrets(key.Namespace(chart)).List(lo)
+	secrets, err := r.k8sClient.CoreV1().Secrets(releaseNamespace).List(lo)
 	if err != nil {
 		return false, microerror.Mask(err)
 	}
