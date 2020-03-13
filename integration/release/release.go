@@ -64,7 +64,7 @@ func (r *Release) WaitForChartInfo(ctx context.Context, namespace, release, vers
 func (r *Release) WaitForStatus(ctx context.Context, namespace, release, status string) error {
 	operation := func() error {
 		rc, err := r.helmClient.GetReleaseContent(ctx, namespace, release)
-		if helmclient.IsReleaseNotFound(err) && status == "DELETED" {
+		if helmclient.IsReleaseNotFound(err) && status == "uninstalled" {
 			// Error is expected because we purge releases when deleting.
 			return nil
 		} else if err != nil {

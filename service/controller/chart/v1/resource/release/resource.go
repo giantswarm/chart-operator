@@ -25,22 +25,22 @@ const (
 	Name = "releasev1"
 
 	// helmDeployedStatus is the deployed status for Helm Releases.
-	helmDeployedStatus = "DEPLOYED"
+	helmDeployedStatus = "deployed"
 	// helmFailedStatus is the failed status for Helm Releases.
-	helmFailedStatus = "FAILED"
+	helmFailedStatus = "failed"
 	// releaseNotInstalledStatus is set in the CR status when there is no Helm
 	// Release to check.
-	releaseNotInstalledStatus = "Not installed"
+	releaseNotInstalledStatus = "not_installed"
 )
 
 var (
 	// releaseTransitionStatuses is used to determine if the Helm Release is
 	// currently being updated.
 	releaseTransitionStatuses = map[string]bool{
-		"DELETING":         true,
-		"PENDING_INSTALL":  true,
-		"PENDING_UPGRADE":  true,
-		"PENDING_ROLLBACK": true,
+		"uninstalling":     true,
+		"pending":          true,
+		"pending_upgrade":  true,
+		"pending_rollback": true,
 	}
 )
 
