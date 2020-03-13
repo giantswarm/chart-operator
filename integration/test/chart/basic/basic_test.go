@@ -89,7 +89,7 @@ func TestChartLifecycle(t *testing.T) {
 		}
 
 		cr.Spec.TarballURL = "https://giantswarm.github.com/default-catalog/kube-state-metrics-app-1.0.4.tgz"
-		cr.Spec.Version = "1.0.3"
+		cr.Spec.Version = "1.0.4"
 
 		_, err = config.K8sClients.G8sClient().ApplicationV1alpha1().Charts(key.Namespace()).Update(cr)
 		if err != nil {

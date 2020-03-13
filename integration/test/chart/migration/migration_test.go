@@ -102,8 +102,8 @@ func TestChartMigration(t *testing.T) {
 			Spec: v1alpha1.ChartSpec{
 				Name:       key.TestAppReleaseName(),
 				Namespace:  key.Namespace(),
-				TarballURL: "https://giantswarm.github.com/default-catalog/metrics-server-app-1.0.0.tgz",
-				Version:    "1.0.0",
+				TarballURL: "https://giantswarm.github.com/default-catalog/kube-state-metrics-app-1.0.4.tgz",
+				Version:    "1.0.4",
 			},
 		}
 		_, err := config.K8sClients.G8sClient().ApplicationV1alpha1().Charts(key.Namespace()).Create(chart)
