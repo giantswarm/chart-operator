@@ -16,7 +16,6 @@ const (
 	Name = "tillermigrationv1"
 )
 
-// Config represents the configuration used to create a new tiller resource.
 type Config struct {
 	// Dependencies.
 	G8sClient versioned.Interface
@@ -24,7 +23,6 @@ type Config struct {
 	Logger    micrologger.Logger
 }
 
-// Resource implements the tillermigration resource.
 type Resource struct {
 	// Dependencies.
 	g8sClient versioned.Interface
@@ -32,7 +30,6 @@ type Resource struct {
 	logger    micrologger.Logger
 }
 
-// New creates a new configured tillermigration resource.
 func New(config Config) (*Resource, error) {
 	if config.G8sClient == nil {
 		return nil, microerror.Maskf(invalidConfigError, "%T.G8sClient must not be empty", config)
