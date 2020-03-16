@@ -121,6 +121,8 @@ func New(config Config) (*Service, error) {
 			HelmClient: helmClient,
 			Logger:     config.Logger,
 			K8sClient:  k8sClient,
+
+			TillerNamespace: config.Viper.GetString(config.Flag.Service.Helm.TillerNamespace),
 		}
 
 		chartController, err = chart.NewChart(c)

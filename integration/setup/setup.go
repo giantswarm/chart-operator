@@ -44,16 +44,12 @@ func installResources(ctx context.Context, config Config) error {
 	var err error
 
 	{
-		err := config.K8s.EnsureNamespaceCreated(ctx, key.Namespace())
+		err = config.K8s.EnsureNamespaceCreated(ctx, key.Namespace())
 		if err != nil {
 			return microerror.Mask(err)
 		}
 	}
 
-	// TODO: Use project.Version() once the operator is flattened.
-	//
-	//	https://github.com/giantswarm/giantswarm/issues/7896
-	//
 	var latestOperatorRelease string
 	{
 		config.Logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("getting latest %#q release", project.Name()))
@@ -70,6 +66,10 @@ func installResources(ctx context.Context, config Config) error {
 	{
 		config.Logger.LogCtx(ctx, "level", "debug", "message", "getting tarball URL")
 
+		// TODO: Use project.Version() once the operator is flattened.
+		//
+		//	https://github.com/giantswarm/giantswarm/issues/7896
+		//
 		operatorVersion := fmt.Sprintf("%s-%s", latestOperatorRelease, env.CircleSHA())
 		operatorTarballURL, err := appcatalog.NewTarballURL(key.DefaultTestCatalogStorageURL(), project.Name(), operatorVersion)
 		if err != nil {
