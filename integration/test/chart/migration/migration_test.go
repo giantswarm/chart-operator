@@ -56,7 +56,7 @@ func TestChartMigration(t *testing.T) {
 		chartConfig := &corev1alpha1.ChartConfig{
 			ObjectMeta: metav1.ObjectMeta{
 				Name:      key.TestAppReleaseName(),
-				Namespace: "giantswarm",
+				Namespace: key.Namespace(),
 				Finalizers: []string{
 					// Finalizer is created manually because there is no
 					// chartconfig controller.
@@ -70,7 +70,7 @@ func TestChartMigration(t *testing.T) {
 				Chart: corev1alpha1.ChartConfigSpecChart{
 					Channel:   "0-7-beta",
 					Name:      key.TestAppReleaseName(),
-					Namespace: "giantswarm",
+					Namespace: key.Namespace(),
 					Release:   key.TestAppReleaseName(),
 				},
 				VersionBundle: corev1alpha1.ChartConfigSpecVersionBundle{
@@ -78,7 +78,7 @@ func TestChartMigration(t *testing.T) {
 				},
 			},
 		}
-		_, err := config.K8sClients.G8sClient().CoreV1alpha1().ChartConfigs("giantswarm").Create(chartConfig)
+		_, err := config.K8sClients.G8sClient().CoreV1alpha1().ChartConfigs(key.Namespace()).Create(chartConfig)
 		if err != nil {
 			t.Fatalf("expected %#v got %#v", nil, err)
 		}
@@ -93,7 +93,7 @@ func TestChartMigration(t *testing.T) {
 		chart := &v1alpha1.Chart{
 			ObjectMeta: metav1.ObjectMeta{
 				Name:      key.TestAppReleaseName(),
-				Namespace: "giantswarm",
+				Namespace: key.Namespace(),
 				Labels: map[string]string{
 					"app":                                  "test-app",
 					"chart-operator.giantswarm.io/version": "1.0.0",
@@ -101,11 +101,11 @@ func TestChartMigration(t *testing.T) {
 			},
 			Spec: v1alpha1.ChartSpec{
 				Name:       key.TestAppReleaseName(),
-				Namespace:  "giantswarm",
+				Namespace:  key.Namespace(),
 				TarballURL: "https://giantswarm.github.com/sample-catalog/kubernetes-test-app-chart-0.7.0.tgz",
 			},
 		}
-		_, err := config.K8sClients.G8sClient().ApplicationV1alpha1().Charts("giantswarm").Create(chart)
+		_, err := config.K8sClients.G8sClient().ApplicationV1alpha1().Charts(key.Namespace()).Create(chart)
 		if err != nil {
 			t.Fatalf("expected %#v got %#v", nil, err)
 		}
@@ -129,7 +129,7 @@ func TestChartMigration(t *testing.T) {
 	{
 		config.Logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("adding annotation to chartconfig %#q", key.TestAppReleaseName()))
 
-		chartConfig, err := config.K8sClients.G8sClient().CoreV1alpha1().ChartConfigs("giantswarm").Get(key.TestAppReleaseName(), metav1.GetOptions{})
+		chartConfig, err := config.K8sClients.G8sClient().CoreV1alpha1().ChartConfigs(key.Namespace()).Get(key.TestAppReleaseName(), metav1.GetOptions{})
 		if err != nil {
 			t.Fatalf("expected %#v got %#v", nil, err)
 		}
@@ -143,7 +143,7 @@ func TestChartMigration(t *testing.T) {
 		annotations[annotation.DeleteCustomResourceOnly] = "true"
 		chartConfig.Annotations = annotations
 
-		_, err = config.K8sClients.G8sClient().CoreV1alpha1().ChartConfigs("giantswarm").Update(chartConfig)
+		_, err = config.K8sClients.G8sClient().CoreV1alpha1().ChartConfigs(key.Namespace()).Update(chartConfig)
 		if err != nil {
 			t.Fatalf("expected %#v got %#v", nil, err)
 		}
@@ -155,7 +155,7 @@ func TestChartMigration(t *testing.T) {
 	{
 		config.Logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("deleting chartconfig %#q", key.TestAppReleaseName()))
 
-		err := config.K8sClients.G8sClient().CoreV1alpha1().ChartConfigs("giantswarm").Delete(key.TestAppReleaseName(), &metav1.DeleteOptions{})
+		err := config.K8sClients.G8sClient().CoreV1alpha1().ChartConfigs(key.Namespace()).Delete(key.TestAppReleaseName(), &metav1.DeleteOptions{})
 		if err != nil {
 			t.Fatalf("expected %#v got %#v", nil, err)
 		}
@@ -168,7 +168,7 @@ func TestChartMigration(t *testing.T) {
 		config.Logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("checking chartconfig %#q was deleted", key.TestAppReleaseName()))
 
 		o := func() error {
-			_, err := config.K8sClients.G8sClient().CoreV1alpha1().ChartConfigs("giantswarm").Get(key.TestAppReleaseName(), metav1.GetOptions{})
+			_, err := config.K8sClients.G8sClient().CoreV1alpha1().ChartConfigs(key.Namespace()).Get(key.TestAppReleaseName(), metav1.GetOptions{})
 			if apierrors.IsNotFound(err) {
 				// Error is expected because finalizer was removed.
 				return nil
