@@ -11,19 +11,19 @@ import (
 	"github.com/giantswarm/chart-operator/service/controller/chart/v1/key"
 )
 
-// EnsureCreated ensures resources are migrated to helm v3.
+// EnsureCreated ensures helm release is migrated from a v2 configmap to a v3 secret.
 func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
 	cr, err := key.ToCustomResource(obj)
 	if err != nil {
 		return microerror.Mask(err)
 	}
 
-	hasConfigMap, err := r.findHelmV2ConfigMaps(ctx, key.ReleaseName(cr))
+	hasConfigMap, err := r.getHelmV2ConfigMaps(ctx, key.ReleaseName(cr))
 	if err != nil {
 		return microerror.Mask(err)
 	}
 
-	hasSecret, err := r.findHelmV3Secrets(ctx, key.ReleaseName(cr), key.Namespace(cr))
+	hasSecret, err := r.getHelmV3Secrets(ctx, key.ReleaseName(cr), key.Namespace(cr))
 	if err != nil {
 		return microerror.Mask(err)
 	}
@@ -42,7 +42,7 @@ func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
 	return nil
 }
 
-func (r *Resource) findHelmV2ConfigMaps(ctx context.Context, releaseName string) (bool, error) {
+func (r *Resource) getHelmV2ConfigMaps(ctx context.Context, releaseName string) (bool, error) {
 	lo := metav1.ListOptions{
 		LabelSelector: fmt.Sprintf("%s=%s,%s=%s", "NAME", releaseName, "OWNER", "TILLER"),
 	}
@@ -56,7 +56,7 @@ func (r *Resource) findHelmV2ConfigMaps(ctx context.Context, releaseName string)
 	return len(cms.Items) > 0, nil
 }
 
-func (r *Resource) findHelmV3Secrets(ctx context.Context, releaseName, releaseNamespace string) (bool, error) {
+func (r *Resource) getHelmV3Secrets(ctx context.Context, releaseName, releaseNamespace string) (bool, error) {
 	lo := metav1.ListOptions{
 		LabelSelector: fmt.Sprintf("%s=%s,%s=%s", "name", releaseName, "owner", "helm"),
 	}

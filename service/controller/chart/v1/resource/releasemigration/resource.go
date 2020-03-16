@@ -7,7 +7,7 @@ import (
 )
 
 const (
-	Name = "tillermigrationv1"
+	Name = "releasemigrationv1"
 )
 
 type Config struct {
