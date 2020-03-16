@@ -1,11 +1,11 @@
-package resourcemigration
+package releasemigration
 
 import (
 	"context"
 	"fmt"
-	"github.com/giantswarm/operatorkit/controller/context/reconciliationcanceledcontext"
 
 	"github.com/giantswarm/microerror"
+	"github.com/giantswarm/operatorkit/controller/context/reconciliationcanceledcontext"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
 	"github.com/giantswarm/chart-operator/service/controller/chart/v1/key"

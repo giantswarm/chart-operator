@@ -1,4 +1,4 @@
-package resourcemigration
+package releasemigration
 
 import (
 	"context"
