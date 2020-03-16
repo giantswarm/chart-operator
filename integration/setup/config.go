@@ -6,8 +6,8 @@ import (
 	"github.com/giantswarm/k8sclient"
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/micrologger"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
-	"github.com/giantswarm/chart-operator/integration/key"
 	"github.com/giantswarm/chart-operator/integration/release"
 )
 
@@ -65,7 +65,7 @@ func NewConfig() (Config, error) {
 			Logger:               logger,
 			K8sClient:            cpK8sClients.K8sClient(),
 			RestConfig:           cpK8sClients.RESTConfig(),
-			TillerNamespace:      key.Namespace(),
+			TillerNamespace:      metav1.NamespaceSystem,
 			TillerUpgradeEnabled: true,
 		}
 		helmClient, err = helmclient.New(c)
