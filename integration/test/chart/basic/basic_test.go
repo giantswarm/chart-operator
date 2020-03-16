@@ -43,8 +43,8 @@ func TestChartLifecycle(t *testing.T) {
 			Spec: v1alpha1.ChartSpec{
 				Name:       key.TestAppReleaseName(),
 				Namespace:  key.Namespace(),
-				TarballURL: "https://giantswarm.github.com/default-catalog/kube-state-metrics-app-1.0.3.tgz",
-				Version:    "1.0.3",
+				TarballURL: "https://giantswarm.github.com/sample-catalog/kubernetes-test-app-chart-0.7.0.tgz",
+				Version:    "0.7.0",
 			},
 		}
 		_, err := config.K8sClients.G8sClient().ApplicationV1alpha1().Charts(key.Namespace()).Create(cr)
@@ -88,8 +88,8 @@ func TestChartLifecycle(t *testing.T) {
 			t.Fatalf("expected %#v got %#v", nil, err)
 		}
 
-		cr.Spec.TarballURL = "https://giantswarm.github.com/default-catalog/kube-state-metrics-app-1.0.4.tgz"
-		cr.Spec.Version = "1.0.4"
+		cr.Spec.TarballURL = "https://giantswarm.github.com/sample-catalog/kubernetes-test-app-chart-0.7.1.tgz"
+		cr.Spec.Version = "0.7.1"
 
 		_, err = config.K8sClients.G8sClient().ApplicationV1alpha1().Charts(key.Namespace()).Update(cr)
 		if err != nil {
