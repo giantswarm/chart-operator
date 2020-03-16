@@ -48,7 +48,7 @@ func (r *Resource) GetCurrentState(ctx context.Context, obj interface{}) (interf
 		return nil, microerror.Mask(err)
 	}
 
-	if releaseContent.Status == helmFailedStatus && releaseContent.Name == project.Name() {
+	if releaseContent.Status == helmclient.StatusFailed && releaseContent.Name == project.Name() {
 		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("not updating own release %#q since it's %#q", releaseContent.Name, releaseContent.Status))
 		r.logger.LogCtx(ctx, "level", "debug", "message", "canceling resource")
 		resourcecanceledcontext.SetCanceled(ctx)

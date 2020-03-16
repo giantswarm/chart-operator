@@ -58,7 +58,7 @@ func (r *Resource) GetDesiredState(ctx context.Context, obj interface{}) (interf
 
 	releaseState := &ReleaseState{
 		Name:              key.ReleaseName(cr),
-		Status:            helmDeployedStatus,
+		Status:            helmclient.StatusDeployed,
 		ValuesMD5Checksum: valuesMD5Checksum,
 		Values:            values,
 		Version:           key.Version(cr),

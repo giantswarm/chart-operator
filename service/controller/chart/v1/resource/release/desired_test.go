@@ -7,6 +7,7 @@ import (
 
 	"github.com/giantswarm/apiextensions/pkg/apis/application/v1alpha1"
 	"github.com/giantswarm/apiextensions/pkg/clientset/versioned/fake"
+	"github.com/giantswarm/helmclient"
 	"github.com/giantswarm/helmclient/helmclienttest"
 	"github.com/giantswarm/micrologger/microloggertest"
 	"github.com/google/go-cmp/cmp"
@@ -39,7 +40,7 @@ func Test_DesiredState(t *testing.T) {
 			},
 			expectedState: ReleaseState{
 				Name:              "chart-operator-chart",
-				Status:            helmDeployedStatus,
+				Status:            helmclient.StatusDeployed,
 				ValuesMD5Checksum: "",
 				Values:            map[string]interface{}{},
 				Version:           "0.1.2",
@@ -68,7 +69,7 @@ func Test_DesiredState(t *testing.T) {
 			},
 			expectedState: ReleaseState{
 				Name:              "chart-operator-chart",
-				Status:            helmDeployedStatus,
+				Status:            helmclient.StatusDeployed,
 				ValuesMD5Checksum: "",
 				Values:            map[string]interface{}{},
 				Version:           "1.2.3",
@@ -99,7 +100,7 @@ func Test_DesiredState(t *testing.T) {
 			},
 			expectedState: ReleaseState{
 				Name:              "chart-operator-chart",
-				Status:            helmDeployedStatus,
+				Status:            helmclient.StatusDeployed,
 				ValuesMD5Checksum: "d27213d2ae2b24e8d1be0806469c564c",
 				Values: map[string]interface{}{
 					"test": "test",
@@ -132,7 +133,7 @@ func Test_DesiredState(t *testing.T) {
 			},
 			expectedState: ReleaseState{
 				Name:              "chart-operator-chart",
-				Status:            helmDeployedStatus,
+				Status:            helmclient.StatusDeployed,
 				ValuesMD5Checksum: "dead3edde0c0c861d8bf4d83e2e4847a",
 				Values: map[string]interface{}{
 					"provider": "azure",
@@ -188,7 +189,7 @@ func Test_DesiredState(t *testing.T) {
 			},
 			expectedState: ReleaseState{
 				Name:              "chart-operator-chart",
-				Status:            helmDeployedStatus,
+				Status:            helmclient.StatusDeployed,
 				ValuesMD5Checksum: "d27213d2ae2b24e8d1be0806469c564c",
 				Values: map[string]interface{}{
 					"test": "test",
@@ -222,7 +223,7 @@ func Test_DesiredState(t *testing.T) {
 			},
 			expectedState: ReleaseState{
 				Name:              "chart-operator-chart",
-				Status:            helmDeployedStatus,
+				Status:            helmclient.StatusDeployed,
 				ValuesMD5Checksum: "8ccfa2ed7f5cb9a125b5f53254c296a8",
 				Values: map[string]interface{}{
 					"secretnumber":   2,
@@ -293,7 +294,7 @@ func Test_DesiredState(t *testing.T) {
 			},
 			expectedState: ReleaseState{
 				Name:              "chart-operator-chart",
-				Status:            helmDeployedStatus,
+				Status:            helmclient.StatusDeployed,
 				ValuesMD5Checksum: "80c4411b068b4b415a94b2b775797891",
 				Values: map[string]interface{}{
 					"replicas":     2,

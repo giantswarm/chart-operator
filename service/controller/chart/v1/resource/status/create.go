@@ -72,7 +72,7 @@ func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
 			reason = key.CordonReason(cr)
 		} else {
 			status = releaseContent.Status
-			if releaseContent.Status != releaseStatusDeployed {
+			if releaseContent.Status != helmclient.StatusDeployed {
 				reason = releaseHistory.Description
 			}
 		}
