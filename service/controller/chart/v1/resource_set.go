@@ -21,6 +21,7 @@ import (
 	"github.com/giantswarm/chart-operator/service/controller/chart/v1/resource/release"
 	"github.com/giantswarm/chart-operator/service/controller/chart/v1/resource/status"
 	"github.com/giantswarm/chart-operator/service/controller/chart/v1/resource/tiller"
+	"github.com/giantswarm/chart-operator/service/controller/chart/v1/resource/tillermigration"
 )
 
 // ResourceSetConfig contains necessary dependencies and settings for
@@ -35,6 +36,7 @@ type ResourceSetConfig struct {
 
 	// Settings.
 	HandledVersionBundles []string
+	TillerNamespace       string
 }
 
 // NewResourceSet returns a configured Chart controller ResourceSet.
@@ -56,6 +58,10 @@ func NewResourceSet(config ResourceSetConfig) (*controller.ResourceSet, error) {
 	}
 	if config.Logger == nil {
 		return nil, microerror.Maskf(invalidConfigError, "%T.Logger must not be empty", config)
+	}
+
+	if config.TillerNamespace == "" {
+		return nil, microerror.Maskf(invalidConfigError, "%T.TillerNamespace must not be empty", config)
 	}
 
 	var chartMigrationResource resource.Interface
@@ -120,9 +126,26 @@ func NewResourceSet(config ResourceSetConfig) (*controller.ResourceSet, error) {
 		}
 	}
 
+	var tillerMigrationResource resource.Interface
+	{
+		c := tillermigration.Config{
+			G8sClient: config.G8sClient,
+			K8sClient: config.K8sClient,
+			Logger:    config.Logger,
+
+			TillerNamespace: config.TillerNamespace,
+		}
+
+		tillerMigrationResource, err = tillermigration.New(c)
+		if err != nil {
+			return nil, microerror.Mask(err)
+		}
+	}
+
 	resources := []resource.Interface{
 		chartMigrationResource,
 		tillerResource,
+		tillerMigrationResource,
 		releaseResource,
 		statusResource,
 	}
