@@ -170,13 +170,11 @@ github.com/giantswarm/apiextensions v0.0.0-20200127104704-78e994410a10 h1:SrUZM6
 github.com/giantswarm/apiextensions v0.0.0-20200127104704-78e994410a10/go.mod h1:zHLSgCszRMdZUzwmfOibzcyfRC89ygwAQlpXcukgZuc=
 github.com/giantswarm/apiextensions v0.1.0 h1:jpmwpNTMxa49ue4p1zUIAqXscWPvxN5EB4dUFWG4wr4=
 github.com/giantswarm/apiextensions v0.1.0/go.mod h1:zHLSgCszRMdZUzwmfOibzcyfRC89ygwAQlpXcukgZuc=
-github.com/giantswarm/apprclient v0.0.0-20191209123802-955b7e89e6e2 h1:AfmrYPVlmiZrEKvg2jVYVDpEVOZVQC7W+M1jiImTp1U=
-github.com/giantswarm/apprclient v0.0.0-20191209123802-955b7e89e6e2/go.mod h1:ajQ3Ibi4dmgMXu23nen/yFp1SaySeQDK3xvXZSKCnCc=
+github.com/giantswarm/appcatalog v0.1.11 h1:VM1fOBBVDSn23nbzTr6W4POC3c/6O9xm0pUUTr1XRI0=
+github.com/giantswarm/appcatalog v0.1.11/go.mod h1:jxC7n+2+TP/ub8kmbIZQ+qcVM55LixRhPP+KznTbKnQ=
 github.com/giantswarm/backoff v0.0.0-20190913091243-4dd491125192 h1:jguq2nu1gbvP6OQIqmkUlbl4ekpwSRUPiXUWlF8InyQ=
 github.com/giantswarm/backoff v0.0.0-20190913091243-4dd491125192/go.mod h1:kjItv/iHgl/xsprYgbnCOme1pVTiiiaZeR2ybsN4ab0=
 github.com/giantswarm/e2e-harness v0.1.1-0.20191209134222-be7852f38d3e/go.mod h1:Vn1HSRdeIgOjYaPRX6p9uzhdwuCn9guM5QEEiLUUb2w=
-github.com/giantswarm/e2e-harness v0.1.1-0.20191209145255-b2048d8645c1 h1:y9NtQNaVNiAG+swx/8sJfUfAqGGantk+BsvZVOcz3lw=
-github.com/giantswarm/e2e-harness v0.1.1-0.20191209145255-b2048d8645c1/go.mod h1:Vn1HSRdeIgOjYaPRX6p9uzhdwuCn9guM5QEEiLUUb2w=
 github.com/giantswarm/e2esetup v0.0.0-20191209131007-01b9f9061692 h1:Bf4dI6D480xUnZ7rPI8d3jKFPCffm+rzxRWk3076Ta4=
 github.com/giantswarm/e2esetup v0.0.0-20191209131007-01b9f9061692/go.mod h1:p+cP+0Aa2AtnwKi2A4CeNcIgP4nb1no23hnVqCWegp0=
 github.com/giantswarm/errors v0.0.0-20200205145547-c12c94d9a110 h1:v8MizGt0iKYaM3PI40psbw3qKgQAfasrJR79tL7N5UI=
@@ -191,6 +189,7 @@ github.com/giantswarm/k8sportforward v0.0.0-20191209165148-21368288d82d h1:nySwi
 github.com/giantswarm/k8sportforward v0.0.0-20191209165148-21368288d82d/go.mod h1:zmkvHSUauFv31WnGl67dEC5zy9CE72KEd/mQ23DvmkU=
 github.com/giantswarm/microendpoint v0.0.0-20200205204116-c2c5b3af4bdb h1:kVDeYhuUaXMSrNlFuArEi/UsYE8WevFkB4v3PE0REbQ=
 github.com/giantswarm/microendpoint v0.0.0-20200205204116-c2c5b3af4bdb/go.mod h1:IivF0ieDmYEjeYULde8aupgXHYBb8N/XR4TEA+WkSO8=
+github.com/giantswarm/microerror v0.0.0-20191011121515-e0ebc4ecf5a5/go.mod h1://Lo9dKJ8P2TBciuky5fDHEItccyvZOWE+B/0JiJT8A=
 github.com/giantswarm/microerror v0.1.1-0.20200205143715-01b76f66cae6 h1:lJr756ZiXB9+n9pCUjMMNKKf+Lli3qQsybugFxx7Gjo=
 github.com/giantswarm/microerror v0.1.1-0.20200205143715-01b76f66cae6/go.mod h1://Lo9dKJ8P2TBciuky5fDHEItccyvZOWE+B/0JiJT8A=
 github.com/giantswarm/microerror v0.2.0 h1:SaE7S34mp/wEiQkgtPiq8wQbNUTCj1gjiCWPjO3wgJo=
@@ -408,6 +407,7 @@ github.com/json-iterator/go v1.1.9/go.mod h1:KdQUCv79m/52Kvf8AW2vK1V8akMuk1QjK/u
 github.com/jstemmer/go-junit-report v0.0.0-20190106144839-af01ea7f8024/go.mod h1:6v2b51hI/fHJwM22ozAgKL4VKDeJcHhJFhtBdhmNjmU=
 github.com/jtolds/gls v4.20.0+incompatible h1:xdiiI2gbIgH/gLH7ADydsJ1uDOEzR8yvV7C0MuV77Wo=
 github.com/jtolds/gls v4.20.0+incompatible/go.mod h1:QJZ7F/aHp+rZTRtaJ1ow/lLfFfVYBRgL+9YlvaHOwJU=
+github.com/juju/errgo v0.0.0-20140925100237-08cceb5d0b53/go.mod h1:ZtgUe3RyZisw/AlQjgU9DeO3hqUH9E/bkreI2FLg/QY=
 github.com/julienschmidt/httprouter v1.2.0/go.mod h1:SYymIcj16QtmaHHD7aYtjjsJG7VTCxuUUipMqKk8s4w=
 github.com/karrick/godirwalk v1.7.5/go.mod h1:2c9FRhkDxdIbgkOnCEvnSWs71Bhugbl46shStcFDJ34=
 github.com/kisielk/errcheck v1.1.0/go.mod h1:EZBBE59ingxPouuu3KfxchcWSUPOHkagtvWXihfKN4Q=
