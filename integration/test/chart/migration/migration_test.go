@@ -11,6 +11,7 @@ import (
 	"github.com/giantswarm/apiextensions/pkg/apis/application/v1alpha1"
 	corev1alpha1 "github.com/giantswarm/apiextensions/pkg/apis/core/v1alpha1"
 	"github.com/giantswarm/backoff"
+	"github.com/giantswarm/helmclient"
 	"github.com/giantswarm/microerror"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -118,7 +119,7 @@ func TestChartMigration(t *testing.T) {
 	{
 		config.Logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("checking release %#q is deployed", key.TestAppReleaseName()))
 
-		err := config.Release.WaitForStatus(ctx, key.Namespace(), key.TestAppReleaseName(), "deployed")
+		err := config.Release.WaitForStatus(ctx, key.Namespace(), key.TestAppReleaseName(), helmclient.StatusDeployed)
 		if err != nil {
 			t.Fatalf("expected %#v got %#v", nil, err)
 		}
@@ -197,7 +198,7 @@ func TestChartMigration(t *testing.T) {
 	{
 		config.Logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("checking release %#q is deployed", key.TestAppReleaseName()))
 
-		err := config.Release.WaitForStatus(ctx, key.Namespace(), key.TestAppReleaseName(), "deployed")
+		err := config.Release.WaitForStatus(ctx, key.Namespace(), key.TestAppReleaseName(), helmclient.StatusDeployed)
 		if err != nil {
 			t.Fatalf("expected %#v got %#v", nil, err)
 		}

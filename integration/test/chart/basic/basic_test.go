@@ -8,6 +8,7 @@ import (
 	"testing"
 
 	"github.com/giantswarm/apiextensions/pkg/apis/application/v1alpha1"
+	"github.com/giantswarm/helmclient"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
 	"github.com/giantswarm/chart-operator/integration/key"
@@ -56,7 +57,7 @@ func TestChartLifecycle(t *testing.T) {
 
 		config.Logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("checking release %#q is deployed", key.TestAppReleaseName()))
 
-		err = config.Release.WaitForStatus(ctx, key.Namespace(), key.TestAppReleaseName(), "deployed")
+		err = config.Release.WaitForStatus(ctx, key.Namespace(), key.TestAppReleaseName(), helmclient.StatusDeployed)
 		if err != nil {
 			t.Fatalf("expected %#v got %#v", nil, err)
 		}
@@ -121,7 +122,7 @@ func TestChartLifecycle(t *testing.T) {
 
 		config.Logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("checking release %#q is deleted", key.TestAppReleaseName()))
 
-		err = config.Release.WaitForStatus(ctx, key.Namespace(), key.TestAppReleaseName(), "uninstalled")
+		err = config.Release.WaitForStatus(ctx, key.Namespace(), key.TestAppReleaseName(), helmclient.StatusUninstalled)
 		if err != nil {
 			t.Fatalf("expected %#v got %#v", nil, err)
 		}
