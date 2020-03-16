@@ -37,6 +37,15 @@ func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
 		return nil
 	}
 
+	// If Helm v2 release configmap had not been deleted and Helm v3 release secret was not created,
+	// It means helm v3 release migration is not started.
+	if hasConfigMap && !hasSecret {
+		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("release %#q is not in under helmV3 migration yet", key.ReleaseName(cr)))
+		r.logger.LogCtx(ctx, "level", "debug", "message", "canceling reconciliation")
+		reconciliationcanceledcontext.SetCanceled(ctx)
+		return nil
+	}
+
 	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("no pending migration on release %#q", key.ReleaseName(cr)))
 
 	return nil
