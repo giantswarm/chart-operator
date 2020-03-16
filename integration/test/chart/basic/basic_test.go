@@ -100,7 +100,7 @@ func TestChartLifecycle(t *testing.T) {
 
 		config.Logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("checking release %#q is updated", key.TestAppReleaseName()))
 
-		err = config.Release.WaitForChartInfo(ctx, key.Namespace(), key.TestAppReleaseName(), "1.0.4")
+		err = config.Release.WaitForChartInfo(ctx, key.Namespace(), key.TestAppReleaseName(), "0.7.1")
 		if err != nil {
 			t.Fatalf("expected %#v got %#v", nil, err)
 		}
