@@ -102,7 +102,8 @@ func TestChartMigration(t *testing.T) {
 			Spec: v1alpha1.ChartSpec{
 				Name:       key.TestAppReleaseName(),
 				Namespace:  key.Namespace(),
-				TarballURL: "https://giantswarm.github.com/sample-catalog/kubernetes-test-app-chart-0.7.0.tgz",
+				TarballURL: "https://giantswarm.github.com/default-test-catalog/0.0.0-be5df8e7e43877cb1656cb37aa3c2ac0b6729757.tgz",
+				Version:    "0.0.0-be5df8e7e43877cb1656cb37aa3c2ac0b6729757",
 			},
 		}
 		_, err := config.K8sClients.G8sClient().ApplicationV1alpha1().Charts(key.Namespace()).Create(chart)
