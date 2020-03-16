@@ -4,7 +4,7 @@ go 1.13
 
 require (
 	github.com/chai2010/gettext-go v0.0.0-20191225085308-6b9f4b1008e1 // indirect
-	github.com/giantswarm/apiextensions v0.1.0
+	github.com/giantswarm/apiextensions v0.1.2-0.20200316114202-2c8cdd380355
 	github.com/giantswarm/apprclient v0.0.0-20191209123802-955b7e89e6e2 // indirect
 	github.com/giantswarm/backoff v0.0.0-20190913091243-4dd491125192
 	github.com/giantswarm/e2e-harness v0.1.1-0.20191209145255-b2048d8645c1
