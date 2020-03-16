@@ -43,7 +43,7 @@ func TestChartLifecycle(t *testing.T) {
 			Spec: v1alpha1.ChartSpec{
 				Name:       key.TestAppReleaseName(),
 				Namespace:  key.Namespace(),
-				TarballURL: "https://giantswarm.github.com/default-test-catalog/0.0.0-be5df8e7e43877cb1656cb37aa3c2ac0b6729757.tgz",
+				TarballURL: "https://giantswarm.github.com/default-test-catalog/test-app-0.0.0-be5df8e7e43877cb1656cb37aa3c2ac0b6729757.tgz",
 				Version:    "0.0.0-be5df8e7e43877cb1656cb37aa3c2ac0b6729757",
 			},
 		}
@@ -100,7 +100,7 @@ func TestChartLifecycle(t *testing.T) {
 
 		config.Logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("checking release %#q is updated", key.TestAppReleaseName()))
 
-		err = config.Release.WaitForChartInfo(ctx, key.Namespace(), key.TestAppReleaseName(), "0.7.1")
+		err = config.Release.WaitForChartInfo(ctx, key.Namespace(), key.TestAppReleaseName(), "0.0.0-18784797b7dc56d33f9fdcd0509da8ea88f4f2ce")
 		if err != nil {
 			t.Fatalf("expected %#v got %#v", nil, err)
 		}

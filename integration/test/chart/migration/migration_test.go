@@ -102,7 +102,7 @@ func TestChartMigration(t *testing.T) {
 			Spec: v1alpha1.ChartSpec{
 				Name:       key.TestAppReleaseName(),
 				Namespace:  key.Namespace(),
-				TarballURL: "https://giantswarm.github.com/default-test-catalog/0.0.0-be5df8e7e43877cb1656cb37aa3c2ac0b6729757.tgz",
+				TarballURL: "https://giantswarm.github.io/default-test-catalog/test-app-0.0.0-be5df8e7e43877cb1656cb37aa3c2ac0b6729757.tgz",
 				Version:    "0.0.0-be5df8e7e43877cb1656cb37aa3c2ac0b6729757",
 			},
 		}
