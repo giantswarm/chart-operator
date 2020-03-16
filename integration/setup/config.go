@@ -7,12 +7,8 @@ import (
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/micrologger"
 
+	"github.com/giantswarm/chart-operator/integration/key"
 	"github.com/giantswarm/chart-operator/integration/release"
-)
-
-const (
-	namespace       = "giantswarm"
-	tillerNamespace = "kube-system"
 )
 
 type Config struct {
@@ -69,7 +65,7 @@ func NewConfig() (Config, error) {
 			Logger:               logger,
 			K8sClient:            cpK8sClients.K8sClient(),
 			RestConfig:           cpK8sClients.RESTConfig(),
-			TillerNamespace:      tillerNamespace,
+			TillerNamespace:      key.Namespace(),
 			TillerUpgradeEnabled: true,
 		}
 		helmClient, err = helmclient.New(c)

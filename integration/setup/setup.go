@@ -51,6 +51,13 @@ func installResources(ctx context.Context, config Config) error {
 		}
 	}
 
+	{
+		err := config.HelmClient.EnsureTillerInstalled(ctx)
+		if err != nil {
+			return microerror.Mask(err)
+		}
+	}
+
 	var latestOperatorRelease string
 	{
 		config.Logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("getting latest %#q release", project.Name()))
