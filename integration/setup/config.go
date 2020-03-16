@@ -1,23 +1,20 @@
 package setup
 
 import (
-	"github.com/giantswarm/e2e-harness/pkg/release"
 	"github.com/giantswarm/e2esetup/chart/env"
 	"github.com/giantswarm/helmclient"
 	"github.com/giantswarm/k8sclient"
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/micrologger"
-)
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
-const (
-	namespace       = "giantswarm"
-	tillerNamespace = "kube-system"
+	"github.com/giantswarm/chart-operator/integration/release"
 )
 
 type Config struct {
-	HelmClient *helmclient.Client
+	HelmClient helmclient.Interface
 	K8s        *k8sclient.Setup
-	K8sClients *k8sclient.Clients
+	K8sClients k8sclient.Interface
 	Logger     micrologger.Logger
 	Release    *release.Release
 }
@@ -68,7 +65,7 @@ func NewConfig() (Config, error) {
 			Logger:               logger,
 			K8sClient:            cpK8sClients.K8sClient(),
 			RestConfig:           cpK8sClients.RESTConfig(),
-			TillerNamespace:      tillerNamespace,
+			TillerNamespace:      metav1.NamespaceSystem,
 			TillerUpgradeEnabled: true,
 		}
 		helmClient, err = helmclient.New(c)
@@ -80,13 +77,8 @@ func NewConfig() (Config, error) {
 	var newRelease *release.Release
 	{
 		c := release.Config{
-			ExtClient:  cpK8sClients.ExtClient(),
-			G8sClient:  cpK8sClients.G8sClient(),
 			HelmClient: helmClient,
-			K8sClient:  cpK8sClients.K8sClient(),
 			Logger:     logger,
-
-			Namespace: namespace,
 		}
 
 		newRelease, err = release.New(c)

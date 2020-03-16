@@ -35,19 +35,19 @@ func TestChartLifecycle(t *testing.T) {
 		cr := &v1alpha1.Chart{
 			ObjectMeta: metav1.ObjectMeta{
 				Name:      key.TestAppReleaseName(),
-				Namespace: "giantswarm",
+				Namespace: key.Namespace(),
 				Labels: map[string]string{
 					"chart-operator.giantswarm.io/version": "1.0.0",
 				},
 			},
 			Spec: v1alpha1.ChartSpec{
 				Name:       key.TestAppReleaseName(),
-				Namespace:  "giantswarm",
+				Namespace:  key.Namespace(),
 				TarballURL: "https://giantswarm.github.com/sample-catalog/kubernetes-test-app-chart-0.7.0.tgz",
 				Version:    "0.7.0",
 			},
 		}
-		_, err := config.K8sClients.G8sClient().ApplicationV1alpha1().Charts("giantswarm").Create(cr)
+		_, err := config.K8sClients.G8sClient().ApplicationV1alpha1().Charts(key.Namespace()).Create(cr)
 		if err != nil {
 			t.Fatalf("expected %#v got %#v", nil, err)
 		}
@@ -68,7 +68,7 @@ func TestChartLifecycle(t *testing.T) {
 	{
 		config.Logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("checking status for chart CR %#q", key.TestAppReleaseName()))
 
-		cr, err := config.K8sClients.G8sClient().ApplicationV1alpha1().Charts("giantswarm").Get(key.TestAppReleaseName(), metav1.GetOptions{})
+		cr, err := config.K8sClients.G8sClient().ApplicationV1alpha1().Charts(key.Namespace()).Get(key.TestAppReleaseName(), metav1.GetOptions{})
 		if err != nil {
 			t.Fatalf("expected %#v got %#v", nil, err)
 		}
@@ -83,7 +83,7 @@ func TestChartLifecycle(t *testing.T) {
 	{
 		config.Logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("updating chart %#q", key.TestAppReleaseName()))
 
-		cr, err := config.K8sClients.G8sClient().ApplicationV1alpha1().Charts("giantswarm").Get(key.TestAppReleaseName(), metav1.GetOptions{})
+		cr, err := config.K8sClients.G8sClient().ApplicationV1alpha1().Charts(key.Namespace()).Get(key.TestAppReleaseName(), metav1.GetOptions{})
 		if err != nil {
 			t.Fatalf("expected %#v got %#v", nil, err)
 		}
@@ -91,7 +91,7 @@ func TestChartLifecycle(t *testing.T) {
 		cr.Spec.TarballURL = "https://giantswarm.github.com/sample-catalog/kubernetes-test-app-chart-0.7.1.tgz"
 		cr.Spec.Version = "0.7.1"
 
-		_, err = config.K8sClients.G8sClient().ApplicationV1alpha1().Charts("giantswarm").Update(cr)
+		_, err = config.K8sClients.G8sClient().ApplicationV1alpha1().Charts(key.Namespace()).Update(cr)
 		if err != nil {
 			t.Fatalf("expected %#v got %#v", nil, err)
 		}
@@ -112,7 +112,7 @@ func TestChartLifecycle(t *testing.T) {
 	{
 		config.Logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("deleting chart %#q", key.TestAppReleaseName()))
 
-		err := config.K8sClients.G8sClient().ApplicationV1alpha1().Charts("giantswarm").Delete(key.TestAppReleaseName(), &metav1.DeleteOptions{})
+		err := config.K8sClients.G8sClient().ApplicationV1alpha1().Charts(key.Namespace()).Delete(key.TestAppReleaseName(), &metav1.DeleteOptions{})
 		if err != nil {
 			t.Fatalf("expected %#v got %#v", nil, err)
 		}
