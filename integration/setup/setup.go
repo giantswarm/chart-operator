@@ -45,14 +45,14 @@ func installResources(ctx context.Context, config Config) error {
 	var err error
 
 	{
-		err := config.K8s.EnsureNamespaceCreated(ctx, key.Namespace())
+		err = config.K8s.EnsureNamespaceCreated(ctx, key.Namespace())
 		if err != nil {
 			return microerror.Mask(err)
 		}
 	}
 
 	{
-		err := config.HelmClient.EnsureTillerInstalled(ctx)
+		err = config.HelmClient.EnsureTillerInstalled(ctx)
 		if err != nil {
 			return microerror.Mask(err)
 		}
