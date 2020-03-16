@@ -88,22 +88,22 @@ func (r *Resource) ensureTillerDeleted(ctx context.Context) error {
 	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("deleted cluster role binding %#q", name))
 
 	pspName := fmt.Sprintf("%s-psp", name)
-	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("deleting cluster role binding %#q", pspName))
+	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("deleting psp cluster role binding %#q", pspName))
 	err = r.k8sClient.RbacV1().ClusterRoleBindings().Delete("tiller-giantswarm-psp", &metav1.DeleteOptions{})
 	if apierrors.IsNotFound(err) {
 		// no-op
 	} else if err != nil {
 		return microerror.Mask(err)
 	}
-	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("deleted cluster role binding %#q", pspName))
+	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("deleted psp cluster role binding %#q", pspName))
 
-	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("deleting cluster role %#q", pspName))
+	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("deleting psp cluster role %#q", pspName))
 	if apierrors.IsNotFound(err) {
 		// no-op
 	} else if err != nil {
 		return microerror.Mask(err)
 	}
-	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("deleted cluster role %#q", pspName))
+	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("deleted psp cluster role %#q", pspName))
 
 	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("deleting pod security policy %#q", pspName))
 	err = r.k8sClient.PolicyV1beta1().PodSecurityPolicies().Delete(pspName, &metav1.DeleteOptions{})

@@ -32,26 +32,27 @@ func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
 
 	notStarted := []string{}
 	inProgress := []string{}
+
 	for _, chart := range charts.Items {
-		foundConfigMap, err := r.findHelmV2ConfigMaps(ctx, key.ReleaseName(chart))
+		hasConfigMap, err := r.findHelmV2ConfigMaps(ctx, key.ReleaseName(chart))
 		if err != nil {
 			return microerror.Mask(err)
 		}
 
-		foundSecret, err := r.findHelmV3Secrets(ctx, key.ReleaseName(chart), key.Namespace(chart))
+		hasSecret, err := r.findHelmV3Secrets(ctx, key.ReleaseName(chart), key.Namespace(chart))
 		if err != nil {
 			return microerror.Mask(err)
 		}
 
 		// If Helm v2 release configmap had not been deleted and Helm v3 release secret is there,
 		// It means helm release migration is in progress.
-		if foundConfigMap && foundSecret {
+		if hasConfigMap && hasSecret {
 			inProgress = append(inProgress, chart.Name)
 		}
 
 		// If Helm v2 release configmap was not deleted and Helm v3 release secret was not created,
 		// It means helm v3 release migration is not started.
-		if foundConfigMap && !foundSecret {
+		if hasConfigMap && !hasSecret {
 			notStarted = append(notStarted, chart.Name)
 		}
 	}
