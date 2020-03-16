@@ -3,28 +3,6 @@ orbs:
   architect: giantswarm/architect@0.8.3
 
 jobs:
-  build:
-    machine: true
-    steps:
-    - checkout
-
-    - run: |
-        wget -q $(curl -sS -H "Authorization: token $RELEASE_TOKEN" https://api.github.com/repos/giantswarm/architect/releases/latest | grep browser_download_url | head -n 1 | cut -d '"' -f 4)
-        chmod +x ./architect
-        ./architect version
-    - run: ./architect build
-    - store_test_results:
-        path: /tmp/results
-    - run: ./architect publish --pipeline=false --channels=${CIRCLE_SHA1}
-    - run: |
-        sed -i 's/version:.*/version: 1.0.0-'"${CIRCLE_SHA1}"'/' helm/chart-operator-chart/Chart.yaml
-        ./architect publish --pipeline=false --channels=${CIRCLE_SHA1}
-    - persist_to_workspace:
-        root: .
-        paths:
-        - ./chart-operator
-        - ./architect
-
   deploy:
     machine: true
     steps:
@@ -55,8 +33,11 @@ jobs:
 workflows:
   build:
     jobs:
-      - build:
+      - architect/go-build:
+          name: go-build-chart-operator
+          binary: chart-operator
           filters:
+            # Needed to trigger job also on git tag.
             tags:
               only: /^v.*/
 
@@ -66,7 +47,7 @@ workflows:
           username_envar: "QUAY_USERNAME"
           password_envar: "QUAY_PASSWORD"
           requires:
-            - build
+            - go-build-chart-operator
           # Needed to trigger job also on git tag.
           filters:
             tags:
@@ -78,7 +59,7 @@ workflows:
           username_envar: "ALIYUN_USERNAME"
           password_envar: "ALIYUN_PASSWORD"
           requires:
-            - build
+            - go-build-chart-operator
           # Needed to trigger job only on git tag.
           filters:
             branches:
@@ -92,7 +73,7 @@ workflows:
           username_envar: "ALIYUN_USERNAME"
           password_envar: "ALIYUN_PASSWORD"
           requires:
-            - build
+            - go-build-chart-operator
 
       - architect/push-to-app-catalog:
           name: push-chart-operator-to-app-catalog
@@ -110,13 +91,13 @@ workflows:
           name: basic-integration-test
           test-dir: "integration/test/chart/basic"
           requires:
-          - build
+          - go-build-chart-operator
       
       - architect/integration-test:
           name: migration-integration-test
           test-dir: "integration/test/chart/migration"
           requires:
-          - build
+          - go-build-chart-operator
 
       - deploy:
           filters:
