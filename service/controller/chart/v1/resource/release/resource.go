@@ -26,7 +26,7 @@ const (
 
 	// releaseNotInstalledStatus is set in the CR status when there is no Helm
 	// Release to check.
-	releaseNotInstalledStatus = "not_installed"
+	releaseNotInstalledStatus = "not-installed"
 )
 
 // Config represents the configuration used to create a new release resource.
