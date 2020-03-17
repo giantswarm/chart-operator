@@ -37,9 +37,9 @@ func New(config Config) (*Release, error) {
 	return r, nil
 }
 
-func (r *Release) WaitForChartInfo(ctx context.Context, namespace, release, version string) error {
+func (r *Release) WaitForChartVersion(ctx context.Context, namespace, release, version string) error {
 	operation := func() error {
-		rh, err := r.helmClient.GetReleaseHistory(ctx, namespace, release)
+		rh, err := r.helmClient.GetReleaseContent(ctx, namespace, release)
 		if err != nil {
 			return microerror.Mask(err)
 		}
