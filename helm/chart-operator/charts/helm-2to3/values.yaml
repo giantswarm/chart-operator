@@ -1,0 +1,17 @@
+# Default values for chart-operator-helm-2to3-migration chart.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+name: chart-operator-helm-2to3-migration
+namespace: kube-system
+
+userID: 1000
+groupID: 1000
+
+image:
+  registry: quay.io
+  name: giantswarm/helm-2to3
+  tag: latest
+
+tiller:
+  namespace: "kube-system"

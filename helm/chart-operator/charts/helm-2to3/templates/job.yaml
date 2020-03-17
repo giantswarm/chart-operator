@@ -1,0 +1,30 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ .Values.name }}
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    "helm.sh/hook": "post-install,post-upgrade"
+    "helm.sh/hook-delete-policy": "hook-succeeded,hook-failed"
+  labels:
+    app: {{ .Values.name }}
+    giantswarm.io/service-type: "managed"
+spec:
+  template:
+    spec:
+      serviceAccountName: {{ .Values.name }}
+      securityContext:
+        runAsUser: {{ .Values.userID }}
+        runAsGroup: {{ .Values.groupID }}
+      containers:
+        - name: {{ .Values.name }}
+          image: "{{ .Values.global.image.registry }}/{{ .Values.image.name }}:{{ .Values.image.tag }}"
+          args:
+            - 2to3
+            - convert
+            - --delete-v2-releases
+            - --tiller-ns
+            - {{ .Values.tiller.namespace }}
+            - {{ .Release.Name }}
+      restartPolicy: Never
+  backoffLimit: 3
