@@ -54,16 +54,7 @@ func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
 		return microerror.Mask(err)
 	}
 
-	releaseHistory, err := r.helmClient.GetReleaseHistory(ctx, key.Namespace(cr), releaseName)
-	if helmclient.IsReleaseNotFound(err) {
-		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("did not get status for release %#q", releaseName))
-		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("release %#q not found", releaseName))
-
-		// Return early. We will retry on the next execution.
-		return nil
-	} else if err != nil {
-		return microerror.Mask(err)
-	}
+	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("DEBUG release content %#v", releaseContent))
 
 	var status, reason string
 	{
@@ -73,19 +64,19 @@ func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
 		} else {
 			status = releaseContent.Status
 			if releaseContent.Status != helmclient.StatusDeployed {
-				reason = releaseHistory.Description
+				reason = releaseContent.Description
 			}
 		}
 	}
 
 	desiredStatus := v1alpha1.ChartStatus{
-		AppVersion: releaseHistory.AppVersion,
+		AppVersion: releaseContent.AppVersion,
 		Reason:     reason,
 		Release: v1alpha1.ChartStatusRelease{
-			LastDeployed: v1alpha1.DeepCopyTime{releaseHistory.LastDeployed},
+			LastDeployed: v1alpha1.DeepCopyTime{releaseContent.LastDeployed},
 			Status:       status,
 		},
-		Version: releaseHistory.Version,
+		Version: releaseContent.Version,
 	}
 
 	if !equals(desiredStatus, key.ChartStatus(cr)) {
