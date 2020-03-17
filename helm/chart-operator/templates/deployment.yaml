@@ -20,7 +20,7 @@ spec:
         app: {{ .Values.project.name }}
         giantswarm.io/service-type: "managed"
       annotations:
-        releaseRevision: {{ $.Release.Revision | quote }}
+        releasetime: {{ $.Release.Time }}
     spec:
       affinity:
         nodeAffinity:
@@ -63,7 +63,7 @@ spec:
         {{ if (.Values.Installation) }}
         image: "{{ .Values.Installation.V1.Registry.Domain }}/{{ .Values.image.name }}:{{ .Values.image.tag }}"
         {{ else }}
-        image: "{{ .Values.image.registry }}/{{ .Values.image.name }}:{{ .Values.image.tag }}"
+        image: "{{ .Values.global.image.registry }}/{{ .Values.image.name }}:{{ .Values.image.tag }}"
         {{ end }}
         command: 
         - sh
