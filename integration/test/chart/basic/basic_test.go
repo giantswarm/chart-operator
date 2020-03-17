@@ -73,8 +73,8 @@ func TestChartLifecycle(t *testing.T) {
 		if err != nil {
 			t.Fatalf("expected %#v got %#v", nil, err)
 		}
-		if cr.Status.Release.Status != "deployed" {
-			t.Fatalf("expected CR release status %#q got %#q", "deployed", cr.Status.Release.Status)
+		if cr.Status.Release.Status != helmclient.StatusDeployed {
+			t.Fatalf("expected CR release status %#q got %#q", helmclient.StatusDeployed, cr.Status.Release.Status)
 		}
 
 		config.Logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("checked status for chart CR %#q", key.TestAppReleaseName()))
