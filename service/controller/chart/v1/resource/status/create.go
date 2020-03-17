@@ -54,8 +54,6 @@ func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
 		return microerror.Mask(err)
 	}
 
-	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("DEBUG release content %#v", releaseContent))
-
 	var status, reason string
 	{
 		if key.IsCordoned(cr) {
