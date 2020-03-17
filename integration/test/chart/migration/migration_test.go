@@ -68,13 +68,13 @@ func TestChartMigration(t *testing.T) {
 			},
 			Spec: corev1alpha1.ChartConfigSpec{
 				Chart: corev1alpha1.ChartConfigSpecChart{
-					Channel:   "0-7-beta",
+					Channel:   "0-1-beta",
 					Name:      key.TestAppReleaseName(),
 					Namespace: key.Namespace(),
 					Release:   key.TestAppReleaseName(),
 				},
 				VersionBundle: corev1alpha1.ChartConfigSpecVersionBundle{
-					Version: "0.7.0",
+					Version: "0.1.1",
 				},
 			},
 		}
@@ -102,7 +102,8 @@ func TestChartMigration(t *testing.T) {
 			Spec: v1alpha1.ChartSpec{
 				Name:       key.TestAppReleaseName(),
 				Namespace:  key.Namespace(),
-				TarballURL: "https://giantswarm.github.com/sample-catalog/kubernetes-test-app-chart-0.7.0.tgz",
+				TarballURL: "https://giantswarm.github.io/default-catalog/test-app-0.1.1.tgz",
+				Version:    "0.1.1",
 			},
 		}
 		_, err := config.K8sClients.G8sClient().ApplicationV1alpha1().Charts(key.Namespace()).Create(chart)

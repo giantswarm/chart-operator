@@ -43,8 +43,13 @@ func TestChartLifecycle(t *testing.T) {
 			Spec: v1alpha1.ChartSpec{
 				Name:       key.TestAppReleaseName(),
 				Namespace:  key.Namespace(),
+<<<<<<< HEAD
 				TarballURL: "https://giantswarm.github.com/sample-catalog/kubernetes-test-app-chart-0.7.0.tgz",
 				Version:    "0.7.0",
+=======
+				TarballURL: "https://giantswarm.github.io/default-catalog/test-app-0.1.0.tgz",
+				Version:    "0.1.0",
+>>>>>>> 809b825b... Use released versions for test-app
 			},
 		}
 		_, err := config.K8sClients.G8sClient().ApplicationV1alpha1().Charts(key.Namespace()).Create(cr)
@@ -88,8 +93,13 @@ func TestChartLifecycle(t *testing.T) {
 			t.Fatalf("expected %#v got %#v", nil, err)
 		}
 
+<<<<<<< HEAD
 		cr.Spec.TarballURL = "https://giantswarm.github.com/sample-catalog/kubernetes-test-app-chart-0.7.1.tgz"
 		cr.Spec.Version = "0.7.1"
+=======
+		cr.Spec.TarballURL = "https://giantswarm.github.io/default-catalog/test-app-0.1.1.tgz"
+		cr.Spec.Version = "0.1.1"
+>>>>>>> 809b825b... Use released versions for test-app
 
 		_, err = config.K8sClients.G8sClient().ApplicationV1alpha1().Charts(key.Namespace()).Update(cr)
 		if err != nil {
@@ -100,7 +110,11 @@ func TestChartLifecycle(t *testing.T) {
 
 		config.Logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("checking release %#q is updated", key.TestAppReleaseName()))
 
+<<<<<<< HEAD
 		err = config.Release.WaitForChartInfo(ctx, key.TestAppReleaseName(), "0.7.1")
+=======
+		err = config.Release.WaitForChartInfo(ctx, key.Namespace(), key.TestAppReleaseName(), "0.1.1")
+>>>>>>> 809b825b... Use released versions for test-app
 		if err != nil {
 			t.Fatalf("expected %#v got %#v", nil, err)
 		}
