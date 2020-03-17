@@ -77,7 +77,7 @@ spec:
         {{ if (.Values.Installation) }}
         image: "{{ .Values.Installation.V1.Registry.Domain }}/{{ .Values.image.name }}:{{ .Values.image.tag }}"
         {{ else }}
-        image: "{{ .Values.image.registry }}/{{ .Values.image.name }}:{{ .Values.image.tag }}"
+        image: "{{ .Values.global.image.registry }}/{{ .Values.image.name }}:{{ .Values.image.tag }}"
         {{ end }}
         volumeMounts:
         - name: {{  .Values.project.name }}
