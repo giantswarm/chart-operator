@@ -4,12 +4,13 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/giantswarm/chart-operator/service/controller/chart/v1/key"
 	"github.com/giantswarm/helmclient"
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/operatorkit/controller/context/finalizerskeptcontext"
 	"github.com/giantswarm/operatorkit/controller/context/resourcecanceledcontext"
 	"github.com/giantswarm/operatorkit/resource/crud"
+
+	"github.com/giantswarm/chart-operator/service/controller/chart/v1/key"
 )
 
 func (r *Resource) ApplyDeleteChange(ctx context.Context, obj, deleteChange interface{}) error {
