@@ -8,7 +8,7 @@ require (
 	github.com/giantswarm/backoff v0.0.0-20200209120535-b7cb1852522d
 	github.com/giantswarm/e2esetup v0.0.0-20191209131007-01b9f9061692
 	github.com/giantswarm/exporterkit v0.0.0-20190619131829-9749deade60f
-	github.com/giantswarm/helmclient v0.0.0-20200317155825-c331c52e8a54
+	github.com/giantswarm/helmclient v0.0.0-20200317180111-3fa03f5d7b76
 	github.com/giantswarm/k8sclient v0.0.0-20200120104955-1542917096d6
 	github.com/giantswarm/microendpoint v0.0.0-20200205204116-c2c5b3af4bdb
 	github.com/giantswarm/microerror v0.2.0
