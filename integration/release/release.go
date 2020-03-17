@@ -37,9 +37,9 @@ func New(config Config) (*Release, error) {
 	return r, nil
 }
 
-func (r *Release) WaitForChartInfo(ctx context.Context, release, version string) error {
+func (r *Release) WaitForChartInfo(ctx context.Context, namespace, release, version string) error {
 	operation := func() error {
-		rh, err := r.helmClient.GetReleaseHistory(ctx, release)
+		rh, err := r.helmClient.GetReleaseHistory(ctx, namespace, release)
 		if err != nil {
 			return microerror.Mask(err)
 		}
@@ -61,10 +61,10 @@ func (r *Release) WaitForChartInfo(ctx context.Context, release, version string)
 	return nil
 }
 
-func (r *Release) WaitForStatus(ctx context.Context, release, status string) error {
+func (r *Release) WaitForStatus(ctx context.Context, namespace, release, status string) error {
 	operation := func() error {
-		rc, err := r.helmClient.GetReleaseContent(ctx, release)
-		if helmclient.IsReleaseNotFound(err) && status == "DELETED" {
+		rc, err := r.helmClient.GetReleaseContent(ctx, namespace, release)
+		if helmclient.IsReleaseNotFound(err) && status == helmclient.StatusUninstalled {
 			// Error is expected because we purge releases when deleting.
 			return nil
 		} else if err != nil {

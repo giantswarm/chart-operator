@@ -12,13 +12,12 @@ import (
 	"github.com/giantswarm/apiextensions/pkg/apis/application/v1alpha1"
 	"github.com/giantswarm/appcatalog"
 	"github.com/giantswarm/backoff"
+	"github.com/giantswarm/helmclient"
 	"github.com/giantswarm/microerror"
 	"github.com/spf13/afero"
-	"k8s.io/helm/pkg/helm"
 
 	"github.com/giantswarm/chart-operator/integration/env"
 	"github.com/giantswarm/chart-operator/integration/key"
-	"github.com/giantswarm/chart-operator/integration/templates"
 	"github.com/giantswarm/chart-operator/pkg/project"
 )
 
@@ -46,13 +45,6 @@ func installResources(ctx context.Context, config Config) error {
 
 	{
 		err = config.K8s.EnsureNamespaceCreated(ctx, key.Namespace())
-		if err != nil {
-			return microerror.Mask(err)
-		}
-	}
-
-	{
-		err = config.HelmClient.EnsureTillerInstalled(ctx)
 		if err != nil {
 			return microerror.Mask(err)
 		}
@@ -107,12 +99,14 @@ func installResources(ctx context.Context, config Config) error {
 
 		config.Logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("installing %#q", project.Name()))
 
-		err = config.HelmClient.InstallReleaseFromTarball(ctx,
-			operatorTarballPath,
-			key.Namespace(),
-			helm.ReleaseName(key.ReleaseName()),
-			helm.ValueOverrides([]byte(templates.ChartOperatorValues)),
-			helm.InstallWait(true))
+		opts := helmclient.InstallOptions{
+			ReleaseName: project.Name(),
+		}
+		values := map[string]interface{}{
+			"clusterDNSIP": "10.96.0.10",
+			"e2e":          "true",
+		}
+		err = config.HelmClient.InstallReleaseFromTarball(ctx, operatorTarballPath, key.Namespace(), values, opts)
 		if err != nil {
 			return microerror.Mask(err)
 		}
