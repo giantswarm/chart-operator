@@ -50,19 +50,11 @@ required = [
 
 [[constraint]]
   branch = "master"
-  name = "github.com/giantswarm/apprclient"
-
-[[constraint]]
-  branch = "master"
   name = "github.com/giantswarm/e2e-harness"
 
 [[constraint]]
-  branch = "master"
+  branch = "kubeconfig"
   name = "github.com/giantswarm/e2esetup"
-
-[[constraint]]
-  branch = "master"
-  name = "github.com/giantswarm/e2etemplates"
 
 [[constraint]]
   branch = "master"
@@ -71,10 +63,6 @@ required = [
 [[constraint]]
   branch = "master"
   name = "github.com/giantswarm/k8sclient"
-
-[[constraint]]
-  branch = "master"
-  name = "github.com/giantswarm/k8sportforward"
 
 [[constraint]]
   name = "github.com/giantswarm/microerror"

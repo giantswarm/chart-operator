@@ -257,12 +257,9 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:d81e8ce19d7bf74d2b9b13aa2d64010e1b51aeafc45797b9da10414f6fcca8f0"
+  digest = "1:42f230f8a7239dbdfb905a36b352bf2b5f53f04657705b66fc44819923357db5"
   name = "github.com/giantswarm/apprclient"
-  packages = [
-    ".",
-    "apprclienttest",
-  ]
+  packages = ["."]
   pruneopts = "UT"
   revision = "045e7f42fdb37501deedc7d2fe758307a0eabcd8"
 
@@ -286,31 +283,12 @@
   revision = "2760a445eb3c77031818fd205acbcefae086b4da"
 
 [[projects]]
-  branch = "master"
-  digest = "1:51f2974e21b6b94e40038a50bd226d55682790a3da30934e4c4ba0756fbdb809"
+  branch = "kubeconfig"
+  digest = "1:f4f5ede4196b9914f6b3376fc95954a5a25fdfb83398bc40b170e2430eaef893"
   name = "github.com/giantswarm/e2esetup"
   packages = ["chart/env"]
   pruneopts = "UT"
-  revision = "01b9f9061692ab47301542ea0eba601289880c2c"
-
-[[projects]]
-  branch = "master"
-<<<<<<< HEAD
-  digest = "1:9f8941cc4db352ee3ccdc78dc12b85ba14d64cbccf264ae4b09eb863a51ff7e3"
-=======
-  digest = "1:7735c348d056d16c55b0a896a412b06c25b96d662c3db0186cf632fa0a1e2331"
->>>>>>> master
-  name = "github.com/giantswarm/e2etemplates"
-  packages = [
-    "internal/render",
-    "pkg/e2etemplates",
-  ]
-  pruneopts = "UT"
-<<<<<<< HEAD
-  revision = "751eac7541c45f8f9b6f5af16f7e6bdaa3502385"
-=======
-  revision = "d9b582bb77554ca3a14bcf1226c38b67ed42660f"
->>>>>>> master
+  revision = "d46cebc21f49cb0eef06dd63f5b16d574508e96c"
 
 [[projects]]
   branch = "master"
@@ -330,22 +308,14 @@
 
 [[projects]]
   branch = "master"
-<<<<<<< HEAD
   digest = "1:2a16ccd0e4b3eabf74c2aae355cf680c18a5ea208085317b44b90a97d7a80055"
-=======
-  digest = "1:fc2341b19203050c3ec69647511267d84e1e54e62b51a19aa16e13de8f0c15e2"
->>>>>>> master
   name = "github.com/giantswarm/helmclient"
   packages = [
     ".",
     "helmclienttest",
   ]
   pruneopts = "UT"
-<<<<<<< HEAD
   revision = "05391cd56d161138170ddd32d0b7d40678bb4d79"
-=======
-  revision = "09cc8424cb4930b685bf53e0c0856bf3727fa41d"
->>>>>>> master
 
 [[projects]]
   branch = "master"
@@ -1890,23 +1860,19 @@
   analyzer-version = 1
   input-imports = [
     "github.com/Azure/go-autorest/autorest",
-    "github.com/cenkalti/backoff",
     "github.com/docker/distribution/reference",
     "github.com/giantswarm/apiextensions/pkg/apis/application/v1alpha1",
     "github.com/giantswarm/apiextensions/pkg/apis/core/v1alpha1",
     "github.com/giantswarm/apiextensions/pkg/clientset/versioned",
     "github.com/giantswarm/apiextensions/pkg/clientset/versioned/fake",
-    "github.com/giantswarm/apprclient",
-    "github.com/giantswarm/apprclient/apprclienttest",
+    "github.com/giantswarm/backoff",
     "github.com/giantswarm/e2e-harness/pkg/release",
     "github.com/giantswarm/e2esetup/chart/env",
-    "github.com/giantswarm/e2etemplates/pkg/e2etemplates",
     "github.com/giantswarm/exporterkit/collector",
     "github.com/giantswarm/helmclient",
     "github.com/giantswarm/helmclient/helmclienttest",
     "github.com/giantswarm/k8sclient",
     "github.com/giantswarm/k8sclient/k8srestconfig",
-    "github.com/giantswarm/k8sportforward",
     "github.com/giantswarm/microendpoint/endpoint/healthz",
     "github.com/giantswarm/microendpoint/endpoint/version",
     "github.com/giantswarm/microendpoint/service/version",
@@ -1917,6 +1883,7 @@
     "github.com/giantswarm/micrologger",
     "github.com/giantswarm/micrologger/microloggertest",
     "github.com/giantswarm/operatorkit/controller",
+    "github.com/giantswarm/operatorkit/controller/context/finalizerskeptcontext",
     "github.com/giantswarm/operatorkit/controller/context/reconciliationcanceledcontext",
     "github.com/giantswarm/operatorkit/controller/context/resourcecanceledcontext",
     "github.com/giantswarm/operatorkit/flag/service/kubernetes",
