@@ -97,12 +97,12 @@
   version = "v1.0.1"
 
 [[projects]]
-  digest = "1:166438587ed45ac211dab8a3ecebf4fa0c186d0db63430fb9127bbc2e5fcdc67"
+  digest = "1:2209584c0f7c9b68c23374e659357ab546e1b70eec2761f03280f69a8fd23d77"
   name = "github.com/cenkalti/backoff"
   packages = ["."]
   pruneopts = "UT"
-  revision = "5267b6dd4d2666b980a911bf235efa276222cbe2"
-  version = "v2.2.1"
+  revision = "2ea60e5f094469f9e65adb9cd103795b73ae743e"
+  version = "v2.0.0"
 
 [[projects]]
   branch = "master"
@@ -225,60 +225,65 @@
   revision = "25d852aebe32c875e9c044af3eef9c7dc6bc777f"
 
 [[projects]]
-  branch = "master"
-  digest = "1:2f9b3a4dc1447d6b0143e2416125989df27d522989afc22031740ff4782befc1"
+  digest = "1:563b512507b12d48276d0ecedecfe83801e8ffc006a05f3f64312f737d62ccad"
   name = "github.com/giantswarm/apiextensions"
   packages = [
     "pkg/apis/application/v1alpha1",
+    "pkg/apis/backup/v1alpha1",
     "pkg/apis/core/v1alpha1",
     "pkg/apis/example/v1alpha1",
+    "pkg/apis/infrastructure/v1alpha2",
     "pkg/apis/provider/v1alpha1",
     "pkg/apis/release/v1alpha1",
     "pkg/clientset/versioned",
     "pkg/clientset/versioned/scheme",
     "pkg/clientset/versioned/typed/application/v1alpha1",
+    "pkg/clientset/versioned/typed/backup/v1alpha1",
     "pkg/clientset/versioned/typed/core/v1alpha1",
     "pkg/clientset/versioned/typed/example/v1alpha1",
+    "pkg/clientset/versioned/typed/infrastructure/v1alpha2",
     "pkg/clientset/versioned/typed/provider/v1alpha1",
     "pkg/clientset/versioned/typed/release/v1alpha1",
   ]
   pruneopts = "UT"
-  revision = "a4fd7939e26e7e2cd681af032963a1597ffae781"
+  revision = "9552ed6bec737d139a14042569f7f96bc32d5a00"
+  version = "v0.1.1"
 
 [[projects]]
-  branch = "master"
-  digest = "1:0dc70d5c96ccd9ef24d12f7c222447425447f7a2ec72556f2479137fe72f5476"
+  digest = "1:df7d76eb372d1e1739a53d84579ba1d82306223e25a98de86642690edc76ec8a"
   name = "github.com/giantswarm/backoff"
   packages = ["."]
   pruneopts = "UT"
-  revision = "4dd4911251929a0ac4c4f3d8c4bda482a9e09f30"
+  revision = "5a00f7bb987700c7c202cf2e44917e2b3b86d12b"
+  version = "v0.1.0"
 
 [[projects]]
-  branch = "master"
   digest = "1:2673e930820371280627226d65918e45097a145a656fc1d7a92505f26610d3cf"
   name = "github.com/giantswarm/errors"
   packages = ["tenant"]
   pruneopts = "UT"
-  revision = "924f9ee3873810de9f288da9bbab5246de195f41"
+  revision = "8d8f8904334c223080acc7886af06b5126de1165"
+  version = "v0.1.0"
 
 [[projects]]
-  branch = "master"
-  digest = "1:640d18361eaa8641ce7d857b613a4e946b30c3d9f50d07adda07390d72e98122"
+  digest = "1:101e392ab6d9e0cd85edb3a62723636e6191bb227d001920a7ac0086c45cb1ab"
   name = "github.com/giantswarm/k8sclient"
   packages = [
     ".",
     "k8scrdclient",
+    "k8sversion",
   ]
   pruneopts = "UT"
-  revision = "f888a8ac48619e166eb78bd93fc7eb8a5a544cd4"
+  revision = "3d89b4e3a990332d09442de0545cd22b67473fae"
+  version = "v0.1.0"
 
 [[projects]]
-  branch = "master"
-  digest = "1:7b4402ea4cd2c0a5c1c0a7eb60a84fe06ee5c077adfeac9b4b1f2544c683f607"
+  digest = "1:99cfa02ec294c967a352cca2cef3bc8bd18fbd2ba03124d5eb01bbc18128c716"
   name = "github.com/giantswarm/k8sportforward"
   packages = ["."]
   pruneopts = "UT"
-  revision = "1c93e34022a6ac23a8763221340f5bb25fae32a8"
+  revision = "0762c4deff14666a4a3accd64fb0474f41029072"
+  version = "v0.1.0"
 
 [[projects]]
   digest = "1:701a5f5a7297ced0c7b9aeeba6a40ef47663b956d56e7acd09fe0d1c31eb1e4b"
