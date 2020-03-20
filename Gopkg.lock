@@ -226,8 +226,7 @@
   revision = "25d852aebe32c875e9c044af3eef9c7dc6bc777f"
 
 [[projects]]
-  branch = "fix-application-crd-errors"
-  digest = "1:976173457a4823589cd481372989a5f415bcb1b0df5feee50a2a9f385791807c"
+  digest = "1:4788a9862da1b867c8c7f916256740a25764572131f8ed3b217f9e5be6d82733"
   name = "github.com/giantswarm/apiextensions"
   packages = [
     "pkg/apis/application/v1alpha1",
@@ -256,7 +255,8 @@
     "pkg/clientset/versioned/typed/release/v1alpha1/fake",
   ]
   pruneopts = "UT"
-  revision = "ca2b5d46f0e3464cdcddcad847007ce1f6bce029"
+  revision = "09d6963fffb465ce77cb77c9c7269e7c3dddc448"
+  version = "v0.1.2"
 
 [[projects]]
   digest = "1:f110592f1b0b0409b8de1306844651c270684ca5fce39e1d79ce450b018a0372"
