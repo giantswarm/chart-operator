@@ -34,8 +34,6 @@ type DraughtsmanConfigExpansion interface{}
 
 type FlannelConfigExpansion interface{}
 
-type IgnitionExpansion interface{}
-
 type IngressConfigExpansion interface{}
 
 type KVMClusterConfigExpansion interface{}

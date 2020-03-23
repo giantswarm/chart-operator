@@ -19,10 +19,9 @@ limitations under the License.
 package v1alpha1
 
 import (
-	rest "k8s.io/client-go/rest"
-
 	v1alpha1 "github.com/giantswarm/apiextensions/pkg/apis/application/v1alpha1"
 	"github.com/giantswarm/apiextensions/pkg/clientset/versioned/scheme"
+	rest "k8s.io/client-go/rest"
 )
 
 type ApplicationV1alpha1Interface interface {

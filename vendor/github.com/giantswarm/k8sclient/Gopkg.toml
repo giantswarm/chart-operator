@@ -28,11 +28,11 @@
 
 [[constraint]]
   name = "github.com/giantswarm/apiextensions"
-  version = "~0.1.0"
+  branch = "master"
 
 [[constraint]]
   name = "github.com/giantswarm/backoff"
-  version = "~0.1.0"
+  branch = "master"
 
 [[override]]
   name = "github.com/giantswarm/microerror"
