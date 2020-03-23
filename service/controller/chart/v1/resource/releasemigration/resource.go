@@ -84,7 +84,7 @@ func (r *Resource) findHelmV2Releases(ctx context.Context) ([]string, error) {
 
 	hadReleases := map[string]bool{}
 	for _, cm := range cms.Items {
-		if _, ok := hadReleases[cm.Name]; !ok {
+		if _, ok := hadReleases[cm.GetLabels()["NAME"]]; !ok {
 			hadReleases[cm.Name] = true
 		}
 	}
