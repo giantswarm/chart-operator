@@ -84,8 +84,9 @@ func (r *Resource) findHelmV2Releases(ctx context.Context) ([]string, error) {
 
 	hadReleases := map[string]bool{}
 	for _, cm := range cms.Items {
-		if _, ok := hadReleases[cm.GetLabels()["NAME"]]; !ok {
-			hadReleases[cm.Name] = true
+		name, _ := cm.GetLabels()["NAME"]
+		if _, ok := hadReleases[name]; !ok {
+			hadReleases[name] = true
 		}
 	}
 
@@ -98,7 +99,6 @@ func (r *Resource) findHelmV2Releases(ctx context.Context) ([]string, error) {
 }
 
 func (r *Resource) ensureReleasesMigrated(ctx context.Context) error {
-
 	// 0. Found all dangling helm release v2
 	releases, err := r.findHelmV2Releases(ctx)
 	if err != nil {
