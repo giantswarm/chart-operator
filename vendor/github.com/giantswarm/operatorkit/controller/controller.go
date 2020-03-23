@@ -108,6 +108,7 @@ type Controller struct {
 	collector              *collector.Set
 	errorCollector         chan error
 	loop                   int64
+	mutex                  sync.Mutex
 	removedFinalizersCache *stringCache
 
 	name         string
@@ -164,6 +165,7 @@ func New(config Config) (*Controller, error) {
 		collector:              timestampCollector,
 		errorCollector:         make(chan error, 1),
 		loop:                   -1,
+		mutex:                  sync.Mutex{},
 		removedFinalizersCache: newStringCache(config.ResyncPeriod * 3),
 
 		name:         config.Name,
@@ -333,6 +335,14 @@ func (c *Controller) bootWithError(ctx context.Context) error {
 }
 
 func (c *Controller) deleteFunc(ctx context.Context, obj interface{}) {
+	// DeleteFunc/UpdateFunc is synchronized to make sure only one of them is
+	// executed at a time. DeleteFunc/UpdateFunc is not thread safe. This is
+	// important because the source of truth for an operator are the reconciled
+	// resources. In case we would run the operator logic in parallel, we would
+	// run into race conditions.
+	c.mutex.Lock()
+	defer c.mutex.Unlock()
+
 	var err error
 
 	var rs *ResourceSet
@@ -450,6 +460,14 @@ func (c *Controller) reconcile(ctx context.Context, req reconcile.Request) (reco
 }
 
 func (c *Controller) updateFunc(ctx context.Context, obj interface{}) {
+	// DeleteFunc/UpdateFunc is synchronized to make sure only one of them is
+	// executed at a time. DeleteFunc/UpdateFunc is not thread safe. This is
+	// important because the source of truth for an operator are the reconciled
+	// resources. In case we would run the operator logic in parallel, we would
+	// run into race conditions.
+	c.mutex.Lock()
+	defer c.mutex.Unlock()
+
 	var err error
 
 	var rs *ResourceSet

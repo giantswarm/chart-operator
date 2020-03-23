@@ -27,7 +27,6 @@ spec:
     status: {}
   validation:
     openAPIV3Schema:
-      type: object
       properties:
         spec:
           type: object
