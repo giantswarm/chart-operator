@@ -42,7 +42,12 @@ func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
 	if hasConfigMap && !hasSecret {
 		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("release %#q helmV3 migration not started", key.ReleaseName(cr)))
 		r.logger.LogCtx(ctx, "level", "debug", "message", "canceling reconciliation")
-		reconciliationcanceledcontext.SetCanceled(ctx)
+
+		// install helm-2to3-migration app
+		err := r.ensureReleasesMigrated(ctx)
+		if err != nil {
+			return microerror.Mask(err)
+		}
 		return nil
 	}
 

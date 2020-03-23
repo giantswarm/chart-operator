@@ -80,8 +80,9 @@ func NewResourceSet(config ResourceSetConfig) (*controller.ResourceSet, error) {
 	var releaseMigrationResource resource.Interface
 	{
 		c := releasemigration.Config{
-			K8sClient: config.K8sClient,
-			Logger:    config.Logger,
+			HelmClient: config.HelmClient,
+			K8sClient:  config.K8sClient,
+			Logger:     config.Logger,
 
 			TillerNamespace: config.TillerNamespace,
 		}
