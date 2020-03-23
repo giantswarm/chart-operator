@@ -139,7 +139,6 @@ func (r *Resource) ensureReleasesMigrated(ctx context.Context) error {
 			}
 
 			err = r.helmClient.InstallReleaseFromTarball(ctx, tarballPath, r.tillerNamespace, values, opts)
-
 			if err != nil {
 				return microerror.Mask(err)
 			}
