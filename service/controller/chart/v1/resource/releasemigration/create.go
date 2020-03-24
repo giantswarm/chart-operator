@@ -41,7 +41,7 @@ func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
 	// It means helm v3 release migration is not started.
 	if hasConfigMap && !hasSecret {
 		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("release %#q helmV3 migration not started", key.ReleaseName(cr)))
-		r.logger.LogCtx(ctx, "level", "debug", "message", "installing helm-2to3-migration")
+		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("installing %#q", migrationApp))
 
 		// install helm-2to3-migration app
 		err := r.ensureReleasesMigrated(ctx)
@@ -49,7 +49,7 @@ func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
 			return microerror.Mask(err)
 		}
 
-		r.logger.LogCtx(ctx, "level", "debug", "message", "installed helm-2to3-migration")
+		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("installed %#q", migrationApp))
 		return nil
 	}
 

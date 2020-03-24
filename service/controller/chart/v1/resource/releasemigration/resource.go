@@ -19,6 +19,8 @@ import (
 
 const (
 	Name = "releasemigrationv1"
+
+	migrationApp = "helm-2to3-migration"
 )
 
 type Config struct {
