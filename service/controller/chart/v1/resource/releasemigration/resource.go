@@ -82,16 +82,16 @@ func (r *Resource) findHelmV2Releases(ctx context.Context) ([]string, error) {
 		return nil, microerror.Mask(err)
 	}
 
-	hadReleases := map[string]bool{}
+	hasReleases := map[string]bool{}
 	for _, cm := range cms.Items {
 		name, _ := cm.GetLabels()["NAME"]
-		if _, ok := hadReleases[name]; !ok {
-			hadReleases[name] = true
+		if _, ok := hasReleases[name]; !ok {
+			hasReleases[name] = true
 		}
 	}
 
-	releases := make([]string, 0, len(hadReleases))
-	for k := range hadReleases {
+	releases := make([]string, 0, len(hasReleases))
+	for k := range hasReleases {
 		releases = append(releases, k)
 	}
 
@@ -99,13 +99,13 @@ func (r *Resource) findHelmV2Releases(ctx context.Context) ([]string, error) {
 }
 
 func (r *Resource) ensureReleasesMigrated(ctx context.Context) error {
-	// 0. Found all dangling helm release v2
+	// Found all dangling helm release v2
 	releases, err := r.findHelmV2Releases(ctx)
 	if err != nil {
 		return microerror.Mask(err)
 	}
 
-	// 1. Install helm-2to3-migration app
+	// Install helm-2to3-migration app
 	{
 		var tarballPath string
 		{
@@ -145,8 +145,8 @@ func (r *Resource) ensureReleasesMigrated(ctx context.Context) error {
 		}
 	}
 
-	// 2. Wait until all helm v2 release are deleted
-	operation := func() error {
+	// Wait until all helm v2 release are deleted
+	o := func() error {
 		releases, err := r.findHelmV2Releases(ctx)
 		if err != nil {
 			return microerror.Mask(err)
@@ -158,12 +158,12 @@ func (r *Resource) ensureReleasesMigrated(ctx context.Context) error {
 		return nil
 	}
 
-	notify := func(err error, t time.Duration) {
+	n := func(err error, t time.Duration) {
 		r.logger.Log("level", "debug", "message", "failed to deleted all helm v2 releases")
 	}
 
 	b := backoff.NewConstant(backoff.ShortMaxWait, backoff.ShortMaxInterval)
-	err = backoff.RetryNotify(operation, b, notify)
+	err = backoff.RetryNotify(o, b, n)
 	if err != nil {
 		return microerror.Mask(err)
 	}
