@@ -141,7 +141,9 @@ func (r *Resource) ensureReleasesMigrated(ctx context.Context) error {
 			}
 
 			err = r.helmClient.InstallReleaseFromTarball(ctx, tarballPath, r.tillerNamespace, values, opts)
-			if err != nil {
+			if helmclient.IsReleaseAlreadyExists(err) {
+				return microerror.Maskf(releaseAlreadyExistsError, "release %#q already exists", migrationApp)
+			} else if err != nil {
 				return microerror.Mask(err)
 			}
 		}

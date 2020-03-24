@@ -45,7 +45,12 @@ func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
 
 		// install helm-2to3-migration app
 		err := r.ensureReleasesMigrated(ctx)
-		if err != nil {
+		if IsReleaseAlreadyExists(err) {
+			r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("release %#q already exists", migrationApp))
+			r.logger.LogCtx(ctx, "level", "debug", "message", "canceling reconciliation")
+			reconciliationcanceledcontext.SetCanceled(ctx)
+			return nil
+		} else if err != nil {
 			return microerror.Mask(err)
 		}
 
