@@ -45,6 +45,8 @@ func NewSet(config SetConfig) (*Set, error) {
 		c := HelmV2ReleaseConfig{
 			K8sClient: config.K8sClient.K8sClient(),
 			Logger:    config.Logger,
+
+			TillerNamespace: config.TillerNamespace,
 		}
 
 		helmV2ReleaseCollector, err = NewHelmV2Release(c)
