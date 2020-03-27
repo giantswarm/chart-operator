@@ -39,7 +39,7 @@ func (r *Resource) GetCurrentState(ctx context.Context, obj interface{}) (interf
 		reason := fmt.Sprintf("release name %#q is invalid", releaseName)
 		addStatusToContext(cc, reason, releaseNotInstalledStatus)
 
-		r.logger.LogCtx(ctx, "level", "warning", "message", reason, "stack", microerror.Stack(err))
+		r.logger.LogCtx(ctx, "level", "warning", "message", reason, "stack", microerror.JSON(err))
 		r.logger.LogCtx(ctx, "level", "debug", "message", "canceling resource")
 		resourcecanceledcontext.SetCanceled(ctx)
 		return nil, nil
