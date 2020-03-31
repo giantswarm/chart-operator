@@ -26,11 +26,6 @@ require (
 	sigs.k8s.io/yaml v1.1.0
 )
 
-// Workaround for https://github.com/sirupsen/logrus/issues/570
-// Additional reading: https://github.com/golang/go/issues/28489
-// Solution: https://github.com/moby/moby/issues/39302
-replace github.com/docker/docker => github.com/docker/engine v1.4.2-0.20191113042239-ea84732a7725
-
 replace (
 	k8s.io/api => k8s.io/api v0.0.0-20191114100352-16d7abae0d2a
 	k8s.io/apiextensions-apiserver => k8s.io/apiextensions-apiserver v0.0.0-20191114105449-027877536833
