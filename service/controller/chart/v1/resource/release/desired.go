@@ -8,7 +8,6 @@ import (
 	"github.com/giantswarm/apiextensions/pkg/apis/application/v1alpha1"
 	"github.com/giantswarm/helmclient"
 	"github.com/giantswarm/microerror"
-	"github.com/giantswarm/operatorkit/controller/context/resourcecanceledcontext"
 	yaml "gopkg.in/yaml.v2"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -18,34 +17,6 @@ import (
 
 func (r *Resource) GetDesiredState(ctx context.Context, obj interface{}) (interface{}, error) {
 	cr, err := key.ToCustomResource(obj)
-	if err != nil {
-		return nil, microerror.Mask(err)
-	}
-
-	releaseName := key.ReleaseName(cr)
-
-	tarballURL := key.TarballURL(cr)
-
-	tarballPath, err := r.helmClient.PullChartTarball(ctx, tarballURL)
-	if helmclient.IsPullChartFailedError(err) {
-		r.logger.LogCtx(ctx, "level", "warning", "message", "pulling chart failed", "stack", microerror.Stack(err))
-
-		resourcecanceledcontext.SetCanceled(ctx)
-		r.logger.LogCtx(ctx, "level", "debug", "message", "canceling resource")
-
-		return nil, nil
-	} else if err != nil {
-		return nil, microerror.Mask(err)
-	}
-
-	defer func() {
-		err := r.fs.Remove(tarballPath)
-		if err != nil {
-			r.logger.LogCtx(ctx, "level", "error", "message", fmt.Sprintf("deletion of %#q failed", tarballPath), "stack", fmt.Sprintf("%#v", err))
-		}
-	}()
-
-	chart, err := r.helmClient.LoadChart(ctx, tarballPath)
 	if err != nil {
 		return nil, microerror.Mask(err)
 	}
@@ -83,11 +54,11 @@ func (r *Resource) GetDesiredState(ctx context.Context, obj interface{}) (interf
 	}
 
 	releaseState := &ReleaseState{
-		Name:              releaseName,
+		Name:              key.ReleaseName(cr),
 		Status:            helmDeployedStatus,
 		ValuesMD5Checksum: valuesMD5Checksum,
 		ValuesYAML:        valuesYAML,
-		Version:           chart.Version,
+		Version:           key.Version(cr),
 	}
 
 	return releaseState, nil

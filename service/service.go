@@ -3,24 +3,24 @@ package service
 import (
 	"context"
 	"sync"
+	"time"
 
-	"github.com/giantswarm/apiextensions/pkg/clientset/versioned"
-	"github.com/giantswarm/apprclient"
+	applicationv1alpha1 "github.com/giantswarm/apiextensions/pkg/apis/application/v1alpha1"
+	corev1alpha1 "github.com/giantswarm/apiextensions/pkg/apis/core/v1alpha1"
 	"github.com/giantswarm/helmclient"
+	"github.com/giantswarm/k8sclient"
+	"github.com/giantswarm/k8sclient/k8srestconfig"
 	"github.com/giantswarm/microendpoint/service/version"
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/micrologger"
-	"github.com/giantswarm/operatorkit/client/k8srestconfig"
 	"github.com/spf13/afero"
 	"github.com/spf13/viper"
-	apiextensionsclient "k8s.io/apiextensions-apiserver/pkg/client/clientset/clientset"
-	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
 
 	"github.com/giantswarm/chart-operator/flag"
+	"github.com/giantswarm/chart-operator/pkg/project"
 	"github.com/giantswarm/chart-operator/service/collector"
 	"github.com/giantswarm/chart-operator/service/controller/chart"
-	"github.com/giantswarm/chart-operator/service/controller/chartconfig"
 )
 
 // Config represents the configuration used to create a new service.
@@ -31,12 +31,6 @@ type Config struct {
 	// Settings.
 	Flag  *flag.Flag
 	Viper *viper.Viper
-
-	Description string
-	GitCommit   string
-	ProjectName string
-	Source      string
-	Version     string
 }
 
 // Service is a type providing implementation of microkit service interface.
@@ -44,10 +38,9 @@ type Service struct {
 	Version *version.Service
 
 	// Internals
-	bootOnce              sync.Once
-	chartController       *chart.Chart
-	chartConfigController *chartconfig.ChartConfig
-	operatorCollector     *collector.Set
+	bootOnce          sync.Once
+	chartController   *chart.Chart
+	operatorCollector *collector.Set
 }
 
 // New creates a new service with given configuration.
@@ -88,46 +81,37 @@ func New(config Config) (*Service, error) {
 		}
 	}
 
-	g8sClient, err := versioned.NewForConfig(restConfig)
-	if err != nil {
-		return nil, microerror.Mask(err)
-	}
-
-	k8sClient, err := kubernetes.NewForConfig(restConfig)
-	if err != nil {
-		return nil, microerror.Mask(err)
-	}
-
-	k8sExtClient, err := apiextensionsclient.NewForConfig(restConfig)
-	if err != nil {
-		return nil, microerror.Mask(err)
-	}
-
-	fs := afero.NewOsFs()
-	var apprClient *apprclient.Client
+	var k8sClient k8sclient.Interface
 	{
-		c := apprclient.Config{
-			Fs:     fs,
+		c := k8sclient.ClientsConfig{
 			Logger: config.Logger,
+			SchemeBuilder: k8sclient.SchemeBuilder{
+				applicationv1alpha1.AddToScheme,
+				corev1alpha1.AddToScheme,
+			},
 
-			Address:      config.Viper.GetString(config.Flag.Service.CNR.Address),
-			Organization: config.Viper.GetString(config.Flag.Service.CNR.Organization),
+			RestConfig: restConfig,
 		}
 
-		apprClient, err = apprclient.New(c)
+		k8sClient, err = k8sclient.NewClients(c)
 		if err != nil {
 			return nil, microerror.Mask(err)
 		}
 	}
 
+	fs := afero.NewOsFs()
+
 	var helmClient *helmclient.Client
 	{
 		c := helmclient.Config{
-			K8sClient: k8sClient,
+			K8sClient: k8sClient.K8sClient(),
 			Logger:    config.Logger,
 
-			RestConfig:      restConfig,
-			TillerNamespace: config.Viper.GetString(config.Flag.Service.Helm.TillerNamespace),
+			EnsureTillerInstalledMaxWait: 30 * time.Second,
+			RestConfig:                   restConfig,
+			TillerImageRegistry:          config.Viper.GetString(config.Flag.Service.Image.Registry),
+			TillerNamespace:              config.Viper.GetString(config.Flag.Service.Helm.TillerNamespace),
+			TillerUpgradeEnabled:         true,
 		}
 
 		helmClient, err = helmclient.New(c)
@@ -139,15 +123,10 @@ func New(config Config) (*Service, error) {
 	var chartController *chart.Chart
 	{
 		c := chart.Config{
-			Fs:           fs,
-			HelmClient:   helmClient,
-			G8sClient:    g8sClient,
-			Logger:       config.Logger,
-			K8sClient:    k8sClient,
-			K8sExtClient: k8sExtClient,
-
-			ProjectName:    config.ProjectName,
-			WatchNamespace: config.Viper.GetString(config.Flag.Service.Kubernetes.Watch.Namespace),
+			Fs:         fs,
+			HelmClient: helmClient,
+			Logger:     config.Logger,
+			K8sClient:  k8sClient,
 		}
 
 		chartController, err = chart.NewChart(c)
@@ -156,31 +135,9 @@ func New(config Config) (*Service, error) {
 		}
 	}
 
-	var chartConfigController *chartconfig.ChartConfig
-	{
-		c := chartconfig.Config{
-			ApprClient:   apprClient,
-			Fs:           fs,
-			HelmClient:   helmClient,
-			G8sClient:    g8sClient,
-			Logger:       config.Logger,
-			K8sClient:    k8sClient,
-			K8sExtClient: k8sExtClient,
-
-			ProjectName:    config.ProjectName,
-			WatchNamespace: config.Viper.GetString(config.Flag.Service.Kubernetes.Watch.Namespace),
-		}
-
-		chartConfigController, err = chartconfig.NewChartConfig(c)
-		if err != nil {
-			return nil, microerror.Mask(err)
-		}
-	}
-
 	var operatorCollector *collector.Set
 	{
 		c := collector.SetConfig{
-			G8sClient:  g8sClient,
 			HelmClient: helmClient,
 			K8sClient:  k8sClient,
 			Logger:     config.Logger,
@@ -197,11 +154,11 @@ func New(config Config) (*Service, error) {
 	var versionService *version.Service
 	{
 		versionConfig := version.Config{
-			Description:    config.Description,
-			GitCommit:      config.GitCommit,
-			Name:           config.ProjectName,
-			Source:         config.Source,
-			Version:        config.Version,
+			Description:    project.Description(),
+			GitCommit:      project.GitSHA(),
+			Name:           project.Name(),
+			Source:         project.Source(),
+			Version:        project.Version(),
 			VersionBundles: NewVersionBundles(),
 		}
 
@@ -214,10 +171,9 @@ func New(config Config) (*Service, error) {
 	s := &Service{
 		Version: versionService,
 
-		bootOnce:              sync.Once{},
-		chartController:       chartController,
-		chartConfigController: chartConfigController,
-		operatorCollector:     operatorCollector,
+		bootOnce:          sync.Once{},
+		chartController:   chartController,
+		operatorCollector: operatorCollector,
 	}
 
 	return s, nil
@@ -228,8 +184,6 @@ func (s *Service) Boot(ctx context.Context) {
 	s.bootOnce.Do(func() {
 		go s.operatorCollector.Boot(ctx)
 
-		// Start the controllers
 		go s.chartController.Boot(ctx)
-		go s.chartConfigController.Boot(ctx)
 	})
 }

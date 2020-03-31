@@ -41,7 +41,7 @@ func mainWithError() error {
 		}
 		newLogger, err = micrologger.New(c)
 		if err != nil {
-			return microerror.Maskf(err, "micrologger.New")
+			return microerror.Mask(err)
 		}
 	}
 
@@ -52,19 +52,14 @@ func mainWithError() error {
 		var newService *service.Service
 		{
 			c := service.Config{
-				Flag:   f,
 				Logger: newLogger,
-				Viper:  v,
 
-				Description: project.Description(),
-				GitCommit:   project.GitSHA(),
-				ProjectName: project.Name(),
-				Source:      project.Source(),
-				Version:     project.Version(),
+				Flag:  f,
+				Viper: v,
 			}
 			newService, err = service.New(c)
 			if err != nil {
-				panic(fmt.Sprintf("%#v\n", microerror.Maskf(err, "service.New")))
+				panic(fmt.Sprintf("%#v\n", microerror.Mask(err)))
 			}
 
 			go newService.Boot(ctx)
@@ -74,15 +69,15 @@ func mainWithError() error {
 		var newServer microserver.Server
 		{
 			c := server.Config{
-				Logger:      newLogger,
-				Service:     newService,
-				Viper:       v,
-				ProjectName: project.Name(),
+				Logger:  newLogger,
+				Service: newService,
+
+				Viper: v,
 			}
 
 			newServer, err = server.New(c)
 			if err != nil {
-				panic(fmt.Sprintf("%#v\n", microerror.Maskf(err, "server.New")))
+				panic(fmt.Sprintf("%#v\n", microerror.Mask(err)))
 			}
 		}
 
@@ -105,22 +100,20 @@ func mainWithError() error {
 
 		newCommand, err = command.New(c)
 		if err != nil {
-			return microerror.Maskf(err, "command.New")
+			return microerror.Mask(err)
 		}
 	}
 
 	daemonCommand := newCommand.DaemonCommand().CobraCommand()
 
-	daemonCommand.PersistentFlags().String(f.Service.CNR.Address, "https://quay.io", "Address used to connect to CNR, defaults to quay's managed offering.")
-	daemonCommand.PersistentFlags().String(f.Service.CNR.Organization, "giantswarm", "CNR organization.")
 	daemonCommand.PersistentFlags().String(f.Service.Helm.TillerNamespace, "giantswarm", "Namespace for the Tiller pod.")
+	daemonCommand.PersistentFlags().String(f.Service.Image.Registry, "quay.io", "Container image registry.")
 	daemonCommand.PersistentFlags().String(f.Service.Kubernetes.Address, "", "Address used to connect to Kubernetes. When empty in-cluster config is created.")
 	daemonCommand.PersistentFlags().Bool(f.Service.Kubernetes.InCluster, false, "Whether to use the in-cluster config to authenticate with Kubernetes.")
 	daemonCommand.PersistentFlags().String(f.Service.Kubernetes.KubeConfig, "", "KubeConfig used to connect to Kubernetes. When empty other settings are used.")
 	daemonCommand.PersistentFlags().String(f.Service.Kubernetes.TLS.CAFile, "", "Certificate authority file path to use to authenticate with Kubernetes.")
 	daemonCommand.PersistentFlags().String(f.Service.Kubernetes.TLS.CrtFile, "", "Certificate file path to use to authenticate with Kubernetes.")
 	daemonCommand.PersistentFlags().String(f.Service.Kubernetes.TLS.KeyFile, "", "Key file path to use to authenticate with Kubernetes.")
-	daemonCommand.PersistentFlags().String(f.Service.Kubernetes.Watch.Namespace, "", "Namespace for watching for Kubernetes resources.")
 
 	newCommand.CobraCommand().Execute()
 

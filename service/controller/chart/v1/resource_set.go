@@ -15,7 +15,9 @@ import (
 	"github.com/spf13/afero"
 	"k8s.io/client-go/kubernetes"
 
+	"github.com/giantswarm/chart-operator/service/controller/chart/v1/controllercontext"
 	"github.com/giantswarm/chart-operator/service/controller/chart/v1/key"
+	"github.com/giantswarm/chart-operator/service/controller/chart/v1/resource/chartmigration"
 	"github.com/giantswarm/chart-operator/service/controller/chart/v1/resource/release"
 	"github.com/giantswarm/chart-operator/service/controller/chart/v1/resource/status"
 	"github.com/giantswarm/chart-operator/service/controller/chart/v1/resource/tiller"
@@ -33,7 +35,6 @@ type ResourceSetConfig struct {
 
 	// Settings.
 	HandledVersionBundles []string
-	ProjectName           string
 }
 
 // NewResourceSet returns a configured Chart controller ResourceSet.
@@ -57,9 +58,17 @@ func NewResourceSet(config ResourceSetConfig) (*controller.ResourceSet, error) {
 		return nil, microerror.Maskf(invalidConfigError, "%T.Logger must not be empty", config)
 	}
 
-	// Settings.
-	if config.ProjectName == "" {
-		return nil, microerror.Maskf(invalidConfigError, "%T.ProjectName must not be empty", config)
+	var chartMigrationResource resource.Interface
+	{
+		c := chartmigration.Config{
+			G8sClient: config.G8sClient,
+			Logger:    config.Logger,
+		}
+
+		chartMigrationResource, err = chartmigration.New(c)
+		if err != nil {
+			return nil, microerror.Mask(err)
+		}
 	}
 
 	var releaseResource resource.Interface
@@ -71,9 +80,6 @@ func NewResourceSet(config ResourceSetConfig) (*controller.ResourceSet, error) {
 			HelmClient: config.HelmClient,
 			K8sClient:  config.K8sClient,
 			Logger:     config.Logger,
-
-			// Settings.
-			ProjectName: config.ProjectName,
 		}
 
 		ops, err := release.New(c)
@@ -115,6 +121,7 @@ func NewResourceSet(config ResourceSetConfig) (*controller.ResourceSet, error) {
 	}
 
 	resources := []resource.Interface{
+		chartMigrationResource,
 		tillerResource,
 		releaseResource,
 		statusResource,
@@ -140,6 +147,9 @@ func NewResourceSet(config ResourceSetConfig) (*controller.ResourceSet, error) {
 	}
 
 	initCtxFunc := func(ctx context.Context, obj interface{}) (context.Context, error) {
+		cc := controllercontext.Context{}
+		ctx = controllercontext.NewContext(ctx, cc)
+
 		return ctx, nil
 	}
 

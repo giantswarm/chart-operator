@@ -60,20 +60,11 @@ func Test_Service_New(t *testing.T) {
 					Flag:   flag.New(),
 					Logger: microloggertest.New(),
 					Viper:  viper.New(),
-
-					Description: "test",
-					GitCommit:   "test",
-					ProjectName: "chart-operator",
-					Source:      "test",
-					Version:     "test",
 				}
 
-				c.Viper.Set(c.Flag.Service.CNR.Address, "https://127.0.0.1:5555")
-				c.Viper.Set(c.Flag.Service.CNR.Organization, "giantswarm")
 				c.Viper.Set(c.Flag.Service.Helm.TillerNamespace, "giantswarm")
 				c.Viper.Set(c.Flag.Service.Kubernetes.Address, ts.URL)
 				c.Viper.Set(c.Flag.Service.Kubernetes.InCluster, false)
-				c.Viper.Set(c.Flag.Service.Kubernetes.Watch.Namespace, "giantswarm")
 
 				return c
 			},

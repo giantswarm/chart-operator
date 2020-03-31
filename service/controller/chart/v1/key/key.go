@@ -4,6 +4,7 @@ import (
 	"strconv"
 
 	"github.com/giantswarm/apiextensions/pkg/apis/application/v1alpha1"
+	corev1alpha1 "github.com/giantswarm/apiextensions/pkg/apis/core/v1alpha1"
 	"github.com/giantswarm/microerror"
 
 	"github.com/giantswarm/chart-operator/pkg/annotation"
@@ -39,6 +40,23 @@ func CordonReason(customResource v1alpha1.Chart) string {
 
 func CordonUntil(customResource v1alpha1.Chart) string {
 	return customResource.GetAnnotations()[annotation.CordonUntilDate]
+}
+
+// HasDeleteCROnlyAnnotation returns true if the legacy chartconfig CR has the
+// delete custom resource only annotation added by cluster-operator to signal
+// that the migration to chart CR is complete.
+func HasDeleteCROnlyAnnotation(customResource corev1alpha1.ChartConfig) bool {
+	val, ok := customResource.Annotations[annotation.DeleteCustomResourceOnly]
+	if !ok {
+		return false
+	}
+
+	result, err := strconv.ParseBool(val)
+	if err != nil {
+		return false
+	}
+
+	return result
 }
 
 func HasForceUpgradeAnnotation(customResource v1alpha1.Chart) bool {
@@ -116,6 +134,10 @@ func ValuesMD5ChecksumAnnotation(customResource v1alpha1.Chart) string {
 	} else {
 		return ""
 	}
+}
+
+func Version(customResource v1alpha1.Chart) string {
+	return customResource.Spec.Version
 }
 
 // VersionLabel returns the label value to determine if the custom resource is

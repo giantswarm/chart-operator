@@ -16,6 +16,7 @@ import (
 	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/client-go/kubernetes"
 
+	"github.com/giantswarm/chart-operator/service/controller/chart/v1/controllercontext"
 	"github.com/giantswarm/chart-operator/service/controller/chart/v1/key"
 )
 
@@ -27,6 +28,9 @@ const (
 	helmDeployedStatus = "DEPLOYED"
 	// helmFailedStatus is the failed status for Helm Releases.
 	helmFailedStatus = "FAILED"
+	// releaseNotInstalledStatus is set in the CR status when there is no Helm
+	// Release to check.
+	releaseNotInstalledStatus = "Not installed"
 )
 
 var (
@@ -48,9 +52,6 @@ type Config struct {
 	HelmClient helmclient.Interface
 	K8sClient  kubernetes.Interface
 	Logger     micrologger.Logger
-
-	// Settings.
-	ProjectName string
 }
 
 // Resource implements the chart resource.
@@ -61,9 +62,6 @@ type Resource struct {
 	helmClient helmclient.Interface
 	k8sClient  kubernetes.Interface
 	logger     micrologger.Logger
-
-	// Settings.
-	projectName string
 }
 
 // New creates a new configured chart resource.
@@ -85,11 +83,6 @@ func New(config Config) (*Resource, error) {
 		return nil, microerror.Maskf(invalidConfigError, "%T.Logger must not be empty", config)
 	}
 
-	// Settings.
-	if config.ProjectName == "" {
-		return nil, microerror.Maskf(invalidConfigError, "%T.ProjectName must not be empty", config)
-	}
-
 	r := &Resource{
 		// Dependencies.
 		fs:         config.Fs,
@@ -97,9 +90,6 @@ func New(config Config) (*Resource, error) {
 		helmClient: config.HelmClient,
 		k8sClient:  config.K8sClient,
 		logger:     config.Logger,
-
-		// Settings.
-		projectName: config.ProjectName,
 	}
 
 	return r, nil
@@ -158,6 +148,17 @@ func (r *Resource) patchAnnotations(ctx context.Context, cr v1alpha1.Chart, rele
 	}
 
 	return nil
+}
+
+// addStatusToContext adds the status to the controller context. It will be
+// used to set the CR status in the status resource.
+func addStatusToContext(cc *controllercontext.Context, reason, status string) {
+	cc.Status = controllercontext.Status{
+		Reason: reason,
+		Release: controllercontext.Release{
+			Status: status,
+		},
+	}
 }
 
 // equals asseses the equality of ReleaseStates with regards to distinguishing fields.

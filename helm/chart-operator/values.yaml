@@ -1,5 +1,5 @@
 clusterDNSIP: 172.31.0.10
-  
+
 cnr:
   address: https://quay.io
 
@@ -41,3 +41,7 @@ resource:
 
 tiller:
   namespace: "kube-system"
+
+cluster:
+  kubernetes:
+    domain: cluster.local

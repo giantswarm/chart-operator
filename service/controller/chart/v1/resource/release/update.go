@@ -3,6 +3,7 @@ package release
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/giantswarm/helmclient"
 	"github.com/giantswarm/microerror"
@@ -10,6 +11,7 @@ import (
 	"github.com/giantswarm/operatorkit/resource/crud"
 	"k8s.io/helm/pkg/helm"
 
+	"github.com/giantswarm/chart-operator/service/controller/chart/v1/controllercontext"
 	"github.com/giantswarm/chart-operator/service/controller/chart/v1/key"
 )
 
@@ -18,6 +20,11 @@ func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange inte
 	if err != nil {
 		return microerror.Mask(err)
 	}
+	cc, err := controllercontext.FromContext(ctx)
+	if err != nil {
+		return microerror.Mask(err)
+	}
+
 	releaseState, err := toReleaseState(updateChange)
 	if err != nil {
 		return microerror.Mask(err)
@@ -31,11 +38,28 @@ func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange inte
 		tarballURL := key.TarballURL(cr)
 		tarballPath, err := r.helmClient.PullChartTarball(ctx, tarballURL)
 		if helmclient.IsPullChartFailedError(err) {
-			r.logger.LogCtx(ctx, "level", "warning", "message", "pulling chart failed", "stack", microerror.Stack(err))
+			reason := fmt.Sprintf("pulling chart %#q failed", tarballURL)
+			addStatusToContext(cc, reason, releaseNotInstalledStatus)
 
-			resourcecanceledcontext.SetCanceled(ctx)
+			r.logger.LogCtx(ctx, "level", "warning", "message", reason, "stack", microerror.JSON(err))
 			r.logger.LogCtx(ctx, "level", "debug", "message", "canceling resource")
+			resourcecanceledcontext.SetCanceled(ctx)
+			return nil
+		} else if helmclient.IsPullChartNotFound(err) {
+			reason := fmt.Sprintf("chart %#q not found", tarballURL)
+			addStatusToContext(cc, reason, releaseNotInstalledStatus)
 
+			r.logger.LogCtx(ctx, "level", "warning", "message", reason, "stack", microerror.JSON(err))
+			r.logger.LogCtx(ctx, "level", "debug", "message", "canceling resource")
+			resourcecanceledcontext.SetCanceled(ctx)
+			return nil
+		} else if helmclient.IsPullChartTimeout(err) {
+			reason := fmt.Sprintf("timeout pulling %#q", tarballURL)
+			addStatusToContext(cc, reason, releaseNotInstalledStatus)
+
+			r.logger.LogCtx(ctx, "level", "warning", "message", reason, "stack", microerror.JSON(err))
+			r.logger.LogCtx(ctx, "level", "debug", "message", "canceling resource")
+			resourcecanceledcontext.SetCanceled(ctx)
 			return nil
 		} else if err != nil {
 			return microerror.Mask(err)
@@ -48,21 +72,49 @@ func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange inte
 			}
 		}()
 
-		// We need to pass the ValueOverrides option to make the update process
-		// use the default values and prevent errors on nested values.
-		err = r.helmClient.UpdateReleaseFromTarball(ctx, releaseState.Name, tarballPath,
-			helm.UpdateValueOverrides(releaseState.ValuesYAML),
-			helm.UpgradeForce(upgradeForce))
+		ch := make(chan error)
+
+		// We update the helm release but with a short timeout so we don't
+		// block reconciling other CRs. This gives time to make the port
+		// forwarding connection to the Tiller API.
+		//
+		// If we do timeout the update will continue in the background.
+		// We will check the progress in the next reconciliation loop.
+		go func() {
+			// We need to pass the ValueOverrides option to make the update process
+			// use the default values and prevent errors on nested values.
+			err = r.helmClient.UpdateReleaseFromTarball(ctx, releaseState.Name, tarballPath,
+				helm.UpdateValueOverrides(releaseState.ValuesYAML),
+				helm.UpgradeForce(upgradeForce))
+			close(ch)
+		}()
+
+		select {
+		case <-ch:
+			// Fall through.
+		case <-time.After(3 * time.Second):
+			r.logger.LogCtx(ctx, "level", "debug", "message", "release still being updated")
+			r.logger.LogCtx(ctx, "level", "debug", "message", "canceling resource")
+			return nil
+		}
+
 		if err != nil {
+			r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("helm release %#q failed", releaseState.Name), "stack", microerror.JSON(err))
+
 			releaseContent, err := r.helmClient.GetReleaseContent(ctx, releaseState.Name)
 			if helmclient.IsReleaseNotFound(err) {
-				r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("helm release %#q not found", releaseContent.Name))
+				reason := fmt.Sprintf("release %#q not found", releaseState.Name)
+				addStatusToContext(cc, reason, releaseNotInstalledStatus)
+
+				r.logger.LogCtx(ctx, "level", "warning", "message", reason, "stack", microerror.JSON(err))
 				r.logger.LogCtx(ctx, "level", "debug", "message", "canceling resource")
 				resourcecanceledcontext.SetCanceled(ctx)
 				return nil
+
 			} else if err != nil {
 				return microerror.Mask(err)
 			}
+			// Release is failed so the status resource will check the Helm release.
 			if releaseContent.Status == helmFailedStatus {
 				r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("failed to update release %#q", releaseContent.Name))
 				r.logger.LogCtx(ctx, "level", "debug", "message", "canceling resource")

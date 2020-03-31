@@ -73,21 +73,14 @@ func (t *TillerReachable) Collect(ch chan<- prometheus.Metric) error {
 
 	ctx := context.Background()
 
-	t.logger.Log("level", "debug", "message", "collecting Tiller reachability")
-
 	charts, err := t.g8sClient.ApplicationV1alpha1().Charts("").List(metav1.ListOptions{})
 	if err != nil {
 		return microerror.Mask(err)
 	}
 
-	chartConfigs, err := t.g8sClient.CoreV1alpha1().ChartConfigs("").List(metav1.ListOptions{})
-	if err != nil {
-		return microerror.Mask(err)
-	}
-
-	if len(charts.Items) == 0 && len(chartConfigs.Items) == 0 {
-		// Skip pinging tiller when there are no custom resources,
-		// as tiller is only installed when there is at least one CR to reconcile.
+	if len(charts.Items) == 0 {
+		// Skip pinging tiller when there are no chart CRs.
+		// As Tiller is only installed when there is at least one CR to reconcile.
 		t.logger.Log("level", "debug", "message", "did not collect Tiller reachability")
 		t.logger.Log("level", "debug", "message", "no Chart or ChartConfig CRs in the cluster")
 
@@ -109,8 +102,6 @@ func (t *TillerReachable) Collect(ch chan<- prometheus.Metric) error {
 		value,
 		t.tillerNamespace,
 	)
-
-	t.logger.Log("level", "debug", "message", "finished collecting Tiller reachability")
 
 	return nil
 }
