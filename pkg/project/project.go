@@ -2,11 +2,15 @@ package project
 
 var (
 	description = "chart-operator is our agent for deploying Helm charts as releases."
-	name        = "chart-operator"
 	gitSHA      = "n/a"
+	name        = "chart-operator"
 	source      = "https://github.com/giantswarm/chart-operator"
-	version     = "n/a"
+	version     = "1.0.0-alpha.1"
 )
+
+func ChartVersion() string {
+	return "1.0.0"
+}
 
 func Description() string {
 	return description

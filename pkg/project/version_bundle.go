@@ -1,10 +1,10 @@
-package v1
+package project
 
 import (
 	"github.com/giantswarm/versionbundle"
 )
 
-func VersionBundle() versionbundle.Bundle {
+func NewVersionBundle() versionbundle.Bundle {
 	return versionbundle.Bundle{
 		Changelogs: []versionbundle.Changelog{
 			{
@@ -14,7 +14,7 @@ func VersionBundle() versionbundle.Bundle {
 			},
 		},
 		Components: []versionbundle.Component{},
-		Name:       "chart-operator",
-		Version:    "1.0.0",
+		Name:       Name(),
+		Version:    Version(),
 	}
 }
