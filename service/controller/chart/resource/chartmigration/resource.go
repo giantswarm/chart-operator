@@ -7,7 +7,7 @@ import (
 )
 
 const (
-	Name = "chartmigrationv1"
+	Name = "chartmigration"
 )
 
 // Config represents the configuration used to create a new tiller resource.

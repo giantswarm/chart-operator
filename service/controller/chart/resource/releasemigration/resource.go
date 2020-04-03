@@ -18,7 +18,7 @@ import (
 )
 
 const (
-	Name = "releasemigrationv1"
+	Name = "releasemigration"
 
 	migrationApp = "helm-2to3-migration"
 )

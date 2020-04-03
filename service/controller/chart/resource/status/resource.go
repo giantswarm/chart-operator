@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	Name = "statusv1"
+	Name = "status"
 
 	releaseStatusCordoned = "CORDONED"
 	releaseStatusDeployed = "DEPLOYED"
