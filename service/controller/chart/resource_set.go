@@ -1,4 +1,4 @@
-package v1
+package chart
 
 import (
 	"context"
@@ -15,18 +15,17 @@ import (
 	"github.com/spf13/afero"
 	"k8s.io/client-go/kubernetes"
 
-	"github.com/giantswarm/chart-operator/service/controller/chart/v1/controllercontext"
-	"github.com/giantswarm/chart-operator/service/controller/chart/v1/key"
-	"github.com/giantswarm/chart-operator/service/controller/chart/v1/resource/chartmigration"
-	"github.com/giantswarm/chart-operator/service/controller/chart/v1/resource/release"
-	"github.com/giantswarm/chart-operator/service/controller/chart/v1/resource/releasemigration"
-	"github.com/giantswarm/chart-operator/service/controller/chart/v1/resource/status"
-	"github.com/giantswarm/chart-operator/service/controller/chart/v1/resource/tillermigration"
+	"github.com/giantswarm/chart-operator/pkg/project"
+	"github.com/giantswarm/chart-operator/service/controller/chart/controllercontext"
+	"github.com/giantswarm/chart-operator/service/controller/chart/key"
+	"github.com/giantswarm/chart-operator/service/controller/chart/resource/chartmigration"
+	"github.com/giantswarm/chart-operator/service/controller/chart/resource/release"
+	"github.com/giantswarm/chart-operator/service/controller/chart/resource/releasemigration"
+	"github.com/giantswarm/chart-operator/service/controller/chart/resource/status"
+	"github.com/giantswarm/chart-operator/service/controller/chart/resource/tillermigration"
 )
 
-// ResourceSetConfig contains necessary dependencies and settings for
-// Chart controller ResourceSet configuration.
-type ResourceSetConfig struct {
+type chartResourceSetConfig struct {
 	// Dependencies.
 	Fs         afero.Fs
 	G8sClient  versioned.Interface
@@ -35,12 +34,10 @@ type ResourceSetConfig struct {
 	Logger     micrologger.Logger
 
 	// Settings.
-	HandledVersionBundles []string
-	TillerNamespace       string
+	TillerNamespace string
 }
 
-// NewResourceSet returns a configured Chart controller ResourceSet.
-func NewResourceSet(config ResourceSetConfig) (*controller.ResourceSet, error) {
+func newChartResourceSet(config chartResourceSetConfig) (*controller.ResourceSet, error) {
 	var err error
 
 	// Dependencies.
@@ -185,7 +182,7 @@ func NewResourceSet(config ResourceSetConfig) (*controller.ResourceSet, error) {
 			return false
 		}
 
-		if key.VersionLabel(cr) == VersionBundle().Version {
+		if key.VersionLabel(cr) == project.ChartVersion() {
 			return true
 		}
 
