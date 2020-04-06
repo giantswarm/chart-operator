@@ -67,7 +67,7 @@ workflows:
               only: /^v.*/
 
       - architect/push-to-app-catalog:
-          name: push-chart-operator-to-app-catalog
+          name: push-chart-operator-to-default-app-catalog
           app_catalog: "default-catalog"
           app_catalog_test: "default-test-catalog"
           chart: "chart-operator"
