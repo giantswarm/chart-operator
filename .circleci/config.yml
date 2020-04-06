@@ -2,13 +2,38 @@ version: 2.1
 orbs:
   architect: giantswarm/architect@0.8.6
 
+jobs:
+ build:
+    machine: true
+    steps:
+    - checkout
+
+    - run: |
+        wget -q $(curl -sS -H "Authorization: token $RELEASE_TOKEN" https://api.github.com/repos/giantswarm/architect/releases/latest | grep browser_download_url | head -n 1 | cut -d '"' -f 4)
+        chmod +x ./architect
+        ./architect version
+    - run: ./architect build
+    - store_test_results:
+        path: /tmp/results
+    - persist_to_workspace:
+        root: .
+        paths:
+        - ./chart-operator
+        - ./architect
+
 workflows:
   build:
     jobs:
-
-      - architect/go-build:
-          name: go-build
-          binary: chart-operator
+      # execute linting and run tests.
+      - architect/go-test-legacy:
+          name: test
+          filters:
+            tags:
+              only: /^v.*/
+      # build binary
+      - build:
+          requires:
+            - test
           filters:
             tags:
               only: /^v.*/
@@ -19,7 +44,7 @@ workflows:
           username_envar: "QUAY_USERNAME"
           password_envar: "QUAY_PASSWORD"
           requires:
-            - go-build
+            - build
           # Needed to trigger job also on git tag.
           filters:
             tags:
@@ -31,7 +56,7 @@ workflows:
           username_envar: "ALIYUN_USERNAME"
           password_envar: "ALIYUN_PASSWORD"
           requires:
-            - go-build
+            - build
           # Needed to trigger job only on git tag.
           filters:
             branches:
@@ -66,10 +91,10 @@ workflows:
           name: basic-integration-test
           test-dir: "integration/test/chart/basic"
           requires:
-          - go-build
+          - build
       
       - architect/integration-test:
           name: migration-integration-test
           test-dir: "integration/test/chart/migration"
           requires:
-          - go-build
+          - build
