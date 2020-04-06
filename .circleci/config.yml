@@ -8,54 +8,22 @@ jobs:
     steps:
       - checkout
 
-      - run:
-          name: Install architect
-          command: |
-            wget -q $(curl -sS -H "Authorization: token $RELEASE_TOKEN" https://api.github.com/repos/giantswarm/architect/releases/latest | grep browser_download_url | head -n 1 | cut -d '"' -f 4)
-            chmod +x ./architect
-            ./architect version
-
-      - run: |
-          date +"%Y" > /tmp/year
-          date +"%m" > /tmp/month
-          date +"%d" > /tmp/day
-
-      - restore_cache:
-          keys:
-            - go-cache-v1-{{ checksum "/tmp/year" }}-{{ checksum "/tmp/month" }}-{{ checksum "/tmp/day" }}
-            - go-cache-v1-{{ checksum "/tmp/year" }}-{{ checksum "/tmp/month" }}
-            - go-cache-v1-{{ checksum "/tmp/year" }}
-
-      - run:
-          name: Build using architect
-          command: ./architect build
-
-      - store_test_results:
-          path: /tmp/results
-
-      - save_cache:
-          key: go-cache-v1-{{ checksum "/tmp/year" }}-{{ checksum "/tmp/month" }}-{{ checksum "/tmp/day" }}
-          paths:
-            - /tmp/go/cache
-
-      - persist_to_workspace:
-          root: .
-          paths:
-          - ./chart-operator
+    - run: |
+        wget -q $(curl -sS -H "Authorization: token $RELEASE_TOKEN" https://api.github.com/repos/giantswarm/architect/releases/latest | grep browser_download_url | head -n 1 | cut -d '"' -f 4)
+        chmod +x ./architect
+        ./architect version
+    - run: ./architect build
+    - store_test_results:
+        path: /tmp/results
+    - persist_to_workspace:
+        root: .
+        paths:
+        - ./chart-operator
 
 workflows:
   build:
     jobs:
-      # execute linting and run tests.
-      - architect/go-test-legacy:
-          name: test
-          filters:
-            tags:
-              only: /^v.*/
-      # build binary
       - build:
-          requires:
-            - test
           filters:
             tags:
               only: /^v.*/
