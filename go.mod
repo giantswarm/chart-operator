@@ -8,7 +8,7 @@ require (
 	github.com/giantswarm/e2e-harness v0.2.0
 	github.com/giantswarm/e2esetup v0.2.0
 	github.com/giantswarm/exporterkit v0.2.0
-	github.com/giantswarm/helmclient v0.2.0
+	github.com/giantswarm/helmclient v0.2.1-0.20200407161707-9b4ec32e6464
 	github.com/giantswarm/k8sclient v0.2.0
 	github.com/giantswarm/microendpoint v0.2.0
 	github.com/giantswarm/microerror v0.2.0
