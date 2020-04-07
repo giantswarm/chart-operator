@@ -62,6 +62,7 @@ func Test_Service_New(t *testing.T) {
 					Viper:  viper.New(),
 				}
 
+				c.Viper.Set(c.Flag.Service.Helm.HTTP.ClientTimeout, "5s")
 				c.Viper.Set(c.Flag.Service.Helm.TillerNamespace, "giantswarm")
 				c.Viper.Set(c.Flag.Service.Kubernetes.Address, ts.URL)
 				c.Viper.Set(c.Flag.Service.Kubernetes.InCluster, false)
