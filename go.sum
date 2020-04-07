@@ -216,6 +216,8 @@ github.com/giantswarm/helmclient v0.2.0 h1:etBQoz0QN9quIA/blbkIkrfr0CuzwjxA89/1M
 github.com/giantswarm/helmclient v0.2.0/go.mod h1:KRqUJrPL3QO/iISztTp+Ds+PJYBU8iGWNe9ZlJCdEAs=
 github.com/giantswarm/helmclient v0.2.1-0.20200407161707-9b4ec32e6464 h1:KicWqMD+o0Bt2jOPGmTzjQ8rZRZZiOywzZezzZKm3L0=
 github.com/giantswarm/helmclient v0.2.1-0.20200407161707-9b4ec32e6464/go.mod h1:KRqUJrPL3QO/iISztTp+Ds+PJYBU8iGWNe9ZlJCdEAs=
+github.com/giantswarm/helmclient v0.2.1-0.20200407171940-b6758df0d86a h1:CRvkRX6Uz34/XVbFmCy0vL9aTDuYBa0CbMX9cvjji9A=
+github.com/giantswarm/helmclient v0.2.1-0.20200407171940-b6758df0d86a/go.mod h1:KRqUJrPL3QO/iISztTp+Ds+PJYBU8iGWNe9ZlJCdEAs=
 github.com/giantswarm/k8sclient v0.2.0 h1:Az+Knfs2UJrNFoqfOsfkudg+rt3fn5EM1aKrnLSg3fU=
 github.com/giantswarm/k8sclient v0.2.0/go.mod h1:tUgUynwKgMnjnN2PldGmxJW6+8eZn2p7tT+tEhXDwOg=
 github.com/giantswarm/k8sportforward v0.2.0 h1:nzyKUtSWEbayvF74u3Pkr8AKKa3rk6LccxuIONDq4T8=
