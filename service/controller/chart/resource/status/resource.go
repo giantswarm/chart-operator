@@ -12,7 +12,6 @@ const (
 	Name = "status"
 
 	releaseStatusCordoned = "CORDONED"
-	releaseStatusDeployed = "DEPLOYED"
 )
 
 // Config represents the configuration used to create a new status resource.

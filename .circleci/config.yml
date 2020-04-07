@@ -1,6 +1,6 @@
 version: 2.1
 orbs:
-  architect: giantswarm/architect@0.8.3
+  architect: giantswarm/architect@0.8.6
 
 jobs:
   build:
@@ -16,41 +16,10 @@ jobs:
     - store_test_results:
         path: /tmp/results
     - run: ./architect publish --pipeline=false --channels=${CIRCLE_SHA1}
-    - run: |
-        sed -i 's/version:.*/version: 1.0.0-'"${CIRCLE_SHA1}"'/' helm/chart-operator-chart/Chart.yaml
-        ./architect publish --pipeline=false --channels=${CIRCLE_SHA1}
     - persist_to_workspace:
         root: .
         paths:
         - ./chart-operator
-        - ./architect
-
-  deploy:
-    machine: true
-    steps:
-    - checkout
-
-    - attach_workspace:
-        at: .
-
-    - run: ./architect deploy
-
-    - run:
-        name: publish to beta
-        command: ./architect publish
-    - run: |
-        sed -i 's/version:.*/version: 1.0.0-'"${CIRCLE_SHA1}"'/' helm/chart-operator-chart/Chart.yaml
-        ./architect publish
-
-  publish_to_stable:
-    machine: true
-    steps:
-    - checkout
-
-    - attach_workspace:
-        at: .
-
-    - run: ./architect publish --stable
 
 workflows:
   build:
@@ -86,16 +55,19 @@ workflows:
             tags:
               only: /^v.*/
 
-      - architect/push-to-docker-legacy:
-          name: push-chart-operator-to-aliyun-legacy
-          image: "registry-intl.cn-shanghai.aliyuncs.com/giantswarm/chart-operator"
-          username_envar: "ALIYUN_USERNAME"
-          password_envar: "ALIYUN_PASSWORD"
+      - architect/push-to-app-catalog:
+          name: push-chart-operator-to-control-plane-app-catalog
+          app_catalog: "control-plane-catalog"
+          app_catalog_test: "control-plane-test-catalog"
+          chart: "chart-operator"
           requires:
-            - build
+            - push-chart-operator-to-quay
+          filters:
+            tags:
+              only: /^v.*/
 
       - architect/push-to-app-catalog:
-          name: push-chart-operator-to-app-catalog
+          name: push-chart-operator-to-default-app-catalog
           app_catalog: "default-catalog"
           app_catalog_test: "default-test-catalog"
           chart: "chart-operator"
@@ -117,17 +89,3 @@ workflows:
           test-dir: "integration/test/chart/migration"
           requires:
           - build
-
-      - deploy:
-          filters:
-            branches:
-              only: master
-          requires:
-          - push-chart-operator-to-aliyun-legacy
-
-      - publish_to_stable:
-          filters:
-            branches:
-              only: master
-          requires:
-          - deploy
