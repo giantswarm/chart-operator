@@ -164,6 +164,9 @@ func newChartResourceSet(config chartResourceSetConfig) (*controller.ResourceSet
 			return false
 		}
 
+		// ChartVersion is fixed for chart CRs. This is because they exist in both
+		// control plane and tenant clusters and their version is not linked to a
+		// release. We may revisit this in future.
 		if key.VersionLabel(cr) == project.ChartVersion() {
 			return true
 		}
