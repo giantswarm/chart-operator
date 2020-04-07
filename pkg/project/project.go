@@ -5,9 +5,12 @@ var (
 	gitSHA      = "n/a"
 	name        = "chart-operator"
 	source      = "https://github.com/giantswarm/chart-operator"
-	version     = "1.0.0-alpha.1"
+	version     = "1.0.0-alpha.1-dev"
 )
 
+// ChartVersion is fixed for chart CRs. This is because they exist in both
+// control plane and tenant clusters and their version is not linked to a
+// release. We may revisit this in future.
 func ChartVersion() string {
 	return "1.0.0"
 }
