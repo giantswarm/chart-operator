@@ -20,7 +20,6 @@ import (
 	"github.com/giantswarm/chart-operator/service/controller/chart/key"
 	"github.com/giantswarm/chart-operator/service/controller/chart/resource/chartmigration"
 	"github.com/giantswarm/chart-operator/service/controller/chart/resource/release"
-	"github.com/giantswarm/chart-operator/service/controller/chart/resource/releasemigration"
 	"github.com/giantswarm/chart-operator/service/controller/chart/resource/status"
 	"github.com/giantswarm/chart-operator/service/controller/chart/resource/tillermigration"
 )
@@ -69,22 +68,6 @@ func newChartResourceSet(config chartResourceSetConfig) (*controller.ResourceSet
 		}
 
 		chartMigrationResource, err = chartmigration.New(c)
-		if err != nil {
-			return nil, microerror.Mask(err)
-		}
-	}
-
-	var releaseMigrationResource resource.Interface
-	{
-		c := releasemigration.Config{
-			HelmClient: config.HelmClient,
-			K8sClient:  config.K8sClient,
-			Logger:     config.Logger,
-
-			TillerNamespace: config.TillerNamespace,
-		}
-
-		releaseMigrationResource, err = releasemigration.New(c)
 		if err != nil {
 			return nil, microerror.Mask(err)
 		}
@@ -144,7 +127,6 @@ func newChartResourceSet(config chartResourceSetConfig) (*controller.ResourceSet
 
 	resources := []resource.Interface{
 		chartMigrationResource,
-		releaseMigrationResource,
 		tillerMigrationResource,
 		releaseResource,
 		statusResource,
