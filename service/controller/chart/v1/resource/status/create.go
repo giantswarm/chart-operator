@@ -30,7 +30,13 @@ func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
 	if helmclient.IsReleaseNotFound(err) {
 		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("release %#q not found", releaseName))
 
-		// If a reason was added to the controller context something went wrong.
+		// There is no Helm release for this chart CR so its likely that
+		// something has gone wrong. This could be for a reason outside
+		// of Helm like the tarball URL is incorrect.
+		//
+		// If something goes wrong outside of Helm we add that to the
+		// controller context in the release resource. So we include this
+		// information in the CR status.
 		if cc.Status.Reason != "" {
 			status := v1alpha1.ChartStatus{
 				Reason: cc.Status.Reason,
@@ -68,8 +74,11 @@ func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
 			status = releaseStatusCordoned
 			reason = key.CordonReason(cr)
 		} else if cc.Status.Reason != "" {
-			// If a reason was added to the controller context something went wrong.
-			reason = cc.Status.Reason
+			// A Helm release exists for this chart CR but data was also added
+			// to the controller context. We do this if something goes wrong
+			// outside of Helm such as pulling the chart tarball. So we ensure
+			// both messages are included in the CR status.
+			reason = fmt.Sprintf("Helm reason: %s Operator reason: %s", releaseHistory.Description, cc.Status.Reason)
 		} else {
 			status = releaseContent.Status
 			if releaseContent.Status != releaseStatusDeployed {
