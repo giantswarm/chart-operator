@@ -89,6 +89,7 @@ func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
 		Reason:     reason,
 		Release: v1alpha1.ChartStatusRelease{
 			LastDeployed: v1alpha1.DeepCopyTime{releaseHistory.LastDeployed},
+			Revision:     releaseHistory.Revision,
 			Status:       status,
 		},
 		Version: releaseHistory.Version,

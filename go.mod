@@ -3,12 +3,12 @@ module github.com/giantswarm/chart-operator
 go 1.13
 
 require (
-	github.com/giantswarm/apiextensions v0.2.0
+	github.com/giantswarm/apiextensions v0.2.3-0.20200408134714-851b8707a8e8
 	github.com/giantswarm/backoff v0.2.0
 	github.com/giantswarm/e2e-harness v0.2.0
 	github.com/giantswarm/e2esetup v0.2.0
 	github.com/giantswarm/exporterkit v0.2.0
-	github.com/giantswarm/helmclient v0.2.1
+	github.com/giantswarm/helmclient v0.2.2-0.20200408133229-78623a5e01e7
 	github.com/giantswarm/k8sclient v0.2.0
 	github.com/giantswarm/microendpoint v0.2.0
 	github.com/giantswarm/microerror v0.2.0
