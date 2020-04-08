@@ -23,6 +23,8 @@ func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
 		return microerror.Mask(err)
 	}
 
+	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("DEBUG CONTEXT STATUS %#v", cc.Status))
+
 	// If a reason was added to the controller context something went wrong.
 	// So we set the CR status and return early.
 	if cc.Status.Reason != "" {
@@ -32,6 +34,8 @@ func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
 				Status: cc.Status.Release.Status,
 			},
 		}
+
+		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("DEBUG SETTING STATUS FROM CONTEXT %#v", status))
 
 		err = r.setStatus(ctx, cr, status)
 		if err != nil {
@@ -54,6 +58,8 @@ func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
 		return microerror.Mask(err)
 	}
 
+	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("DEBUG RELEASE CONTENT %#v", releaseContent))
+
 	releaseHistory, err := r.helmClient.GetReleaseHistory(ctx, releaseName)
 	if helmclient.IsReleaseNotFound(err) {
 		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("did not get status for release %#q", releaseName))
@@ -64,6 +70,8 @@ func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
 	} else if err != nil {
 		return microerror.Mask(err)
 	}
+
+	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("DEBUG RELEASE HISTORY %#v", releaseHistory))
 
 	var status, reason string
 	{
@@ -88,7 +96,12 @@ func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
 		Version: releaseHistory.Version,
 	}
 
+	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("DEBUG DESIRED STATUS %#v", desiredStatus))
+	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("DEBUG CURRENT STATUS %#v", key.ChartStatus(cr)))
+
 	if !equals(desiredStatus, key.ChartStatus(cr)) {
+		r.logger.LogCtx(ctx, "level", "debug", "message", "DEBUG SETTING STATUS")
+
 		err = r.setStatus(ctx, cr, desiredStatus)
 		if err != nil {
 			return microerror.Mask(err)
