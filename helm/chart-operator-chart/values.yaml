@@ -18,7 +18,7 @@ cnr:
 
 helm:
   http:
-    clientTimeout: "5s"
+    clientTimeout: 5s
 
 image:
   registry: quay.io

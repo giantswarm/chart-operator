@@ -17,11 +17,7 @@ data:
     service:
       helm:
         http:
-          {{ if (.Values.Installation) }}
           clientTimeout: '{{ .Values.Installation.V1.Helm.HTTP.ClientTimout }}'
-          {{ else }}
-          clientTimeout: '{{ .Values.helm.http.clientTimeout }}'
-          {{ end }}
         tillerNamespace:  '{{ .Values.tiller.namespace }}'
       kubernetes:
         incluster: true
