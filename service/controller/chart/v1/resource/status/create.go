@@ -23,30 +23,27 @@ func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
 		return microerror.Mask(err)
 	}
 
-	// If a reason was added to the controller context something went wrong.
-	// So we set the CR status and return early.
-	if cc.Status.Reason != "" {
-		status := v1alpha1.ChartStatus{
-			Reason: cc.Status.Reason,
-			Release: v1alpha1.ChartStatusRelease{
-				Status: cc.Status.Release.Status,
-			},
-		}
-
-		err = r.setStatus(ctx, cr, status)
-		if err != nil {
-			return microerror.Mask(err)
-		}
-
-		return nil
-	}
-
 	releaseName := key.ReleaseName(cr)
 	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("getting status for release %#q", releaseName))
 
 	releaseContent, err := r.helmClient.GetReleaseContent(ctx, releaseName)
 	if helmclient.IsReleaseNotFound(err) {
 		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("release %#q not found", releaseName))
+
+		// If a reason was added to the controller context something went wrong.
+		if cc.Status.Reason != "" {
+			status := v1alpha1.ChartStatus{
+				Reason: cc.Status.Reason,
+				Release: v1alpha1.ChartStatusRelease{
+					Status: cc.Status.Release.Status,
+				},
+			}
+
+			err = r.setStatus(ctx, cr, status)
+			if err != nil {
+				return microerror.Mask(err)
+			}
+		}
 
 		// Return early. We will retry on the next execution.
 		return nil
@@ -70,6 +67,9 @@ func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
 		if key.IsCordoned(cr) {
 			status = releaseStatusCordoned
 			reason = key.CordonReason(cr)
+		} else if cc.Status.Reason != "" {
+			// If a reason was added to the controller context something went wrong.
+			reason = cc.Status.Reason
 		} else {
 			status = releaseContent.Status
 			if releaseContent.Status != releaseStatusDeployed {
