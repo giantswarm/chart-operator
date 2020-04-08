@@ -12,7 +12,7 @@ import (
 	"k8s.io/client-go/kubernetes"
 
 	"github.com/giantswarm/chart-operator/pkg/label"
-	"github.com/giantswarm/chart-operator/service/controller/chart/v1/key"
+	"github.com/giantswarm/chart-operator/service/controller/chart/key"
 )
 
 var (

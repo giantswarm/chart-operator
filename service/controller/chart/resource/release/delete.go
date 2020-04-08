@@ -10,7 +10,7 @@ import (
 	"github.com/giantswarm/operatorkit/controller/context/resourcecanceledcontext"
 	"github.com/giantswarm/operatorkit/resource/crud"
 
-	"github.com/giantswarm/chart-operator/service/controller/chart/v1/key"
+	"github.com/giantswarm/chart-operator/service/controller/chart/key"
 )
 
 func (r *Resource) ApplyDeleteChange(ctx context.Context, obj, deleteChange interface{}) error {

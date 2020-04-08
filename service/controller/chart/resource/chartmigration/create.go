@@ -12,7 +12,7 @@ import (
 
 	"github.com/giantswarm/chart-operator/pkg/annotation"
 	"github.com/giantswarm/chart-operator/pkg/label"
-	"github.com/giantswarm/chart-operator/service/controller/chart/v1/key"
+	"github.com/giantswarm/chart-operator/service/controller/chart/key"
 )
 
 func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {

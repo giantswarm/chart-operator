@@ -11,10 +11,9 @@ import (
 	"k8s.io/apimachinery/pkg/runtime"
 
 	"github.com/giantswarm/chart-operator/pkg/project"
-	v1 "github.com/giantswarm/chart-operator/service/controller/chart/v1"
 )
 
-const chartConfigControllerSuffix = "-chart"
+const chartControllerSuffix = "-chart"
 
 type Config struct {
 	Fs         afero.Fs
@@ -46,38 +45,23 @@ func NewChart(config Config) (*Chart, error) {
 		return nil, microerror.Maskf(invalidConfigError, "%T.TillerNamespace must not be empty", config)
 	}
 
-	var resourceSetV1 *controller.ResourceSet
-	{
-		c := v1.ResourceSetConfig{
-			Fs:         config.Fs,
-			G8sClient:  config.K8sClient.G8sClient(),
-			HelmClient: config.HelmClient,
-			K8sClient:  config.K8sClient.K8sClient(),
-			Logger:     config.Logger,
-
-			TillerNamespace: config.TillerNamespace,
-		}
-
-		resourceSetV1, err = v1.NewResourceSet(c)
-		if err != nil {
-			return nil, microerror.Mask(err)
-		}
+	resourceSets, err := newChartResourceSets(config)
+	if err != nil {
+		return nil, microerror.Mask(err)
 	}
 
 	var chartController *controller.Controller
 	{
 		c := controller.Config{
-			CRD:       v1alpha1.NewChartCRD(),
-			K8sClient: config.K8sClient,
-			Logger:    config.Logger,
-			ResourceSets: []*controller.ResourceSet{
-				resourceSetV1,
-			},
+			CRD:          v1alpha1.NewChartCRD(),
+			K8sClient:    config.K8sClient,
+			Logger:       config.Logger,
+			ResourceSets: resourceSets,
 			NewRuntimeObjectFunc: func() runtime.Object {
 				return new(v1alpha1.Chart)
 			},
 
-			Name: project.Name() + chartConfigControllerSuffix,
+			Name: project.Name() + chartControllerSuffix,
 		}
 
 		chartController, err = controller.New(c)
@@ -91,4 +75,32 @@ func NewChart(config Config) (*Chart, error) {
 	}
 
 	return c, nil
+}
+
+func newChartResourceSets(config Config) ([]*controller.ResourceSet, error) {
+	var err error
+
+	var resourceSet *controller.ResourceSet
+	{
+		c := chartResourceSetConfig{
+			Fs:         config.Fs,
+			G8sClient:  config.K8sClient.G8sClient(),
+			HelmClient: config.HelmClient,
+			K8sClient:  config.K8sClient.K8sClient(),
+			Logger:     config.Logger,
+
+			TillerNamespace: config.TillerNamespace,
+		}
+
+		resourceSet, err = newChartResourceSet(c)
+		if err != nil {
+			return nil, microerror.Mask(err)
+		}
+	}
+
+	resourceSets := []*controller.ResourceSet{
+		resourceSet,
+	}
+
+	return resourceSets, nil
 }

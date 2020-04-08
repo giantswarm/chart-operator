@@ -18,7 +18,7 @@ import (
 	k8sfake "k8s.io/client-go/kubernetes/fake"
 	"sigs.k8s.io/yaml"
 
-	"github.com/giantswarm/chart-operator/service/controller/chart/v1/controllercontext"
+	"github.com/giantswarm/chart-operator/service/controller/chart/controllercontext"
 )
 
 func Test_DesiredState(t *testing.T) {

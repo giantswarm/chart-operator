@@ -13,7 +13,7 @@ import (
 )
 
 const (
-	Name = "tillermigrationv1"
+	Name = "tillermigration"
 )
 
 type Config struct {
