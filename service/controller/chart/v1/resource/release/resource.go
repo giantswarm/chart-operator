@@ -189,19 +189,26 @@ func isReleaseInTransitionState(r ReleaseState) bool {
 
 func isReleaseModified(a, b ReleaseState) bool {
 	if isEmpty(a) {
+		fmt.Println("IS EMPTY")
 		return false
 	}
 
 	// Values have changed so we need to update the Helm Release.
 	if a.ValuesMD5Checksum != b.ValuesMD5Checksum {
+		fmt.Println("CHECKSUM")
+		fmt.Printf("A: %#q B: %#q", a.ValuesMD5Checksum, b.ValuesMD5Checksum)
 		return true
 	}
 
 	if a.Status != b.Status {
+		fmt.Println("STATUS")
+		fmt.Printf("A: %#q B: %#q", a.Status, b.Status)
 		return true
 	}
 
 	if a.Version != b.Version {
+		fmt.Println("VERSION")
+		fmt.Printf("A: %#q B: %#q", a.Version, b.Version)
 		return true
 	}
 
