@@ -7,6 +7,7 @@ require (
 	github.com/giantswarm/backoff v0.2.0
 	github.com/giantswarm/e2e-harness v0.2.0
 	github.com/giantswarm/e2esetup v0.2.0
+	github.com/giantswarm/errors v0.2.2 // indirect
 	github.com/giantswarm/exporterkit v0.2.0
 	github.com/giantswarm/helmclient v0.2.2-0.20200408133229-78623a5e01e7
 	github.com/giantswarm/k8sclient v0.2.0
