@@ -18,7 +18,7 @@ data:
       helm:
         http:
           {{ if (.Values.Installation) }}
-          clientTimeout: '{{ .Values.Installation.V1.Helm.HTTP.ClientTimout }}'
+          clientTimeout: '{{ .Values.Installation.V1.Helm.HTTP.ClientTimeout }}'
           {{ else }}
           clientTimeout: '{{ .Values.helm.http.clientTimeout }}'
           {{ end }}
