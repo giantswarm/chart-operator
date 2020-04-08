@@ -108,6 +108,7 @@ func New(config Config) (*Service, error) {
 			Logger:    config.Logger,
 
 			EnsureTillerInstalledMaxWait: 30 * time.Second,
+			HTTPClientTimeout:            config.Viper.GetDuration(config.Flag.Service.Helm.HTTP.ClientTimeout),
 			RestConfig:                   restConfig,
 			TillerImageRegistry:          config.Viper.GetString(config.Flag.Service.Image.Registry),
 			TillerNamespace:              config.Viper.GetString(config.Flag.Service.Helm.TillerNamespace),

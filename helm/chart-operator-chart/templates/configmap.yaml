@@ -16,6 +16,8 @@ data:
         address: 'http://0.0.0.0:{{ .Values.port }}'
     service:
       helm:
+        http:
+          clientTimeout: '{{ .Values.Installation.V1.Helm.HTTP.ClientTimeout }}'
         tillerNamespace:  '{{ .Values.tiller.namespace }}'
       kubernetes:
         incluster: true

@@ -16,6 +16,10 @@ groupID: 1000
 cnr:
   address: https://quay.io
 
+helm:
+  http:
+    clientTimeout: 5s
+
 image:
   registry: quay.io
   name: giantswarm/chart-operator

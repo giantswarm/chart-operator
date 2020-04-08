@@ -5,6 +5,10 @@ cnr:
 
 externalDNSIP: 8.8.8.8
 
+helm:
+  http:
+    clientTimeout: "5s"
+
 image:
   registry: "quay.io"
   name: "giantswarm/chart-operator"
