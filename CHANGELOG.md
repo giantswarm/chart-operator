@@ -7,6 +7,12 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+## [v0.12.3] 2020-04-09
+
+### Changed
+
+- Fix problem pushing chart to default app catalog.
+
 ### Changed
 
 ## [v0.12.2] 2020-04-09
