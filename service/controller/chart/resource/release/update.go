@@ -99,6 +99,13 @@ func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange inte
 		case <-ch:
 			// Fall through.
 		case <-time.After(3 * time.Second):
+			// We set the checksum annotation so the update state calculation
+			// is accurate when we check in the next reconciliation loop.
+			err = r.patchAnnotations(ctx, cr, releaseState)
+			if err != nil {
+				return microerror.Mask(err)
+			}
+
 			r.logger.LogCtx(ctx, "level", "debug", "message", "release still being updated")
 			r.logger.LogCtx(ctx, "level", "debug", "message", "canceling resource")
 			return nil
