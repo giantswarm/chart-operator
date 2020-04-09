@@ -9,6 +9,13 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ### Changed
 
+## [v0.12.2] 2020-04-09
+
+### Changed
+
+- Fix update state calculation and status resource for long running deployments.
+- Handle 503 responses when GitHub Pages is unavailable.
+- Make HTTP client timeout configurable for pulling chart tarballs in AWS China.
 - Switch from dep to go modules.
 
 ## [v0.12.1] 2020-03-10
