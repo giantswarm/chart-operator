@@ -4,23 +4,21 @@ metadata:
   name: {{ tpl .Values.resource.default.name  . }}
   namespace: {{ tpl .Values.resource.default.namespace . }}
   labels:
-    app: {{ .Values.project.name }}
-    giantswarm.io/service-type: "managed"
+    {{- include "chart-operator.labels" . | nindent 4 }}
 spec:
   replicas: 1
   revisionHistoryLimit: 3
   selector:
     matchLabels:
-      app: {{ .Values.project.name }}
+      {{- include "azure-operator.selectorLabels" . | nindent 6 }}
   strategy:
     type: RollingUpdate
   template:
     metadata:
-      labels:
-        app: {{ .Values.project.name }}
-        giantswarm.io/service-type: "managed"
       annotations:
         releaseRevision: {{ $.Release.Revision | quote }}
+      labels:
+        {{- include "chart-operator.labels" . | nindent 8 }}
     spec:
       affinity:
         nodeAffinity:
