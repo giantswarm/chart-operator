@@ -8,7 +8,7 @@ metadata:
 spec:
   podSelector:
     matchLabels:
-      app: {{ .Values.project.name }}
+      {{- include "chart-operator.selectorLabels" . | nindent 6 }}
   ingress:
   - ports:
     - port: {{ .Values.pod.port }}
