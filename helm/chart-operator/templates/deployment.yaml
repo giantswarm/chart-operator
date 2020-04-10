@@ -33,9 +33,9 @@ spec:
                 values:
                 - master
       volumes:
-      - name: {{ .Values.project.name }}
+      - name:  {{ tpl .Values.resource.default.name  . }}-configmap
         configMap:
-          name: {{ .Values.project.name }}
+          name: {{ tpl .Values.resource.default.name  . }}
           items:
           - key: config.yaml
             path: config.yaml
@@ -73,21 +73,21 @@ spec:
           runAsUser: {{ .Values.pod.user.id }}
           runAsGroup: {{ .Values.pod.group.id }}
       containers:
-      - name: {{ .Values.project.name }}
+      - name: {{ .Chart.Name }}
         {{ if (.Values.Installation) }}
         image: "{{ .Values.Installation.V1.Registry.Domain }}/{{ .Values.image.name }}:{{ .Values.image.tag }}"
         {{ else }}
         image: "{{ .Values.image.registry }}/{{ .Values.image.name }}:{{ .Values.image.tag }}"
         {{ end }}
         volumeMounts:
-        - name: {{  .Values.project.name }}
-          mountPath: /var/run/{{ .Values.project.name }}/configmap/
+        - name: {{ tpl .Values.resource.default.name  . }}-configmap
+          mountPath: /var/run/{{ .Chart.name }}/configmap/
         ports:
         - name: http
           containerPort: {{ .Values.pod.port }}
         args:
         - daemon
-        - --config.dirs=/var/run/{{ .Values.project.name }}/configmap/
+        - --config.dirs=/var/run/{{ .Chart.Name }}/configmap/
         - --config.files=config
         securityContext:
           runAsUser: {{ .Values.pod.user.id }}
