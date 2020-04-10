@@ -11,4 +11,4 @@ spec:
   ports:
   - port: {{ .Values.pod.port }}
   selector:
-    app: {{ .Values.project.name }}
+    {{- include "chart-operator.selectorLabels" . | nindent 4 }}
