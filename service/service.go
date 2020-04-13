@@ -107,6 +107,8 @@ func New(config Config) (*Service, error) {
 			Fs:        fs,
 			K8sClient: k8sClient,
 			Logger:    config.Logger,
+
+			HTTPClientTimeout: config.Viper.GetDuration(config.Flag.Service.Helm.HTTP.ClientTimeout),
 		}
 
 		helmClient, err = helmclient.New(c)
