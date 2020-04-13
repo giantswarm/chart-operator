@@ -23,30 +23,33 @@ func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
 		return microerror.Mask(err)
 	}
 
-	// If a reason was added to the controller context something went wrong.
-	// So we set the CR status and return early.
-	if cc.Status.Reason != "" {
-		status := v1alpha1.ChartStatus{
-			Reason: cc.Status.Reason,
-			Release: v1alpha1.ChartStatusRelease{
-				Status: cc.Status.Release.Status,
-			},
-		}
-
-		err = r.setStatus(ctx, cr, status)
-		if err != nil {
-			return microerror.Mask(err)
-		}
-
-		return nil
-	}
-
 	releaseName := key.ReleaseName(cr)
 	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("getting status for release %#q", releaseName))
 
 	releaseContent, err := r.helmClient.GetReleaseContent(ctx, key.Namespace(cr), releaseName)
 	if helmclient.IsReleaseNotFound(err) {
 		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("release %#q not found", releaseName))
+
+		// There is no Helm release for this chart CR so its likely that
+		// something has gone wrong. This could be for a reason outside
+		// of Helm like the tarball URL is incorrect.
+		//
+		// If something goes wrong outside of Helm we add that to the
+		// controller context in the release resource. So we include this
+		// information in the CR status.
+		if cc.Status.Reason != "" {
+			status := v1alpha1.ChartStatus{
+				Reason: cc.Status.Reason,
+				Release: v1alpha1.ChartStatusRelease{
+					Status: cc.Status.Release.Status,
+				},
+			}
+
+			err = r.setStatus(ctx, cr, status)
+			if err != nil {
+				return microerror.Mask(err)
+			}
+		}
 
 		// Return early. We will retry on the next execution.
 		return nil
@@ -59,6 +62,12 @@ func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
 		if key.IsCordoned(cr) {
 			status = releaseStatusCordoned
 			reason = key.CordonReason(cr)
+		} else if cc.Status.Reason != "" {
+			// A Helm release exists for this chart CR but data was also added
+			// to the controller context. We do this if something goes wrong
+			// outside of Helm such as pulling the chart tarball. So we ensure
+			// both messages are included in the CR status.
+			reason = fmt.Sprintf("Helm reason: %s Operator reason: %s", releaseContent.Description, cc.Status.Reason)
 		} else {
 			status = releaseContent.Status
 			if releaseContent.Status != helmclient.StatusDeployed {
