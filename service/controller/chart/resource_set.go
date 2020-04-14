@@ -16,12 +16,12 @@ import (
 	"k8s.io/client-go/kubernetes"
 
 	"github.com/giantswarm/chart-operator/pkg/project"
+	"github.com/giantswarm/chart-operator/service/controller/chart/controllercontext"
+	"github.com/giantswarm/chart-operator/service/controller/chart/key"
 	"github.com/giantswarm/chart-operator/service/controller/chart/resource/chartmigration"
 	"github.com/giantswarm/chart-operator/service/controller/chart/resource/release"
 	"github.com/giantswarm/chart-operator/service/controller/chart/resource/status"
 	"github.com/giantswarm/chart-operator/service/controller/chart/resource/tiller"
-	"github.com/giantswarm/chart-operator/service/controller/chart/controllercontext"
-	"github.com/giantswarm/chart-operator/service/controller/chart/key"
 )
 
 type chartResourceSetConfig struct {
