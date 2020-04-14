@@ -16,13 +16,13 @@ import (
 	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/client-go/kubernetes"
 
-	"github.com/giantswarm/chart-operator/service/controller/chart/v1/controllercontext"
-	"github.com/giantswarm/chart-operator/service/controller/chart/v1/key"
+	"github.com/giantswarm/chart-operator/service/controller/chart/controllercontext"
+	"github.com/giantswarm/chart-operator/service/controller/chart/key"
 )
 
 const (
 	// Name is the identifier of the resource.
-	Name = "releasev1"
+	Name = "release"
 
 	// helmDeployedStatus is the deployed status for Helm Releases.
 	helmDeployedStatus = "DEPLOYED"

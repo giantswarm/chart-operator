@@ -9,8 +9,8 @@ import (
 	"github.com/giantswarm/operatorkit/controller/context/resourcecanceledcontext"
 
 	"github.com/giantswarm/chart-operator/pkg/project"
-	"github.com/giantswarm/chart-operator/service/controller/chart/v1/controllercontext"
-	"github.com/giantswarm/chart-operator/service/controller/chart/v1/key"
+	"github.com/giantswarm/chart-operator/service/controller/chart/controllercontext"
+	"github.com/giantswarm/chart-operator/service/controller/chart/key"
 )
 
 func (r *Resource) GetCurrentState(ctx context.Context, obj interface{}) (interface{}, error) {
