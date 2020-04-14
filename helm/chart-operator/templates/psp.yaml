@@ -3,8 +3,7 @@ kind: PodSecurityPolicy
 metadata:
   name: {{ tpl .Values.resource.psp.name . }}
   labels:
-    app: {{ .Values.project.name }}
-    giantswarm.io/service-type: "managed"
+    {{- include "chart-operator.labels" . | nindent 4 }}
 spec:
   runAsUser:
     rule: MustRunAsNonRoot

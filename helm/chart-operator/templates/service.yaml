@@ -4,12 +4,11 @@ metadata:
   name: {{ tpl .Values.resource.default.name  . }}
   namespace: {{ tpl .Values.resource.default.namespace . }}
   labels:
-    app: {{ .Values.project.name }}
-    giantswarm.io/service-type: "managed"
+    {{- include "chart-operator.labels" . | nindent 4 }}
   annotations:
     prometheus.io/scrape: "true"
 spec:
   ports:
   - port: {{ .Values.pod.port }}
   selector:
-    app: {{ .Values.project.name }}
+    {{- include "chart-operator.selectorLabels" . | nindent 4 }}
