@@ -47,9 +47,9 @@ func NewChart(config Config) (*Chart, error) {
 	var chartController *controller.Controller
 	{
 		c := controller.Config{
-			CRD:       v1alpha1.NewChartCRD(),
-			K8sClient: config.K8sClient,
-			Logger:    config.Logger,
+			CRD:          v1alpha1.NewChartCRD(),
+			K8sClient:    config.K8sClient,
+			Logger:       config.Logger,
 			ResourceSets: resourceSets,
 			NewRuntimeObjectFunc: func() runtime.Object {
 				return new(v1alpha1.Chart)

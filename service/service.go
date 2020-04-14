@@ -13,10 +13,10 @@ import (
 	"github.com/giantswarm/microendpoint/service/version"
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/micrologger"
+	"github.com/giantswarm/versionbundle"
 	"github.com/spf13/afero"
 	"github.com/spf13/viper"
 	"k8s.io/client-go/rest"
-	"github.com/giantswarm/versionbundle"
 
 	"github.com/giantswarm/chart-operator/flag"
 	"github.com/giantswarm/chart-operator/pkg/project"
