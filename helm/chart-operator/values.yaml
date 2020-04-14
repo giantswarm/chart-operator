@@ -25,7 +25,6 @@ pod:
 project:
   branch: "[[ .Branch ]]"
   commit: "[[ .SHA ]]"
-  name: "chart-operator"
 
 # Resource names are truncated to 47 characters. Kubernetes allows 63 characters
 # limit for resource names. When pods for deployments are created they have

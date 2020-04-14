@@ -3,7 +3,7 @@ kind: ClusterRole
 metadata:
   name: {{ tpl .Values.resource.default.name  . }}
   labels:
-    app: {{ .Values.project.name }}
+    app: {{ .Chart.Name }}
     giantswarm.io/service-type: "managed"
 rules:
 - apiGroups:
