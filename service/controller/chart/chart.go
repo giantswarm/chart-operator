@@ -57,7 +57,7 @@ func NewChart(config Config) (*Chart, error) {
 				return new(v1alpha1.Chart)
 			},
 
-			Name: project.Name() + chartControllerSuffix,
+			Name:         project.Name() + chartControllerSuffix,
 			ResyncPeriod: 5 * time.Minute,
 		}
 
