@@ -55,7 +55,7 @@ func NewChart(config Config) (*Chart, error) {
 				return new(v1alpha1.Chart)
 			},
 
-			Name:         project.Name() + chartControllerSuffix,
+			Name: project.Name() + chartControllerSuffix,
 		}
 
 		chartController, err = controller.New(c)
