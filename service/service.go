@@ -13,6 +13,7 @@ import (
 	"github.com/giantswarm/microendpoint/service/version"
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/micrologger"
+	"github.com/giantswarm/versionbundle"
 	"github.com/spf13/afero"
 	"github.com/spf13/viper"
 	"k8s.io/client-go/rest"
@@ -160,7 +161,7 @@ func New(config Config) (*Service, error) {
 			Name:           project.Name(),
 			Source:         project.Source(),
 			Version:        project.Version(),
-			VersionBundles: NewVersionBundles(),
+			VersionBundles: []versionbundle.Bundle{project.NewVersionBundle()},
 		}
 
 		versionService, err = version.New(versionConfig)

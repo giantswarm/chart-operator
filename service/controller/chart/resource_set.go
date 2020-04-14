@@ -1,4 +1,4 @@
-package v1
+package chart
 
 import (
 	"context"
@@ -15,6 +15,7 @@ import (
 	"github.com/spf13/afero"
 	"k8s.io/client-go/kubernetes"
 
+	"github.com/giantswarm/chart-operator/pkg/project"
 	"github.com/giantswarm/chart-operator/service/controller/chart/controllercontext"
 	"github.com/giantswarm/chart-operator/service/controller/chart/key"
 	"github.com/giantswarm/chart-operator/service/controller/chart/resource/chartmigration"
@@ -23,22 +24,16 @@ import (
 	"github.com/giantswarm/chart-operator/service/controller/chart/resource/tiller"
 )
 
-// ResourceSetConfig contains necessary dependencies and settings for
-// Chart controller ResourceSet configuration.
-type ResourceSetConfig struct {
+type chartResourceSetConfig struct {
 	// Dependencies.
 	Fs         afero.Fs
 	G8sClient  versioned.Interface
 	HelmClient helmclient.Interface
 	K8sClient  kubernetes.Interface
 	Logger     micrologger.Logger
-
-	// Settings.
-	HandledVersionBundles []string
 }
 
-// NewResourceSet returns a configured Chart controller ResourceSet.
-func NewResourceSet(config ResourceSetConfig) (*controller.ResourceSet, error) {
+func newChartResourceSet(config chartResourceSetConfig) (*controller.ResourceSet, error) {
 	var err error
 
 	// Dependencies.
@@ -159,7 +154,10 @@ func NewResourceSet(config ResourceSetConfig) (*controller.ResourceSet, error) {
 			return false
 		}
 
-		if key.VersionLabel(cr) == VersionBundle().Version {
+		// ChartVersion is fixed for chart CRs. This is because they exist in both
+		// control plane and tenant clusters and their version is not linked to a
+		// release. We may revisit this in future.
+		if key.VersionLabel(cr) == project.ChartVersion() {
 			return true
 		}
 
