@@ -56,6 +56,7 @@ func NewChart(config Config) (*Chart, error) {
 			},
 
 			Name: project.Name() + chartControllerSuffix,
+			ResyncPeriod: 5 * time.Minute,
 		}
 
 		chartController, err = controller.New(c)
