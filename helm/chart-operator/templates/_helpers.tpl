@@ -17,8 +17,8 @@ Create chart name and version as used by the chart label.
 Common labels
 */}}
 {{- define "chart-operator.labels" -}}
-app: {{ include "chart-operator.name" . | quote }}
 {{ include "chart-operator.selectorLabels" . }}
+app: {{ include "chart-operator.name" . | quote }}
 app.giantswarm.io/branch: {{ .Values.project.branch | quote }}
 app.giantswarm.io/commit: {{ .Values.project.commit | quote }}
 app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
