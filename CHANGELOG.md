@@ -7,6 +7,8 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+## [v0.12.4] 2020-04-15
+
 ### Changed
 
 - Always set chart CR annotations so update state calculation is accurate.
