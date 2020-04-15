@@ -79,7 +79,7 @@ spec:
         {{ end }}
         volumeMounts:
         - name: {{ tpl .Values.resource.default.name  . }}-configmap
-          mountPath: /var/run/{{ .Chart.name }}/configmap/
+          mountPath: /var/run/{{ .Chart.Name }}/configmap/
         ports:
         - name: http
           containerPort: {{ .Values.pod.port }}
