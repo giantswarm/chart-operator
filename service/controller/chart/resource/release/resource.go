@@ -189,7 +189,7 @@ func isReleaseFailed(current, desired ReleaseState) bool {
 		}
 
 		// Release is failed and should not be updated.
-		if current.Status == helmFailedStatus {
+		if current.Status == helmclient.StatusFailed {
 			result = true
 		}
 	}
