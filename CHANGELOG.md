@@ -9,6 +9,7 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ### Changed
 
+- Always set chart CR annotations so update state calculation is accurate.
 - Only update failed Helm releases if the chart values or version has changed.
 
 ## [v0.12.3] 2020-04-09
