@@ -4,8 +4,7 @@ kind: PriorityClass
 metadata:
   name: giantswarm-critical
   labels:
-    app: {{ .Values.project.name }}
-    giantswarm.io/service-type: "managed"
+    {{- include "chart-operator.labels" . | nindent 4 }}
 value: 1000000000
 globalDefault: false
 description: "This priority class is used by giantswarm kubernetes components."

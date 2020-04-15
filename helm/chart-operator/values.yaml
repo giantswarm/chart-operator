@@ -22,6 +22,8 @@ pod:
   replicas: 1
 
 project:
+  branch: "[[ .Branch ]]"
+  commit: "[[ .SHA ]]"
   name: "chart-operator"
 
 # Resource names are truncated to 47 characters. Kubernetes allows 63 characters
