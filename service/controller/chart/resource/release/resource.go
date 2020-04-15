@@ -16,6 +16,7 @@ import (
 	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/client-go/kubernetes"
 
+	"github.com/giantswarm/chart-operator/pkg/annotation"
 	"github.com/giantswarm/chart-operator/service/controller/chart/controllercontext"
 	"github.com/giantswarm/chart-operator/service/controller/chart/key"
 )
@@ -112,7 +113,7 @@ func (r *Resource) patchAnnotations(ctx context.Context, cr v1alpha1.Chart, rele
 
 		patches = append(patches, Patch{
 			Op:    "add",
-			Path:  fmt.Sprintf("/metadata/annotations/%s", replaceToEscape(key.ValuesMD5ChecksumAnnotationName)),
+			Path:  fmt.Sprintf("/metadata/annotations/%s", replaceToEscape(annotation.ValuesMD5Checksum)),
 			Value: releaseState.ValuesMD5Checksum,
 		})
 

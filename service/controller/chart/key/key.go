@@ -8,18 +8,7 @@ import (
 	"github.com/giantswarm/microerror"
 
 	"github.com/giantswarm/chart-operator/pkg/annotation"
-)
-
-const (
-	// ForceHelmUpgradeAnnotationName is the name of the annotation that
-	// controls whether force is used when upgrading the Helm release.
-	ForceHelmUpgradeAnnotationName = "chart-operator.giantswarm.io/force-helm-upgrade"
-
-	// ValuesMD5ChecksumAnnotationName is the name of the annotation storing
-	// an MD5 checksum of the Helm release values.
-	ValuesMD5ChecksumAnnotationName = "chart-operator.giantswarm.io/values-md5-checksum"
-
-	versionLabel = "chart-operator.giantswarm.io/version"
+	"github.com/giantswarm/chart-operator/pkg/label"
 )
 
 func ChartStatus(customResource v1alpha1.Chart) v1alpha1.ChartStatus {
@@ -60,7 +49,7 @@ func HasDeleteCROnlyAnnotation(customResource corev1alpha1.ChartConfig) bool {
 }
 
 func HasForceUpgradeAnnotation(customResource v1alpha1.Chart) bool {
-	val, ok := customResource.Annotations[ForceHelmUpgradeAnnotationName]
+	val, ok := customResource.Annotations[annotation.ForceHelmUpgrade]
 	if !ok {
 		return false
 	}
@@ -129,7 +118,7 @@ func ToCustomResource(v interface{}) (v1alpha1.Chart, error) {
 // ValuesMD5ChecksumAnnotation returns the annotation value to determine if the
 // Helm release values have changed.
 func ValuesMD5ChecksumAnnotation(customResource v1alpha1.Chart) string {
-	if val, ok := customResource.ObjectMeta.Annotations[ValuesMD5ChecksumAnnotationName]; ok {
+	if val, ok := customResource.ObjectMeta.Annotations[annotation.ValuesMD5Checksum]; ok {
 		return val
 	} else {
 		return ""
@@ -143,7 +132,7 @@ func Version(customResource v1alpha1.Chart) string {
 // VersionLabel returns the label value to determine if the custom resource is
 // supported by this version of the operatorkit resource.
 func VersionLabel(customResource v1alpha1.Chart) string {
-	if val, ok := customResource.ObjectMeta.Labels[versionLabel]; ok {
+	if val, ok := customResource.ObjectMeta.Labels[label.Version]; ok {
 		return val
 	} else {
 		return ""
