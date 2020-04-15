@@ -170,26 +170,26 @@ func isEmpty(c ReleaseState) bool {
 }
 
 func isReleaseFailed(current, desired ReleaseState) bool {
-	if isEmpty(current) {
-		return false
+	result := false
+
+	if !isEmpty(current) {
+		// Values have not changed so we should not try another update.
+		if current.ValuesMD5Checksum == desired.ValuesMD5Checksum {
+			result = true
+		}
+
+		// Values has not changed so we should not try another update.
+		if current.Version == desired.Version {
+			result = true
+		}
+
+		// Release is failed and should not be updated.
+		if current.Status == helmFailedStatus {
+			result = true
+		}
 	}
 
-	// Values have changed so we will try to update the release.
-	if current.ValuesMD5Checksum != desired.ValuesMD5Checksum {
-		return false
-	}
-
-	// Version has changed so we will try to update the release.
-	if current.Version != desired.Version {
-		return false
-	}
-
-	// Release is failed and should not be updated.
-	if current.Status == helmFailedStatus {
-		return true
-	}
-
-	return false
+	return result
 }
 
 func isReleaseInTransitionState(r ReleaseState) bool {
@@ -197,24 +197,23 @@ func isReleaseInTransitionState(r ReleaseState) bool {
 }
 
 func isReleaseModified(a, b ReleaseState) bool {
-	if isEmpty(a) {
-		return false
+	result := false
+
+	if !isEmpty(a) {
+		if a.ValuesMD5Checksum != b.ValuesMD5Checksum {
+			result = true
+		}
+
+		if a.Status != b.Status {
+			result = true
+		}
+
+		if a.Version != b.Version {
+			result = true
+		}
 	}
 
-	// Values have changed so we need to update the Helm Release.
-	if a.ValuesMD5Checksum != b.ValuesMD5Checksum {
-		return true
-	}
-
-	if a.Status != b.Status {
-		return true
-	}
-
-	if a.Version != b.Version {
-		return true
-	}
-
-	return false
+	return result
 }
 
 func replaceToEscape(from string) string {
