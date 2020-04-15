@@ -65,6 +65,9 @@ func equals(a, b v1alpha1.ChartStatus) bool {
 	if a.Reason != b.Reason {
 		return false
 	}
+	if a.Release.Revision != b.Release.Revision {
+		return false
+	}
 	if a.Release.Status != b.Release.Status {
 		return false
 	}

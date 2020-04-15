@@ -182,11 +182,19 @@ func isReleaseModified(a, b ReleaseState) bool {
 		return true
 	}
 
+	if a.Status != b.Status {
+		return true
+	}
+
 	if a.Version != b.Version {
 		return true
 	}
 
 	return false
+}
+
+func replaceToEscape(from string) string {
+	return strings.Replace(from, "/", "~1", -1)
 }
 
 func toReleaseState(v interface{}) (ReleaseState, error) {
@@ -200,20 +208,4 @@ func toReleaseState(v interface{}) (ReleaseState, error) {
 	}
 
 	return *releaseState, nil
-}
-
-func isWrongStatus(a, b ReleaseState) bool {
-	if a.Status == "" {
-		return false
-	}
-
-	if a.Status != b.Status {
-		return true
-	}
-
-	return false
-}
-
-func replaceToEscape(from string) string {
-	return strings.Replace(from, "/", "~1", -1)
 }
