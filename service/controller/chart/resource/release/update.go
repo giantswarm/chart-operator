@@ -172,7 +172,16 @@ func (r *Resource) newUpdateChange(ctx context.Context, obj, currentState, desir
 
 	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("finding out if the %#q release has to be updated", desiredReleaseState.Name))
 
+	// The release is still being updated so we don't update and check again
+	// in the next reconciliation loop.
 	if isReleaseInTransitionState(currentReleaseState) {
+		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("the %#q release is in status %#q and cannot be updated", desiredReleaseState.Name, currentReleaseState.Status))
+		return nil, nil
+	}
+
+	// The release is failed and the values and version have not changed. So we
+	// don't update. We will be alerted so we can investigate.
+	if isReleaseFailed(currentReleaseState, desiredReleaseState) {
 		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("the %#q release is in status %#q and cannot be updated", desiredReleaseState.Name, currentReleaseState.Status))
 		return nil, nil
 	}
