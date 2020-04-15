@@ -32,6 +32,13 @@ func (r *Resource) ApplyCreateChange(ctx context.Context, obj, createChange inte
 	if releaseState.Name != "" {
 		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("creating release %#q", releaseState.Name))
 
+		// We set the checksum annotation so the update state calculation
+		// is accurate when we check in the next reconciliation loop.
+		err = r.patchAnnotations(ctx, cr, releaseState)
+		if err != nil {
+			return microerror.Mask(err)
+		}
+
 		ns := key.Namespace(cr)
 		tarballURL := key.TarballURL(cr)
 
@@ -90,13 +97,6 @@ func (r *Resource) ApplyCreateChange(ctx context.Context, obj, createChange inte
 		case <-ch:
 			// Fall through.
 		case <-time.After(3 * time.Second):
-			// We set the checksum annotation so the update state calculation
-			// is accurate when we check in the next reconciliation loop.
-			err = r.patchAnnotations(ctx, cr, releaseState)
-			if err != nil {
-				return microerror.Mask(err)
-			}
-
 			r.logger.LogCtx(ctx, "level", "debug", "message", "release still being created")
 			r.logger.LogCtx(ctx, "level", "debug", "message", "canceling resource")
 			return nil
@@ -125,11 +125,6 @@ func (r *Resource) ApplyCreateChange(ctx context.Context, obj, createChange inte
 				resourcecanceledcontext.SetCanceled(ctx)
 				return nil
 			}
-			return microerror.Mask(err)
-		}
-
-		err = r.patchAnnotations(ctx, cr, releaseState)
-		if err != nil {
 			return microerror.Mask(err)
 		}
 
