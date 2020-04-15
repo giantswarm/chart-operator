@@ -183,6 +183,29 @@ func isEmpty(c ReleaseState) bool {
 	return equals(c, ReleaseState{})
 }
 
+func isReleaseFailed(current, desired ReleaseState) bool {
+	if isEmpty(current) {
+		return false
+	}
+
+	// Values have changed so we will try to update the release.
+	if current.ValuesMD5Checksum != desired.ValuesMD5Checksum {
+		return false
+	}
+
+	// Version has changed so we will try to update the release.
+	if current.Version != desired.Version {
+		return false
+	}
+
+	// Release is failed and should not be updated.
+	if current.Status == helmFailedStatus {
+		return true
+	}
+
+	return false
+}
+
 func isReleaseInTransitionState(r ReleaseState) bool {
 	return releaseTransitionStatuses[r.Status]
 }
