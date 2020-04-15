@@ -305,7 +305,7 @@ func Test_ValuesMD5ChecksumAnnotation(t *testing.T) {
 	obj := v1alpha1.Chart{
 		ObjectMeta: metav1.ObjectMeta{
 			Annotations: map[string]string{
-				ValuesMD5ChecksumAnnotationName: "1ee001c5286ca00fdf64d9660c04bde2",
+				annotation.ValuesMD5Checksum: "1ee001c5286ca00fdf64d9660c04bde2",
 			},
 		},
 	}

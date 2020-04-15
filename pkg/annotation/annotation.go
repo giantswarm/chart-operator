@@ -14,4 +14,12 @@ const (
 	// DeleteCustomResourceOnly is the name of the annotation that indicates
 	// the custom resource should be deleted without deleting the Helm release.
 	DeleteCustomResourceOnly = "chart-operator.giantswarm.io/delete-custom-resource-only"
+
+	// ForceHelmUpgrade is the name of the annotation that controls whether
+	// force is used when upgrading the Helm release.
+	ForceHelmUpgrade = "chart-operator.giantswarm.io/force-helm-upgrade"
+
+	// ValuesMD5Checksum is the name of the annotation storing an MD5 checksum
+	// of the Helm release values.
+	ValuesMD5Checksum = "chart-operator.giantswarm.io/values-md5-checksum"
 )
