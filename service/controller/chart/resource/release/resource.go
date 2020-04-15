@@ -184,18 +184,23 @@ func isEmpty(c ReleaseState) bool {
 	return equals(c, ReleaseState{})
 }
 
+// isReleaseFailed checks if the release is failed. If the values or version
+// has changed we return false and will attempt to update the release. As this
+// may fix the problem.
 func isReleaseFailed(current, desired ReleaseState) bool {
 	result := false
 
 	if !isEmpty(current) {
-		// Values have not changed so we should not try another update.
-		if current.ValuesMD5Checksum == desired.ValuesMD5Checksum {
-			result = true
+		// Values have changed so we should try to update even if the release
+		// is failed.
+		if current.ValuesMD5Checksum != desired.ValuesMD5Checksum {
+			return false
 		}
 
-		// Values has not changed so we should not try another update.
-		if current.Version == desired.Version {
-			result = true
+		// Version has changed so we should try to update even if the release
+		// is failed.
+		if current.Version != desired.Version {
+			return false
 		}
 
 		// Release is failed and should not be updated.
