@@ -8,4 +8,7 @@ const (
 
 	// ManagedBy is set for Kubernetes resources managed by the operator.
 	ManagedBy = "giantswarm.io/managed-by"
+
+	// Version is the version label for chart custom resources.
+	Version = "chart-operator.giantswarm.io/version"
 )

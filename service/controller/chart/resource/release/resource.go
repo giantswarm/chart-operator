@@ -16,6 +16,7 @@ import (
 	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/client-go/kubernetes"
 
+	"github.com/giantswarm/chart-operator/pkg/annotation"
 	"github.com/giantswarm/chart-operator/service/controller/chart/controllercontext"
 	"github.com/giantswarm/chart-operator/service/controller/chart/key"
 )
@@ -127,7 +128,7 @@ func (r *Resource) patchAnnotations(ctx context.Context, cr v1alpha1.Chart, rele
 
 		patches = append(patches, Patch{
 			Op:    "add",
-			Path:  fmt.Sprintf("/metadata/annotations/%s", replaceToEscape(key.ValuesMD5ChecksumAnnotationName)),
+			Path:  fmt.Sprintf("/metadata/annotations/%s", replaceToEscape(annotation.ValuesMD5Checksum)),
 			Value: releaseState.ValuesMD5Checksum,
 		})
 
@@ -183,29 +184,56 @@ func isEmpty(c ReleaseState) bool {
 	return equals(c, ReleaseState{})
 }
 
+// isReleaseFailed checks if the release is failed. If the values or version
+// has changed we return false and will attempt to update the release. As this
+// may fix the problem.
+func isReleaseFailed(current, desired ReleaseState) bool {
+	result := false
+
+	if !isEmpty(current) {
+		// Values have changed so we should try to update even if the release
+		// is failed.
+		if current.ValuesMD5Checksum != desired.ValuesMD5Checksum {
+			return false
+		}
+
+		// Version has changed so we should try to update even if the release
+		// is failed.
+		if current.Version != desired.Version {
+			return false
+		}
+
+		// Release is failed and should not be updated.
+		if current.Status == helmFailedStatus {
+			result = true
+		}
+	}
+
+	return result
+}
+
 func isReleaseInTransitionState(r ReleaseState) bool {
 	return releaseTransitionStatuses[r.Status]
 }
 
 func isReleaseModified(a, b ReleaseState) bool {
-	if isEmpty(a) {
-		return false
+	result := false
+
+	if !isEmpty(a) {
+		if a.ValuesMD5Checksum != b.ValuesMD5Checksum {
+			result = true
+		}
+
+		if a.Status != b.Status {
+			result = true
+		}
+
+		if a.Version != b.Version {
+			result = true
+		}
 	}
 
-	// Values have changed so we need to update the Helm Release.
-	if a.ValuesMD5Checksum != b.ValuesMD5Checksum {
-		return true
-	}
-
-	if a.Status != b.Status {
-		return true
-	}
-
-	if a.Version != b.Version {
-		return true
-	}
-
-	return false
+	return result
 }
 
 func replaceToEscape(from string) string {
