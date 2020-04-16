@@ -36,8 +36,8 @@ workflows:
           password_envar: "QUAY_PASSWORD"
           requires:
             - build
-          # Needed to trigger job also on git tag.
           filters:
+            # Trigger the job also on git tag.
             tags:
               only: /^v.*/
 
@@ -49,10 +49,10 @@ workflows:
           password_envar: "ALIYUN_PASSWORD"
           requires:
             - build
-          # Needed to trigger job only on git tag.
           filters:
             branches:
               only: master
+            # Trigger the job also on git tag.
             tags:
               only: /^v.*/
 
@@ -64,8 +64,8 @@ workflows:
           chart: "chart-operator"
           requires:
             - push-chart-operator-to-quay
+            - push-chart-operator-to-aliyun
           filters:
-            # Needed to trigger job also on git tag.
             tags:
               only: /^v.*/
 
@@ -77,8 +77,8 @@ workflows:
           chart: "chart-operator"
           requires:
             - push-chart-operator-to-quay
+            - push-chart-operator-to-aliyun
           filters:
-            # Needed to trigger job also on git tag.
             tags:
               only: /^v.*/
 
