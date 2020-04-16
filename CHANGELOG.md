@@ -7,6 +7,10 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+### Changed
+
+- Deploy as a unique app in app collection in control plane clusters.
+
 ## [v0.12.4] 2020-04-15
 
 ### Changed
