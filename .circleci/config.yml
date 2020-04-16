@@ -29,6 +29,7 @@ workflows:
               only: /^v.*/
 
       - architect/push-to-docker:
+          context: architect
           name: push-chart-operator-to-quay
           image: "quay.io/giantswarm/chart-operator"
           username_envar: "QUAY_USERNAME"
@@ -41,6 +42,7 @@ workflows:
               only: /^v.*/
 
       - architect/push-to-docker:
+          context: architect
           name: push-chart-operator-to-aliyun
           image: "registry-intl.cn-shanghai.aliyuncs.com/giantswarm/chart-operator"
           username_envar: "ALIYUN_USERNAME"
@@ -55,6 +57,7 @@ workflows:
               only: /^v.*/
 
       - architect/push-to-app-catalog:
+          context: architect
           name: push-chart-operator-to-control-plane-app-catalog
           app_catalog: "control-plane-catalog"
           app_catalog_test: "control-plane-test-catalog"
@@ -67,6 +70,7 @@ workflows:
               only: /^v.*/
 
       - architect/push-to-app-catalog:
+          context: architect
           name: push-chart-operator-to-default-app-catalog
           app_catalog: "default-catalog"
           app_catalog_test: "default-test-catalog"
@@ -79,6 +83,7 @@ workflows:
               only: /^v.*/
 
       - architect/push-to-app-collection:
+          context: architect
           name: push-chart-operator-to-aws-app-collection
           app_name: "chart-operator"
           app_collection_repo: "aws-app-collection"
@@ -92,6 +97,7 @@ workflows:
               only: /^v.*/
 
       - architect/push-to-app-collection:
+          context: architect
           name: push-chart-operator-to-azure-app-collection
           app_name: "chart-operator"
           app_collection_repo: "azure-app-collection"
@@ -105,6 +111,7 @@ workflows:
               only: /^v.*/
 
       - architect/push-to-app-collection:
+          context: architect
           name: push-chart-operator-to-kvm-app-collection
           app_name: "chart-operator"
           app_collection_repo: "kvm-app-collection"
@@ -118,12 +125,14 @@ workflows:
               only: /^v.*/
 
       - architect/integration-test:
+          context: architect
           name: basic-integration-test
           test-dir: "integration/test/chart/basic"
           requires:
           - build
       
       - architect/integration-test:
+          context: architect
           name: migration-integration-test
           test-dir: "integration/test/chart/migration"
           requires:
