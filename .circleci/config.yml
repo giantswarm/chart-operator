@@ -1,6 +1,7 @@
 version: 2.1
 orbs:
   architect: giantswarm/architect@0.8.8
+  build-tools: circleci/build-tools@2.6.3
 
 jobs:
   build:
@@ -83,9 +84,19 @@ workflows:
           test-dir: "integration/test/chart/basic"
           requires:
           - build
+          # Debug memory usage during KIND cluster creation failures.
+          pre-steps:
+          - build-tools/memory
+          post-steps:
+           - build-tools/store-report
       
       - architect/integration-test:
           name: migration-integration-test
           test-dir: "integration/test/chart/migration"
           requires:
           - build
+          # Debug memory usage during KIND cluster creation failures.
+          pre-steps:
+          - build-tools/memory
+          post-steps:
+           - build-tools/store-report
