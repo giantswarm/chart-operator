@@ -16,6 +16,7 @@ import (
 	"github.com/spf13/afero"
 	"k8s.io/helm/pkg/helm"
 
+	"github.com/giantswarm/chart-operator/integration/env"
 	"github.com/giantswarm/chart-operator/integration/key"
 	"github.com/giantswarm/chart-operator/integration/templates"
 	"github.com/giantswarm/chart-operator/pkg/project"
@@ -66,7 +67,7 @@ func installResources(ctx context.Context, config Config) error {
 	{
 		config.Logger.LogCtx(ctx, "level", "debug", "message", "getting tarball URL")
 
-		operatorVersion := fmt.Sprintf("%s-%s", latestOperatorRelease, project.Version())
+		operatorVersion := fmt.Sprintf("%s-%s", latestOperatorRelease, env.CircleSHA())
 		operatorTarballURL, err := appcatalog.NewTarballURL(key.DefaultTestCatalogStorageURL(), project.Name(), operatorVersion)
 		if err != nil {
 			return microerror.Mask(err)
