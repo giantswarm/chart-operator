@@ -130,6 +130,7 @@ workflows:
           test-dir: "integration/test/chart/basic"
           requires:
           - build
+          - push-chart-operator-to-default-app-catalog
       
       - architect/integration-test:
           context: architect
@@ -137,3 +138,4 @@ workflows:
           test-dir: "integration/test/chart/migration"
           requires:
           - build
+          - push-chart-operator-to-default-app-catalog
