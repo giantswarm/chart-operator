@@ -1,6 +1,6 @@
 package key
 
-func ChartOperatorReleaseName() string {
+func ReleaseName() string {
 	return "chart-operator"
 }
 
