@@ -9,10 +9,10 @@ func NewVersionBundle() versionbundle.Bundle {
 		Changelogs: []versionbundle.Changelog{
 			{
 				Component:   "chart-operator",
-				Description: "Deploy as a unique app in control plane clusters.",
-				Kind:        versionbundle.KindAdded,
+				Description: "TODO",
+				Kind:        versionbundle.KindChanged,
 				URLs: []string{
-					"https://github.com/giantswarm/chart-operator/pull/421",
+					"",
 				},
 			},
 		},
