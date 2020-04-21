@@ -77,6 +77,7 @@ We check progress in the next reconciliation loop. ([#362](https://github.com/gi
 - Security context in deployment spec with non-root user.
 
 [Unreleased]: https://github.com/giantswarm/chart-operator/compare/v0.13.0..HEAD
+[v0.13.0]: https://github.com/giantswarm/chart-operator/releases/tag/v0.13.0
 [v0.12.4]: https://github.com/giantswarm/chart-operator/releases/tag/v0.12.4
 [v0.12.3]: https://github.com/giantswarm/chart-operator/releases/tag/v0.12.3
 [v0.12.2]: https://github.com/giantswarm/chart-operator/releases/tag/v0.12.2
