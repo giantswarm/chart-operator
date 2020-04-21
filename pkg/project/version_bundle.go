@@ -9,10 +9,10 @@ func NewVersionBundle() versionbundle.Bundle {
 		Changelogs: []versionbundle.Changelog{
 			{
 				Component:   "chart-operator",
-				Description: "Only update failed Helm releases if the chart values or version has changed.",
+				Description: "Deploy as a unique app in control plane clusters.",
 				Kind:        versionbundle.KindAdded,
 				URLs: []string{
-					"https://github.com/giantswarm/chart-operator/pull/422",
+					"https://github.com/giantswarm/chart-operator/pull/421",
 				},
 			},
 		},
