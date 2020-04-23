@@ -7,7 +7,7 @@ workflows:
     jobs:
       - architect/go-build:
           name: go-build
-          binary: aws-operator
+          binary: chart-operator
           resource_class: large
           filters:
             tags:
