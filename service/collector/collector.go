@@ -1,13 +1,9 @@
 package collector
 
 const (
-	gaugeValue float64 = 1
-	Namespace  string  = "chart_operator"
+	Namespace string = "chart_operator"
 )
 
 const (
-	labelChart         = "chart_name"
-	labelRelease       = "release_name"
-	labelReleaseStatus = "release_status"
-	labelNamespace     = "namespace"
+	labelNamespace = "namespace"
 )
