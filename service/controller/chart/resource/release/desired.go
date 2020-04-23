@@ -46,7 +46,7 @@ func (r *Resource) GetDesiredState(ctx context.Context, obj interface{}) (interf
 			return nil, microerror.Mask(err)
 		}
 
-		valuesMD5Checksum = fmt.Sprintf("%x", md5.Sum(valuesYAML))
+		valuesMD5Checksum = fmt.Sprintf("%x", md5.Sum(valuesYAML)) //nolint:gosec
 	} else {
 		// We need to pass empty values in ValueOverrides to make the install
 		// process use the default values and prevent errors on nested values.

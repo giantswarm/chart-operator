@@ -292,7 +292,7 @@ func Test_DesiredState(t *testing.T) {
 
 	for i, tc := range testCases {
 		t.Run(strconv.Itoa(i), func(t *testing.T) {
-			objs := make([]runtime.Object, 0, 0)
+			objs := make([]runtime.Object, 0)
 			if tc.configMap != nil {
 				objs = append(objs, tc.configMap)
 			}
