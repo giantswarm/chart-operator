@@ -42,7 +42,7 @@ func Test_Service_New(t *testing.T) {
 				return
 			}
 			w.Header().Set("Content-Type", "application/json")
-			_, err := w.Write(pods)
+			_, err = w.Write(pods)
 			if err != nil {
 				t.Fatalf("error == %#v, want nil", err)
 			}
