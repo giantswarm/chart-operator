@@ -7,6 +7,10 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+### Changed
+
+- Use go build from architect orb.
+
 ## [v0.13.0] 2020-04-21
 
 ### Changed
