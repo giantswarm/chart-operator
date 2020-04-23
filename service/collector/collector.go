@@ -2,7 +2,7 @@ package collector
 
 const (
 	gaugeValue float64 = 1
-	Namespace          = "chart_operator"
+	Namespace  string  = "chart_operator"
 )
 
 const (

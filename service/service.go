@@ -184,7 +184,7 @@ func New(config Config) (*Service, error) {
 // Boot starts top level service implementation.
 func (s *Service) Boot(ctx context.Context) {
 	s.bootOnce.Do(func() {
-		go s.operatorCollector.Boot(ctx)
+		go s.operatorCollector.Boot(ctx) // nolint:errcheck
 
 		go s.chartController.Boot(ctx)
 	})
