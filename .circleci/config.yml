@@ -8,7 +8,6 @@ workflows:
       - architect/go-build:
           name: go-build
           binary: chart-operator
-          resource_class: large
           filters:
             tags:
               only: /^v.*/
