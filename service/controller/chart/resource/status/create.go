@@ -91,7 +91,7 @@ func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
 		AppVersion: releaseHistory.AppVersion,
 		Reason:     reason,
 		Release: v1alpha1.ChartStatusRelease{
-			LastDeployed: v1alpha1.DeepCopyTime{releaseHistory.LastDeployed},
+			LastDeployed: metav1.NewTime(releaseHistory.LastDeployed),
 			Revision:     releaseHistory.Revision,
 			Status:       status,
 		},

@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"strings"
 
 	"github.com/giantswarm/apiextensions/pkg/apis/core/v1alpha1"
 	"github.com/giantswarm/microerror"
@@ -107,8 +106,4 @@ func (r *Resource) removeFinalizer(ctx context.Context, chartConfig v1alpha1.Cha
 	}
 
 	return nil
-}
-
-func replaceToEscape(from string) string {
-	return strings.Replace(from, "/", "~1", -1)
 }
