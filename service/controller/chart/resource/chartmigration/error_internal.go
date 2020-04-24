@@ -37,7 +37,7 @@ func isChartConfigNotAvailable(err error) bool {
 		}
 	}
 
-	if c == chartConfigNotAvailableError {
+	if c == chartConfigNotAvailableError { //nolint:gosimple
 		return true
 	}
 
