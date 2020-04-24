@@ -184,7 +184,12 @@ func New(config Config) (*Service, error) {
 // Boot starts top level service implementation.
 func (s *Service) Boot(ctx context.Context) {
 	s.bootOnce.Do(func() {
-		go s.operatorCollector.Boot(ctx) // nolint:errcheck
+		go func() {
+			err := s.operatorCollector.Boot(ctx)
+			if err != nil {
+				panic(microerror.JSON(err))
+			}
+		}()
 
 		go s.chartController.Boot(ctx)
 	})
