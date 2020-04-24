@@ -69,7 +69,7 @@ func (h *HelmV2Release) Collect(ch chan<- prometheus.Metric) error {
 
 	hasReleases := map[string]bool{}
 	for _, cm := range cms.Items {
-		name, _ := cm.GetLabels()["NAME"]
+		name := cm.GetLabels()["NAME"]
 		if _, ok := hasReleases[name]; !ok {
 			hasReleases[name] = true
 		}
