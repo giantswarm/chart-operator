@@ -2,7 +2,7 @@ package release
 
 import (
 	"context"
-	"crypto/md5"
+	"crypto/md5" // #nosec
 	"fmt"
 
 	"github.com/giantswarm/apiextensions/pkg/apis/application/v1alpha1"
@@ -49,7 +49,9 @@ func (r *Resource) GetDesiredState(ctx context.Context, obj interface{}) (interf
 			return nil, microerror.Mask(err)
 		}
 
-		valuesMD5Checksum = fmt.Sprintf("%x", md5.Sum(valuesYAML))
+		// MD5 is only used for comparison but we need to turn off gosec or
+		// linting errors will occur.
+		valuesMD5Checksum = fmt.Sprintf("%x", md5.Sum(valuesYAML)) // #nosec
 	} else {
 		// We need to pass empty values in ValueOverrides to make the install
 		// process use the default values and prevent errors on nested values.

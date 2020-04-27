@@ -12,11 +12,11 @@ spec:
     matchLabels:
       {{- include "chart-operator.selectorLabels" . | nindent 6 }}
   strategy:
-    type: RollingUpdate
+    type: Recreate
   template:
     metadata:
       annotations:
-        releaseRevision: {{ $.Release.Revision | quote }}
+        releaseRevision: {{ .Release.Revision | quote }}
       labels:
         {{- include "chart-operator.labels" . | nindent 8 }}
     spec:

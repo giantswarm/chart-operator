@@ -42,7 +42,10 @@ func Test_Service_New(t *testing.T) {
 				return
 			}
 			w.Header().Set("Content-Type", "application/json")
-			w.Write(pods)
+			_, err = w.Write(pods)
+			if err != nil {
+				t.Fatalf("error == %#v, want nil", err)
+			}
 		}
 	}
 	ts := httptest.NewServer(http.HandlerFunc(h))
@@ -62,6 +65,7 @@ func Test_Service_New(t *testing.T) {
 					Viper:  viper.New(),
 				}
 
+				c.Viper.Set(c.Flag.Service.Helm.HTTP.ClientTimeout, "5s")
 				c.Viper.Set(c.Flag.Service.Helm.TillerNamespace, "giantswarm")
 				c.Viper.Set(c.Flag.Service.Kubernetes.Address, ts.URL)
 				c.Viper.Set(c.Flag.Service.Kubernetes.InCluster, false)

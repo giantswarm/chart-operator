@@ -9,6 +9,34 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ### Changed
 
+## [v0.13.0] 2020-04-21
+
+### Changed
+
+- Deploy as a unique app in app collection in control plane clusters.
+
+## [v0.12.4] 2020-04-15
+
+### Changed
+
+- Always set chart CR annotations so update state calculation is accurate.
+- Only update failed Helm releases if the chart values or version has changed.
+
+## [v0.12.3] 2020-04-09
+
+### Changed
+
+- Fix problem pushing chart to default app catalog.
+
+### Changed
+
+## [v0.12.2] 2020-04-09
+
+### Changed
+
+- Fix update state calculation and status resource for long running deployments.
+- Handle 503 responses when GitHub Pages is unavailable.
+- Make HTTP client timeout configurable for pulling chart tarballs in AWS China.
 - Switch from dep to go modules.
 
 ## [v0.12.1] 2020-03-10
@@ -50,7 +78,11 @@ We check progress in the next reconciliation loop. ([#362](https://github.com/gi
 - Separate podsecuritypolicy.
 - Security context in deployment spec with non-root user.
 
-[Unreleased]: https://github.com/giantswarm/chart-operator/compare/v0.12.1..HEAD
+[Unreleased]: https://github.com/giantswarm/chart-operator/compare/v0.13.0..HEAD
+[v0.13.0]: https://github.com/giantswarm/chart-operator/releases/tag/v0.13.0
+[v0.12.4]: https://github.com/giantswarm/chart-operator/releases/tag/v0.12.4
+[v0.12.3]: https://github.com/giantswarm/chart-operator/releases/tag/v0.12.3
+[v0.12.2]: https://github.com/giantswarm/chart-operator/releases/tag/v0.12.2
 [v0.12.1]: https://github.com/giantswarm/chart-operator/releases/tag/v0.12.1
 [v0.12.0]: https://github.com/giantswarm/chart-operator/releases/tag/v0.12.0
 [v0.8.0]: https://github.com/giantswarm/chart-operator/releases/tag/v0.8.0
