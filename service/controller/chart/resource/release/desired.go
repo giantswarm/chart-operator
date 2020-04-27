@@ -52,10 +52,6 @@ func (r *Resource) GetDesiredState(ctx context.Context, obj interface{}) (interf
 		// MD5 is only used for comparison but we need to turn off gosec or
 		// linting errors will occur.
 		valuesMD5Checksum = fmt.Sprintf("%x", md5.Sum(valuesYAML)) // #nosec
-	} else {
-		// We need to pass empty values in ValueOverrides to make the install
-		// process use the default values and prevent errors on nested values.
-		valuesYAML = []byte("{}") // #nosec
 	}
 
 	releaseState := &ReleaseState{
