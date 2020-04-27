@@ -16,6 +16,7 @@ import (
 	"github.com/giantswarm/microerror"
 	"github.com/spf13/afero"
 
+	"github.com/giantswarm/chart-operator/integration/env"
 	"github.com/giantswarm/chart-operator/integration/key"
 	"github.com/giantswarm/chart-operator/pkg/project"
 )
@@ -49,11 +50,28 @@ func installResources(ctx context.Context, config Config) error {
 		}
 	}
 
+	var latestOperatorRelease string
+	{
+		config.Logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("getting latest %#q release", project.Name()))
+
+		latestOperatorRelease, err = appcatalog.GetLatestVersion(ctx, key.DefaultCatalogStorageURL(), project.Name())
+		if err != nil {
+			return microerror.Mask(err)
+		}
+
+		config.Logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("latest %#q release is %#q", project.Name(), latestOperatorRelease))
+	}
+
 	var operatorTarballPath string
 	{
 		config.Logger.LogCtx(ctx, "level", "debug", "message", "getting tarball URL")
 
-		operatorTarballURL, err := appcatalog.NewTarballURL(key.DefaultTestCatalogStorageURL(), project.Name(), project.Version())
+		// TODO: Use project.Version() once the operator is flattened.
+		//
+		//	https://github.com/giantswarm/giantswarm/issues/7896
+		//
+		operatorVersion := fmt.Sprintf("%s-%s", latestOperatorRelease, env.CircleSHA())
+		operatorTarballURL, err := appcatalog.NewTarballURL(key.DefaultTestCatalogStorageURL(), project.Name(), operatorVersion)
 		if err != nil {
 			return microerror.Mask(err)
 		}
