@@ -49,23 +49,11 @@ func installResources(ctx context.Context, config Config) error {
 		}
 	}
 
-	var latestOperatorVersion string
-	{
-		config.Logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("getting latest %#q release", project.Name()))
-
-		latestOperatorVersion, err = appcatalog.GetLatestVersion(ctx, key.DefaultTestCatalogStorageURL(), project.Name(), project.Version())
-		if err != nil {
-			return microerror.Mask(err)
-		}
-
-		config.Logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("latest %#q release is %#q", project.Name(), latestOperatorVersion))
-	}
-
 	var operatorTarballPath string
 	{
 		config.Logger.LogCtx(ctx, "level", "debug", "message", "getting tarball URL")
 
-		operatorTarballURL, err := appcatalog.NewTarballURL(key.DefaultTestCatalogStorageURL(), project.Name(), latestOperatorVersion)
+		operatorTarballURL, err := appcatalog.GetLatestChart(ctx, key.DefaultTestCatalogStorageURL(), project.Name(), project.Version())
 		if err != nil {
 			return microerror.Mask(err)
 		}
