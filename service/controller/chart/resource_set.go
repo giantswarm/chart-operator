@@ -21,7 +21,7 @@ import (
 	"github.com/giantswarm/chart-operator/service/controller/chart/resource/chartmigration"
 	"github.com/giantswarm/chart-operator/service/controller/chart/resource/release"
 	"github.com/giantswarm/chart-operator/service/controller/chart/resource/status"
-	"github.com/giantswarm/chart-operator/service/controller/chart/resource/tiller"
+	"github.com/giantswarm/chart-operator/service/controller/chart/resource/tillermigration"
 )
 
 type chartResourceSetConfig struct {
@@ -31,6 +31,9 @@ type chartResourceSetConfig struct {
 	HelmClient helmclient.Interface
 	K8sClient  kubernetes.Interface
 	Logger     micrologger.Logger
+
+	// Settings.
+	TillerNamespace string
 }
 
 func newChartResourceSet(config chartResourceSetConfig) (*controller.ResourceSet, error) {
@@ -51,6 +54,10 @@ func newChartResourceSet(config chartResourceSetConfig) (*controller.ResourceSet
 	}
 	if config.Logger == nil {
 		return nil, microerror.Maskf(invalidConfigError, "%T.Logger must not be empty", config)
+	}
+
+	if config.TillerNamespace == "" {
+		return nil, microerror.Maskf(invalidConfigError, "%T.TillerNamespace must not be empty", config)
 	}
 
 	var chartMigrationResource resource.Interface
@@ -102,14 +109,17 @@ func newChartResourceSet(config chartResourceSetConfig) (*controller.ResourceSet
 		}
 	}
 
-	var tillerResource resource.Interface
+	var tillerMigrationResource resource.Interface
 	{
-		c := tiller.Config{
-			HelmClient: config.HelmClient,
-			Logger:     config.Logger,
+		c := tillermigration.Config{
+			G8sClient: config.G8sClient,
+			K8sClient: config.K8sClient,
+			Logger:    config.Logger,
+
+			TillerNamespace: config.TillerNamespace,
 		}
 
-		tillerResource, err = tiller.New(c)
+		tillerMigrationResource, err = tillermigration.New(c)
 		if err != nil {
 			return nil, microerror.Mask(err)
 		}
@@ -117,7 +127,7 @@ func newChartResourceSet(config chartResourceSetConfig) (*controller.ResourceSet
 
 	resources := []resource.Interface{
 		chartMigrationResource,
-		tillerResource,
+		tillerMigrationResource,
 		releaseResource,
 		statusResource,
 	}

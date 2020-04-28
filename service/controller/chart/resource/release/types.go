@@ -18,9 +18,9 @@ type ReleaseState struct {
 	// comparison since it is more reliable than using the values returned by
 	// helmclient.GetReleaseContent.
 	ValuesMD5Checksum string
-	// ValuesYAML are any values that have been set when the Helm Chart was
+	// Values are any values that have been set when the Helm Chart was
 	// installed.
-	ValuesYAML []byte
+	Values map[string]interface{}
 	// Version is the version of the Helm Chart to be deployed.
 	// e.g. 0.1.2
 	Version string

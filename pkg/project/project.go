@@ -1,9 +1,9 @@
 package project
 
 var (
-	description = "chart-operator is our agent for deploying Helm charts as releases."
-	name        = "chart-operator"
+	description = "chart-operator is an agent for deploying Helm charts as releases."
 	gitSHA      = "n/a"
+	name        = "chart-operator"
 	source      = "https://github.com/giantswarm/chart-operator"
 	version     = "0.13.1-dev"
 )

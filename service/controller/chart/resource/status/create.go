@@ -26,7 +26,7 @@ func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
 	releaseName := key.ReleaseName(cr)
 	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("getting status for release %#q", releaseName))
 
-	releaseContent, err := r.helmClient.GetReleaseContent(ctx, releaseName)
+	releaseContent, err := r.helmClient.GetReleaseContent(ctx, key.Namespace(cr), releaseName)
 	if helmclient.IsReleaseNotFound(err) {
 		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("release %#q not found", releaseName))
 
@@ -57,17 +57,6 @@ func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
 		return microerror.Mask(err)
 	}
 
-	releaseHistory, err := r.helmClient.GetReleaseHistory(ctx, releaseName)
-	if helmclient.IsReleaseNotFound(err) {
-		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("did not get status for release %#q", releaseName))
-		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("release %#q not found", releaseName))
-
-		// Return early. We will retry on the next execution.
-		return nil
-	} else if err != nil {
-		return microerror.Mask(err)
-	}
-
 	var status, reason string
 	{
 		if key.IsCordoned(cr) {
@@ -78,24 +67,23 @@ func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
 			// to the controller context. We do this if something goes wrong
 			// outside of Helm such as pulling the chart tarball. So we ensure
 			// both messages are included in the CR status.
-			reason = fmt.Sprintf("Helm reason: %s Operator reason: %s", releaseHistory.Description, cc.Status.Reason)
+			reason = fmt.Sprintf("Helm reason: %s Operator reason: %s", releaseContent.Description, cc.Status.Reason)
 		} else {
 			status = releaseContent.Status
-			if releaseContent.Status != releaseStatusDeployed {
-				reason = releaseHistory.Description
+			if releaseContent.Status != helmclient.StatusDeployed {
+				reason = releaseContent.Description
 			}
 		}
 	}
 
 	desiredStatus := v1alpha1.ChartStatus{
-		AppVersion: releaseHistory.AppVersion,
+		AppVersion: releaseContent.AppVersion,
 		Reason:     reason,
 		Release: v1alpha1.ChartStatusRelease{
-			LastDeployed: metav1.NewTime(releaseHistory.LastDeployed),
-			Revision:     releaseHistory.Revision,
+			LastDeployed: metav1.Time{Time: releaseContent.LastDeployed},
 			Status:       status,
 		},
-		Version: releaseHistory.Version,
+		Version: releaseContent.Version,
 	}
 
 	if !equals(desiredStatus, key.ChartStatus(cr)) {

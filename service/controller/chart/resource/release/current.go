@@ -31,7 +31,7 @@ func (r *Resource) GetCurrentState(ctx context.Context, obj interface{}) (interf
 	}
 
 	releaseName := key.ReleaseName(cr)
-	releaseContent, err := r.helmClient.GetReleaseContent(ctx, releaseName)
+	releaseContent, err := r.helmClient.GetReleaseContent(ctx, key.Namespace(cr), releaseName)
 	if helmclient.IsReleaseNotFound(err) {
 		// Return early as release is not installed.
 		return nil, nil
@@ -48,23 +48,18 @@ func (r *Resource) GetCurrentState(ctx context.Context, obj interface{}) (interf
 		return nil, microerror.Mask(err)
 	}
 
-	if releaseContent.Status == "FAILED" && releaseContent.Name == project.Name() {
+	if releaseContent.Status == helmclient.StatusFailed && releaseContent.Name == project.Name() {
 		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("not updating own release %#q since it's %#q", releaseContent.Name, releaseContent.Status))
 		r.logger.LogCtx(ctx, "level", "debug", "message", "canceling resource")
 		resourcecanceledcontext.SetCanceled(ctx)
 		return nil, nil
 	}
 
-	releaseHistory, err := r.helmClient.GetReleaseHistory(ctx, releaseName)
-	if err != nil {
-		return nil, microerror.Mask(err)
-	}
-
 	releaseState := &ReleaseState{
 		Name:              releaseName,
 		Status:            releaseContent.Status,
 		ValuesMD5Checksum: key.ValuesMD5ChecksumAnnotation(cr),
-		Version:           releaseHistory.Version,
+		Version:           releaseContent.Version,
 	}
 
 	return releaseState, nil

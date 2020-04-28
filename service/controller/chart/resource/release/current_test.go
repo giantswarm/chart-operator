@@ -24,7 +24,6 @@ func Test_CurrentState(t *testing.T) {
 		name           string
 		obj            *v1alpha1.Chart
 		releaseContent *helmclient.ReleaseContent
-		releaseHistory *helmclient.ReleaseHistory
 		returnedError  error
 		expectedState  ReleaseState
 		expectedError  bool
@@ -47,9 +46,6 @@ func Test_CurrentState(t *testing.T) {
 				Values: map[string]interface{}{
 					"key": "value",
 				},
-			},
-			releaseHistory: &helmclient.ReleaseHistory{
-				Name:    "prometheus",
 				Version: "0.1.2",
 			},
 			expectedState: ReleaseState{
@@ -78,9 +74,6 @@ func Test_CurrentState(t *testing.T) {
 					"key":     "value",
 					"another": "value",
 				},
-			},
-			releaseHistory: &helmclient.ReleaseHistory{
-				Name:    "prometheus",
 				Version: "1.2.3",
 			},
 			expectedState: ReleaseState{
@@ -98,9 +91,8 @@ func Test_CurrentState(t *testing.T) {
 				},
 			},
 			releaseContent: &helmclient.ReleaseContent{},
-			releaseHistory: &helmclient.ReleaseHistory{},
 			returnedError:  fmt.Errorf("No such release: prometheus"),
-			expectedError:  false,
+			expectedError:  true,
 		},
 		{
 			name: "case 3: unexpected error",
@@ -110,7 +102,6 @@ func Test_CurrentState(t *testing.T) {
 				},
 			},
 			releaseContent: &helmclient.ReleaseContent{},
-			releaseHistory: &helmclient.ReleaseHistory{},
 			returnedError:  fmt.Errorf("Unexpected error"),
 			expectedError:  true,
 		},
@@ -143,7 +134,6 @@ func Test_CurrentState(t *testing.T) {
 			{
 				c := helmclienttest.Config{
 					DefaultReleaseContent: tc.releaseContent,
-					DefaultReleaseHistory: tc.releaseHistory,
 					DefaultError:          tc.returnedError,
 				}
 				helmClient = helmclienttest.New(c)

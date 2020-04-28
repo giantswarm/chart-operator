@@ -8,9 +8,9 @@ import (
 	"github.com/giantswarm/apiextensions/pkg/apis/application/v1alpha1"
 	"github.com/giantswarm/helmclient"
 	"github.com/giantswarm/microerror"
-	yaml "gopkg.in/yaml.v2"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"sigs.k8s.io/yaml"
 
 	"github.com/giantswarm/chart-operator/service/controller/chart/key"
 )
@@ -41,6 +41,9 @@ func (r *Resource) GetDesiredState(ctx context.Context, obj interface{}) (interf
 	var valuesMD5Checksum string
 
 	if len(values) > 0 {
+		// We serialize the values to YAML so we can generate the MD5 checksum.
+		// We use this for comparison because Helm may modify the values we get
+		// back from the Helm client.
 		valuesYAML, err = yaml.Marshal(values)
 		if err != nil {
 			return nil, microerror.Mask(err)
@@ -49,17 +52,13 @@ func (r *Resource) GetDesiredState(ctx context.Context, obj interface{}) (interf
 		// MD5 is only used for comparison but we need to turn off gosec or
 		// linting errors will occur.
 		valuesMD5Checksum = fmt.Sprintf("%x", md5.Sum(valuesYAML)) // #nosec
-	} else {
-		// We need to pass empty values in ValueOverrides to make the install
-		// process use the default values and prevent errors on nested values.
-		valuesYAML = []byte("{}")
 	}
 
 	releaseState := &ReleaseState{
 		Name:              key.ReleaseName(cr),
-		Status:            helmDeployedStatus,
+		Status:            helmclient.StatusDeployed,
 		ValuesMD5Checksum: valuesMD5Checksum,
-		ValuesYAML:        valuesYAML,
+		Values:            values,
 		Version:           key.Version(cr),
 	}
 
