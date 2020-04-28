@@ -12,7 +12,7 @@ Installation:
   V1:
     Helm:
       HTTP:
-        ClientTimeout: 5s
+        ClientTimeout: 30s
     Registry:
       Domain: quay.io
 `

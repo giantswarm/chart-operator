@@ -1,91 +1,126 @@
 version: 2.1
 orbs:
-  architect: giantswarm/architect@0.8.8
-
-jobs:
-  build:
-    machine: true
-    steps:
-    - checkout
-
-    - run: |
-        wget -q $(curl -sS -H "Authorization: token $RELEASE_TOKEN" https://api.github.com/repos/giantswarm/architect/releases/latest | grep browser_download_url | head -n 1 | cut -d '"' -f 4)
-        chmod +x ./architect
-        ./architect version
-    - run: ./architect build
-    - store_test_results:
-        path: /tmp/results
-    - run: ./architect publish --pipeline=false --channels=${CIRCLE_SHA1}
-    - persist_to_workspace:
-        root: .
-        paths:
-        - ./chart-operator
+  architect: giantswarm/architect@0.8.12
 
 workflows:
   build:
     jobs:
-      - build:
+      - architect/go-build:
+          context: architect
+          name: go-build
+          binary: chart-operator
           filters:
             tags:
               only: /^v.*/
 
       - architect/push-to-docker:
+          context: architect
           name: push-chart-operator-to-quay
           image: "quay.io/giantswarm/chart-operator"
           username_envar: "QUAY_USERNAME"
           password_envar: "QUAY_PASSWORD"
           requires:
-            - build
-          # Needed to trigger job also on git tag.
+            - go-build
           filters:
+            # Trigger the job also on git tag.
             tags:
               only: /^v.*/
 
       - architect/push-to-docker:
+          context: architect
           name: push-chart-operator-to-aliyun
           image: "registry-intl.cn-shanghai.aliyuncs.com/giantswarm/chart-operator"
           username_envar: "ALIYUN_USERNAME"
           password_envar: "ALIYUN_PASSWORD"
           requires:
-            - build
-          # Needed to trigger job only on git tag.
+            - go-build
           filters:
             branches:
               only: master
+            # Trigger the job also on git tag.
             tags:
               only: /^v.*/
 
       - architect/push-to-app-catalog:
+          context: architect
           name: push-chart-operator-to-control-plane-app-catalog
           app_catalog: "control-plane-catalog"
           app_catalog_test: "control-plane-test-catalog"
           chart: "chart-operator"
           requires:
             - push-chart-operator-to-quay
+            - push-chart-operator-to-aliyun
           filters:
             tags:
               only: /^v.*/
 
       - architect/push-to-app-catalog:
+          context: architect
           name: push-chart-operator-to-default-app-catalog
           app_catalog: "default-catalog"
           app_catalog_test: "default-test-catalog"
           chart: "chart-operator"
           requires:
             - push-chart-operator-to-quay
+            - push-chart-operator-to-aliyun
           filters:
-            # Needed to trigger job also on git tag.
+            tags:
+              only: /^v.*/
+
+      - architect/push-to-app-collection:
+          context: architect
+          name: push-chart-operator-to-aws-app-collection
+          app_name: "chart-operator"
+          app_collection_repo: "aws-app-collection"
+          unique: "true"
+          requires:
+            - push-chart-operator-to-control-plane-app-catalog
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^v.*/
+
+      - architect/push-to-app-collection:
+          context: architect
+          name: push-chart-operator-to-azure-app-collection
+          app_name: "chart-operator"
+          app_collection_repo: "azure-app-collection"
+          unique: "true"
+          requires:
+            - push-chart-operator-to-control-plane-app-catalog
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^v.*/
+
+      - architect/push-to-app-collection:
+          context: architect
+          name: push-chart-operator-to-kvm-app-collection
+          app_name: "chart-operator"
+          app_collection_repo: "kvm-app-collection"
+          unique: "true"
+          requires:
+            - push-chart-operator-to-control-plane-app-catalog
+          filters:
+            branches:
+              ignore: /.*/
             tags:
               only: /^v.*/
 
       - architect/integration-test:
+          context: architect
           name: basic-integration-test
           test-dir: "integration/test/chart/basic"
           requires:
-          - build
+          - go-build
+          - push-chart-operator-to-default-app-catalog
       
       - architect/integration-test:
+          context: architect
           name: migration-integration-test
           test-dir: "integration/test/chart/migration"
           requires:
-          - build
+          - go-build
+          - push-chart-operator-to-default-app-catalog

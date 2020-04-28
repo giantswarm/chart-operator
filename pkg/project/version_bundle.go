@@ -9,8 +9,11 @@ func NewVersionBundle() versionbundle.Bundle {
 		Changelogs: []versionbundle.Changelog{
 			{
 				Component:   "chart-operator",
-				Description: "Add your changes here.",
-				Kind:        versionbundle.KindAdded,
+				Description: "TODO",
+				Kind:        versionbundle.KindChanged,
+				URLs: []string{
+					"",
+				},
 			},
 		},
 		Components: []versionbundle.Component{},

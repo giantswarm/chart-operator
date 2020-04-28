@@ -1,6 +1,8 @@
 clusterDNSIP: 172.31.0.10
 
 e2e: false
+cnr:
+  address: https://quay.io
 
 externalDNSIP: 8.8.8.8
 

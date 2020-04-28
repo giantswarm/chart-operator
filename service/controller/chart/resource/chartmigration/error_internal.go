@@ -37,11 +37,7 @@ func isChartConfigNotAvailable(err error) bool {
 		}
 	}
 
-	if c == chartConfigNotAvailableError {
-		return true
-	}
-
-	return false
+	return c == chartConfigNotAvailableError
 }
 
 var chartConfigNotInstalledError = &microerror.Error{
