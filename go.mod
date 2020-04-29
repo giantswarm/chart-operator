@@ -17,7 +17,7 @@ require (
 	github.com/giantswarm/operatorkit v0.2.0
 	github.com/giantswarm/versionbundle v0.2.0
 	github.com/google/go-cmp v0.4.0
-	github.com/prometheus/client_golang v1.5.1
+	github.com/prometheus/client_golang v1.6.0
 	github.com/spf13/afero v1.2.2
 	github.com/spf13/viper v1.6.2
 	gopkg.in/yaml.v2 v2.2.8
