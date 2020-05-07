@@ -235,6 +235,8 @@ github.com/giantswarm/micrologger v0.3.1 h1:HbYbQLobvfsLYzRiGTncaO61CCPd4BlT18xa
 github.com/giantswarm/micrologger v0.3.1/go.mod h1:PjAgtcJ922ZMX/Aa05IPi0bdYvOj2P7pZ7+6dBShMQs=
 github.com/giantswarm/operatorkit v0.2.0 h1:OY5NCS4L4MPpZgtzvPlpUXlLK9d7VxHOzDy05MavK3c=
 github.com/giantswarm/operatorkit v0.2.0/go.mod h1:i/yHa01y+d67ZzZBOck56CcZLkbRIx89ZqAoK46+Bjs=
+github.com/giantswarm/operatorkit v0.2.1 h1:AgDq8MGs8J947+Y0BCQTvz+H3JxKhNyFlD6W84iShKg=
+github.com/giantswarm/operatorkit v0.2.1/go.mod h1:i/yHa01y+d67ZzZBOck56CcZLkbRIx89ZqAoK46+Bjs=
 github.com/giantswarm/to v0.2.0 h1:qZj0DUnjUcI/7ajwIVtT6mwmSYQm8g0qBvAPCoS1ZF8=
 github.com/giantswarm/to v0.2.0/go.mod h1:RTRtw+Dyk6YqoiNBOGLO981BqhibtVwogdaFIMO1y/A=
 github.com/giantswarm/valuemodifier v0.2.0/go.mod h1:GYMylCMZIu9XrSXD8LE5U0bn1KA1z7U533jTRlN7CEM=
