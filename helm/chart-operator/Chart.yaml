@@ -2,5 +2,7 @@ apiVersion: v1
 name: chart-operator
 description: A Helm chart for the chart-operator
 home: https://github.com/giantswarm/chart-operator
+maintainers:
+- name: batman
 appVersion: [[ .AppVersion ]]
 version: [[ .Version ]]
