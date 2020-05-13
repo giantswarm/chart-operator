@@ -35,8 +35,6 @@ workflows:
           requires:
             - go-build
           filters:
-            branches:
-              only: master
             # Trigger the job also on git tag.
             tags:
               only: /^v.*/
