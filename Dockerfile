@@ -1,9 +1,12 @@
-FROM quay.io/giantswarm/alpine:3.10-giantswarm
+FROM ubuntu:20.04
 
 USER root
 
 # bind-tools is required by the init container to use dig.
-RUN apk add --no-cache ca-certificates bind-tools
+RUN apt-get update -y && \
+    apt-get install --no-install-recommends -y ca-certificates dnsutils && \
+    rm -rf /var/lib/apt/lists/*
+RUN useradd -ms /bin/bash giantswarm
 
 USER giantswarm
 
