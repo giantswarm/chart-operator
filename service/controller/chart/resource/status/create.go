@@ -41,7 +41,8 @@ func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
 			status := v1alpha1.ChartStatus{
 				Reason: cc.Status.Reason,
 				Release: v1alpha1.ChartStatusRelease{
-					Status: cc.Status.Release.Status,
+					LastDeployed: metav1.Time{},
+					Status:       cc.Status.Release.Status,
 				},
 			}
 
