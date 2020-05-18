@@ -233,8 +233,8 @@ github.com/giantswarm/e2esetup v0.1.0 h1:ONjRdccVsaopFzeAjlwUDEeX+ul9ujNQmVyp8MM
 github.com/giantswarm/e2esetup v0.1.0/go.mod h1:p+cP+0Aa2AtnwKi2A4CeNcIgP4nb1no23hnVqCWegp0=
 github.com/giantswarm/exporterkit v0.2.0 h1:+HTGl4fmT/1OkTox8HbV3JXeavmsZv94+2CDW8cSrq0=
 github.com/giantswarm/exporterkit v0.2.0/go.mod h1:b4fuHVjsvZgznC9OEPfn0y5zvN8SnEKTiI5zTTfck94=
-github.com/giantswarm/helmclient v0.0.0-20200409082908-fd7e6c8a6bb0 h1:oSqYbAWuFtZi4IwywaJbw0P0B5HMp7MeiLPlAKtv7ec=
-github.com/giantswarm/helmclient v0.0.0-20200409082908-fd7e6c8a6bb0/go.mod h1:2KJ2cg7UTbVnYwpar92Qnm6x60gA6RGIoGATBvAaf/g=
+github.com/giantswarm/helmclient v1.0.0 h1:VukapA4dpSEQLr2skPbNjFuHfT/huhaGqL10hQbQASc=
+github.com/giantswarm/helmclient v1.0.0/go.mod h1:2KJ2cg7UTbVnYwpar92Qnm6x60gA6RGIoGATBvAaf/g=
 github.com/giantswarm/k8sclient v0.2.0 h1:Az+Knfs2UJrNFoqfOsfkudg+rt3fn5EM1aKrnLSg3fU=
 github.com/giantswarm/k8sclient v0.2.0/go.mod h1:tUgUynwKgMnjnN2PldGmxJW6+8eZn2p7tT+tEhXDwOg=
 github.com/giantswarm/kubeconfig v0.2.0 h1:Uelz9nDVrbbnyhsZo+fEwg9/PkfBi7oI9ECvjemZjG8=
