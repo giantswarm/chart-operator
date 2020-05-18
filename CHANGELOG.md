@@ -7,6 +7,8 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+## [v1.0.0] 2020-05-18
+
 ### Changed
 
 - Updated to support Helm 3; To keep using Helm 2, please use version 0.X.X.
@@ -80,12 +82,14 @@ We check progress in the next reconciliation loop. ([#362](https://github.com/gi
 - Separate podsecuritypolicy.
 - Security context in deployment spec with non-root user.
 
-[Unreleased]: https://github.com/giantswarm/chart-operator/compare/v0.13.0..HEAD
-[v0.13.0]: https://github.com/giantswarm/chart-operator/releases/tag/v0.13.0
-[v0.12.4]: https://github.com/giantswarm/chart-operator/releases/tag/v0.12.4
-[v0.12.3]: https://github.com/giantswarm/chart-operator/releases/tag/v0.12.3
-[v0.12.2]: https://github.com/giantswarm/chart-operator/releases/tag/v0.12.2
-[v0.12.1]: https://github.com/giantswarm/chart-operator/releases/tag/v0.12.1
-[v0.12.0]: https://github.com/giantswarm/chart-operator/releases/tag/v0.12.0
-[v0.8.0]: https://github.com/giantswarm/chart-operator/releases/tag/v0.8.0
+[Unreleased]: https://github.com/giantswarm/chart-operator/compare/v1.0.0..HEAD
+[v1.0.0]: https://github.com/giantswarm/chart-operator/compare/v0.13.0..v1.0.0
+[v0.13.0]: https://github.com/giantswarm/chart-operator/compare/v0.12.4..v0.13.0
+[v0.12.4]: https://github.com/giantswarm/chart-operator/compare/v0.12.3..v0.12.4
+[v0.12.3]: https://github.com/giantswarm/chart-operator/compare/v0.12.2..v0.12.3
+[v0.12.2]: https://github.com/giantswarm/chart-operator/compare/v0.12.1..v0.12.2
+[v0.12.1]: https://github.com/giantswarm/chart-operator/compare/v0.12.0..v0.12.1
+[v0.12.0]: https://github.com/giantswarm/chart-operator/compare/v0.8.0..v0.12.0
+[v0.8.0]: https://github.com/giantswarm/chart-operator/compare/v0.7.0..v0.8.0
+
 [v0.7.0]: https://github.com/giantswarm/chart-operator/releases/tag/v0.7.0
