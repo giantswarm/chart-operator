@@ -20,6 +20,8 @@ type Config struct {
 	HelmClient helmclient.Interface
 	K8sClient  k8sclient.Interface
 	Logger     micrologger.Logger
+
+	TillerNamespace string
 }
 
 type Chart struct {
@@ -37,6 +39,10 @@ func NewChart(config Config) (*Chart, error) {
 	}
 	if config.Logger == nil {
 		return nil, microerror.Maskf(invalidConfigError, "%T.Logger must not be empty", config)
+	}
+
+	if config.TillerNamespace == "" {
+		return nil, microerror.Maskf(invalidConfigError, "%T.TillerNamespace must not be empty", config)
 	}
 
 	resourceSets, err := newChartResourceSets(config)
@@ -82,6 +88,8 @@ func newChartResourceSets(config Config) ([]*controller.ResourceSet, error) {
 			HelmClient: config.HelmClient,
 			K8sClient:  config.K8sClient.K8sClient(),
 			Logger:     config.Logger,
+
+			TillerNamespace: config.TillerNamespace,
 		}
 
 		resourceSet, err = newChartResourceSet(c)

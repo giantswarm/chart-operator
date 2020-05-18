@@ -25,24 +25,9 @@ const (
 	// Name is the identifier of the resource.
 	Name = "release"
 
-	// helmDeployedStatus is the deployed status for Helm Releases.
-	helmDeployedStatus = "DEPLOYED"
-	// helmFailedStatus is the failed status for Helm Releases.
-	helmFailedStatus = "FAILED"
 	// releaseNotInstalledStatus is set in the CR status when there is no Helm
 	// Release to check.
-	releaseNotInstalledStatus = "Not installed"
-)
-
-var (
-	// releaseTransitionStatuses is used to determine if the Helm Release is
-	// currently being updated.
-	releaseTransitionStatuses = map[string]bool{
-		"DELETING":         true,
-		"PENDING_INSTALL":  true,
-		"PENDING_UPGRADE":  true,
-		"PENDING_ROLLBACK": true,
-	}
+	releaseNotInstalledStatus = "not-installed"
 )
 
 // Config represents the configuration used to create a new release resource.
@@ -204,7 +189,7 @@ func isReleaseFailed(current, desired ReleaseState) bool {
 		}
 
 		// Release is failed and should not be updated.
-		if current.Status == helmFailedStatus {
+		if current.Status == helmclient.StatusFailed {
 			result = true
 		}
 	}
@@ -213,7 +198,7 @@ func isReleaseFailed(current, desired ReleaseState) bool {
 }
 
 func isReleaseInTransitionState(r ReleaseState) bool {
-	return releaseTransitionStatuses[r.Status]
+	return helmclient.ReleaseTransitionStatuses[r.Status]
 }
 
 func isReleaseModified(a, b ReleaseState) bool {

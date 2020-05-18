@@ -40,6 +40,21 @@ func NewSet(config SetConfig) (*Set, error) {
 
 	var err error
 
+	var helmV2ReleaseCollector *HelmV2Release
+	{
+		c := HelmV2ReleaseConfig{
+			K8sClient: config.K8sClient.K8sClient(),
+			Logger:    config.Logger,
+
+			TillerNamespace: config.TillerNamespace,
+		}
+
+		helmV2ReleaseCollector, err = NewHelmV2Release(c)
+		if err != nil {
+			return nil, microerror.Mask(err)
+		}
+	}
+
 	var orphanConfigMapCollector *OrphanConfigMap
 	{
 		c := OrphanConfigMapConfig{
@@ -68,63 +83,13 @@ func NewSet(config SetConfig) (*Set, error) {
 		}
 	}
 
-	var tillerMaxHistoryCollector *TillerMaxHistory
-	{
-		c := TillerMaxHistoryConfig{
-			G8sClient: config.K8sClient.G8sClient(),
-			K8sClient: config.K8sClient.K8sClient(),
-			Logger:    config.Logger,
-
-			TillerNamespace: config.TillerNamespace,
-		}
-
-		tillerMaxHistoryCollector, err = NewTillerMaxHistory(c)
-		if err != nil {
-			return nil, microerror.Mask(err)
-		}
-	}
-
-	var tillerReachableCollector *TillerReachable
-	{
-		c := TillerReachableConfig{
-			G8sClient:  config.K8sClient.G8sClient(),
-			HelmClient: config.HelmClient,
-			Logger:     config.Logger,
-
-			TillerNamespace: config.TillerNamespace,
-		}
-
-		tillerReachableCollector, err = NewTillerReachable(c)
-		if err != nil {
-			return nil, microerror.Mask(err)
-		}
-	}
-
-	var tillerRunningPodsCollector *TillerRunningPods
-	{
-		c := TillerRunningPodsConfig{
-			G8sClient:  config.K8sClient.G8sClient(),
-			HelmClient: config.HelmClient,
-			Logger:     config.Logger,
-
-			TillerNamespace: config.TillerNamespace,
-		}
-
-		tillerRunningPodsCollector, err = NewTillerRunningPods(c)
-		if err != nil {
-			return nil, microerror.Mask(err)
-		}
-	}
-
 	var collectorSet *collector.Set
 	{
 		c := collector.SetConfig{
 			Collectors: []collector.Interface{
+				helmV2ReleaseCollector,
 				orphanConfigMapCollector,
 				orphanSecretCollector,
-				tillerMaxHistoryCollector,
-				tillerReachableCollector,
-				tillerRunningPodsCollector,
 			},
 			Logger: config.Logger,
 		}

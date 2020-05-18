@@ -1,4 +1,4 @@
-package tiller
+package tillermigration
 
 import (
 	"github.com/giantswarm/microerror"

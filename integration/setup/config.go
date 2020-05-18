@@ -6,15 +6,15 @@ import (
 	"github.com/giantswarm/k8sclient"
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/micrologger"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"github.com/spf13/afero"
 
 	"github.com/giantswarm/chart-operator/integration/release"
 )
 
 type Config struct {
-	HelmClient *helmclient.Client
+	HelmClient helmclient.Interface
 	K8s        *k8sclient.Setup
-	K8sClients *k8sclient.Clients
+	K8sClients k8sclient.Interface
 	Logger     micrologger.Logger
 	Release    *release.Release
 }
@@ -59,14 +59,14 @@ func NewConfig() (Config, error) {
 		}
 	}
 
+	fs := afero.NewOsFs()
+
 	var helmClient *helmclient.Client
 	{
 		c := helmclient.Config{
-			Logger:               logger,
-			K8sClient:            cpK8sClients.K8sClient(),
-			RestConfig:           cpK8sClients.RESTConfig(),
-			TillerNamespace:      metav1.NamespaceSystem,
-			TillerUpgradeEnabled: true,
+			Fs:        fs,
+			K8sClient: cpK8sClients,
+			Logger:    logger,
 		}
 		helmClient, err = helmclient.New(c)
 		if err != nil {

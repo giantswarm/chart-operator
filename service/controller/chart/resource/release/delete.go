@@ -9,10 +9,16 @@ import (
 	"github.com/giantswarm/operatorkit/controller/context/finalizerskeptcontext"
 	"github.com/giantswarm/operatorkit/controller/context/resourcecanceledcontext"
 	"github.com/giantswarm/operatorkit/resource/crud"
-	"k8s.io/helm/pkg/helm"
+
+	"github.com/giantswarm/chart-operator/service/controller/chart/key"
 )
 
 func (r *Resource) ApplyDeleteChange(ctx context.Context, obj, deleteChange interface{}) error {
+	cr, err := key.ToCustomResource(obj)
+	if err != nil {
+		return microerror.Mask(err)
+	}
+
 	releaseState, err := toReleaseState(deleteChange)
 	if err != nil {
 		return microerror.Mask(err)
@@ -21,7 +27,7 @@ func (r *Resource) ApplyDeleteChange(ctx context.Context, obj, deleteChange inte
 	if releaseState.Name != "" {
 		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("deleting release %#q", releaseState.Name))
 
-		err = r.helmClient.DeleteRelease(ctx, releaseState.Name, helm.DeletePurge(true))
+		err = r.helmClient.DeleteRelease(ctx, key.Namespace(cr), releaseState.Name)
 		if helmclient.IsReleaseNotFound(err) {
 			r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("release %#q already deleted", releaseState.Name))
 			return nil
@@ -29,7 +35,7 @@ func (r *Resource) ApplyDeleteChange(ctx context.Context, obj, deleteChange inte
 			return microerror.Mask(err)
 		}
 
-		rel, err := r.helmClient.GetReleaseContent(ctx, releaseState.Name)
+		rel, err := r.helmClient.GetReleaseContent(ctx, key.Namespace(cr), releaseState.Name)
 		if rel != nil {
 			// Release still exists. We cancel the resource and keep the finalizer.
 			// We will retry the delete in the next reconciliation loop.
