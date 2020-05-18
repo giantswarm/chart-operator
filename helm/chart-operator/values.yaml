@@ -1,5 +1,6 @@
 clusterDNSIP: 172.31.0.10
 
+e2e: false
 cnr:
   address: https://quay.io
 
