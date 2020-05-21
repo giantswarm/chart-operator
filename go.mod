@@ -6,7 +6,7 @@ require (
 	github.com/giantswarm/apiextensions v0.3.8
 	github.com/giantswarm/appcatalog v0.2.3
 	github.com/giantswarm/backoff v0.2.0
-	github.com/giantswarm/e2esetup v0.1.0
+	github.com/giantswarm/e2esetup v0.3.0
 	github.com/giantswarm/exporterkit v0.2.0
 	github.com/giantswarm/helmclient v1.0.0
 	github.com/giantswarm/k8sclient v0.2.0
