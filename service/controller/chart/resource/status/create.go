@@ -3,6 +3,7 @@ package status
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/giantswarm/apiextensions/pkg/apis/application/v1alpha1"
 	"github.com/giantswarm/helmclient"
@@ -11,6 +12,10 @@ import (
 
 	"github.com/giantswarm/chart-operator/service/controller/chart/controllercontext"
 	"github.com/giantswarm/chart-operator/service/controller/chart/key"
+)
+
+var (
+	blankDate = time.Date(0, time.January, 1, 0, 0, 0, 0, time.UTC)
 )
 
 func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
@@ -41,7 +46,7 @@ func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
 			status := v1alpha1.ChartStatus{
 				Reason: cc.Status.Reason,
 				Release: v1alpha1.ChartStatusRelease{
-					LastDeployed: metav1.Time{},
+					LastDeployed: metav1.Time{Time: blankDate},
 					Status:       cc.Status.Release.Status,
 				},
 			}
