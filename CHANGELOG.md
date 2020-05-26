@@ -7,6 +7,13 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+## [v1.0.1] 2020-05-26
+
+### Changed 
+
+- Using helmclient v1.0.1 for security fix.
+- Cancel the release resource when the manifest validation failed.
+
 ## [v1.0.0] 2020-05-18
 
 ### Changed
@@ -82,7 +89,8 @@ We check progress in the next reconciliation loop. ([#362](https://github.com/gi
 - Separate podsecuritypolicy.
 - Security context in deployment spec with non-root user.
 
-[Unreleased]: https://github.com/giantswarm/chart-operator/compare/v1.0.0..HEAD
+[Unreleased]: https://github.com/giantswarm/chart-operator/compare/v1.0.1..HEAD
+[v1.0.1]: https://github.com/giantswarm/chart-operator/compare/v1.0.0..v1.0.1
 [v1.0.0]: https://github.com/giantswarm/chart-operator/compare/v0.13.0..v1.0.0
 [v0.13.0]: https://github.com/giantswarm/chart-operator/compare/v0.12.4..v0.13.0
 [v0.12.4]: https://github.com/giantswarm/chart-operator/compare/v0.12.3..v0.12.4
