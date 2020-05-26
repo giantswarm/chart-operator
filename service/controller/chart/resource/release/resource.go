@@ -28,6 +28,10 @@ const (
 	// releaseNotInstalledStatus is set in the CR status when there is no Helm
 	// Release to check.
 	releaseNotInstalledStatus = "not-installed"
+
+	// validationFailedStatus is set in the CR status when it failed to pass
+	// OpenAPI validation on release manifest.
+	validationFailedStatus = "validation-failed"
 )
 
 // Config represents the configuration used to create a new release resource.
