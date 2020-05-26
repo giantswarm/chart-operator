@@ -111,7 +111,16 @@ func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange inte
 			return nil
 		}
 
-		if err != nil {
+		if helmclient.IsInvalidManifest(err) {
+			reason := err.Error()
+			reason = fmt.Sprintf("helm validation error: (%s)", reason)
+			r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("helm release %#q failed, %s", releaseState.Name, reason))
+			addStatusToContext(cc, reason, validationFailedStatus)
+
+			r.logger.LogCtx(ctx, "level", "debug", "message", "canceling resource")
+			resourcecanceledcontext.SetCanceled(ctx)
+			return nil
+		} else if err != nil {
 			r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("helm release %#q failed", releaseState.Name), "stack", microerror.JSON(err))
 
 			releaseContent, err := r.helmClient.GetReleaseContent(ctx, key.Namespace(cr), releaseState.Name)
