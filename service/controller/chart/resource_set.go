@@ -82,6 +82,9 @@ func newChartResourceSet(config chartResourceSetConfig) (*controller.ResourceSet
 			HelmClient: config.HelmClient,
 			K8sClient:  config.K8sClient,
 			Logger:     config.Logger,
+
+			// Settings
+			TillerNamespace: config.TillerNamespace,
 		}
 
 		ops, err := release.New(c)
