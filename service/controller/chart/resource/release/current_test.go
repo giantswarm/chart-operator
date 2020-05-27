@@ -145,6 +145,8 @@ func Test_CurrentState(t *testing.T) {
 				HelmClient: helmClient,
 				K8sClient:  k8sfake.NewSimpleClientset(),
 				Logger:     microloggertest.New(),
+
+				TillerNamespace: "giantswarm",
 			}
 
 			r, err := New(c)
