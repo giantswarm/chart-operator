@@ -3,7 +3,7 @@ module github.com/giantswarm/chart-operator
 go 1.13
 
 require (
-	github.com/giantswarm/apiextensions v0.2.3
+	github.com/giantswarm/apiextensions v0.4.3
 	github.com/giantswarm/appcatalog v0.1.11
 	github.com/giantswarm/backoff v0.2.0
 	github.com/giantswarm/e2esetup v0.2.0
@@ -23,7 +23,6 @@ require (
 	gopkg.in/yaml.v2 v2.2.8
 	k8s.io/api v0.17.2
 	k8s.io/apimachinery v0.17.2
-	k8s.io/apiserver v0.16.6 // indirect
 	k8s.io/client-go v0.17.2
 	k8s.io/helm v2.16.4+incompatible
 )
