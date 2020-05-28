@@ -36,7 +36,7 @@ func (r *Resource) GetCurrentState(ctx context.Context, obj interface{}) (interf
 	}
 
 	if hasConfigmap {
-		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("release %#q has been not migrated from helm 2", key.ReleaseName(cr)))
+		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("release %#q has not been migrated from helm 2", key.ReleaseName(cr)))
 		r.logger.LogCtx(ctx, "level", "debug", "message", "canceling resource")
 		resourcecanceledcontext.SetCanceled(ctx)
 		return nil, nil
