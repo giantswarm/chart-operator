@@ -108,7 +108,7 @@ func (r *Resource) findHelmV2ConfigMaps(ctx context.Context, releaseName string)
 		LabelSelector: fmt.Sprintf("%s=%s,%s=%s", "NAME", releaseName, "OWNER", "TILLER"),
 	}
 
-	// Check whether it keep helm2 release configMaps
+	// Check whether there are still helm2 release configmaps.
 	cms, err := r.k8sClient.CoreV1().ConfigMaps(r.tillerNamespace).List(lo)
 	if err != nil {
 		return false, microerror.Mask(err)
