@@ -30,6 +30,18 @@ func (r *Resource) GetCurrentState(ctx context.Context, obj interface{}) (interf
 		return nil, nil
 	}
 
+	hasConfigmap, err := r.findHelmV2ConfigMaps(ctx, key.ReleaseName(cr))
+	if err != nil {
+		return nil, microerror.Mask(err)
+	}
+
+	if hasConfigmap {
+		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("release %#q has not been migrated from helm 2", key.ReleaseName(cr)))
+		r.logger.LogCtx(ctx, "level", "debug", "message", "canceling resource")
+		resourcecanceledcontext.SetCanceled(ctx)
+		return nil, nil
+	}
+
 	releaseName := key.ReleaseName(cr)
 	releaseContent, err := r.helmClient.GetReleaseContent(ctx, key.Namespace(cr), releaseName)
 	if helmclient.IsReleaseNotFound(err) {

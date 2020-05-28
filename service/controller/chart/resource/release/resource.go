@@ -42,6 +42,9 @@ type Config struct {
 	HelmClient helmclient.Interface
 	K8sClient  kubernetes.Interface
 	Logger     micrologger.Logger
+
+	// Settings.
+	TillerNamespace string
 }
 
 // Resource implements the chart resource.
@@ -52,6 +55,9 @@ type Resource struct {
 	helmClient helmclient.Interface
 	k8sClient  kubernetes.Interface
 	logger     micrologger.Logger
+
+	// Settings.
+	tillerNamespace string
 }
 
 // New creates a new configured chart resource.
@@ -73,6 +79,11 @@ func New(config Config) (*Resource, error) {
 		return nil, microerror.Maskf(invalidConfigError, "%T.Logger must not be empty", config)
 	}
 
+	// Settings.
+	if config.TillerNamespace == "" {
+		return nil, microerror.Maskf(invalidConfigError, "%T.TillerNamespace must not be empty", config)
+	}
+
 	r := &Resource{
 		// Dependencies.
 		fs:         config.Fs,
@@ -80,6 +91,9 @@ func New(config Config) (*Resource, error) {
 		helmClient: config.HelmClient,
 		k8sClient:  config.K8sClient,
 		logger:     config.Logger,
+
+		// Settings.
+		tillerNamespace: config.TillerNamespace,
 	}
 
 	return r, nil
@@ -87,6 +101,20 @@ func New(config Config) (*Resource, error) {
 
 func (r *Resource) Name() string {
 	return Name
+}
+
+func (r *Resource) findHelmV2ConfigMaps(ctx context.Context, releaseName string) (bool, error) {
+	lo := metav1.ListOptions{
+		LabelSelector: fmt.Sprintf("%s=%s,%s=%s", "NAME", releaseName, "OWNER", "TILLER"),
+	}
+
+	// Check whether there are still helm2 release configmaps.
+	cms, err := r.k8sClient.CoreV1().ConfigMaps(r.tillerNamespace).List(lo)
+	if err != nil {
+		return false, microerror.Mask(err)
+	}
+
+	return len(cms.Items) > 0, nil
 }
 
 // patchAnnotations updates the chart CR annotations if they have changed.

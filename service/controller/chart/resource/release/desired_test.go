@@ -328,6 +328,8 @@ func Test_DesiredState(t *testing.T) {
 				HelmClient: helmclienttest.New(helmclienttest.Config{}),
 				K8sClient:  k8sfake.NewSimpleClientset(objs...),
 				Logger:     microloggertest.New(),
+
+				TillerNamespace: "giantswarm",
 			}
 			r, err := New(c)
 			if err != nil {
