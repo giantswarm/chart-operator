@@ -68,6 +68,7 @@ func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
 			// to the controller context. We do this if something goes wrong
 			// outside of Helm such as pulling the chart tarball. So we ensure
 			// both messages are included in the CR status.
+			status = cc.Status.Release.Status
 			reason = fmt.Sprintf("Helm reason: %s Operator reason: %s", releaseContent.Description, cc.Status.Reason)
 		} else {
 			status = releaseContent.Status
