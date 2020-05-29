@@ -25,6 +25,10 @@ const (
 	// Name is the identifier of the resource.
 	Name = "release"
 
+	// invalidManifestStatus is set in the CR status when it failed to create
+	// manifest objects with helm resources.
+	invalidManifestStatus = "invalid-manifest"
+
 	// releaseNotInstalledStatus is set in the CR status when there is no Helm
 	// Release to check.
 	releaseNotInstalledStatus = "not-installed"

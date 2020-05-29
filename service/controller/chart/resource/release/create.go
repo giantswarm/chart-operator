@@ -103,12 +103,20 @@ func (r *Resource) ApplyCreateChange(ctx context.Context, obj, createChange inte
 			r.logger.LogCtx(ctx, "level", "debug", "message", "canceling resource")
 			return nil
 		}
-
-		if helmclient.IsInvalidManifest(err) {
+		if helmclient.IsValidationFailedError(err) {
 			reason := err.Error()
 			reason = fmt.Sprintf("helm validation error: (%s)", reason)
 			r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("helm release %#q failed, %s", releaseState.Name, reason))
 			addStatusToContext(cc, reason, validationFailedStatus)
+
+			r.logger.LogCtx(ctx, "level", "debug", "message", "canceling resource")
+			resourcecanceledcontext.SetCanceled(ctx)
+			return nil
+		} else if helmclient.IsInvalidManifest(err) {
+			reason := err.Error()
+			reason = fmt.Sprintf("Invalid manifest error: (%s)", reason)
+			r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("helm release %#q failed, %s", releaseState.Name, reason))
+			addStatusToContext(cc, reason, invalidManifestStatus)
 
 			r.logger.LogCtx(ctx, "level", "debug", "message", "canceling resource")
 			resourcecanceledcontext.SetCanceled(ctx)
