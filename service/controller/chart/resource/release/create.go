@@ -114,7 +114,7 @@ func (r *Resource) ApplyCreateChange(ctx context.Context, obj, createChange inte
 			return nil
 		} else if helmclient.IsInvalidManifest(err) {
 			reason := err.Error()
-			reason = fmt.Sprintf("Invalid manifest error: (%s)", reason)
+			reason = fmt.Sprintf("invalid manifest error: (%s)", reason)
 			r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("helm release %#q failed, %s", releaseState.Name, reason))
 			addStatusToContext(cc, reason, invalidManifestStatus)
 
