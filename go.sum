@@ -227,6 +227,8 @@ github.com/ghodss/yaml v1.0.1-0.20190212211648-25d852aebe32/go.mod h1:GIjDIg/heH
 github.com/giantswarm/apiextensions v0.2.0/go.mod h1:iw66G0WDcrQl9mi2m/6mov2fWTD6ZiT2+FC62b2Mczw=
 github.com/giantswarm/apiextensions v0.4.4 h1:yqxNdcsA0DT0+aUeeAN6R2RrX4LTsBdQ6k4S4AdgBy4=
 github.com/giantswarm/apiextensions v0.4.4/go.mod h1:iMZLjyvqRIVPTAQGbjwTSqifwrGB41a4mW8MwC45mYI=
+github.com/giantswarm/apiextensions v0.4.6 h1:nWBBY1BOHSSJe3+Mfvwz2S/cz4PJF4yIipK2xN/V/q8=
+github.com/giantswarm/apiextensions v0.4.6/go.mod h1:iMZLjyvqRIVPTAQGbjwTSqifwrGB41a4mW8MwC45mYI=
 github.com/giantswarm/appcatalog v0.2.3 h1:3zU0bLBdULmfVZ9Lnu4CUUMtpjc4uD5WGwV3ntqSy/I=
 github.com/giantswarm/appcatalog v0.2.3/go.mod h1:jxC7n+2+TP/ub8kmbIZQ+qcVM55LixRhPP+KznTbKnQ=
 github.com/giantswarm/apprclient v0.2.0/go.mod h1:iAGOReCnEud0xxwhDS/lI50JSUN4zRCB3vlPRqH3IVc=
