@@ -51,7 +51,9 @@ func (r *Resource) GetDesiredState(ctx context.Context, obj interface{}) (interf
 
 		// MD5 is only used for comparison but we need to turn off gosec or
 		// linting errors will occur.
-		valuesMD5Checksum = fmt.Sprintf("%x", md5.Sum(valuesYAML)) // #nosec
+		h := md5.New()
+		h.Write([]byte(fmt.Sprintf("%v", values)))
+		valuesMD5Checksum = fmt.Sprintf("%x", h.Sum(nil))
 	}
 
 	releaseState := &ReleaseState{
