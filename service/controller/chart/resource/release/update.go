@@ -32,8 +32,9 @@ func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange inte
 	upgradeForce := key.HasForceUpgradeAnnotation(cr)
 
 	if releaseState.Name != "" {
-		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("updating release %#q with force == %t", releaseState.Name, upgradeForce))
-
+		if upgradeForce {
+			r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("release %#q is disabled from helm upgrade-force  ", releaseState.Name))
+		}
 		// We set the checksum annotation so the update state calculation
 		// is accurate when we check in the next reconciliation loop.
 		err = r.patchAnnotations(ctx, cr, releaseState)
@@ -88,7 +89,7 @@ func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange inte
 		// We will check the progress in the next reconciliation loop.
 		go func() {
 			opts := helmclient.UpdateOptions{
-				Force: upgradeForce,
+				Force: false,
 			}
 
 			// We need to pass the ValueOverrides option to make the update process
