@@ -7,6 +7,13 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+## [v1.0.2] 2020-06-04
+
+### Changed
+
+- Disabled force-upgrade from helmclient. 
+- Canceling the release resource when migration is done yet.
+
 ## [v1.0.1] 2020-05-26
 
 ### Changed 
@@ -89,7 +96,8 @@ We check progress in the next reconciliation loop. ([#362](https://github.com/gi
 - Separate podsecuritypolicy.
 - Security context in deployment spec with non-root user.
 
-[Unreleased]: https://github.com/giantswarm/chart-operator/compare/v1.0.1..HEAD
+[Unreleased]: https://github.com/giantswarm/chart-operator/compare/v1.0.2..HEAD
+[v1.0.2]: https://github.com/giantswarm/chart-operator/compare/v1.0.1..v1.0.2
 [v1.0.1]: https://github.com/giantswarm/chart-operator/compare/v1.0.0..v1.0.1
 [v1.0.0]: https://github.com/giantswarm/chart-operator/compare/v0.13.0..v1.0.0
 [v0.13.0]: https://github.com/giantswarm/chart-operator/compare/v0.12.4..v0.13.0
