@@ -69,18 +69,18 @@ workflows:
             tags:
               only: /^v.*/
 
-#      - architect/push-to-app-catalog:
-#          context: architect
-#          name: push-chart-operator-to-default-app-catalog
-#          app_catalog: "default-catalog"
-#          app_catalog_test: "default-test-catalog"
-#          chart: "chart-operator"
-#          requires:
-#            - push-chart-operator-to-quay
-#            - push-chart-operator-to-aliyun
-#          filters:
-#            tags:
-#              only: /^v.*/
+      - architect/push-to-app-catalog:
+          context: architect
+          name: push-chart-operator-to-default-app-catalog
+          app_catalog: "default-catalog"
+          app_catalog_test: "default-test-catalog"
+          chart: "chart-operator"
+          requires:
+            - push-chart-operator-to-quay
+            - push-chart-operator-to-aliyun
+          filters:
+            tags:
+              only: /^v.*/
 #
 #      - architect/push-to-app-collection:
 #          context: architect
@@ -131,7 +131,7 @@ workflows:
           requires:
           - build
           - push-chart-operator-to-default-app-catalog
-      
+
       - architect/integration-test:
           context: architect
           name: migration-integration-test
