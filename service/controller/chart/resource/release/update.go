@@ -37,7 +37,7 @@ func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange inte
 		//	See https://github.com/giantswarm/giantswarm/issues/11376
 		//
 		if upgradeForce {
-			r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("disabling helm upgrade-force on release %#q", releaseState.Name))
+			r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("helm upgrade force is disabled for %#q", releaseState.Name))
 		}
 		// We set the checksum annotation so the update state calculation
 		// is accurate when we check in the next reconciliation loop.
