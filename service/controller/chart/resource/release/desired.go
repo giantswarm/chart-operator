@@ -10,7 +10,6 @@ import (
 	"github.com/giantswarm/microerror"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"sigs.k8s.io/yaml"
 
 	"github.com/giantswarm/chart-operator/service/controller/chart/key"
 )
@@ -37,21 +36,18 @@ func (r *Resource) GetDesiredState(ctx context.Context, obj interface{}) (interf
 		return nil, microerror.Mask(err)
 	}
 
-	var valuesYAML []byte
 	var valuesMD5Checksum string
 
 	if len(values) > 0 {
-		// We serialize the values to YAML so we can generate the MD5 checksum.
-		// We use this for comparison because Helm may modify the values we get
-		// back from the Helm client.
-		valuesYAML, err = yaml.Marshal(values)
+		// MD5 is only used for comparison but we need to turn off gosec or
+		// linting errors will occur.
+		h := md5.New() // #nosec
+		_, err := h.Write([]byte(fmt.Sprintf("%v", values)))
 		if err != nil {
 			return nil, microerror.Mask(err)
 		}
 
-		// MD5 is only used for comparison but we need to turn off gosec or
-		// linting errors will occur.
-		valuesMD5Checksum = fmt.Sprintf("%x", md5.Sum(valuesYAML)) // #nosec
+		valuesMD5Checksum = fmt.Sprintf("%x", h.Sum(nil))
 	}
 
 	releaseState := &ReleaseState{
