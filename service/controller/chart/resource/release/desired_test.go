@@ -99,7 +99,7 @@ func Test_DesiredState(t *testing.T) {
 			expectedState: ReleaseState{
 				Name:              "chart-operator-chart",
 				Status:            helmDeployedStatus,
-				ValuesMD5Checksum: "d27213d2ae2b24e8d1be0806469c564c",
+				ValuesMD5Checksum: "6e5ae9a10fd227006b0f938c51cb300b",
 				ValuesYAML:        []byte("test: test\n"),
 				Version:           "0.1.2",
 			},
@@ -130,7 +130,7 @@ func Test_DesiredState(t *testing.T) {
 			expectedState: ReleaseState{
 				Name:              "chart-operator-chart",
 				Status:            helmDeployedStatus,
-				ValuesMD5Checksum: "dead3edde0c0c861d8bf4d83e2e4847a",
+				ValuesMD5Checksum: "4845bfb2cf922d7527886ac13599ea3b",
 				ValuesYAML:        []byte("provider: azure\nreplicas: 2\n"),
 				Version:           "0.1.2",
 			},
@@ -183,7 +183,7 @@ func Test_DesiredState(t *testing.T) {
 			expectedState: ReleaseState{
 				Name:              "chart-operator-chart",
 				Status:            helmDeployedStatus,
-				ValuesMD5Checksum: "d27213d2ae2b24e8d1be0806469c564c",
+				ValuesMD5Checksum: "6e5ae9a10fd227006b0f938c51cb300b",
 				ValuesYAML:        []byte("test: test\n"),
 				Version:           "0.1.2",
 			},
@@ -215,7 +215,7 @@ func Test_DesiredState(t *testing.T) {
 			expectedState: ReleaseState{
 				Name:              "chart-operator-chart",
 				Status:            helmDeployedStatus,
-				ValuesMD5Checksum: "8ccfa2ed7f5cb9a125b5f53254c296a8",
+				ValuesMD5Checksum: "2187a8fce91c3765a74d462062af7526",
 				ValuesYAML:        []byte("secretnumber: 2\nsecretpassword: admin\n"),
 				Version:           "0.1.2",
 			},
@@ -283,7 +283,7 @@ func Test_DesiredState(t *testing.T) {
 			expectedState: ReleaseState{
 				Name:              "chart-operator-chart",
 				Status:            helmDeployedStatus,
-				ValuesMD5Checksum: "80c4411b068b4b415a94b2b775797891",
+				ValuesMD5Checksum: "40f61add2413651115ef94f85d8335cf",
 				ValuesYAML:        []byte("replicas: 2\nsecretnumber: 2\nusername: admin\n"),
 				Version:           "0.1.2",
 			},
