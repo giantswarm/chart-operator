@@ -22,6 +22,7 @@ metadata:
 rules:
   - apiGroups:
       - extensions
+      - policy
     resources:
       - podsecuritypolicies
     resourceNames:
