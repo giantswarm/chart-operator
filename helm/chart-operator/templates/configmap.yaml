@@ -21,6 +21,7 @@ data:
           {{ else }}
           clientTimeout: '{{ .Values.helm.http.clientTimeout }}'
           {{ end }}
+        tillerImageName:  '{{ .Values.tiller.image }}'
         tillerNamespace:  '{{ .Values.tiller.namespace }}'
       image:
         registry: '{{ .Values.image.registry }}'
