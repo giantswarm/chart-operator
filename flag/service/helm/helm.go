@@ -6,5 +6,6 @@ import (
 
 type Helm struct {
 	HTTP            http.HTTP
+	TillerImageName string
 	TillerNamespace string
 }
