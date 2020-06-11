@@ -1,6 +1,6 @@
 module github.com/giantswarm/chart-operator
 
-go 1.13
+go 1.14
 
 require (
 	github.com/giantswarm/apiextensions v0.2.3
