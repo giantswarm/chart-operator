@@ -16,11 +16,11 @@ data:
     service:
       helm:
         http:
-          {{ if (.Values.Installation) }}
+          {{- if (.Values.Installation) }}
           clientTimeout: '{{ .Values.Installation.V1.Helm.HTTP.ClientTimeout }}'
-          {{ else }}
+          {{- else }}
           clientTimeout: '{{ .Values.helm.http.clientTimeout }}'
-          {{ end }}
+          {{- end }}
         tillerImageName:  '{{ .Values.tiller.image }}'
         tillerNamespace:  '{{ .Values.tiller.namespace }}'
       image:
