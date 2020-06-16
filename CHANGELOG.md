@@ -7,6 +7,12 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+## [v1.0.3] 2020-06-16
+
+### Changed
+
+- Fixed PodSecurityPolicy compatibility problem.
+
 ## [v1.0.2] 2020-06-04
 
 ### Changed
@@ -96,7 +102,8 @@ We check progress in the next reconciliation loop. ([#362](https://github.com/gi
 - Separate podsecuritypolicy.
 - Security context in deployment spec with non-root user.
 
-[Unreleased]: https://github.com/giantswarm/chart-operator/compare/v1.0.2..HEAD
+[Unreleased]: https://github.com/giantswarm/chart-operator/compare/v1.0.3..HEAD
+[v1.0.3]: https://github.com/giantswarm/chart-operator/compare/v1.0.2..v1.0.3
 [v1.0.2]: https://github.com/giantswarm/chart-operator/compare/v1.0.1..v1.0.2
 [v1.0.1]: https://github.com/giantswarm/chart-operator/compare/v1.0.0..v1.0.1
 [v1.0.0]: https://github.com/giantswarm/chart-operator/compare/v0.13.0..v1.0.0
