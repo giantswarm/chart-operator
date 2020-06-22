@@ -17,7 +17,7 @@ import (
 
 var (
 	orphanSecretDesc *prometheus.Desc = prometheus.NewDesc(
-		prometheus.BuildFQName(Namespace, "secret", "orphan"),
+		prometheus.BuildFQName(namespace, "secret", "orphan"),
 		"Secrets without a chart CR.",
 		[]string{},
 		nil,

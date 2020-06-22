@@ -16,7 +16,7 @@ import (
 
 var (
 	namespaceInconsistency = prometheus.NewDesc(
-		prometheus.BuildFQName(Namespace, "", "namespace_inconsistency"),
+		prometheus.BuildFQName(namespace, "", "namespace_inconsistency"),
 		"namespace is consistent with chart CR spec.",
 		[]string{
 			labelChart,
@@ -63,8 +63,6 @@ func NewNamespaceInconsistency(config NamespaceInconsistencyConfig) (*NamespaceI
 }
 
 func (n *NamespaceInconsistency) Collect(ch chan<- prometheus.Metric) error {
-	var value float64
-
 	ctx := context.Background()
 
 	charts, err := n.g8sClient.ApplicationV1alpha1().Charts("").List(metav1.ListOptions{})
@@ -86,9 +84,9 @@ func (n *NamespaceInconsistency) Collect(ch chan<- prometheus.Metric) error {
 		ch <- prometheus.MustNewConstMetric(
 			namespaceInconsistency,
 			prometheus.GaugeValue,
-			value,
+			gaugeValue,
 			content.Name,
-			chart.Spec.Namespace,
+			key.Namespace(chart),
 			content.Namespace,
 		)
 

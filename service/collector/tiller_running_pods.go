@@ -14,7 +14,7 @@ import (
 
 var (
 	tillerRunningPodsDesc *prometheus.Desc = prometheus.NewDesc(
-		prometheus.BuildFQName(Namespace, "", "tiller_running_pods"),
+		prometheus.BuildFQName(namespace, "", "tiller_running_pods"),
 		"Tiller running pods.",
 		[]string{
 			labelNamespace,

@@ -17,7 +17,7 @@ import (
 
 var (
 	tillerConfiguredDesc *prometheus.Desc = prometheus.NewDesc(
-		prometheus.BuildFQName(Namespace, "", "tiller_max_history"),
+		prometheus.BuildFQName(namespace, "", "tiller_max_history"),
 		"Tiller setting for number of revisions to save per release.",
 		[]string{
 			labelNamespace,

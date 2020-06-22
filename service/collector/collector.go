@@ -1,7 +1,8 @@
 package collector
 
 const (
-	Namespace = "chart_operator"
+	gaugeValue float64 = 1
+	namespace          = "chart_operator"
 )
 
 const (

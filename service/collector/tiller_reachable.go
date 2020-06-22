@@ -14,7 +14,7 @@ import (
 
 var (
 	tillerReachableDesc *prometheus.Desc = prometheus.NewDesc(
-		prometheus.BuildFQName(Namespace, "", "tiller_reachable"),
+		prometheus.BuildFQName(namespace, "", "tiller_reachable"),
 		"Tiller is reachable from chart-operator.",
 		[]string{
 			labelNamespace,
