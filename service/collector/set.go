@@ -42,13 +42,13 @@ func NewSet(config SetConfig) (*Set, error) {
 
 	var namespaceConsistency *NamespaceConsistency
 	{
-		c := NamespaceConsistencyConfig{
+		c := NamespaceInconsistencyConfig{
 			G8sClient:  config.K8sClient.G8sClient(),
 			HelmClient: config.HelmClient,
 			Logger:     config.Logger,
 		}
 
-		namespaceConsistency, err = NewNamespaceConsistency(c)
+		namespaceConsistency, err = NewNamespaceInconsistency(c)
 		if err != nil {
 			return nil, microerror.Mask(err)
 		}

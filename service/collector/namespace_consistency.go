@@ -10,11 +10,13 @@ import (
 	"github.com/giantswarm/micrologger"
 	"github.com/prometheus/client_golang/prometheus"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+
+	"github.com/giantswarm/chart-operator/service/controller/chart/key"
 )
 
 var (
-	namespaceConsistency = prometheus.NewDesc(
-		prometheus.BuildFQName(Namespace, "", "namespace_consistency"),
+	namespaceInconsistency = prometheus.NewDesc(
+		prometheus.BuildFQName(Namespace, "", "namespace_inconsistency"),
 		"namespace is consistent with chart CR spec.",
 		[]string{
 			labelChart,
@@ -25,22 +27,22 @@ var (
 	)
 )
 
-// NamespaceConsistencyConfig is this collector's configuration struct.
-type NamespaceConsistencyConfig struct {
+// NamespaceInconsistencyConfig is this collector's configuration struct.
+type NamespaceInconsistencyConfig struct {
 	G8sClient  versioned.Interface
 	HelmClient helmclient.Interface
 	Logger     micrologger.Logger
 }
 
-// NamespaceConsistency is the main struct for this collector.
-type NamespaceConsistency struct {
+// NamespaceInconsistency is the main struct for this collector.
+type NamespaceInconsistency struct {
 	g8sClient  versioned.Interface
 	helmClient helmclient.Interface
 	logger     micrologger.Logger
 }
 
-// NewNamespaceConsistency creates a new NamespaceConsistency metrics collector.
-func NewNamespaceConsistency(config NamespaceConsistencyConfig) (*NamespaceConsistency, error) {
+// NewNamespaceInconsistency creates a new NamespaceInconsistency metrics collector.
+func NewNamespaceInconsistency(config NamespaceInconsistencyConfig) (*NamespaceInconsistency, error) {
 	if config.G8sClient == nil {
 		return nil, microerror.Maskf(invalidConfigError, "%T.G8sClient must not be empty", config)
 	}
@@ -51,7 +53,7 @@ func NewNamespaceConsistency(config NamespaceConsistencyConfig) (*NamespaceConsi
 		return nil, microerror.Maskf(invalidConfigError, "%T.Logger must not be empty", config)
 	}
 
-	t := &NamespaceConsistency{
+	t := &NamespaceInconsistency{
 		g8sClient:  config.G8sClient,
 		helmClient: config.HelmClient,
 		logger:     config.Logger,
@@ -60,7 +62,7 @@ func NewNamespaceConsistency(config NamespaceConsistencyConfig) (*NamespaceConsi
 	return t, nil
 }
 
-func (n *NamespaceConsistency) Collect(ch chan<- prometheus.Metric) error {
+func (n *NamespaceInconsistency) Collect(ch chan<- prometheus.Metric) error {
 	var value float64
 
 	ctx := context.Background()
@@ -77,8 +79,12 @@ func (n *NamespaceConsistency) Collect(ch chan<- prometheus.Metric) error {
 			continue
 		}
 
+		if key.Namespace(chart) == content.Namespace {
+			continue
+		}
+
 		ch <- prometheus.MustNewConstMetric(
-			namespaceConsistency,
+			namespaceInconsistency,
 			prometheus.GaugeValue,
 			value,
 			content.Name,
@@ -92,7 +98,7 @@ func (n *NamespaceConsistency) Collect(ch chan<- prometheus.Metric) error {
 }
 
 // Describe emits the description for the metrics collected here.
-func (n *NamespaceConsistency) Describe(ch chan<- *prometheus.Desc) error {
-	ch <- namespaceConsistency
+func (n *NamespaceInconsistency) Describe(ch chan<- *prometheus.Desc) error {
+	ch <- namespaceInconsistency
 	return nil
 }
