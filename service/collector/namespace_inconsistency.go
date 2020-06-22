@@ -70,6 +70,7 @@ func (n *NamespaceInconsistency) Collect(ch chan<- prometheus.Metric) error {
 		return microerror.Mask(err)
 	}
 
+	var value float64
 	for _, chart := range charts.Items {
 		content, err := n.helmClient.GetReleaseContent(ctx, chart.Spec.Name)
 		if err != nil {
@@ -77,14 +78,14 @@ func (n *NamespaceInconsistency) Collect(ch chan<- prometheus.Metric) error {
 			continue
 		}
 
-		if key.Namespace(chart) == content.Namespace {
-			continue
+		if key.Namespace(chart) != content.Namespace {
+			value = 1
 		}
 
 		ch <- prometheus.MustNewConstMetric(
 			namespaceInconsistency,
 			prometheus.GaugeValue,
-			gaugeValue,
+			value,
 			content.Name,
 			key.Namespace(chart),
 			content.Namespace,
