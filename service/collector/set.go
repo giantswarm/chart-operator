@@ -40,7 +40,7 @@ func NewSet(config SetConfig) (*Set, error) {
 
 	var err error
 
-	var namespaceConsistency *NamespaceConsistency
+	var namespaceConsistency *NamespaceInconsistency
 	{
 		c := NamespaceInconsistencyConfig{
 			G8sClient:  config.K8sClient.G8sClient(),
