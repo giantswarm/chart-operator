@@ -40,6 +40,20 @@ func NewSet(config SetConfig) (*Set, error) {
 
 	var err error
 
+	var namespaceConsistency *NamespaceConsistency
+	{
+		c := NamespaceConsistencyConfig{
+			G8sClient:  config.K8sClient.G8sClient(),
+			HelmClient: config.HelmClient,
+			Logger:     config.Logger,
+		}
+
+		namespaceConsistency, err = NewNamespaceConsistency(c)
+		if err != nil {
+			return nil, microerror.Mask(err)
+		}
+	}
+
 	var orphanConfigMapCollector *OrphanConfigMap
 	{
 		c := OrphanConfigMapConfig{
@@ -120,6 +134,7 @@ func NewSet(config SetConfig) (*Set, error) {
 	{
 		c := collector.SetConfig{
 			Collectors: []collector.Interface{
+				namespaceConsistency,
 				orphanConfigMapCollector,
 				orphanSecretCollector,
 				tillerMaxHistoryCollector,
