@@ -40,15 +40,15 @@ func NewSet(config SetConfig) (*Set, error) {
 
 	var err error
 
-	var namespaceConsistency *NamespaceInconsistency
+	var namespaceConsistency *NamespaceMismatch
 	{
-		c := NamespaceInconsistencyConfig{
+		c := NamespaceMismatchConfig{
 			G8sClient:  config.K8sClient.G8sClient(),
 			HelmClient: config.HelmClient,
 			Logger:     config.Logger,
 		}
 
-		namespaceConsistency, err = NewNamespaceInconsistency(c)
+		namespaceConsistency, err = NewNamespaceMismatch(c)
 		if err != nil {
 			return nil, microerror.Mask(err)
 		}

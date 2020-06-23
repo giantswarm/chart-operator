@@ -15,9 +15,9 @@ import (
 )
 
 var (
-	namespaceInconsistency = prometheus.NewDesc(
-		prometheus.BuildFQName(namespace, "", "namespace_inconsistency"),
-		"namespace is consistent with chart CR spec.",
+	namespaceMismatch = prometheus.NewDesc(
+		prometheus.BuildFQName(namespace, "", "namespace_mismatch"),
+		"namespace is mismatching with chart CR spec.",
 		[]string{
 			labelChart,
 			labelNamespace,
@@ -27,22 +27,22 @@ var (
 	)
 )
 
-// NamespaceInconsistencyConfig is this collector's configuration struct.
-type NamespaceInconsistencyConfig struct {
+// NamespaceMismatchConfig is this collector's configuration struct.
+type NamespaceMismatchConfig struct {
 	G8sClient  versioned.Interface
 	HelmClient helmclient.Interface
 	Logger     micrologger.Logger
 }
 
-// NamespaceInconsistency is the main struct for this collector.
-type NamespaceInconsistency struct {
+// NamespaceMismatch is the main struct for this collector.
+type NamespaceMismatch struct {
 	g8sClient  versioned.Interface
 	helmClient helmclient.Interface
 	logger     micrologger.Logger
 }
 
-// NewNamespaceInconsistency creates a new NamespaceInconsistency metrics collector.
-func NewNamespaceInconsistency(config NamespaceInconsistencyConfig) (*NamespaceInconsistency, error) {
+// NewNamespaceMismatch creates a new NamespaceMismatch metrics collector.
+func NewNamespaceMismatch(config NamespaceMismatchConfig) (*NamespaceMismatch, error) {
 	if config.G8sClient == nil {
 		return nil, microerror.Maskf(invalidConfigError, "%T.G8sClient must not be empty", config)
 	}
@@ -53,7 +53,7 @@ func NewNamespaceInconsistency(config NamespaceInconsistencyConfig) (*NamespaceI
 		return nil, microerror.Maskf(invalidConfigError, "%T.Logger must not be empty", config)
 	}
 
-	t := &NamespaceInconsistency{
+	t := &NamespaceMismatch{
 		g8sClient:  config.G8sClient,
 		helmClient: config.HelmClient,
 		logger:     config.Logger,
@@ -62,7 +62,7 @@ func NewNamespaceInconsistency(config NamespaceInconsistencyConfig) (*NamespaceI
 	return t, nil
 }
 
-func (n *NamespaceInconsistency) Collect(ch chan<- prometheus.Metric) error {
+func (n *NamespaceMismatch) Collect(ch chan<- prometheus.Metric) error {
 	ctx := context.Background()
 
 	charts, err := n.g8sClient.ApplicationV1alpha1().Charts("").List(metav1.ListOptions{})
@@ -83,7 +83,7 @@ func (n *NamespaceInconsistency) Collect(ch chan<- prometheus.Metric) error {
 		}
 
 		ch <- prometheus.MustNewConstMetric(
-			namespaceInconsistency,
+			namespaceMismatch,
 			prometheus.GaugeValue,
 			value,
 			content.Name,
@@ -97,7 +97,7 @@ func (n *NamespaceInconsistency) Collect(ch chan<- prometheus.Metric) error {
 }
 
 // Describe emits the description for the metrics collected here.
-func (n *NamespaceInconsistency) Describe(ch chan<- *prometheus.Desc) error {
-	ch <- namespaceInconsistency
+func (n *NamespaceMismatch) Describe(ch chan<- *prometheus.Desc) error {
+	ch <- namespaceMismatch
 	return nil
 }
