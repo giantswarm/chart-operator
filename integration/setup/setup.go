@@ -16,7 +16,6 @@ import (
 	"github.com/spf13/afero"
 	"k8s.io/helm/pkg/helm"
 
-	"github.com/giantswarm/chart-operator/integration/env"
 	"github.com/giantswarm/chart-operator/integration/key"
 	"github.com/giantswarm/chart-operator/integration/templates"
 	"github.com/giantswarm/chart-operator/pkg/project"
@@ -58,24 +57,11 @@ func installResources(ctx context.Context, config Config) error {
 		}
 	}
 
-	var latestOperatorRelease string
-	{
-		config.Logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("getting latest %#q release", project.Name()))
-
-		latestOperatorRelease, err = appcatalog.GetLatestVersion(ctx, key.DefaultCatalogStorageURL(), project.Name())
-		if err != nil {
-			return microerror.Mask(err)
-		}
-
-		config.Logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("latest %#q release is %#q", project.Name(), latestOperatorRelease))
-	}
-
 	var operatorTarballPath string
 	{
 		config.Logger.LogCtx(ctx, "level", "debug", "message", "getting tarball URL")
 
-		operatorVersion := fmt.Sprintf("%s-%s", latestOperatorRelease, env.CircleSHA())
-		operatorTarballURL, err := appcatalog.NewTarballURL(key.DefaultTestCatalogStorageURL(), project.Name(), operatorVersion)
+		operatorTarballURL, err := appcatalog.GetLatestChart(ctx, key.DefaultCatalogStorageURL(), project.Name(), project.Version())
 		if err != nil {
 			return microerror.Mask(err)
 		}
