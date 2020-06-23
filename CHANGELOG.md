@@ -11,7 +11,7 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ### Changed
 
-- Metrics for the helm release which contains the different namespace.
+- Add metrics for Helm releases with a mismatched namespace.
 
 ## [v0.13.1] 2020-06-04
 
