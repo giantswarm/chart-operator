@@ -7,6 +7,18 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+## [v0.13.2] 2020-06-23
+
+### Changed
+
+- Add metrics for Helm releases with a mismatched namespace.
+
+## [v0.13.1] 2020-06-04
+
+### Changed
+
+- Calculating md5sum from `Chart` go struct.
+
 ## [v0.13.0] 2020-04-21
 
 ### Changed
@@ -76,7 +88,9 @@ We check progress in the next reconciliation loop. ([#362](https://github.com/gi
 - Separate podsecuritypolicy.
 - Security context in deployment spec with non-root user.
 
-[Unreleased]: https://github.com/giantswarm/chart-operator/compare/v0.13.0..HEAD
+[Unreleased]: https://github.com/giantswarm/chart-operator/compare/v0.13.2..HEAD
+[v0.13.2]: https://github.com/giantswarm/chart-operator/releases/tag/v0.13.2
+[v0.13.1]: https://github.com/giantswarm/chart-operator/releases/tag/v0.13.1
 [v0.13.0]: https://github.com/giantswarm/chart-operator/releases/tag/v0.13.0
 [v0.12.4]: https://github.com/giantswarm/chart-operator/releases/tag/v0.12.4
 [v0.12.3]: https://github.com/giantswarm/chart-operator/releases/tag/v0.12.3
