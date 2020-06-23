@@ -17,7 +17,7 @@ import (
 
 var (
 	orphanConfigMapDesc *prometheus.Desc = prometheus.NewDesc(
-		prometheus.BuildFQName(Namespace, "configmap", "orphan"),
+		prometheus.BuildFQName(namespace, "configmap", "orphan"),
 		"Configmaps without a chart CR.",
 		[]string{},
 		nil,

@@ -45,7 +45,6 @@ resource:
     name: '{{ .Release.Name | replace "." "-" | trunc 47 }}-psp'
 
 tiller:
-  image: "giantswarm/tiller:v2.16.8"
   namespace: "kube-system"
 
 cluster:
