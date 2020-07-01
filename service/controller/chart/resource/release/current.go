@@ -32,6 +32,8 @@ func (r *Resource) GetCurrentState(ctx context.Context, obj interface{}) (interf
 
 	hasConfigmap, err := r.findHelmV2ConfigMaps(ctx, key.ReleaseName(cr))
 	if err != nil {
+		reason := fmt.Sprintf("release %#q didn't migrate to helm 3", key.ReleaseName(cr))
+		addStatusToContext(cc, reason, releaseNotInstalledStatus)
 		return nil, microerror.Mask(err)
 	}
 
