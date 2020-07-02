@@ -7,6 +7,10 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+### Changed
+
+- Update MD5 Hash only if chart-operator upgrade the release successfully. 
+
 ## [v1.0.3] 2020-06-16
 
 ### Changed
