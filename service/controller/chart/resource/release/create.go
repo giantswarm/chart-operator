@@ -28,41 +28,105 @@ func (r *Resource) ApplyCreateChange(ctx context.Context, obj, createChange inte
 		return microerror.Mask(err)
 	}
 
-	if releaseState.Name != "" {
-		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("creating release %#q", releaseState.Name))
+	if releaseState.Name == "" {
+		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("no release name is provided for %#q", cr.Name))
+		return nil
+	}
 
-		// We set the checksum annotation so the update state calculation
-		// is accurate when we check in the next reconciliation loop.
-		err = r.patchAnnotations(ctx, cr, releaseState)
+	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("creating release %#q", releaseState.Name))
+
+	ns := key.Namespace(cr)
+	tarballURL := key.TarballURL(cr)
+
+	tarballPath, err := r.helmClient.PullChartTarball(ctx, tarballURL)
+	if helmclient.IsPullChartFailedError(err) {
+		reason := fmt.Sprintf("pulling chart %#q failed", tarballURL)
+		addStatusToContext(cc, reason, releaseNotInstalledStatus)
+
+		r.logger.LogCtx(ctx, "level", "warning", "message", reason, "stack", microerror.JSON(err))
+		r.logger.LogCtx(ctx, "level", "debug", "message", "canceling resource")
+		resourcecanceledcontext.SetCanceled(ctx)
+		return nil
+	} else if helmclient.IsPullChartNotFound(err) {
+		reason := fmt.Sprintf("chart %#q not found", tarballURL)
+		addStatusToContext(cc, reason, releaseNotInstalledStatus)
+
+		r.logger.LogCtx(ctx, "level", "warning", "message", reason, "stack", microerror.JSON(err))
+		r.logger.LogCtx(ctx, "level", "debug", "message", "canceling resource")
+		resourcecanceledcontext.SetCanceled(ctx)
+		return nil
+	} else if helmclient.IsPullChartTimeout(err) {
+		reason := fmt.Sprintf("timeout pulling %#q", tarballURL)
+		addStatusToContext(cc, reason, releaseNotInstalledStatus)
+
+		r.logger.LogCtx(ctx, "level", "warning", "message", reason, "stack", microerror.JSON(err))
+		r.logger.LogCtx(ctx, "level", "debug", "message", "canceling resource")
+		resourcecanceledcontext.SetCanceled(ctx)
+		return nil
+	} else if err != nil {
+		return microerror.Mask(err)
+	}
+
+	defer func() {
+		err := r.fs.Remove(tarballPath)
 		if err != nil {
-			return microerror.Mask(err)
+			r.logger.LogCtx(ctx, "level", "error", "message", fmt.Sprintf("deletion of %#q failed", tarballPath), "stack", fmt.Sprintf("%#v", err))
 		}
+	}()
 
-		ns := key.Namespace(cr)
-		tarballURL := key.TarballURL(cr)
+	ch := make(chan error)
 
-		tarballPath, err := r.helmClient.PullChartTarball(ctx, tarballURL)
-		if helmclient.IsPullChartFailedError(err) {
-			reason := fmt.Sprintf("pulling chart %#q failed", tarballURL)
+	// We create the helm release but with a short timeout so we don't
+	// block reconciling other CRs. This gives time to make the port
+	// forwarding connection to the Tiller API.
+	//
+	// If we do timeout the install will continue in the background.
+	// We will check the progress in the next reconciliation loop.
+	go func() {
+		opts := helmclient.InstallOptions{
+			ReleaseName: releaseState.Name,
+		}
+		// We need to pass the ValueOverrides option to make the install process
+		// use the default values and prevent errors on nested values.
+		err = r.helmClient.InstallReleaseFromTarball(ctx, tarballPath, ns, releaseState.Values, opts)
+		close(ch)
+	}()
+
+	select {
+	case <-ch:
+		// Fall through.
+	case <-time.After(3 * time.Second):
+		r.logger.LogCtx(ctx, "level", "debug", "message", "release still being created")
+		r.logger.LogCtx(ctx, "level", "debug", "message", "canceling resource")
+		return nil
+	}
+	if helmclient.IsValidationFailedError(err) {
+		reason := err.Error()
+		reason = fmt.Sprintf("helm validation error: (%s)", reason)
+		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("helm release %#q failed, %s", releaseState.Name, reason))
+		addStatusToContext(cc, reason, validationFailedStatus)
+
+		r.logger.LogCtx(ctx, "level", "debug", "message", "canceling resource")
+		resourcecanceledcontext.SetCanceled(ctx)
+		return nil
+	} else if helmclient.IsInvalidManifest(err) {
+		reason := err.Error()
+		reason = fmt.Sprintf("invalid manifest error: (%s)", reason)
+		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("helm release %#q failed, %s", releaseState.Name, reason))
+		addStatusToContext(cc, reason, invalidManifestStatus)
+
+		r.logger.LogCtx(ctx, "level", "debug", "message", "canceling resource")
+		resourcecanceledcontext.SetCanceled(ctx)
+		return nil
+	} else if err != nil {
+		reason := err.Error()
+		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("helm release %#q failed", releaseState.Name), "stack", microerror.JSON(err))
+
+		releaseContent, err := r.helmClient.GetReleaseContent(ctx, ns, releaseState.Name)
+		if helmclient.IsReleaseNotFound(err) {
+			reason = fmt.Sprintf("helm error: (%s)", reason)
 			addStatusToContext(cc, reason, releaseNotInstalledStatus)
 
-			r.logger.LogCtx(ctx, "level", "warning", "message", reason, "stack", microerror.JSON(err))
-			r.logger.LogCtx(ctx, "level", "debug", "message", "canceling resource")
-			resourcecanceledcontext.SetCanceled(ctx)
-			return nil
-		} else if helmclient.IsPullChartNotFound(err) {
-			reason := fmt.Sprintf("chart %#q not found", tarballURL)
-			addStatusToContext(cc, reason, releaseNotInstalledStatus)
-
-			r.logger.LogCtx(ctx, "level", "warning", "message", reason, "stack", microerror.JSON(err))
-			r.logger.LogCtx(ctx, "level", "debug", "message", "canceling resource")
-			resourcecanceledcontext.SetCanceled(ctx)
-			return nil
-		} else if helmclient.IsPullChartTimeout(err) {
-			reason := fmt.Sprintf("timeout pulling %#q", tarballURL)
-			addStatusToContext(cc, reason, releaseNotInstalledStatus)
-
-			r.logger.LogCtx(ctx, "level", "warning", "message", reason, "stack", microerror.JSON(err))
 			r.logger.LogCtx(ctx, "level", "debug", "message", "canceling resource")
 			resourcecanceledcontext.SetCanceled(ctx)
 			return nil
@@ -70,84 +134,23 @@ func (r *Resource) ApplyCreateChange(ctx context.Context, obj, createChange inte
 			return microerror.Mask(err)
 		}
 
-		defer func() {
-			err := r.fs.Remove(tarballPath)
-			if err != nil {
-				r.logger.LogCtx(ctx, "level", "error", "message", fmt.Sprintf("deletion of %#q failed", tarballPath), "stack", fmt.Sprintf("%#v", err))
-			}
-		}()
-
-		ch := make(chan error)
-
-		// We create the helm release but with a short timeout so we don't
-		// block reconciling other CRs. This gives time to make the port
-		// forwarding connection to the Tiller API.
-		//
-		// If we do timeout the install will continue in the background.
-		// We will check the progress in the next reconciliation loop.
-		go func() {
-			opts := helmclient.InstallOptions{
-				ReleaseName: releaseState.Name,
-			}
-			// We need to pass the ValueOverrides option to make the install process
-			// use the default values and prevent errors on nested values.
-			err = r.helmClient.InstallReleaseFromTarball(ctx, tarballPath, ns, releaseState.Values, opts)
-			close(ch)
-		}()
-
-		select {
-		case <-ch:
-			// Fall through.
-		case <-time.After(3 * time.Second):
-			r.logger.LogCtx(ctx, "level", "debug", "message", "release still being created")
-			r.logger.LogCtx(ctx, "level", "debug", "message", "canceling resource")
-			return nil
-		}
-		if helmclient.IsValidationFailedError(err) {
-			reason := err.Error()
-			reason = fmt.Sprintf("helm validation error: (%s)", reason)
-			r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("helm release %#q failed, %s", releaseState.Name, reason))
-			addStatusToContext(cc, reason, validationFailedStatus)
-
+		// Release is failed so the status resource will check the Helm release.
+		if releaseContent.Status == helmclient.StatusFailed {
+			r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("failed to create release %#q", releaseContent.Name))
 			r.logger.LogCtx(ctx, "level", "debug", "message", "canceling resource")
 			resourcecanceledcontext.SetCanceled(ctx)
 			return nil
-		} else if helmclient.IsInvalidManifest(err) {
-			reason := err.Error()
-			reason = fmt.Sprintf("invalid manifest error: (%s)", reason)
-			r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("helm release %#q failed, %s", releaseState.Name, reason))
-			addStatusToContext(cc, reason, invalidManifestStatus)
-
-			r.logger.LogCtx(ctx, "level", "debug", "message", "canceling resource")
-			resourcecanceledcontext.SetCanceled(ctx)
-			return nil
-		} else if err != nil {
-			reason := err.Error()
-			r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("helm release %#q failed", releaseState.Name), "stack", microerror.JSON(err))
-
-			releaseContent, err := r.helmClient.GetReleaseContent(ctx, ns, releaseState.Name)
-			if helmclient.IsReleaseNotFound(err) {
-				reason = fmt.Sprintf("helm error: (%s)", reason)
-				addStatusToContext(cc, reason, releaseNotInstalledStatus)
-
-				r.logger.LogCtx(ctx, "level", "debug", "message", "canceling resource")
-				resourcecanceledcontext.SetCanceled(ctx)
-				return nil
-			} else if err != nil {
-				return microerror.Mask(err)
-			}
-
-			// Release is failed so the status resource will check the Helm release.
-			if releaseContent.Status == helmclient.StatusFailed {
-				r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("failed to create release %#q", releaseContent.Name))
-				r.logger.LogCtx(ctx, "level", "debug", "message", "canceling resource")
-				resourcecanceledcontext.SetCanceled(ctx)
-				return nil
-			}
-			return microerror.Mask(err)
 		}
+		return microerror.Mask(err)
+	}
 
-		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("created release %#q", releaseState.Name))
+	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("created release %#q", releaseState.Name))
+
+	// We set the checksum annotation so the update state calculation
+	// is accurate when we check in the next reconciliation loop.
+	err = r.patchAnnotations(ctx, cr, releaseState)
+	if err != nil {
+		return microerror.Mask(err)
 	}
 
 	return nil
