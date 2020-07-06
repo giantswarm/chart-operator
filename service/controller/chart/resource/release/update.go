@@ -83,9 +83,8 @@ func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange inte
 
 	ch := make(chan error)
 
-	// We update the helm release but with a short timeout so we don't
-	// block reconciling other CRs. This gives time to make the port
-	// forwarding connection to the Tiller API.
+	// We update the helm release but with a wait timeout so we don't
+	// block reconciling other CRs.
 	//
 	// If we do timeout the update will continue in the background.
 	// We will check the progress in the next reconciliation loop.
@@ -108,7 +107,7 @@ func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange inte
 	select {
 	case <-ch:
 		// Fall through.
-	case <-time.After(3 * time.Second):
+	case <-time.After(r.k8sWaitTimeout):
 		r.logger.LogCtx(ctx, "level", "debug", "message", "release still being updated")
 		r.logger.LogCtx(ctx, "level", "debug", "message", "canceling resource")
 		return nil
