@@ -9,7 +9,7 @@ externalDNSIP: 8.8.8.8
 helm:
   http:
     clientTimeout: "5s"
-  kubernets: 
+  kubernetes:
     waitTimeout: "10s"
 
 image:
