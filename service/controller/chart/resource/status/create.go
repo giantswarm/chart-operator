@@ -83,6 +83,7 @@ func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
 		Reason:     reason,
 		Release: v1alpha1.ChartStatusRelease{
 			LastDeployed: metav1.Time{Time: releaseContent.LastDeployed},
+			Revision:     releaseContent.Revision,
 			Status:       status,
 		},
 		Version: releaseContent.Version,
