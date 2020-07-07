@@ -26,10 +26,6 @@ const (
 	// Name is the identifier of the resource.
 	Name = "release"
 
-	// defaultK8sWaitTimeout is how long to wait for the Kubernetes API when
-	// installing or updating a release before moving to process the next CR.
-	defaultK8sWaitTimeout = 10 * time.Second
-
 	// invalidManifestStatus is set in the CR status when it failed to create
 	// manifest objects with helm resources.
 	invalidManifestStatus = "invalid-manifest"
@@ -91,9 +87,6 @@ func New(config Config) (*Resource, error) {
 	}
 
 	// Settings.
-	if config.K8sWaitTimeout == 0 {
-		config.K8sWaitTimeout = defaultK8sWaitTimeout
-	}
 	if config.TillerNamespace == "" {
 		return nil, microerror.Maskf(invalidConfigError, "%T.TillerNamespace must not be empty", config)
 	}
