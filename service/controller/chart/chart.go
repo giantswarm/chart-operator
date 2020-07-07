@@ -92,6 +92,7 @@ func newChartResourceSets(config Config) ([]*controller.ResourceSet, error) {
 			K8sClient:  config.K8sClient.K8sClient(),
 			Logger:     config.Logger,
 
+			K8sWaitTimeout:  config.K8sWaitTimeout,
 			TillerNamespace: config.TillerNamespace,
 		}
 
