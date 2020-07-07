@@ -62,7 +62,7 @@ func (r *Resource) GetCurrentState(ctx context.Context, obj interface{}) (interf
 		return nil, microerror.Mask(err)
 	}
 
-	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("DEBUG release status %#v", releaseContent.Status))
+	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("DEBUG release status %#q", releaseContent.Status))
 	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("DEBUG release content %#v", releaseContent))
 
 	if releaseContent.Status == helmclient.StatusFailed && releaseContent.Name == project.Name() {
