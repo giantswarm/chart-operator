@@ -21,6 +21,12 @@ data:
           {{ else }}
           clientTimeout: '{{ .Values.helm.http.clientTimeout }}'
           {{ end }}
+        kubernetes:
+          {{ if (.Values.Installation) }}
+          waitTimeout: '{{ .Values.Installation.V1.Helm.Kubernetes.WaitTimeout }}'
+          {{ else }}
+          waitTimeout: '{{ .Values.helm.kubernetes.waitTimeout }}'
+          {{ end }}
         tillerNamespace:  '{{ .Values.tiller.namespace }}'
       image:
         registry: '{{ .Values.image.registry }}'

@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/giantswarm/apiextensions/pkg/apis/application/v1alpha1"
 	"github.com/giantswarm/apiextensions/pkg/clientset/versioned"
@@ -24,6 +25,10 @@ import (
 const (
 	// Name is the identifier of the resource.
 	Name = "release"
+
+	// defaultK8sWaitTimeout is how long to wait for the Kubernetes API when
+	// installing or updating a release before moving to process the next CR.
+	defaultK8sWaitTimeout = 10 * time.Second
 
 	// invalidManifestStatus is set in the CR status when it failed to create
 	// manifest objects with helm resources.
@@ -48,6 +53,7 @@ type Config struct {
 	Logger     micrologger.Logger
 
 	// Settings.
+	K8sWaitTimeout  time.Duration
 	TillerNamespace string
 }
 
@@ -61,6 +67,7 @@ type Resource struct {
 	logger     micrologger.Logger
 
 	// Settings.
+	k8sWaitTimeout  time.Duration
 	tillerNamespace string
 }
 
@@ -84,6 +91,9 @@ func New(config Config) (*Resource, error) {
 	}
 
 	// Settings.
+	if config.K8sWaitTimeout == 0 {
+		config.K8sWaitTimeout = defaultK8sWaitTimeout
+	}
 	if config.TillerNamespace == "" {
 		return nil, microerror.Maskf(invalidConfigError, "%T.TillerNamespace must not be empty", config)
 	}
@@ -97,6 +107,7 @@ func New(config Config) (*Resource, error) {
 		logger:     config.Logger,
 
 		// Settings.
+		k8sWaitTimeout:  config.K8sWaitTimeout,
 		tillerNamespace: config.TillerNamespace,
 	}
 

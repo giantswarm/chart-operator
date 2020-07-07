@@ -9,6 +9,8 @@ externalDNSIP: 8.8.8.8
 helm:
   http:
     clientTimeout: "5s"
+  kubernetes:
+    waitTimeout: "10s"
 
 image:
   registry: "quay.io"

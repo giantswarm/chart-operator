@@ -21,7 +21,6 @@ metadata:
     {{- include "chart-operator.labels" . | nindent 4 }}
 rules:
   - apiGroups:
-      - extensions
       - policy
     resources:
       - podsecuritypolicies

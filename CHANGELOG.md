@@ -10,6 +10,8 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 ### Changed
 
 - Update MD5 Hash only if chart-operator upgrade the release successfully. 
+- Make kubernetes wait timeout configurable when installing and updating
+releases.
 
 ## [v1.0.3] 2020-06-16
 

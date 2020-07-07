@@ -2,6 +2,7 @@ package chart
 
 import (
 	"context"
+	"time"
 
 	"github.com/giantswarm/apiextensions/pkg/clientset/versioned"
 	"github.com/giantswarm/helmclient"
@@ -33,6 +34,7 @@ type chartResourceSetConfig struct {
 	Logger     micrologger.Logger
 
 	// Settings.
+	K8sWaitTimeout  time.Duration
 	TillerNamespace string
 }
 
@@ -84,6 +86,7 @@ func newChartResourceSet(config chartResourceSetConfig) (*controller.ResourceSet
 			Logger:     config.Logger,
 
 			// Settings
+			K8sWaitTimeout:  config.K8sWaitTimeout,
 			TillerNamespace: config.TillerNamespace,
 		}
 

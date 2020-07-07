@@ -76,9 +76,8 @@ func (r *Resource) ApplyCreateChange(ctx context.Context, obj, createChange inte
 
 	ch := make(chan error)
 
-	// We create the helm release but with a short timeout so we don't
-	// block reconciling other CRs. This gives time to make the port
-	// forwarding connection to the Tiller API.
+	// We create the helm release but with a wait timeout so we don't
+	// block reconciling other CRs.
 	//
 	// If we do timeout the install will continue in the background.
 	// We will check the progress in the next reconciliation loop.
@@ -95,8 +94,17 @@ func (r *Resource) ApplyCreateChange(ctx context.Context, obj, createChange inte
 	select {
 	case <-ch:
 		// Fall through.
-	case <-time.After(3 * time.Second):
-		r.logger.LogCtx(ctx, "level", "debug", "message", "release still being created")
+	case <-time.After(r.k8sWaitTimeout):
+		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("waited for %d secs. release still being created", int64(r.k8sWaitTimeout.Seconds())))
+
+		// The install will continue in the background. We set the checksum
+		// annotation so the update state calculation is accurate when we check
+		// in the next reconciliation loop.
+		err = r.patchAnnotations(ctx, cr, releaseState)
+		if err != nil {
+			return microerror.Mask(err)
+		}
+
 		r.logger.LogCtx(ctx, "level", "debug", "message", "canceling resource")
 		return nil
 	}
