@@ -108,7 +108,7 @@ func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange inte
 	case <-ch:
 		// Fall through.
 	case <-time.After(r.k8sWaitTimeout):
-		r.logger.LogCtx(ctx, "level", "debug", "message", "release still being updated")
+		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("waited for %d secs. release still being updated", int64(r.k8sWaitTimeout.Seconds())))
 		r.logger.LogCtx(ctx, "level", "debug", "message", "canceling resource")
 		return nil
 	}
