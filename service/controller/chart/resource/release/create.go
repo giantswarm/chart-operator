@@ -96,6 +96,15 @@ func (r *Resource) ApplyCreateChange(ctx context.Context, obj, createChange inte
 		// Fall through.
 	case <-time.After(r.k8sWaitTimeout):
 		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("waited for %d secs. release still being created", int64(r.k8sWaitTimeout.Seconds())))
+
+		// The install will continue in the background. We set the checksum
+		// annotation so the update state calculation is accurate when we check
+		// in the next reconciliation loop.
+		err = r.patchAnnotations(ctx, cr, releaseState)
+		if err != nil {
+			return microerror.Mask(err)
+		}
+
 		r.logger.LogCtx(ctx, "level", "debug", "message", "canceling resource")
 		return nil
 	}
