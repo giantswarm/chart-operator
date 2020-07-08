@@ -7,6 +7,8 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+## [1.0.4] - 2020-07-08
+
 ### Changed
 
 - Update MD5 Hash only if chart-operator upgrade the release successfully. 
@@ -109,8 +111,8 @@ We check progress in the next reconciliation loop. ([#362](https://github.com/gi
 - Separate podsecuritypolicy.
 - Security context in deployment spec with non-root user.
 
-[Unreleased]: https://github.com/giantswarm/chart-operator/compare/v1.0.3...HEAD
-
+[Unreleased]: https://github.com/giantswarm/chart-operator/compare/v1.0.4...HEAD
+[1.0.4]: https://github.com/giantswarm/chart-operator/compare/v1.0.3...v1.0.4
 [v1.0.3]: https://github.com/giantswarm/chart-operator/compare/v1.0.2...v1.0.3
 [v1.0.2]: https://github.com/giantswarm/chart-operator/compare/v1.0.1...v1.0.2
 [v1.0.1]: https://github.com/giantswarm/chart-operator/compare/v1.0.0...v1.0.1
