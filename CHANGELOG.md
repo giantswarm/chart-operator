@@ -109,9 +109,8 @@ We check progress in the next reconciliation loop. ([#362](https://github.com/gi
 - Separate podsecuritypolicy.
 - Security context in deployment spec with non-root user.
 
-[Unreleased]: https://github.com/giantswarm/REPOSITORY_NAME/compare/v1.2.3...HEAD
-
 [Unreleased]: https://github.com/giantswarm/chart-operator/compare/v1.0.3...HEAD
+
 [v1.0.3]: https://github.com/giantswarm/chart-operator/compare/v1.0.2...v1.0.3
 [v1.0.2]: https://github.com/giantswarm/chart-operator/compare/v1.0.1...v1.0.2
 [v1.0.1]: https://github.com/giantswarm/chart-operator/compare/v1.0.0...v1.0.1
