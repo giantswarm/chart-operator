@@ -1,11 +1,18 @@
-[![CircleCI](https://circleci.com/gh/giantswarm/chart-operator.svg?style=shield)](https://circleci.com/gh/giantswarm/chart-operator) [![Docker Repository on Quay](https://quay.io/repository/giantswarm/chart-operator/status "Docker Repository on Quay")](https://quay.io/repository/giantswarm/chart-operator)
+[![CircleCI](https://circleci.com/gh/giantswarm/chart-operator.svg?style=shield)](https://circleci.com/gh/giantswarm/chart-operator) 
 
 # chart-operator
 
 The chart-operator deploys Helm charts as [helm] releases. It is implemented
 using [operatorkit].
 
-## chart CRD
+## Branches
+
+- `master`
+    - Latest version using Helm 3.
+- `helm2`
+    - Legacy support for Helm 2.
+
+## chart CR
 
 The operator deploys charts hosted in a Helm repository. The chart CRs are
 managed by [app-operator] which provides a higher level abstraction for
@@ -32,10 +39,6 @@ spec:
       namespace: "monitoring"
   tarballURL: "https://giantswarm.github.com/app-catalog/prometheus-1-0-0.tgz"
 ```
-
-## chartconfig CRD
-
-Legacy CRD that reconciles against an [appr] repository.
 
 ## Getting Project
 
@@ -68,6 +71,5 @@ details.
 
 
 [app-operator]: https://github.com/giantswarm/app-operator
-[appr]: https://github.com/appr/appr
 [helm]: https://github.com/helm/helm
 [operatorkit]: https://github.com/giantswarm/operatorkit
