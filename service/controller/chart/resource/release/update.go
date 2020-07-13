@@ -29,19 +29,9 @@ func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange inte
 		return microerror.Mask(err)
 	}
 
-	upgradeForce := key.HasForceUpgradeAnnotation(cr)
-
 	if releaseState.Name == "" {
 		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("no release name is provided for %#q", cr.Name))
 		return nil
-	}
-
-	// TODO: Disabling upgrade-force from chart-operator 1.0.2
-	//
-	//	See https://github.com/giantswarm/giantswarm/issues/11376
-	//
-	if upgradeForce {
-		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("helm upgrade force is disabled for %#q", releaseState.Name))
 	}
 
 	tarballURL := key.TarballURL(cr)
@@ -81,6 +71,9 @@ func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange inte
 		}
 	}()
 
+	upgradeForce := key.HasForceUpgradeAnnotation(cr)
+	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("updating release %#q with force == %t", releaseState.Name, upgradeForce))
+
 	ch := make(chan error)
 
 	// We update the helm release but with a wait timeout so we don't
@@ -90,7 +83,7 @@ func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange inte
 	// We will check the progress in the next reconciliation loop.
 	go func() {
 		opts := helmclient.UpdateOptions{
-			Force: false,
+			Force: upgradeForce,
 		}
 
 		// We need to pass the ValueOverrides option to make the update process
