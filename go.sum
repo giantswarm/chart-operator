@@ -228,8 +228,6 @@ github.com/giantswarm/e2esetup v0.3.0/go.mod h1:I5Kgh+G27T2YMPGNGQ5KX9WVJPPOS+eZ
 github.com/giantswarm/exporterkit v0.2.0 h1:+HTGl4fmT/1OkTox8HbV3JXeavmsZv94+2CDW8cSrq0=
 github.com/giantswarm/exporterkit v0.2.0/go.mod h1:b4fuHVjsvZgznC9OEPfn0y5zvN8SnEKTiI5zTTfck94=
 github.com/giantswarm/helmclient v1.0.0/go.mod h1:2KJ2cg7UTbVnYwpar92Qnm6x60gA6RGIoGATBvAaf/g=
-github.com/giantswarm/helmclient v1.0.3 h1:TQHma7GFvy72WfAc69bW629lZqynTK0JzQHlOafKwfo=
-github.com/giantswarm/helmclient v1.0.3/go.mod h1:5jfYwrjmyGq8u7Q51qsq9RzsT/Zs27sTcA34c8dkUf4=
 github.com/giantswarm/helmclient v1.0.4 h1:fN6NAW4h3r1TEfVFwS7zXrk0IjZSX6k2J3kL6EGUIvA=
 github.com/giantswarm/helmclient v1.0.4/go.mod h1:BjGESTZyJv1b2Cx5ZYZWE3mNQjn+J+VAAzL5HS6FqdM=
 github.com/giantswarm/k8sclient v0.2.0 h1:Az+Knfs2UJrNFoqfOsfkudg+rt3fn5EM1aKrnLSg3fU=
@@ -237,7 +235,6 @@ github.com/giantswarm/k8sclient v0.2.0/go.mod h1:tUgUynwKgMnjnN2PldGmxJW6+8eZn2p
 github.com/giantswarm/k8sclient/v3 v3.1.1 h1:iJYop1h59ItPzmroa7wGHrhXSzeh7QblViUMIQPm9dY=
 github.com/giantswarm/k8sclient/v3 v3.1.1/go.mod h1:ezorsMUa1az9KC2a0C3FmG10x6AqEiNr4R246hWj9h4=
 github.com/giantswarm/k8sportforward v0.2.0/go.mod h1:+hyTTG0V2f3V28hDyEhJZQ341LTgSeXCgcZO2AeqLlI=
-github.com/giantswarm/kubeconfig v0.2.0 h1:Uelz9nDVrbbnyhsZo+fEwg9/PkfBi7oI9ECvjemZjG8=
 github.com/giantswarm/kubeconfig v0.2.0/go.mod h1:3WrVk85sYExwZ38bYlZwazG/BzWU2FkYOjTyKb7tnU0=
 github.com/giantswarm/kubeconfig v0.2.1 h1:cDKTcq7BJXBTsvMT/yfQnabZ9ua59vIarjUEynqqgX8=
 github.com/giantswarm/kubeconfig v0.2.1/go.mod h1:3WrVk85sYExwZ38bYlZwazG/BzWU2FkYOjTyKb7tnU0=
@@ -376,7 +373,6 @@ github.com/google/go-cmp v0.2.0/go.mod h1:oXzfMopK8JAjlY9xF4vHSVASa0yLyX7SntLO5a
 github.com/google/go-cmp v0.3.0/go.mod h1:8QqcDgzrUqlUb/G2PQTWiueGozuR1884gddMywk6iLU=
 github.com/google/go-cmp v0.3.1/go.mod h1:8QqcDgzrUqlUb/G2PQTWiueGozuR1884gddMywk6iLU=
 github.com/google/go-cmp v0.4.0/go.mod h1:v8dTdLbMG2kIc/vJvl+f65V22dbkXbowE6jgT/gNBxE=
-github.com/google/go-cmp v0.4.1/go.mod h1:v8dTdLbMG2kIc/vJvl+f65V22dbkXbowE6jgT/gNBxE=
 github.com/google/go-cmp v0.5.0 h1:/QaMHBdZ26BB3SSst0Iwl10Epc+xhTquomWX0oZEB6w=
 github.com/google/go-cmp v0.5.0/go.mod h1:v8dTdLbMG2kIc/vJvl+f65V22dbkXbowE6jgT/gNBxE=
 github.com/google/go-github v17.0.0+incompatible/go.mod h1:zLgOLi98H3fifZn+44m+umXrS52loVEgC2AApnigrVQ=
