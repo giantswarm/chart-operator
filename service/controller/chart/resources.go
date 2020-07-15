@@ -1,14 +1,12 @@
 package chart
 
 import (
-	"context"
 	"time"
 
 	"github.com/giantswarm/apiextensions/pkg/clientset/versioned"
 	"github.com/giantswarm/helmclient"
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/micrologger"
-	"github.com/giantswarm/operatorkit/controller"
 	"github.com/giantswarm/operatorkit/resource"
 	"github.com/giantswarm/operatorkit/resource/crud"
 	"github.com/giantswarm/operatorkit/resource/wrapper/metricsresource"
@@ -16,9 +14,6 @@ import (
 	"github.com/spf13/afero"
 	"k8s.io/client-go/kubernetes"
 
-	"github.com/giantswarm/chart-operator/pkg/project"
-	"github.com/giantswarm/chart-operator/service/controller/chart/controllercontext"
-	"github.com/giantswarm/chart-operator/service/controller/chart/key"
 	"github.com/giantswarm/chart-operator/service/controller/chart/resource/chartmigration"
 	"github.com/giantswarm/chart-operator/service/controller/chart/resource/release"
 	"github.com/giantswarm/chart-operator/service/controller/chart/resource/status"
@@ -38,7 +33,7 @@ type chartResourceSetConfig struct {
 	TillerNamespace string
 }
 
-func newChartResourceSet(config chartResourceSetConfig) (*controller.ResourceSet, error) {
+func newChartResources(config chartResourceSetConfig) ([]resource.Interface, error) {
 	var err error
 
 	// Dependencies.
@@ -157,45 +152,47 @@ func newChartResourceSet(config chartResourceSetConfig) (*controller.ResourceSet
 		}
 	}
 
-	initCtxFunc := func(ctx context.Context, obj interface{}) (context.Context, error) {
-		cc := controllercontext.Context{}
-		ctx = controllercontext.NewContext(ctx, cc)
+	return resources, nil
+	//
+	//initCtxFunc := func(ctx context.Context, obj interface{}) (context.Context, error) {
+	//	cc := controllercontext.Context{}
+	//	ctx = controllercontext.NewContext(ctx, cc)
+	//
+	//	return ctx, nil
+	//}
 
-		return ctx, nil
-	}
+	//handlesFunc := func(obj interface{}) bool {
+	//	cr, err := key.ToCustomResource(obj)
+	//	if err != nil {
+	//		return false
+	//	}
+	//
+	//	// ChartVersion is fixed for chart CRs. This is because they exist in both
+	//	// control plane and tenant clusters and their version is not linked to a
+	//	// release. We may revisit this in future.
+	//	if key.VersionLabel(cr) == project.ChartVersion() {
+	//		return true
+	//	}
+	//
+	//	return false
+	//}
 
-	handlesFunc := func(obj interface{}) bool {
-		cr, err := key.ToCustomResource(obj)
-		if err != nil {
-			return false
-		}
-
-		// ChartVersion is fixed for chart CRs. This is because they exist in both
-		// control plane and tenant clusters and their version is not linked to a
-		// release. We may revisit this in future.
-		if key.VersionLabel(cr) == project.ChartVersion() {
-			return true
-		}
-
-		return false
-	}
-
-	var resourceSet *controller.ResourceSet
-	{
-		c := controller.ResourceSetConfig{
-			Handles:   handlesFunc,
-			InitCtx:   initCtxFunc,
-			Logger:    config.Logger,
-			Resources: resources,
-		}
-
-		resourceSet, err = controller.NewResourceSet(c)
-		if err != nil {
-			return nil, microerror.Mask(err)
-		}
-	}
-
-	return resourceSet, nil
+	//var resourceSet *controller.ResourceSet
+	//{
+	//	c := controller.ResourceSetConfig{
+	//		Handles:   handlesFunc,
+	//		InitCtx:   initCtxFunc,
+	//		Logger:    config.Logger,
+	//		Resources: resources,
+	//	}
+	//
+	//	resourceSet, err = controller.NewResourceSet(c)
+	//	if err != nil {
+	//		return nil, microerror.Mask(err)
+	//	}
+	//}
+	//
+	//return resourceSet, nil
 }
 
 func toCRUDResource(logger micrologger.Logger, ops crud.Interface) (*crud.Resource, error) {
