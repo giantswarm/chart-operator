@@ -1,7 +1,6 @@
 package chart
 
 import (
-	"github.com/giantswarm/operatorkit/resource"
 	"time"
 
 	"github.com/giantswarm/apiextensions/pkg/apis/application/v1alpha1"
@@ -10,6 +9,7 @@ import (
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/micrologger"
 	"github.com/giantswarm/operatorkit/controller"
+	"github.com/giantswarm/operatorkit/resource"
 	"github.com/spf13/afero"
 	"k8s.io/apimachinery/pkg/runtime"
 
