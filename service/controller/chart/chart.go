@@ -1,11 +1,12 @@
 package chart
 
 import (
+	"github.com/giantswarm/operatorkit/resource"
 	"time"
 
 	"github.com/giantswarm/apiextensions/pkg/apis/application/v1alpha1"
 	"github.com/giantswarm/helmclient"
-	"github.com/giantswarm/k8sclient"
+	"github.com/giantswarm/k8sclient/v3/pkg/k8sclient"
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/micrologger"
 	"github.com/giantswarm/operatorkit/controller"
@@ -48,18 +49,31 @@ func NewChart(config Config) (*Chart, error) {
 		return nil, microerror.Maskf(invalidConfigError, "%T.TillerNamespace must not be empty", config)
 	}
 
-	resourceSets, err := newChartResourceSets(config)
-	if err != nil {
-		return nil, microerror.Mask(err)
+	var resources []resource.Interface
+	{
+		c := chartResourcesConfig{
+			Fs:         config.Fs,
+			G8sClient:  config.K8sClient.G8sClient(),
+			HelmClient: config.HelmClient,
+			K8sClient:  config.K8sClient.K8sClient(),
+			Logger:     config.Logger,
+
+			K8sWaitTimeout:  config.K8sWaitTimeout,
+			TillerNamespace: config.TillerNamespace,
+		}
+
+		resources, err = newChartResources(c)
+		if err != nil {
+			return nil, microerror.Mask(err)
+		}
 	}
 
 	var chartController *controller.Controller
 	{
 		c := controller.Config{
-			CRD:          v1alpha1.NewChartCRD(),
-			K8sClient:    config.K8sClient,
-			Logger:       config.Logger,
-			ResourceSets: resourceSets,
+			K8sClient: config.K8sClient,
+			Logger:    config.Logger,
+			Resources: resources,
 			NewRuntimeObjectFunc: func() runtime.Object {
 				return new(v1alpha1.Chart)
 			},
@@ -78,33 +92,4 @@ func NewChart(config Config) (*Chart, error) {
 	}
 
 	return c, nil
-}
-
-func newChartResourceSets(config Config) ([]*controller.ResourceSet, error) {
-	var err error
-
-	var resourceSet *controller.ResourceSet
-	{
-		c := chartResourceSetConfig{
-			Fs:         config.Fs,
-			G8sClient:  config.K8sClient.G8sClient(),
-			HelmClient: config.HelmClient,
-			K8sClient:  config.K8sClient.K8sClient(),
-			Logger:     config.Logger,
-
-			K8sWaitTimeout:  config.K8sWaitTimeout,
-			TillerNamespace: config.TillerNamespace,
-		}
-
-		resourceSet, err = newChartResourceSet(c)
-		if err != nil {
-			return nil, microerror.Mask(err)
-		}
-	}
-
-	resourceSets := []*controller.ResourceSet{
-		resourceSet,
-	}
-
-	return resourceSets, nil
 }

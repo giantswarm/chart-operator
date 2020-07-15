@@ -20,7 +20,7 @@ import (
 	"github.com/giantswarm/chart-operator/service/controller/chart/resource/tillermigration"
 )
 
-type chartResourceSetConfig struct {
+type chartResourcesConfig struct {
 	// Dependencies.
 	Fs         afero.Fs
 	G8sClient  versioned.Interface
@@ -33,7 +33,7 @@ type chartResourceSetConfig struct {
 	TillerNamespace string
 }
 
-func newChartResources(config chartResourceSetConfig) ([]resource.Interface, error) {
+func newChartResources(config chartResourcesConfig) ([]resource.Interface, error) {
 	var err error
 
 	// Dependencies.
@@ -153,46 +153,6 @@ func newChartResources(config chartResourceSetConfig) ([]resource.Interface, err
 	}
 
 	return resources, nil
-	//
-	//initCtxFunc := func(ctx context.Context, obj interface{}) (context.Context, error) {
-	//	cc := controllercontext.Context{}
-	//	ctx = controllercontext.NewContext(ctx, cc)
-	//
-	//	return ctx, nil
-	//}
-
-	//handlesFunc := func(obj interface{}) bool {
-	//	cr, err := key.ToCustomResource(obj)
-	//	if err != nil {
-	//		return false
-	//	}
-	//
-	//	// ChartVersion is fixed for chart CRs. This is because they exist in both
-	//	// control plane and tenant clusters and their version is not linked to a
-	//	// release. We may revisit this in future.
-	//	if key.VersionLabel(cr) == project.ChartVersion() {
-	//		return true
-	//	}
-	//
-	//	return false
-	//}
-
-	//var resourceSet *controller.ResourceSet
-	//{
-	//	c := controller.ResourceSetConfig{
-	//		Handles:   handlesFunc,
-	//		InitCtx:   initCtxFunc,
-	//		Logger:    config.Logger,
-	//		Resources: resources,
-	//	}
-	//
-	//	resourceSet, err = controller.NewResourceSet(c)
-	//	if err != nil {
-	//		return nil, microerror.Mask(err)
-	//	}
-	//}
-	//
-	//return resourceSet, nil
 }
 
 func toCRUDResource(logger micrologger.Logger, ops crud.Interface) (*crud.Resource, error) {
