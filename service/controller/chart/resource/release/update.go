@@ -71,8 +71,15 @@ func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange inte
 		}
 	}()
 
+	// TODO: Disabling helm upgrade --force from chart-operator since recreate
+	// is not supported.
+	//
+	//	See https://github.com/giantswarm/giantswarm/issues/11376
+	//
 	upgradeForce := key.HasForceUpgradeAnnotation(cr)
-	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("updating release %#q with force == %t", releaseState.Name, upgradeForce))
+	if upgradeForce {
+		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("helm upgrade force is disabled for %#q", releaseState.Name))
+	}
 
 	ch := make(chan error)
 
@@ -83,7 +90,7 @@ func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange inte
 	// We will check the progress in the next reconciliation loop.
 	go func() {
 		opts := helmclient.UpdateOptions{
-			Force: upgradeForce,
+			Force: false,
 		}
 
 		// We need to pass the ValueOverrides option to make the update process
