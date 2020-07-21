@@ -8,7 +8,7 @@ require (
 	github.com/giantswarm/backoff v0.2.0
 	github.com/giantswarm/e2esetup v0.3.0
 	github.com/giantswarm/exporterkit v0.2.0
-	github.com/giantswarm/helmclient v1.0.4
+	github.com/giantswarm/helmclient v1.0.5
 	github.com/giantswarm/k8sclient/v3 v3.1.1
 	github.com/giantswarm/microendpoint v0.2.0
 	github.com/giantswarm/microerror v0.2.0
@@ -25,3 +25,5 @@ require (
 	k8s.io/client-go v0.17.2
 	sigs.k8s.io/yaml v1.2.0
 )
+
+replace github.com/mattn/go-isatty => github.com/mattn/go-isatty v0.0.9
