@@ -1,6 +1,7 @@
 package chart
 
 import (
+	"context"
 	"time"
 
 	"github.com/giantswarm/apiextensions/pkg/apis/application/v1alpha1"
@@ -14,6 +15,7 @@ import (
 	"k8s.io/apimachinery/pkg/runtime"
 
 	"github.com/giantswarm/chart-operator/pkg/project"
+	"github.com/giantswarm/chart-operator/service/controller/chart/controllercontext"
 )
 
 const chartControllerSuffix = "-chart"
@@ -49,6 +51,17 @@ func NewChart(config Config) (*Chart, error) {
 		return nil, microerror.Maskf(invalidConfigError, "%T.TillerNamespace must not be empty", config)
 	}
 
+	// TODO: Remove usage of deprecated controller context.
+	//
+	//	https://github.com/giantswarm/giantswarm/issues/12324
+	//
+	initCtxFunc := func(ctx context.Context, obj interface{}) (context.Context, error) {
+		cc := controllercontext.Context{}
+		ctx = controllercontext.NewContext(ctx, cc)
+
+		return ctx, nil
+	}
+
 	var resources []resource.Interface
 	{
 		c := chartResourcesConfig{
@@ -71,6 +84,7 @@ func NewChart(config Config) (*Chart, error) {
 	var chartController *controller.Controller
 	{
 		c := controller.Config{
+			InitCtx:   initCtxFunc,
 			K8sClient: config.K8sClient,
 			Logger:    config.Logger,
 			Resources: resources,
