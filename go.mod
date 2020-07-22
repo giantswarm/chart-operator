@@ -3,7 +3,7 @@ module github.com/giantswarm/chart-operator
 go 1.14
 
 require (
-	github.com/giantswarm/apiextensions v0.4.8
+	github.com/giantswarm/apiextensions v0.4.17-0.20200721152857-93b97954496a
 	github.com/giantswarm/appcatalog v0.2.6
 	github.com/giantswarm/backoff v0.2.0
 	github.com/giantswarm/e2esetup v0.3.0
