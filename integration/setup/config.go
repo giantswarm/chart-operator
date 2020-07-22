@@ -1,13 +1,15 @@
+// +build k8srequired
+
 package setup
 
 import (
-	"github.com/giantswarm/e2esetup/chart/env"
 	"github.com/giantswarm/helmclient"
 	"github.com/giantswarm/k8sclient"
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/micrologger"
 	"github.com/spf13/afero"
 
+	"github.com/giantswarm/chart-operator/integration/env"
 	"github.com/giantswarm/chart-operator/integration/release"
 )
 
