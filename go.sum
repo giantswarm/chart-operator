@@ -260,6 +260,8 @@ github.com/giantswarm/exporterkit v0.2.0 h1:+HTGl4fmT/1OkTox8HbV3JXeavmsZv94+2CD
 github.com/giantswarm/exporterkit v0.2.0/go.mod h1:b4fuHVjsvZgznC9OEPfn0y5zvN8SnEKTiI5zTTfck94=
 github.com/giantswarm/helmclient v1.0.5 h1:r5nGWQDV3eZaGrox/kZPKsnp8FhMUJJd41qrF+9rkJc=
 github.com/giantswarm/helmclient v1.0.5/go.mod h1:BjGESTZyJv1b2Cx5ZYZWE3mNQjn+J+VAAzL5HS6FqdM=
+github.com/giantswarm/k8sclient/v2 v2.0.0 h1:vhqMIM7vxlvfkCIzPwkbRRh+O4O91g9ArBnDNalo1kc=
+github.com/giantswarm/k8sclient/v2 v2.0.0/go.mod h1:4qkgg7+wF6IrwEB1oWYUFLmhft/1pBfGV08NFJSrBb4=
 github.com/giantswarm/k8sclient/v3 v3.1.0/go.mod h1:kDOgbAQ3V8YqroN4T7RVPk+rapvT/IV2KNNbxfM2xys=
 github.com/giantswarm/k8sclient/v3 v3.1.1 h1:iJYop1h59ItPzmroa7wGHrhXSzeh7QblViUMIQPm9dY=
 github.com/giantswarm/k8sclient/v3 v3.1.1/go.mod h1:ezorsMUa1az9KC2a0C3FmG10x6AqEiNr4R246hWj9h4=

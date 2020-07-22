@@ -10,6 +10,7 @@ import (
 
 	"github.com/giantswarm/apiextensions/pkg/apis/application/v1alpha1"
 	corev1alpha1 "github.com/giantswarm/apiextensions/pkg/apis/core/v1alpha1"
+	"github.com/giantswarm/apiextensions/pkg/crd"
 	"github.com/giantswarm/backoff"
 	"github.com/giantswarm/helmclient"
 	"github.com/giantswarm/microerror"
@@ -42,7 +43,7 @@ func TestChartMigration(t *testing.T) {
 	{
 		config.Logger.LogCtx(ctx, "level", "debug", "message", "creating chartconfig CRD")
 
-		err := config.K8sClients.CRDClient().EnsureCreated(ctx, corev1alpha1.NewChartConfigCRD(), backoff.NewMaxRetries(7, 1*time.Second))
+		err := config.K8sClientsV2.CRDClient().EnsureCreated(ctx, crd.LoadV1Beta1("core.giantswarm.io", "ChartConfig"), backoff.NewMaxRetries(7, 1*time.Second))
 		if err != nil {
 			t.Fatalf("expected %#v got %#v", nil, err)
 		}
