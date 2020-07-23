@@ -4,7 +4,7 @@ go 1.14
 
 require (
 	github.com/ghodss/yaml v1.0.1-0.20190212211648-25d852aebe32 // indirect
-	github.com/giantswarm/apiextensions v0.4.8
+	github.com/giantswarm/apiextensions v0.4.16
 	github.com/giantswarm/appcatalog v0.2.6
 	github.com/giantswarm/backoff v0.2.0
 	github.com/giantswarm/exporterkit v0.2.0
@@ -19,7 +19,6 @@ require (
 	github.com/google/go-cmp v0.5.1
 	github.com/huandu/xstrings v1.3.0 // indirect
 	github.com/konsorten/go-windows-terminal-sequences v1.0.2 // indirect
-	github.com/mattn/go-isatty v0.0.9 // indirect
 	github.com/mattn/go-runewidth v0.0.4 // indirect
 	github.com/opencontainers/runc v1.0.0-rc2.0.20190611121236-6cc515888830 // indirect
 	github.com/prometheus/client_golang v1.7.1
