@@ -5,7 +5,7 @@ go 1.14
 require (
 	github.com/Masterminds/semver/v3 v3.1.0 // indirect
 	github.com/ghodss/yaml v1.0.1-0.20190212211648-25d852aebe32 // indirect
-	github.com/giantswarm/apiextensions v0.4.17-0.20200721152857-93b97954496a
+	github.com/giantswarm/apiextensions v0.4.17
 	github.com/giantswarm/appcatalog v0.2.7
 	github.com/giantswarm/backoff v0.2.0
 	github.com/giantswarm/exporterkit v0.2.0
