@@ -225,10 +225,16 @@ github.com/giantswarm/exporterkit v0.2.0 h1:+HTGl4fmT/1OkTox8HbV3JXeavmsZv94+2CD
 github.com/giantswarm/exporterkit v0.2.0/go.mod h1:b4fuHVjsvZgznC9OEPfn0y5zvN8SnEKTiI5zTTfck94=
 github.com/giantswarm/helmclient v1.0.3 h1:TQHma7GFvy72WfAc69bW629lZqynTK0JzQHlOafKwfo=
 github.com/giantswarm/helmclient v1.0.3/go.mod h1:5jfYwrjmyGq8u7Q51qsq9RzsT/Zs27sTcA34c8dkUf4=
+github.com/giantswarm/helmclient v1.0.5 h1:r5nGWQDV3eZaGrox/kZPKsnp8FhMUJJd41qrF+9rkJc=
+github.com/giantswarm/helmclient v1.0.5/go.mod h1:BjGESTZyJv1b2Cx5ZYZWE3mNQjn+J+VAAzL5HS6FqdM=
 github.com/giantswarm/k8sclient v0.2.0 h1:Az+Knfs2UJrNFoqfOsfkudg+rt3fn5EM1aKrnLSg3fU=
 github.com/giantswarm/k8sclient v0.2.0/go.mod h1:tUgUynwKgMnjnN2PldGmxJW6+8eZn2p7tT+tEhXDwOg=
+github.com/giantswarm/k8sclient/v3 v3.1.1 h1:iJYop1h59ItPzmroa7wGHrhXSzeh7QblViUMIQPm9dY=
+github.com/giantswarm/k8sclient/v3 v3.1.1/go.mod h1:ezorsMUa1az9KC2a0C3FmG10x6AqEiNr4R246hWj9h4=
 github.com/giantswarm/kubeconfig v0.2.0 h1:Uelz9nDVrbbnyhsZo+fEwg9/PkfBi7oI9ECvjemZjG8=
 github.com/giantswarm/kubeconfig v0.2.0/go.mod h1:3WrVk85sYExwZ38bYlZwazG/BzWU2FkYOjTyKb7tnU0=
+github.com/giantswarm/kubeconfig v0.2.1 h1:cDKTcq7BJXBTsvMT/yfQnabZ9ua59vIarjUEynqqgX8=
+github.com/giantswarm/kubeconfig v0.2.1/go.mod h1:3WrVk85sYExwZ38bYlZwazG/BzWU2FkYOjTyKb7tnU0=
 github.com/giantswarm/microendpoint v0.2.0 h1:xCAqAVRjTw/4ifEuBeNavALdbQsLk6+k/ukzdy0GWZE=
 github.com/giantswarm/microendpoint v0.2.0/go.mod h1:SSkSp4Q4iSW7vwkil+/E3IXy9Q8To8vXmT5VCg24RDg=
 github.com/giantswarm/microerror v0.0.0-20191011121515-e0ebc4ecf5a5/go.mod h1://Lo9dKJ8P2TBciuky5fDHEItccyvZOWE+B/0JiJT8A=
@@ -363,6 +369,7 @@ github.com/google/go-cmp v0.3.0/go.mod h1:8QqcDgzrUqlUb/G2PQTWiueGozuR1884gddMyw
 github.com/google/go-cmp v0.3.1/go.mod h1:8QqcDgzrUqlUb/G2PQTWiueGozuR1884gddMywk6iLU=
 github.com/google/go-cmp v0.4.0/go.mod h1:v8dTdLbMG2kIc/vJvl+f65V22dbkXbowE6jgT/gNBxE=
 github.com/google/go-cmp v0.4.1/go.mod h1:v8dTdLbMG2kIc/vJvl+f65V22dbkXbowE6jgT/gNBxE=
+github.com/google/go-cmp v0.5.0/go.mod h1:v8dTdLbMG2kIc/vJvl+f65V22dbkXbowE6jgT/gNBxE=
 github.com/google/go-cmp v0.5.1 h1:JFrFEBb2xKufg6XkJsJr+WbKb4FQlURi5RUcBveYu9k=
 github.com/google/go-cmp v0.5.1/go.mod h1:v8dTdLbMG2kIc/vJvl+f65V22dbkXbowE6jgT/gNBxE=
 github.com/google/gofuzz v0.0.0-20161122191042-44d81051d367/go.mod h1:HP5RmnzzSNb993RKQDq4+1A4ia9nllfqcQFTQJedwGI=
@@ -680,6 +687,7 @@ github.com/sony/gobreaker v0.4.1/go.mod h1:ZKptC7FHNvhBz7dN2LGjPVBz2sZJmc0/PkyDJ
 github.com/spaolacci/murmur3 v0.0.0-20180118202830-f09979ecbc72/go.mod h1:JwIasOWyU6f++ZhiEuf87xNszmSA2myDM2Kzu9HwQUA=
 github.com/spf13/afero v1.1.2/go.mod h1:j4pytiNVoe2o6bmDsKpLACNPDBIoEAkihy7loJ1B0CQ=
 github.com/spf13/afero v1.2.2/go.mod h1:9ZxEEn6pIJ8Rxe320qSDBk6AsU0r9pR7Q4OcevTdifk=
+github.com/spf13/afero v1.3.1/go.mod h1:5KUK8ByomD5Ti5Artl0RtHeI5pTF7MIDuXL3yY520V4=
 github.com/spf13/afero v1.3.2 h1:GDarE4TJQI52kYSbSAmLiId1Elfj+xgSDqrUZxFhxlU=
 github.com/spf13/afero v1.3.2/go.mod h1:5KUK8ByomD5Ti5Artl0RtHeI5pTF7MIDuXL3yY520V4=
 github.com/spf13/cast v1.3.0 h1:oget//CVOEoFewqQxwr0Ej5yjygnqGkvggSE/gB35Q8=
