@@ -80,7 +80,7 @@ func TestChartMigration(t *testing.T) {
 				},
 			},
 		}
-		_, err := config.K8sClients.G8sClient().CoreV1alpha1().ChartConfigs(key.Namespace()).Create(chartConfig)
+		_, err := config.K8sClients.G8sClient().CoreV1alpha1().ChartConfigs(key.Namespace()).Create(context.TODO(), chartConfig, metav1.CreateOptions{})
 		if err != nil {
 			t.Fatalf("expected %#v got %#v", nil, err)
 		}
@@ -108,7 +108,7 @@ func TestChartMigration(t *testing.T) {
 				Version:    "0.1.1",
 			},
 		}
-		_, err := config.K8sClients.G8sClient().ApplicationV1alpha1().Charts(key.Namespace()).Create(chart)
+		_, err := config.K8sClients.G8sClient().ApplicationV1alpha1().Charts(key.Namespace()).Create(context.TODO(), chart, metav1.CreateOptions{})
 		if err != nil {
 			t.Fatalf("expected %#v got %#v", nil, err)
 		}
@@ -132,7 +132,7 @@ func TestChartMigration(t *testing.T) {
 	{
 		config.Logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("adding annotation to chartconfig %#q", key.TestAppReleaseName()))
 
-		chartConfig, err := config.K8sClients.G8sClient().CoreV1alpha1().ChartConfigs(key.Namespace()).Get(key.TestAppReleaseName(), metav1.GetOptions{})
+		chartConfig, err := config.K8sClients.G8sClient().CoreV1alpha1().ChartConfigs(key.Namespace()).Get(context.TODO(), key.TestAppReleaseName(), metav1.GetOptions{})
 		if err != nil {
 			t.Fatalf("expected %#v got %#v", nil, err)
 		}
@@ -146,7 +146,7 @@ func TestChartMigration(t *testing.T) {
 		annotations[annotation.DeleteCustomResourceOnly] = "true"
 		chartConfig.Annotations = annotations
 
-		_, err = config.K8sClients.G8sClient().CoreV1alpha1().ChartConfigs(key.Namespace()).Update(chartConfig)
+		_, err = config.K8sClients.G8sClient().CoreV1alpha1().ChartConfigs(key.Namespace()).Update(context.TODO(), chartConfig, metav1.UpdateOptions{})
 		if err != nil {
 			t.Fatalf("expected %#v got %#v", nil, err)
 		}
@@ -158,7 +158,7 @@ func TestChartMigration(t *testing.T) {
 	{
 		config.Logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("deleting chartconfig %#q", key.TestAppReleaseName()))
 
-		err := config.K8sClients.G8sClient().CoreV1alpha1().ChartConfigs(key.Namespace()).Delete(key.TestAppReleaseName(), &metav1.DeleteOptions{})
+		err := config.K8sClients.G8sClient().CoreV1alpha1().ChartConfigs(key.Namespace()).Delete(context.TODO(), key.TestAppReleaseName(), metav1.DeleteOptions{})
 		if err != nil {
 			t.Fatalf("expected %#v got %#v", nil, err)
 		}
@@ -171,7 +171,7 @@ func TestChartMigration(t *testing.T) {
 		config.Logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("checking chartconfig %#q was deleted", key.TestAppReleaseName()))
 
 		o := func() error {
-			_, err := config.K8sClients.G8sClient().CoreV1alpha1().ChartConfigs(key.Namespace()).Get(key.TestAppReleaseName(), metav1.GetOptions{})
+			_, err := config.K8sClients.G8sClient().CoreV1alpha1().ChartConfigs(key.Namespace()).Get(context.TODO(), key.TestAppReleaseName(), metav1.GetOptions{})
 			if apierrors.IsNotFound(err) {
 				// Error is expected because finalizer was removed.
 				return nil

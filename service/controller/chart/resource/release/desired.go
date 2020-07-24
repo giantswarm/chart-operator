@@ -77,7 +77,7 @@ func (r *Resource) getConfigMapData(ctx context.Context, cr v1alpha1.Chart) (map
 		configMapName := key.ConfigMapName(cr)
 		configMapNamespace := key.ConfigMapNamespace(cr)
 
-		configMap, err := r.k8sClient.CoreV1().ConfigMaps(configMapNamespace).Get(configMapName, metav1.GetOptions{})
+		configMap, err := r.k8sClient.CoreV1().ConfigMaps(configMapNamespace).Get(context.TODO(), configMapName, metav1.GetOptions{})
 		if apierrors.IsNotFound(err) {
 			return nil, microerror.Maskf(notFoundError, "config map %#q in namespace %#q not found", configMapName, configMapNamespace)
 		} else if err != nil {
@@ -109,7 +109,7 @@ func (r *Resource) getSecretData(ctx context.Context, cr v1alpha1.Chart) (map[st
 		secretName := key.SecretName(cr)
 		secretNamespace := key.SecretNamespace(cr)
 
-		secret, err := r.k8sClient.CoreV1().Secrets(secretNamespace).Get(secretName, metav1.GetOptions{})
+		secret, err := r.k8sClient.CoreV1().Secrets(secretNamespace).Get(context.TODO(), secretName, metav1.GetOptions{})
 		if apierrors.IsNotFound(err) {
 			return nil, microerror.Maskf(notFoundError, "secret %#q in namespace %#q not found", secretName, secretNamespace)
 		} else if err != nil {

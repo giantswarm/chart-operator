@@ -26,7 +26,7 @@ func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
 	lo := metav1.ListOptions{
 		LabelSelector: fmt.Sprintf("%s=%s", label.App, cr.Labels[label.App]),
 	}
-	res, err := r.g8sClient.CoreV1alpha1().ChartConfigs(cr.Namespace).List(lo)
+	res, err := r.g8sClient.CoreV1alpha1().ChartConfigs(cr.Namespace).List(context.TODO(), lo)
 	if isChartConfigNotInstalled(err) {
 		r.logger.LogCtx(ctx, "level", "debug", "message", "no chartconfig CRD. nothing to do.")
 		return nil
@@ -100,7 +100,7 @@ func (r *Resource) removeFinalizer(ctx context.Context, chartConfig v1alpha1.Cha
 		return microerror.Mask(err)
 	}
 
-	_, err = r.g8sClient.CoreV1alpha1().ChartConfigs(chartConfig.Namespace).Patch(chartConfig.Name, types.JSONPatchType, bytes)
+	_, err = r.g8sClient.CoreV1alpha1().ChartConfigs(chartConfig.Namespace).Patch(context.TODO(), chartConfig.Name, types.JSONPatchType, bytes, metav1.PatchOptions{})
 	if err != nil {
 		return microerror.Mask(err)
 	}
