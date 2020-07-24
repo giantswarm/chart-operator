@@ -262,7 +262,6 @@ github.com/giantswarm/helmclient v1.0.5/go.mod h1:BjGESTZyJv1b2Cx5ZYZWE3mNQjn+J+
 github.com/giantswarm/k8sclient/v2 v2.0.0 h1:vhqMIM7vxlvfkCIzPwkbRRh+O4O91g9ArBnDNalo1kc=
 github.com/giantswarm/k8sclient/v2 v2.0.0/go.mod h1:4qkgg7+wF6IrwEB1oWYUFLmhft/1pBfGV08NFJSrBb4=
 github.com/giantswarm/k8sclient/v3 v3.1.0/go.mod h1:kDOgbAQ3V8YqroN4T7RVPk+rapvT/IV2KNNbxfM2xys=
-github.com/giantswarm/k8sclient/v3 v3.1.1 h1:iJYop1h59ItPzmroa7wGHrhXSzeh7QblViUMIQPm9dY=
 github.com/giantswarm/k8sclient/v3 v3.1.1/go.mod h1:ezorsMUa1az9KC2a0C3FmG10x6AqEiNr4R246hWj9h4=
 github.com/giantswarm/k8sclient/v3 v3.1.2 h1:/X1OqiWDm+4IjZn3HYkTJbNkqH6/T9j+lJfZRQ4R30A=
 github.com/giantswarm/k8sclient/v3 v3.1.2/go.mod h1:BTcd+oxkukuu+NBIs9yWN4ZIh+Ca8PmsoYTK7GXZErg=
