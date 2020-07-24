@@ -10,6 +10,8 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 ### Changed
 
 - Disable force upgrades since recreating resources is not supported.
+- Graduate Chart CRD to v1.
+- Upgrade to operatorkit 1.2.0.
 
 ## [1.0.5] - 2020-07-15
 
