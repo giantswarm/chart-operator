@@ -4,7 +4,6 @@ package setup
 
 import (
 	"github.com/giantswarm/helmclient"
-	k8sclientv2 "github.com/giantswarm/k8sclient/v2/pkg/k8sclient"
 	"github.com/giantswarm/k8sclient/v3/pkg/k8sclient"
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/micrologger"
@@ -15,12 +14,11 @@ import (
 )
 
 type Config struct {
-	HelmClient   helmclient.Interface
-	K8s          *k8sclient.Setup
-	K8sClientsV2 k8sclientv2.Interface
-	K8sClients   k8sclient.Interface
-	Logger       micrologger.Logger
-	Release      *release.Release
+	HelmClient helmclient.Interface
+	K8s        *k8sclient.Setup
+	K8sClients k8sclient.Interface
+	Logger     micrologger.Logger
+	Release    *release.Release
 }
 
 func NewConfig() (Config, error) {
@@ -45,22 +43,6 @@ func NewConfig() (Config, error) {
 		}
 
 		cpK8sClients, err = k8sclient.NewClients(c)
-		if err != nil {
-			return Config{}, microerror.Mask(err)
-		}
-	}
-
-	// cpK8sClientsV2 is to create the chartconfig CRD which will not be
-	// graduated from v1beta1 to v1 since its deprecated.
-	var cpK8sClientsV2 *k8sclientv2.Clients
-	{
-		c := k8sclientv2.ClientsConfig{
-			Logger: logger,
-
-			KubeConfigPath: env.KubeConfigPath(),
-		}
-
-		cpK8sClientsV2, err = k8sclientv2.NewClients(c)
 		if err != nil {
 			return Config{}, microerror.Mask(err)
 		}
@@ -108,12 +90,11 @@ func NewConfig() (Config, error) {
 	}
 
 	c := Config{
-		HelmClient:   helmClient,
-		K8s:          k8sSetup,
-		K8sClients:   cpK8sClients,
-		K8sClientsV2: cpK8sClientsV2,
-		Logger:       logger,
-		Release:      newRelease,
+		HelmClient: helmClient,
+		K8s:        k8sSetup,
+		K8sClients: cpK8sClients,
+		Logger:     logger,
+		Release:    newRelease,
 	}
 
 	return c, nil

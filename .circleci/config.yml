@@ -114,11 +114,3 @@ workflows:
           requires:
           - go-build
           - push-chart-operator-to-default-app-catalog
-      
-      - architect/integration-test:
-          context: architect
-          name: migration-integration-test
-          test-dir: "integration/test/chart/migration"
-          requires:
-          - go-build
-          - push-chart-operator-to-default-app-catalog
