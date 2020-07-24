@@ -63,7 +63,7 @@ func (h *HelmV2Release) Collect(ch chan<- prometheus.Metric) error {
 	}
 
 	// Check whether helm 2 release configMaps still exist.
-	cms, err := h.k8sClient.CoreV1().ConfigMaps(h.tillerNamespace).List(context.TODO(), lo)
+	cms, err := h.k8sClient.CoreV1().ConfigMaps(h.tillerNamespace).List(context.Background(), lo)
 	if err != nil {
 		return microerror.Mask(err)
 	}

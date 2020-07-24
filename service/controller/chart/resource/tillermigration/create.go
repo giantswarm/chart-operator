@@ -25,7 +25,7 @@ func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
 		return nil
 	}
 
-	charts, err := r.g8sClient.ApplicationV1alpha1().Charts("").List(context.TODO(), metav1.ListOptions{})
+	charts, err := r.g8sClient.ApplicationV1alpha1().Charts("").List(ctx, metav1.ListOptions{})
 	if err != nil {
 		return microerror.Mask(err)
 	}
@@ -82,7 +82,7 @@ func (r *Resource) findHelmV2ConfigMaps(ctx context.Context, releaseName string)
 	}
 
 	// Check whether it keep helm2 release configMaps
-	cms, err := r.k8sClient.CoreV1().ConfigMaps(r.tillerNamespace).List(context.TODO(), lo)
+	cms, err := r.k8sClient.CoreV1().ConfigMaps(r.tillerNamespace).List(ctx, lo)
 	if err != nil {
 		return false, microerror.Mask(err)
 	}
@@ -96,7 +96,7 @@ func (r *Resource) findHelmV3Secrets(ctx context.Context, releaseName, releaseNa
 	}
 
 	// Check whether it keep helm3 release secrets
-	secrets, err := r.k8sClient.CoreV1().Secrets(releaseNamespace).List(context.TODO(), lo)
+	secrets, err := r.k8sClient.CoreV1().Secrets(releaseNamespace).List(ctx, lo)
 	if err != nil {
 		return false, microerror.Mask(err)
 	}

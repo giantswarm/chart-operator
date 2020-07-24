@@ -58,7 +58,9 @@ func NewOrphanConfigMap(config OrphanConfigMapConfig) (*OrphanConfigMap, error) 
 }
 
 func (oc *OrphanConfigMap) Collect(ch chan<- prometheus.Metric) error {
-	charts, err := oc.g8sClient.ApplicationV1alpha1().Charts("").List(context.TODO(), metav1.ListOptions{})
+	ctx := context.Background()
+
+	charts, err := oc.g8sClient.ApplicationV1alpha1().Charts("").List(ctx, metav1.ListOptions{})
 	if err != nil {
 		return microerror.Mask(err)
 	}
@@ -72,7 +74,7 @@ func (oc *OrphanConfigMap) Collect(ch chan<- prometheus.Metric) error {
 	lo := metav1.ListOptions{
 		LabelSelector: fmt.Sprintf("%s=%s", label.ManagedBy, "app-operator"),
 	}
-	configMaps, err := oc.k8sClient.CoreV1().ConfigMaps("").List(context.TODO(), lo)
+	configMaps, err := oc.k8sClient.CoreV1().ConfigMaps("").List(ctx, lo)
 	if err != nil {
 		return microerror.Mask(err)
 	}

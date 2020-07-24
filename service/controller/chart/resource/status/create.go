@@ -105,14 +105,14 @@ func (r *Resource) setStatus(ctx context.Context, cr v1alpha1.Chart, status v1al
 	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("setting status for release %#q status to %#q", key.ReleaseName(cr), status.Release.Status))
 
 	// Get chart CR again to ensure the resource version is correct.
-	currentCR, err := r.g8sClient.ApplicationV1alpha1().Charts(cr.Namespace).Get(context.TODO(), cr.Name, metav1.GetOptions{})
+	currentCR, err := r.g8sClient.ApplicationV1alpha1().Charts(cr.Namespace).Get(ctx, cr.Name, metav1.GetOptions{})
 	if err != nil {
 		return microerror.Mask(err)
 	}
 
 	currentCR.Status = status
 
-	_, err = r.g8sClient.ApplicationV1alpha1().Charts(cr.Namespace).UpdateStatus(context.TODO(), currentCR, metav1.UpdateOptions{})
+	_, err = r.g8sClient.ApplicationV1alpha1().Charts(cr.Namespace).UpdateStatus(ctx, currentCR, metav1.UpdateOptions{})
 	if err != nil {
 		return microerror.Mask(err)
 	}

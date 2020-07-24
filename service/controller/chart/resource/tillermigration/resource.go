@@ -70,7 +70,7 @@ func (r *Resource) ensureTillerDeleted(ctx context.Context) error {
 	name := "tiller-giantswarm"
 
 	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("deleting service account %#q in namespace %#q", name, r.tillerNamespace))
-	err := r.k8sClient.CoreV1().ServiceAccounts(r.tillerNamespace).Delete(context.TODO(), name, metav1.DeleteOptions{})
+	err := r.k8sClient.CoreV1().ServiceAccounts(r.tillerNamespace).Delete(ctx, name, metav1.DeleteOptions{})
 	if apierrors.IsNotFound(err) {
 		// no-op
 	} else if err != nil {
@@ -79,7 +79,7 @@ func (r *Resource) ensureTillerDeleted(ctx context.Context) error {
 	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("deleted service account %#q in namespace %#q", name, r.tillerNamespace))
 
 	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("deleting cluster role binding %#q", name))
-	err = r.k8sClient.RbacV1().ClusterRoleBindings().Delete(context.TODO(), name, metav1.DeleteOptions{})
+	err = r.k8sClient.RbacV1().ClusterRoleBindings().Delete(ctx, name, metav1.DeleteOptions{})
 	if apierrors.IsNotFound(err) {
 		// no-op
 	} else if err != nil {
@@ -89,7 +89,7 @@ func (r *Resource) ensureTillerDeleted(ctx context.Context) error {
 
 	pspName := fmt.Sprintf("%s-psp", name)
 	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("deleting psp cluster role binding %#q", pspName))
-	err = r.k8sClient.RbacV1().ClusterRoleBindings().Delete(context.TODO(), "tiller-giantswarm-psp", metav1.DeleteOptions{})
+	err = r.k8sClient.RbacV1().ClusterRoleBindings().Delete(ctx, "tiller-giantswarm-psp", metav1.DeleteOptions{})
 	if apierrors.IsNotFound(err) {
 		// no-op
 	} else if err != nil {
@@ -106,7 +106,7 @@ func (r *Resource) ensureTillerDeleted(ctx context.Context) error {
 	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("deleted psp cluster role %#q", pspName))
 
 	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("deleting pod security policy %#q", pspName))
-	err = r.k8sClient.PolicyV1beta1().PodSecurityPolicies().Delete(context.TODO(), pspName, metav1.DeleteOptions{})
+	err = r.k8sClient.PolicyV1beta1().PodSecurityPolicies().Delete(ctx, pspName, metav1.DeleteOptions{})
 	if apierrors.IsNotFound(err) {
 		// no-op
 	} else if err != nil {
@@ -115,7 +115,7 @@ func (r *Resource) ensureTillerDeleted(ctx context.Context) error {
 	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("deleted pod security policy %#q", pspName))
 
 	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("deleting network policy %#q in namespace %#q", pspName, r.tillerNamespace))
-	err = r.k8sClient.NetworkingV1().NetworkPolicies(r.tillerNamespace).Delete(context.TODO(), "tiller-giantswarm", metav1.DeleteOptions{})
+	err = r.k8sClient.NetworkingV1().NetworkPolicies(r.tillerNamespace).Delete(ctx, "tiller-giantswarm", metav1.DeleteOptions{})
 	if apierrors.IsNotFound(err) {
 		// no-op
 	} else if err != nil {
@@ -124,7 +124,7 @@ func (r *Resource) ensureTillerDeleted(ctx context.Context) error {
 	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("deleted network policy %#q in namespace %#q", pspName, r.tillerNamespace))
 
 	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("deleting deployment `tiller-deploy` in namespace %#q", r.tillerNamespace))
-	err = r.k8sClient.AppsV1().Deployments(r.tillerNamespace).Delete(context.TODO(), "tiller-deploy", metav1.DeleteOptions{})
+	err = r.k8sClient.AppsV1().Deployments(r.tillerNamespace).Delete(ctx, "tiller-deploy", metav1.DeleteOptions{})
 	if apierrors.IsNotFound(err) {
 		// no-op
 	} else if err != nil {
