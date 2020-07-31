@@ -21,6 +21,7 @@ Common labels
 app: {{ include "chart-operator.name" . | quote }}
 app.giantswarm.io/branch: {{ .Values.project.branch | replace "#" "-" | replace "/" "-" | trunc 63 | quote }}
 app.giantswarm.io/commit: {{ .Values.project.commit | quote }}
+app.giantswarm.io/team: {{ (index .Values.maintainers 0).team }}
 app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 helm.sh/chart: {{ include "chart-operator.chart" . | quote }}
