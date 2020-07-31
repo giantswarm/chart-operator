@@ -6,4 +6,6 @@ home: https://github.com/giantswarm/chart-operator
 maintainers:
 - name: team-batman
   team: batman
+- name: team-halo
+  team: halo
 version: [[ .Version ]]
