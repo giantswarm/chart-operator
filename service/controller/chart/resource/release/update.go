@@ -252,7 +252,7 @@ func (r *Resource) newUpdateChange(ctx context.Context, obj, currentState, desir
 		patches := []Patch{
 			{
 				Op:    "add",
-				Path:  fmt.Sprintf("/metadata/annotations/%s", annotation.RollbackCounts),
+				Path:  fmt.Sprintf("/metadata/annotations/%s", replaceToEscape(annotation.RollbackCounts)),
 				Value: fmt.Sprintf("%d", rollbackCounts+1),
 			},
 		}
@@ -274,7 +274,7 @@ func (r *Resource) newUpdateChange(ctx context.Context, obj, currentState, desir
 		patches := []Patch{
 			{
 				Op:   "remove",
-				Path: fmt.Sprintf("/metadata/annotations/%s", annotation.RollbackCounts),
+				Path: fmt.Sprintf("/metadata/annotations/%s", replaceToEscape(annotation.RollbackCounts)),
 			},
 		}
 
