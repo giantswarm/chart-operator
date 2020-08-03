@@ -225,6 +225,9 @@ func (r *Resource) newUpdateChange(ctx context.Context, obj, currentState, desir
 		// This is to consider critical app's service level and stateful apps.
 		if upgradeForce {
 			err = r.rollback(ctx, obj, currentReleaseState.Status)
+			if err != nil {
+				return nil, microerror.Mask(err)
+			}
 		}
 	}
 
