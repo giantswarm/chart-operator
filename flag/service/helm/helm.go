@@ -8,5 +8,6 @@ import (
 type Helm struct {
 	HTTP            http.HTTP
 	Kubernetes      kubernetes.Kubernetes
+	MaxRollback     string
 	TillerNamespace string
 }

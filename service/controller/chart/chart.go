@@ -27,6 +27,7 @@ type Config struct {
 	Logger     micrologger.Logger
 
 	K8sWaitTimeout  time.Duration
+	MaxRollback     int
 	TillerNamespace string
 }
 
@@ -72,6 +73,7 @@ func NewChart(config Config) (*Chart, error) {
 			Logger:     config.Logger,
 
 			K8sWaitTimeout:  config.K8sWaitTimeout,
+			MaxRollback:     config.MaxRollback,
 			TillerNamespace: config.TillerNamespace,
 		}
 

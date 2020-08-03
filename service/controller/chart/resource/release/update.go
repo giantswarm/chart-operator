@@ -267,8 +267,8 @@ func (r *Resource) rollback(ctx context.Context, obj interface{}, currentStatus 
 		}
 	}
 
-	if rollbackCounts > maxRollBack {
-		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("the %#q release is in status %#q and cannot be updated", key.ReleaseName(cr), currentStatus))
+	if rollbackCounts > r.maxRollback {
+		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("the %#q release is in status %#q and cannot be updated regardless of %d rollbacks", key.ReleaseName(cr), currentStatus, r.maxRollback))
 		return nil
 	}
 

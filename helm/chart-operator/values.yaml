@@ -11,6 +11,7 @@ helm:
     clientTimeout: "5s"
   kubernetes:
     waitTimeout: "10s"
+  maxRollback: 3
 
 image:
   registry: "quay.io"
