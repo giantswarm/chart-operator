@@ -41,6 +41,8 @@ const (
 	// validationFailedStatus is set in the CR status when it failed to pass
 	// OpenAPI validation on release manifest.
 	validationFailedStatus = "validation-failed"
+
+	maxRollBack = 5
 )
 
 // Config represents the configuration used to create a new release resource.
