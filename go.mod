@@ -24,7 +24,7 @@ require (
 	github.com/mattn/go-runewidth v0.0.4 // indirect
 	github.com/opencontainers/runc v1.0.0-rc2.0.20190611121236-6cc515888830 // indirect
 	github.com/prometheus/client_golang v1.7.1
-	github.com/spf13/afero v1.3.2
+	github.com/spf13/afero v1.3.3
 	github.com/spf13/viper v1.7.1
 	google.golang.org/appengine v1.6.5 // indirect
 	k8s.io/api v0.17.3
