@@ -278,16 +278,24 @@ func (r *Resource) rollback(ctx context.Context, obj interface{}, currentStatus 
 	}
 
 	if currentStatus == helmclient.StatusPendingInstall {
+		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("deleting release %#q in %#q status", key.ReleaseName(cr), currentStatus))
+
 		err = r.helmClient.DeleteRelease(ctx, key.Namespace(cr), key.ReleaseName(cr))
 		if err != nil {
 			return microerror.Mask(err)
 		}
+
+		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("deleted release %#q", key.ReleaseName(cr)))
 	} else {
+		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("rollback release %#q in %#q status", key.ReleaseName(cr), currentStatus))
+
 		// Rollback to revision 0 restore a release to the previous revision.
 		err = r.helmClient.Rollback(ctx, key.Namespace(cr), key.ReleaseName(cr), 0, helmclient.RollbackOptions{})
 		if err != nil {
 			return microerror.Mask(err)
 		}
+
+		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("rollbacked release %#q", key.ReleaseName(cr)))
 	}
 
 	patches := []Patch{
