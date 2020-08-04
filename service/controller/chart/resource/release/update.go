@@ -318,6 +318,7 @@ func (r *Resource) deleteRollbackAnnotation(obj interface{}) error {
 		// no-op
 		return nil
 	}
+
 	patches := []Patch{
 		{
 			Op:   "remove",
