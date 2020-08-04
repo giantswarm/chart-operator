@@ -19,8 +19,8 @@ const (
 	// force is used when upgrading the Helm release.
 	ForceHelmUpgrade = "chart-operator.giantswarm.io/force-helm-upgrade"
 
-	// RollbackCount is the name of the annotation that indicates
-	// the number of rollback did since get stuck in pending status.
+	// RollbackCount is the name of the annoataion storing the number of
+	// rollbacks performed from the previous pending status.
 	RollbackCount = "chart-operator.giantswarm.io/rollback-count"
 
 	// ValuesMD5Checksum is the name of the annotation storing an MD5 checksum
