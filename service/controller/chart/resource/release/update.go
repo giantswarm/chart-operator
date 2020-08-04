@@ -259,21 +259,21 @@ func (r *Resource) rollback(ctx context.Context, obj interface{}, currentStatus 
 		return microerror.Mask(err)
 	}
 
-	counts, ok := cr.GetAnnotations()[annotation.RollbackCount]
+	count, ok := cr.GetAnnotations()[annotation.RollbackCount]
 
 	var rollbackCount int
 
 	if !ok {
 		rollbackCount = 0
 	} else {
-		rollbackCount, err = strconv.Atoi(counts)
+		rollbackCount, err = strconv.Atoi(count)
 		if err != nil {
 			return microerror.Mask(err)
 		}
 	}
 
 	if rollbackCount > r.maxRollback {
-		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("the %#q release is in status %#q and cannot be updated despite of %d rollbacks", key.ReleaseName(cr), currentStatus, r.maxRollback))
+		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("the %#q release is in status %#q and has reached max %d rollbacks", key.ReleaseName(cr), currentStatus, r.maxRollback))
 		return nil
 	}
 
