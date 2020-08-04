@@ -260,17 +260,19 @@ func (r *Resource) rollback(ctx context.Context, obj interface{}, currentStatus 
 	}
 
 	counts, ok := cr.GetAnnotations()[annotation.RollbackCount]
-	var rollbackCounts int
+
+	var rollbackCount int
+
 	if !ok {
-		rollbackCounts = 0
+		rollbackCount = 0
 	} else {
-		rollbackCounts, err = strconv.Atoi(counts)
+		rollbackCount, err = strconv.Atoi(counts)
 		if err != nil {
 			return microerror.Mask(err)
 		}
 	}
 
-	if rollbackCounts > r.maxRollback {
+	if rollbackCount > r.maxRollback {
 		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("the %#q release is in status %#q and cannot be updated despite of %d rollbacks", key.ReleaseName(cr), currentStatus, r.maxRollback))
 		return nil
 	}
@@ -292,7 +294,7 @@ func (r *Resource) rollback(ctx context.Context, obj interface{}, currentStatus 
 		{
 			Op:    "add",
 			Path:  fmt.Sprintf("/metadata/annotations/%s", replaceToEscape(annotation.RollbackCount)),
-			Value: fmt.Sprintf("%d", rollbackCounts+1),
+			Value: fmt.Sprintf("%d", rollbackCount+1),
 		},
 	}
 
