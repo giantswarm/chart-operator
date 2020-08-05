@@ -27,6 +27,7 @@ data:
           {{ else }}
           waitTimeout: '{{ .Values.helm.kubernetes.waitTimeout }}'
           {{ end }}
+        maxRollback: '{{ .Values.helm.maxRollback }}'
         tillerNamespace:  '{{ .Values.tiller.namespace }}'
       image:
         registry: '{{ .Values.image.registry }}'
