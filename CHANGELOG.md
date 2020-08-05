@@ -9,6 +9,10 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [1.0.7] - 2020-08-05
 
+### Changed
+
+- Rollback the helm release in pending-install, pending-upgrade.
+
 ## [1.0.6] - 2020-07-24
 
 ### Changed
