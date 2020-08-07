@@ -7,6 +7,12 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+## [1.0.7] - 2020-08-05
+
+### Changed
+
+- Rollback the helm release in pending-install, pending-upgrade.
+
 ## [1.0.6] - 2020-07-24
 
 ### Changed
@@ -125,7 +131,8 @@ We check progress in the next reconciliation loop. ([#362](https://github.com/gi
 - Separate podsecuritypolicy.
 - Security context in deployment spec with non-root user.
 
-[Unreleased]: https://github.com/giantswarm/chart-operator/compare/v1.0.6...HEAD
+[Unreleased]: https://github.com/giantswarm/chart-operator/compare/v1.0.7...HEAD
+[1.0.7]: https://github.com/giantswarm/chart-operator/compare/v1.0.6...v1.0.7
 [1.0.6]: https://github.com/giantswarm/chart-operator/compare/v1.0.5...v1.0.6
 [1.0.5]: https://github.com/giantswarm/chart-operator/compare/v1.0.4...v1.0.5
 [1.0.4]: https://github.com/giantswarm/chart-operator/compare/v1.0.3...v1.0.4

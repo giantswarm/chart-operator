@@ -164,7 +164,7 @@ func Test_Resource_Release_newUpdateChange(t *testing.T) {
 
 	for i, tc := range testCases {
 		t.Run(strconv.Itoa(i), func(t *testing.T) {
-			result, err := newResource.newUpdateChange(context.TODO(), tc.obj, tc.currentState, tc.desiredState)
+			result, err := newResource.newUpdateChange(context.TODO(), &tc.obj, tc.currentState, tc.desiredState)
 			if err != nil {
 				t.Fatal("expected", nil, "got", err)
 			}

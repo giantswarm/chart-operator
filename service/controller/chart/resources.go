@@ -30,6 +30,7 @@ type chartResourcesConfig struct {
 
 	// Settings.
 	K8sWaitTimeout  time.Duration
+	MaxRollback     int
 	TillerNamespace string
 }
 
@@ -82,6 +83,7 @@ func newChartResources(config chartResourcesConfig) ([]resource.Interface, error
 
 			// Settings
 			K8sWaitTimeout:  config.K8sWaitTimeout,
+			MaxRollback:     config.MaxRollback,
 			TillerNamespace: config.TillerNamespace,
 		}
 

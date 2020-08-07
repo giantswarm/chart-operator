@@ -54,6 +54,7 @@ type Config struct {
 
 	// Settings.
 	K8sWaitTimeout  time.Duration
+	MaxRollback     int
 	TillerNamespace string
 }
 
@@ -68,6 +69,7 @@ type Resource struct {
 
 	// Settings.
 	k8sWaitTimeout  time.Duration
+	maxRollback     int
 	tillerNamespace string
 }
 
@@ -108,6 +110,7 @@ func New(config Config) (*Resource, error) {
 
 		// Settings.
 		k8sWaitTimeout:  config.K8sWaitTimeout,
+		maxRollback:     config.MaxRollback,
 		tillerNamespace: config.TillerNamespace,
 	}
 

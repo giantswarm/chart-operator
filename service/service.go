@@ -126,6 +126,7 @@ func New(config Config) (*Service, error) {
 			K8sClient:  k8sClient,
 
 			K8sWaitTimeout:  config.Viper.GetDuration(config.Flag.Service.Helm.Kubernetes.WaitTimeout),
+			MaxRollback:     config.Viper.GetInt(config.Flag.Service.Helm.MaxRollback),
 			TillerNamespace: config.Viper.GetString(config.Flag.Service.Helm.TillerNamespace),
 		}
 

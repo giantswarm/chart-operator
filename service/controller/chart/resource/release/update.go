@@ -2,14 +2,18 @@ package release
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
+	"strconv"
 	"time"
 
 	"github.com/giantswarm/helmclient"
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/operatorkit/controller/context/resourcecanceledcontext"
 	"github.com/giantswarm/operatorkit/resource/crud"
+	"k8s.io/apimachinery/pkg/types"
 
+	"github.com/giantswarm/chart-operator/pkg/annotation"
 	"github.com/giantswarm/chart-operator/service/controller/chart/controllercontext"
 	"github.com/giantswarm/chart-operator/service/controller/chart/key"
 )
@@ -196,6 +200,11 @@ func (r *Resource) NewUpdatePatch(ctx context.Context, obj, currentState, desire
 }
 
 func (r *Resource) newUpdateChange(ctx context.Context, obj, currentState, desiredState interface{}) (interface{}, error) {
+	cr, err := key.ToCustomResource(obj)
+	if err != nil {
+		return nil, microerror.Mask(err)
+	}
+
 	currentReleaseState, err := toReleaseState(currentState)
 	if err != nil {
 		return nil, microerror.Mask(err)
@@ -211,8 +220,15 @@ func (r *Resource) newUpdateChange(ctx context.Context, obj, currentState, desir
 	// The release is still being updated so we don't update and check again
 	// in the next reconciliation loop.
 	if isReleaseInTransitionState(currentReleaseState) {
-		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("the %#q release is in status %#q and cannot be updated", desiredReleaseState.Name, currentReleaseState.Status))
-		return nil, nil
+		upgradeForce := key.HasForceUpgradeAnnotation(cr)
+		// Only perform a rollback in case of upgrade force is enabled.
+		// This is to consider critical app's service level and stateful apps.
+		if upgradeForce {
+			err = r.rollback(ctx, obj, currentReleaseState.Status)
+			if err != nil {
+				return nil, microerror.Mask(err)
+			}
+		}
 	}
 
 	// The release is failed and the values and version have not changed. So we
@@ -229,5 +245,106 @@ func (r *Resource) newUpdateChange(ctx context.Context, obj, currentState, desir
 		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("the %#q release does not have to be updated", desiredReleaseState.Name))
 	}
 
+	err = r.deleteRollbackAnnotation(obj)
+	if err != nil {
+		return nil, microerror.Mask(err)
+	}
+
 	return nil, nil
+}
+
+func (r *Resource) rollback(ctx context.Context, obj interface{}, currentStatus string) error {
+	cr, err := key.ToCustomResource(obj)
+	if err != nil {
+		return microerror.Mask(err)
+	}
+
+	count, ok := cr.GetAnnotations()[annotation.RollbackCount]
+
+	var rollbackCount int
+
+	if !ok {
+		rollbackCount = 0
+	} else {
+		rollbackCount, err = strconv.Atoi(count)
+		if err != nil {
+			return microerror.Mask(err)
+		}
+	}
+
+	if rollbackCount > r.maxRollback {
+		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("the %#q release is in status %#q and has reached max %d rollbacks", key.ReleaseName(cr), currentStatus, r.maxRollback))
+		return nil
+	}
+
+	if currentStatus == helmclient.StatusPendingInstall {
+		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("deleting release %#q in %#q status", key.ReleaseName(cr), currentStatus))
+
+		err = r.helmClient.DeleteRelease(ctx, key.Namespace(cr), key.ReleaseName(cr))
+		if err != nil {
+			return microerror.Mask(err)
+		}
+
+		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("deleted release %#q", key.ReleaseName(cr)))
+	} else {
+		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("rollback release %#q in %#q status", key.ReleaseName(cr), currentStatus))
+
+		// Rollback to revision 0 restore a release to the previous revision.
+		err = r.helmClient.Rollback(ctx, key.Namespace(cr), key.ReleaseName(cr), 0, helmclient.RollbackOptions{})
+		if err != nil {
+			return microerror.Mask(err)
+		}
+
+		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("rollbacked release %#q", key.ReleaseName(cr)))
+	}
+
+	patches := []Patch{
+		{
+			Op:    "add",
+			Path:  fmt.Sprintf("/metadata/annotations/%s", replaceToEscape(annotation.RollbackCount)),
+			Value: fmt.Sprintf("%d", rollbackCount+1),
+		},
+	}
+
+	bytes, err := json.Marshal(patches)
+	if err != nil {
+		return microerror.Mask(err)
+	}
+
+	_, err = r.g8sClient.ApplicationV1alpha1().Charts(cr.Namespace).Patch(cr.Name, types.JSONPatchType, bytes)
+	if err != nil {
+		return microerror.Mask(err)
+	}
+
+	return nil
+}
+
+func (r *Resource) deleteRollbackAnnotation(obj interface{}) error {
+	cr, err := key.ToCustomResource(obj)
+	if err != nil {
+		return microerror.Mask(err)
+	}
+	if _, ok := cr.GetAnnotations()[annotation.RollbackCount]; !ok {
+		// no-op
+		return nil
+	}
+
+	patches := []Patch{
+		{
+			Op:   "remove",
+			Path: fmt.Sprintf("/metadata/annotations/%s", replaceToEscape(annotation.RollbackCount)),
+		},
+	}
+
+	bytes, err := json.Marshal(patches)
+	if err != nil {
+		return microerror.Mask(err)
+	}
+
+	_, err = r.g8sClient.ApplicationV1alpha1().Charts(cr.Namespace).Patch(cr.Name, types.JSONPatchType, bytes)
+	if err != nil {
+		return microerror.Mask(err)
+	}
+
+	return nil
 }
