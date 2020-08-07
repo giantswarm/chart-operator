@@ -5,7 +5,7 @@ package basic
 import (
 	"testing"
 
-	"github.com/giantswarm/chart-operator/integration/setup"
+	"github.com/giantswarm/chart-operator/v2/integration/setup"
 )
 
 var (

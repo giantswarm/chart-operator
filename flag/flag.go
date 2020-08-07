@@ -3,7 +3,7 @@ package flag
 import (
 	"github.com/giantswarm/microkit/flag"
 
-	"github.com/giantswarm/chart-operator/flag/service"
+	"github.com/giantswarm/chart-operator/v2/flag/service"
 )
 
 // Flag provides data structure for service command line flags.

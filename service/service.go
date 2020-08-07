@@ -4,11 +4,11 @@ import (
 	"context"
 	"sync"
 
-	applicationv1alpha1 "github.com/giantswarm/apiextensions/pkg/apis/application/v1alpha1"
-	corev1alpha1 "github.com/giantswarm/apiextensions/pkg/apis/core/v1alpha1"
-	"github.com/giantswarm/helmclient"
-	"github.com/giantswarm/k8sclient/v3/pkg/k8sclient"
-	"github.com/giantswarm/k8sclient/v3/pkg/k8srestconfig"
+	applicationv1alpha1 "github.com/giantswarm/apiextensions/v2/pkg/apis/application/v1alpha1"
+	corev1alpha1 "github.com/giantswarm/apiextensions/v2/pkg/apis/core/v1alpha1"
+	"github.com/giantswarm/helmclient/v2"
+	"github.com/giantswarm/k8sclient/v4/pkg/k8sclient"
+	"github.com/giantswarm/k8sclient/v4/pkg/k8srestconfig"
 	"github.com/giantswarm/microendpoint/service/version"
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/micrologger"
@@ -17,10 +17,10 @@ import (
 	"github.com/spf13/viper"
 	"k8s.io/client-go/rest"
 
-	"github.com/giantswarm/chart-operator/flag"
-	"github.com/giantswarm/chart-operator/pkg/project"
-	"github.com/giantswarm/chart-operator/service/collector"
-	"github.com/giantswarm/chart-operator/service/controller/chart"
+	"github.com/giantswarm/chart-operator/v2/flag"
+	"github.com/giantswarm/chart-operator/v2/pkg/project"
+	"github.com/giantswarm/chart-operator/v2/service/collector"
+	"github.com/giantswarm/chart-operator/v2/service/controller/chart"
 )
 
 // Config represents the configuration used to create a new service.

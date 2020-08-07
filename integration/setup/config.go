@@ -3,14 +3,14 @@
 package setup
 
 import (
-	"github.com/giantswarm/helmclient"
-	"github.com/giantswarm/k8sclient/v3/pkg/k8sclient"
+	"github.com/giantswarm/helmclient/v2"
+	"github.com/giantswarm/k8sclient/v4/pkg/k8sclient"
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/micrologger"
 	"github.com/spf13/afero"
 
-	"github.com/giantswarm/chart-operator/integration/env"
-	"github.com/giantswarm/chart-operator/integration/release"
+	"github.com/giantswarm/chart-operator/v2/integration/env"
+	"github.com/giantswarm/chart-operator/v2/integration/release"
 )
 
 type Config struct {
