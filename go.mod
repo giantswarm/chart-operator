@@ -8,13 +8,13 @@ require (
 	github.com/giantswarm/appcatalog v0.2.7
 	github.com/giantswarm/backoff v0.2.0
 	github.com/giantswarm/exporterkit v0.2.0
-	github.com/giantswarm/helmclient/v2 v2.0.0-20200807083927-a727a3bb1283
+	github.com/giantswarm/helmclient/v2 v2.0.0-20200809132331-a75d70f49755
 	github.com/giantswarm/k8sclient/v4 v4.0.0-20200806115259-2d3b230ace59
 	github.com/giantswarm/microendpoint v0.2.0
 	github.com/giantswarm/microerror v0.2.1
 	github.com/giantswarm/microkit v0.2.1
 	github.com/giantswarm/micrologger v0.3.1
-	github.com/giantswarm/operatorkit/v2 v2.0.0-20200807092214-4411e28d02a5
+	github.com/giantswarm/operatorkit/v2 v2.0.0-20200809132745-a35924cf9504
 	github.com/giantswarm/versionbundle v0.2.0
 	github.com/google/go-cmp v0.5.1
 	github.com/opencontainers/runc v1.0.0-rc2.0.20190611121236-6cc515888830 // indirect

@@ -256,8 +256,11 @@ github.com/giantswarm/backoff v0.2.0 h1:kdfAf83pZ/l8X0KiA2dJ2Wq19nS9hISijVn7ZRdF
 github.com/giantswarm/backoff v0.2.0/go.mod h1:Z3WRsFilSJ5H5VlFa4XhraoPr+9pmZgYasoY2OSfNOk=
 github.com/giantswarm/exporterkit v0.2.0 h1:+HTGl4fmT/1OkTox8HbV3JXeavmsZv94+2CDW8cSrq0=
 github.com/giantswarm/exporterkit v0.2.0/go.mod h1:b4fuHVjsvZgznC9OEPfn0y5zvN8SnEKTiI5zTTfck94=
+github.com/giantswarm/helmclient v1.0.6 h1:Pbb4sjKzpqPEuH4hgrZvWrakNPFk8SJS14XIR5hZ6kc=
 github.com/giantswarm/helmclient/v2 v2.0.0-20200807083927-a727a3bb1283 h1:e87mNA9V4ASnkS6ZL3ldtvD54rBOLQgBY6jghXYX70Q=
 github.com/giantswarm/helmclient/v2 v2.0.0-20200807083927-a727a3bb1283/go.mod h1:dDw7Nx5TxmPCUM2cjKbpUa4DJMMGYfADLohaEnVaQ7U=
+github.com/giantswarm/helmclient/v2 v2.0.0-20200809132331-a75d70f49755 h1:O/4Widunymtfwxefdgju8XtW302CZOmZq/XGFMqAo2o=
+github.com/giantswarm/helmclient/v2 v2.0.0-20200809132331-a75d70f49755/go.mod h1:dDw7Nx5TxmPCUM2cjKbpUa4DJMMGYfADLohaEnVaQ7U=
 github.com/giantswarm/k8sclient/v4 v4.0.0-20200806115259-2d3b230ace59 h1:1coxk7fZJR5pIO/rS8jP9Q0BCf0CFYVq5gXJscvqhME=
 github.com/giantswarm/k8sclient/v4 v4.0.0-20200806115259-2d3b230ace59/go.mod h1:rz3zvIDi304gTDHSludo/0x7xyTi3cV5nYIXg0kW8HA=
 github.com/giantswarm/kubeconfig/v2 v2.0.0-20200806114529-9ef53912cf03 h1:jWGr10DtK8Xq1QNXDxZrVKYXSMuPDLYnV7D+ylHjwdM=
@@ -274,6 +277,8 @@ github.com/giantswarm/micrologger v0.3.1 h1:HbYbQLobvfsLYzRiGTncaO61CCPd4BlT18xa
 github.com/giantswarm/micrologger v0.3.1/go.mod h1:PjAgtcJ922ZMX/Aa05IPi0bdYvOj2P7pZ7+6dBShMQs=
 github.com/giantswarm/operatorkit/v2 v2.0.0-20200807092214-4411e28d02a5 h1:2+8kVEYxbA2kzrL75Oam0DmAk0VbwR0hYKDxo23G9Fs=
 github.com/giantswarm/operatorkit/v2 v2.0.0-20200807092214-4411e28d02a5/go.mod h1:H96vwuntVcLuZAn9fdb4g8GYqP36vHqxTkoCIWfeG9c=
+github.com/giantswarm/operatorkit/v2 v2.0.0-20200809132745-a35924cf9504 h1:fPz0lhqLSw0FkTX1fMDnZ1rmoDByDow2UUcgKARscxk=
+github.com/giantswarm/operatorkit/v2 v2.0.0-20200809132745-a35924cf9504/go.mod h1:H96vwuntVcLuZAn9fdb4g8GYqP36vHqxTkoCIWfeG9c=
 github.com/giantswarm/to v0.3.0 h1:cEzMYkWLGI3cI8x3a0L3nPCQYJTb/cAaqcIPvxnDmpQ=
 github.com/giantswarm/to v0.3.0/go.mod h1:RTRtw+Dyk6YqoiNBOGLO981BqhibtVwogdaFIMO1y/A=
 github.com/giantswarm/versionbundle v0.2.0 h1:6EP3+9uO/9z1xu7g4pHNUyENxE+Ix1bc5aFpUMPz5Yg=
