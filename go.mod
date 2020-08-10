@@ -14,7 +14,7 @@ require (
 	github.com/giantswarm/microerror v0.2.1
 	github.com/giantswarm/microkit v0.2.1
 	github.com/giantswarm/micrologger v0.3.1
-	github.com/giantswarm/operatorkit/v2 v2.0.0-20200809132745-a35924cf9504
+	github.com/giantswarm/operatorkit/v2 v2.0.0-20200810113941-edc8f5257617
 	github.com/giantswarm/versionbundle v0.2.0
 	github.com/google/go-cmp v0.5.1
 	github.com/opencontainers/runc v1.0.0-rc2.0.20190611121236-6cc515888830 // indirect
