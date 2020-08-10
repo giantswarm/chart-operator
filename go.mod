@@ -19,8 +19,8 @@ require (
 	github.com/google/go-cmp v0.5.1
 	github.com/opencontainers/runc v1.0.0-rc2.0.20190611121236-6cc515888830 // indirect
 	github.com/prometheus/client_golang v1.7.1
-	github.com/spf13/afero v1.3.3
-	github.com/spf13/viper v1.7.0
+	github.com/spf13/afero v1.3.4
+	github.com/spf13/viper v1.7.1
 	k8s.io/api v0.18.5
 	k8s.io/apimachinery v0.18.5
 	k8s.io/client-go v0.18.5
