@@ -9,15 +9,15 @@ import (
 	"testing"
 	"time"
 
-	"github.com/giantswarm/apiextensions/pkg/crd"
+	"github.com/giantswarm/apiextensions/v2/pkg/crd"
 	"github.com/giantswarm/appcatalog"
 	"github.com/giantswarm/backoff"
-	"github.com/giantswarm/helmclient"
+	"github.com/giantswarm/helmclient/v2/pkg/helmclient"
 	"github.com/giantswarm/microerror"
 	"github.com/spf13/afero"
 
-	"github.com/giantswarm/chart-operator/integration/key"
-	"github.com/giantswarm/chart-operator/pkg/project"
+	"github.com/giantswarm/chart-operator/v2/integration/key"
+	"github.com/giantswarm/chart-operator/v2/pkg/project"
 )
 
 func Setup(m *testing.M, config Config) {

@@ -12,7 +12,7 @@ import (
 	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
-	"github.com/giantswarm/chart-operator/flag"
+	"github.com/giantswarm/chart-operator/v2/flag"
 )
 
 func Test_Service_New(t *testing.T) {

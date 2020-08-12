@@ -5,14 +5,14 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/giantswarm/apiextensions/pkg/apis/core/v1alpha1"
+	"github.com/giantswarm/apiextensions/v2/pkg/apis/core/v1alpha1"
 	"github.com/giantswarm/microerror"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
 
-	"github.com/giantswarm/chart-operator/pkg/annotation"
-	"github.com/giantswarm/chart-operator/pkg/label"
-	"github.com/giantswarm/chart-operator/service/controller/chart/key"
+	"github.com/giantswarm/chart-operator/v2/pkg/annotation"
+	"github.com/giantswarm/chart-operator/v2/pkg/label"
+	"github.com/giantswarm/chart-operator/v2/service/controller/chart/key"
 )
 
 func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
@@ -26,7 +26,7 @@ func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
 	lo := metav1.ListOptions{
 		LabelSelector: fmt.Sprintf("%s=%s", label.App, cr.Labels[label.App]),
 	}
-	res, err := r.g8sClient.CoreV1alpha1().ChartConfigs(cr.Namespace).List(lo)
+	res, err := r.g8sClient.CoreV1alpha1().ChartConfigs(cr.Namespace).List(ctx, lo)
 	if isChartConfigNotInstalled(err) {
 		r.logger.LogCtx(ctx, "level", "debug", "message", "no chartconfig CRD. nothing to do.")
 		return nil
@@ -100,7 +100,7 @@ func (r *Resource) removeFinalizer(ctx context.Context, chartConfig v1alpha1.Cha
 		return microerror.Mask(err)
 	}
 
-	_, err = r.g8sClient.CoreV1alpha1().ChartConfigs(chartConfig.Namespace).Patch(chartConfig.Name, types.JSONPatchType, bytes)
+	_, err = r.g8sClient.CoreV1alpha1().ChartConfigs(chartConfig.Namespace).Patch(ctx, chartConfig.Name, types.JSONPatchType, bytes, metav1.PatchOptions{})
 	if err != nil {
 		return microerror.Mask(err)
 	}

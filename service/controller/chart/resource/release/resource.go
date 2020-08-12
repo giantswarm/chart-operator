@@ -7,9 +7,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/giantswarm/apiextensions/pkg/apis/application/v1alpha1"
-	"github.com/giantswarm/apiextensions/pkg/clientset/versioned"
-	"github.com/giantswarm/helmclient"
+	"github.com/giantswarm/apiextensions/v2/pkg/apis/application/v1alpha1"
+	"github.com/giantswarm/apiextensions/v2/pkg/clientset/versioned"
+	"github.com/giantswarm/helmclient/v2/pkg/helmclient"
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/micrologger"
 	"github.com/spf13/afero"
@@ -17,9 +17,9 @@ import (
 	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/client-go/kubernetes"
 
-	"github.com/giantswarm/chart-operator/pkg/annotation"
-	"github.com/giantswarm/chart-operator/service/controller/chart/controllercontext"
-	"github.com/giantswarm/chart-operator/service/controller/chart/key"
+	"github.com/giantswarm/chart-operator/v2/pkg/annotation"
+	"github.com/giantswarm/chart-operator/v2/service/controller/chart/controllercontext"
+	"github.com/giantswarm/chart-operator/v2/service/controller/chart/key"
 )
 
 const (
@@ -127,7 +127,7 @@ func (r *Resource) findHelmV2ConfigMaps(ctx context.Context, releaseName string)
 	}
 
 	// Check whether there are still helm2 release configmaps.
-	cms, err := r.k8sClient.CoreV1().ConfigMaps(r.tillerNamespace).List(lo)
+	cms, err := r.k8sClient.CoreV1().ConfigMaps(r.tillerNamespace).List(ctx, lo)
 	if err != nil {
 		return false, microerror.Mask(err)
 	}
@@ -143,7 +143,7 @@ func (r *Resource) patchAnnotations(ctx context.Context, cr v1alpha1.Chart, rele
 
 	// Get chart CR again to ensure the resource version and annotations
 	// are correct.
-	currentCR, err := r.g8sClient.ApplicationV1alpha1().Charts(cr.Namespace).Get(cr.Name, metav1.GetOptions{})
+	currentCR, err := r.g8sClient.ApplicationV1alpha1().Charts(cr.Namespace).Get(ctx, cr.Name, metav1.GetOptions{})
 	if err != nil {
 		return microerror.Mask(err)
 	}
@@ -172,7 +172,7 @@ func (r *Resource) patchAnnotations(ctx context.Context, cr v1alpha1.Chart, rele
 			return microerror.Mask(err)
 		}
 
-		_, err = r.g8sClient.ApplicationV1alpha1().Charts(cr.Namespace).Patch(cr.Name, types.JSONPatchType, bytes)
+		_, err = r.g8sClient.ApplicationV1alpha1().Charts(cr.Namespace).Patch(ctx, cr.Name, types.JSONPatchType, bytes, metav1.PatchOptions{})
 		if err != nil {
 			return microerror.Mask(err)
 		}

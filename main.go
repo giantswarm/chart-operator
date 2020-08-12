@@ -11,10 +11,10 @@ import (
 	"github.com/giantswarm/micrologger"
 	"github.com/spf13/viper"
 
-	"github.com/giantswarm/chart-operator/flag"
-	"github.com/giantswarm/chart-operator/pkg/project"
-	"github.com/giantswarm/chart-operator/server"
-	"github.com/giantswarm/chart-operator/service"
+	"github.com/giantswarm/chart-operator/v2/flag"
+	"github.com/giantswarm/chart-operator/v2/pkg/project"
+	"github.com/giantswarm/chart-operator/v2/server"
+	"github.com/giantswarm/chart-operator/v2/service"
 )
 
 var (

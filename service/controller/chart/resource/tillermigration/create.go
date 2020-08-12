@@ -7,8 +7,8 @@ import (
 	"github.com/giantswarm/microerror"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
-	"github.com/giantswarm/chart-operator/pkg/project"
-	"github.com/giantswarm/chart-operator/service/controller/chart/key"
+	"github.com/giantswarm/chart-operator/v2/pkg/project"
+	"github.com/giantswarm/chart-operator/v2/service/controller/chart/key"
 )
 
 // EnsureCreated ensures tiller resources are deleted once all helm releases are migrated to v3.
@@ -25,7 +25,7 @@ func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
 		return nil
 	}
 
-	charts, err := r.g8sClient.ApplicationV1alpha1().Charts("").List(metav1.ListOptions{})
+	charts, err := r.g8sClient.ApplicationV1alpha1().Charts("").List(ctx, metav1.ListOptions{})
 	if err != nil {
 		return microerror.Mask(err)
 	}
@@ -82,7 +82,7 @@ func (r *Resource) findHelmV2ConfigMaps(ctx context.Context, releaseName string)
 	}
 
 	// Check whether it keep helm2 release configMaps
-	cms, err := r.k8sClient.CoreV1().ConfigMaps(r.tillerNamespace).List(lo)
+	cms, err := r.k8sClient.CoreV1().ConfigMaps(r.tillerNamespace).List(ctx, lo)
 	if err != nil {
 		return false, microerror.Mask(err)
 	}
@@ -96,7 +96,7 @@ func (r *Resource) findHelmV3Secrets(ctx context.Context, releaseName, releaseNa
 	}
 
 	// Check whether it keep helm3 release secrets
-	secrets, err := r.k8sClient.CoreV1().Secrets(releaseNamespace).List(lo)
+	secrets, err := r.k8sClient.CoreV1().Secrets(releaseNamespace).List(ctx, lo)
 	if err != nil {
 		return false, microerror.Mask(err)
 	}

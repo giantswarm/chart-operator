@@ -7,15 +7,16 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/giantswarm/helmclient"
+	"github.com/giantswarm/helmclient/v2/pkg/helmclient"
 	"github.com/giantswarm/microerror"
-	"github.com/giantswarm/operatorkit/controller/context/resourcecanceledcontext"
-	"github.com/giantswarm/operatorkit/resource/crud"
+	"github.com/giantswarm/operatorkit/v2/pkg/controller/context/resourcecanceledcontext"
+	"github.com/giantswarm/operatorkit/v2/pkg/resource/crud"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
 
-	"github.com/giantswarm/chart-operator/pkg/annotation"
-	"github.com/giantswarm/chart-operator/service/controller/chart/controllercontext"
-	"github.com/giantswarm/chart-operator/service/controller/chart/key"
+	"github.com/giantswarm/chart-operator/v2/pkg/annotation"
+	"github.com/giantswarm/chart-operator/v2/service/controller/chart/controllercontext"
+	"github.com/giantswarm/chart-operator/v2/service/controller/chart/key"
 )
 
 func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange interface{}) error {
@@ -245,7 +246,7 @@ func (r *Resource) newUpdateChange(ctx context.Context, obj, currentState, desir
 		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("the %#q release does not have to be updated", desiredReleaseState.Name))
 	}
 
-	err = r.deleteRollbackAnnotation(obj)
+	err = r.deleteRollbackAnnotation(ctx, obj)
 	if err != nil {
 		return nil, microerror.Mask(err)
 	}
@@ -311,7 +312,7 @@ func (r *Resource) rollback(ctx context.Context, obj interface{}, currentStatus 
 		return microerror.Mask(err)
 	}
 
-	_, err = r.g8sClient.ApplicationV1alpha1().Charts(cr.Namespace).Patch(cr.Name, types.JSONPatchType, bytes)
+	_, err = r.g8sClient.ApplicationV1alpha1().Charts(cr.Namespace).Patch(ctx, cr.Name, types.JSONPatchType, bytes, metav1.PatchOptions{})
 	if err != nil {
 		return microerror.Mask(err)
 	}
@@ -319,7 +320,7 @@ func (r *Resource) rollback(ctx context.Context, obj interface{}, currentStatus 
 	return nil
 }
 
-func (r *Resource) deleteRollbackAnnotation(obj interface{}) error {
+func (r *Resource) deleteRollbackAnnotation(ctx context.Context, obj interface{}) error {
 	cr, err := key.ToCustomResource(obj)
 	if err != nil {
 		return microerror.Mask(err)
@@ -341,7 +342,7 @@ func (r *Resource) deleteRollbackAnnotation(obj interface{}) error {
 		return microerror.Mask(err)
 	}
 
-	_, err = r.g8sClient.ApplicationV1alpha1().Charts(cr.Namespace).Patch(cr.Name, types.JSONPatchType, bytes)
+	_, err = r.g8sClient.ApplicationV1alpha1().Charts(cr.Namespace).Patch(ctx, cr.Name, types.JSONPatchType, bytes, metav1.PatchOptions{})
 	if err != nil {
 		return microerror.Mask(err)
 	}

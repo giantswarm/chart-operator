@@ -1,18 +1,19 @@
 package collector
 
 import (
+	"context"
 	"fmt"
 	"strings"
 
-	"github.com/giantswarm/apiextensions/pkg/clientset/versioned"
+	"github.com/giantswarm/apiextensions/v2/pkg/clientset/versioned"
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/micrologger"
 	"github.com/prometheus/client_golang/prometheus"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
 
-	"github.com/giantswarm/chart-operator/pkg/label"
-	"github.com/giantswarm/chart-operator/service/controller/chart/key"
+	"github.com/giantswarm/chart-operator/v2/pkg/label"
+	"github.com/giantswarm/chart-operator/v2/service/controller/chart/key"
 )
 
 var (
@@ -57,7 +58,9 @@ func NewOrphanSecret(config OrphanSecretConfig) (*OrphanSecret, error) {
 }
 
 func (oc *OrphanSecret) Collect(ch chan<- prometheus.Metric) error {
-	charts, err := oc.g8sClient.ApplicationV1alpha1().Charts("").List(metav1.ListOptions{})
+	ctx := context.Background()
+
+	charts, err := oc.g8sClient.ApplicationV1alpha1().Charts("").List(ctx, metav1.ListOptions{})
 	if err != nil {
 		return microerror.Mask(err)
 	}
@@ -71,7 +74,7 @@ func (oc *OrphanSecret) Collect(ch chan<- prometheus.Metric) error {
 	lo := metav1.ListOptions{
 		LabelSelector: fmt.Sprintf("%s=%s", label.ManagedBy, "app-operator"),
 	}
-	secrets, err := oc.k8sClient.CoreV1().Secrets("").List(lo)
+	secrets, err := oc.k8sClient.CoreV1().Secrets("").List(ctx, lo)
 	if err != nil {
 		return microerror.Mask(err)
 	}

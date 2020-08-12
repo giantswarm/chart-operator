@@ -1,6 +1,7 @@
 package collector
 
 import (
+	"context"
 	"fmt"
 	"strings"
 
@@ -57,12 +58,13 @@ func NewHelmV2Release(config HelmV2ReleaseConfig) (*HelmV2Release, error) {
 }
 
 func (h *HelmV2Release) Collect(ch chan<- prometheus.Metric) error {
+	ctx := context.Background()
 	lo := metav1.ListOptions{
 		LabelSelector: fmt.Sprintf("%s=%s", "OWNER", "TILLER"),
 	}
 
 	// Check whether helm 2 release configMaps still exist.
-	cms, err := h.k8sClient.CoreV1().ConfigMaps(h.tillerNamespace).List(lo)
+	cms, err := h.k8sClient.CoreV1().ConfigMaps(h.tillerNamespace).List(ctx, lo)
 	if err != nil {
 		return microerror.Mask(err)
 	}

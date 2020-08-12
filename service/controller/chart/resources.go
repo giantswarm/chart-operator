@@ -3,21 +3,21 @@ package chart
 import (
 	"time"
 
-	"github.com/giantswarm/apiextensions/pkg/clientset/versioned"
-	"github.com/giantswarm/helmclient"
+	"github.com/giantswarm/apiextensions/v2/pkg/clientset/versioned"
+	"github.com/giantswarm/helmclient/v2/pkg/helmclient"
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/micrologger"
-	"github.com/giantswarm/operatorkit/resource"
-	"github.com/giantswarm/operatorkit/resource/crud"
-	"github.com/giantswarm/operatorkit/resource/wrapper/metricsresource"
-	"github.com/giantswarm/operatorkit/resource/wrapper/retryresource"
+	"github.com/giantswarm/operatorkit/v2/pkg/resource"
+	"github.com/giantswarm/operatorkit/v2/pkg/resource/crud"
+	"github.com/giantswarm/operatorkit/v2/pkg/resource/wrapper/metricsresource"
+	"github.com/giantswarm/operatorkit/v2/pkg/resource/wrapper/retryresource"
 	"github.com/spf13/afero"
 	"k8s.io/client-go/kubernetes"
 
-	"github.com/giantswarm/chart-operator/service/controller/chart/resource/chartmigration"
-	"github.com/giantswarm/chart-operator/service/controller/chart/resource/release"
-	"github.com/giantswarm/chart-operator/service/controller/chart/resource/status"
-	"github.com/giantswarm/chart-operator/service/controller/chart/resource/tillermigration"
+	"github.com/giantswarm/chart-operator/v2/service/controller/chart/resource/chartmigration"
+	"github.com/giantswarm/chart-operator/v2/service/controller/chart/resource/release"
+	"github.com/giantswarm/chart-operator/v2/service/controller/chart/resource/status"
+	"github.com/giantswarm/chart-operator/v2/service/controller/chart/resource/tillermigration"
 )
 
 type chartResourcesConfig struct {

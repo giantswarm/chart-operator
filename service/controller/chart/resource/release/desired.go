@@ -5,13 +5,13 @@ import (
 	"crypto/md5" // #nosec
 	"fmt"
 
-	"github.com/giantswarm/apiextensions/pkg/apis/application/v1alpha1"
-	"github.com/giantswarm/helmclient"
+	"github.com/giantswarm/apiextensions/v2/pkg/apis/application/v1alpha1"
+	"github.com/giantswarm/helmclient/v2/pkg/helmclient"
 	"github.com/giantswarm/microerror"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
-	"github.com/giantswarm/chart-operator/service/controller/chart/key"
+	"github.com/giantswarm/chart-operator/v2/service/controller/chart/key"
 )
 
 func (r *Resource) GetDesiredState(ctx context.Context, obj interface{}) (interface{}, error) {
@@ -77,7 +77,7 @@ func (r *Resource) getConfigMapData(ctx context.Context, cr v1alpha1.Chart) (map
 		configMapName := key.ConfigMapName(cr)
 		configMapNamespace := key.ConfigMapNamespace(cr)
 
-		configMap, err := r.k8sClient.CoreV1().ConfigMaps(configMapNamespace).Get(configMapName, metav1.GetOptions{})
+		configMap, err := r.k8sClient.CoreV1().ConfigMaps(configMapNamespace).Get(ctx, configMapName, metav1.GetOptions{})
 		if apierrors.IsNotFound(err) {
 			return nil, microerror.Maskf(notFoundError, "config map %#q in namespace %#q not found", configMapName, configMapNamespace)
 		} else if err != nil {
@@ -109,7 +109,7 @@ func (r *Resource) getSecretData(ctx context.Context, cr v1alpha1.Chart) (map[st
 		secretName := key.SecretName(cr)
 		secretNamespace := key.SecretNamespace(cr)
 
-		secret, err := r.k8sClient.CoreV1().Secrets(secretNamespace).Get(secretName, metav1.GetOptions{})
+		secret, err := r.k8sClient.CoreV1().Secrets(secretNamespace).Get(ctx, secretName, metav1.GetOptions{})
 		if apierrors.IsNotFound(err) {
 			return nil, microerror.Maskf(notFoundError, "secret %#q in namespace %#q not found", secretName, secretNamespace)
 		} else if err != nil {
