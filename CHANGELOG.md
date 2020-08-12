@@ -7,6 +7,8 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+## [2.0.0] - 2020-08-12
+
 ## Changed
 
 - Updated backward incompatible Kubernetes dependencies to v1.18.5.
@@ -136,7 +138,8 @@ We check progress in the next reconciliation loop. ([#362](https://github.com/gi
 - Separate podsecuritypolicy.
 - Security context in deployment spec with non-root user.
 
-[Unreleased]: https://github.com/giantswarm/chart-operator/compare/v1.0.7...HEAD
+[Unreleased]: https://github.com/giantswarm/chart-operator/compare/v2.0.0...HEAD
+[2.0.0]: https://github.com/giantswarm/chart-operator/compare/v1.0.7...v2.0.0
 [1.0.7]: https://github.com/giantswarm/chart-operator/compare/v1.0.6...v1.0.7
 [1.0.6]: https://github.com/giantswarm/chart-operator/compare/v1.0.5...v1.0.6
 [1.0.5]: https://github.com/giantswarm/chart-operator/compare/v1.0.4...v1.0.5
