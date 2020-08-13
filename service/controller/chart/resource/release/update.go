@@ -229,6 +229,8 @@ func (r *Resource) newUpdateChange(ctx context.Context, obj, currentState, desir
 			if err != nil {
 				return nil, microerror.Mask(err)
 			}
+			// no-op after rollback
+			return nil, nil
 		}
 	}
 
