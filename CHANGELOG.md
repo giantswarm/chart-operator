@@ -13,6 +13,7 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 - Updated backward incompatible Kubernetes dependencies to v1.18.5.
 - Updated Helm to v3.2.4.
+- Fix the rollback in a loop problem. 
 
 ## [1.0.7] - 2020-08-05
 
