@@ -5,10 +5,10 @@ import (
 
 	"github.com/giantswarm/apiextensions/v2/pkg/apis/application/v1alpha1"
 	corev1alpha1 "github.com/giantswarm/apiextensions/v2/pkg/apis/core/v1alpha1"
+	"github.com/giantswarm/apiextensions/v2/pkg/label"
 	"github.com/giantswarm/microerror"
 
 	"github.com/giantswarm/chart-operator/v2/pkg/annotation"
-	"github.com/giantswarm/chart-operator/v2/pkg/label"
 )
 
 func ChartStatus(customResource v1alpha1.Chart) v1alpha1.ChartStatus {
@@ -132,7 +132,7 @@ func Version(customResource v1alpha1.Chart) string {
 // VersionLabel returns the label value to determine if the custom resource is
 // supported by this version of the operatorkit resource.
 func VersionLabel(customResource v1alpha1.Chart) string {
-	if val, ok := customResource.ObjectMeta.Labels[label.Version]; ok {
+	if val, ok := customResource.ObjectMeta.Labels[label.ChartOperatorVersion]; ok {
 		return val
 	} else {
 		return ""
