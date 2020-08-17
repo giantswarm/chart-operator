@@ -8,6 +8,7 @@ import (
 	"testing"
 
 	"github.com/giantswarm/apiextensions/v2/pkg/apis/application/v1alpha1"
+	"github.com/giantswarm/apiextensions/v2/pkg/label"
 	"github.com/giantswarm/helmclient/v2/pkg/helmclient"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
@@ -38,7 +39,7 @@ func TestChartLifecycle(t *testing.T) {
 				Name:      key.TestAppReleaseName(),
 				Namespace: key.Namespace(),
 				Labels: map[string]string{
-					"chart-operator.giantswarm.io/version": "1.0.0",
+					label.ChartOperatorVersion: "1.0.0",
 				},
 			},
 			Spec: v1alpha1.ChartSpec{

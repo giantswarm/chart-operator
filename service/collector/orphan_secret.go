@@ -6,13 +6,13 @@ import (
 	"strings"
 
 	"github.com/giantswarm/apiextensions/v2/pkg/clientset/versioned"
+	"github.com/giantswarm/apiextensions/v2/pkg/label"
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/micrologger"
 	"github.com/prometheus/client_golang/prometheus"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
 
-	"github.com/giantswarm/chart-operator/v2/pkg/label"
 	"github.com/giantswarm/chart-operator/v2/service/controller/chart/key"
 )
 
