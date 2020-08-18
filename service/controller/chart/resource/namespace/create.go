@@ -43,7 +43,7 @@ func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
 	case <-ch:
 		// Fall through.
 	case <-time.After(r.k8sWaitTimeout):
-		r.logger.LogCtx(ctx, "level", "debug", "message", "timeout creating namespace %#q", key.Namespace(cr))
+		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("timeout creating namespace %#q", key.Namespace(cr)))
 		r.logger.LogCtx(ctx, "level", "debug", "message", "canceling resource")
 		return nil
 	}
