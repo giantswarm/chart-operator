@@ -1,7 +1,6 @@
 package chart
 
 import (
-	"github.com/giantswarm/chart-operator/v2/service/controller/chart/resource/namespace"
 	"time"
 
 	"github.com/giantswarm/apiextensions/v2/pkg/clientset/versioned"
@@ -16,6 +15,7 @@ import (
 	"k8s.io/client-go/kubernetes"
 
 	"github.com/giantswarm/chart-operator/v2/service/controller/chart/resource/chartmigration"
+	"github.com/giantswarm/chart-operator/v2/service/controller/chart/resource/namespace"
 	"github.com/giantswarm/chart-operator/v2/service/controller/chart/resource/release"
 	"github.com/giantswarm/chart-operator/v2/service/controller/chart/resource/status"
 	"github.com/giantswarm/chart-operator/v2/service/controller/chart/resource/tillermigration"

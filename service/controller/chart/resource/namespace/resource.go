@@ -1,10 +1,11 @@
 package namespace
 
 import (
+	"time"
+
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/micrologger"
 	"k8s.io/client-go/kubernetes"
-	"time"
 )
 
 const (
