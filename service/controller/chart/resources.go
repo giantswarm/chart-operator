@@ -15,6 +15,7 @@ import (
 	"k8s.io/client-go/kubernetes"
 
 	"github.com/giantswarm/chart-operator/v2/service/controller/chart/resource/chartmigration"
+	"github.com/giantswarm/chart-operator/v2/service/controller/chart/resource/namespace"
 	"github.com/giantswarm/chart-operator/v2/service/controller/chart/resource/release"
 	"github.com/giantswarm/chart-operator/v2/service/controller/chart/resource/status"
 	"github.com/giantswarm/chart-operator/v2/service/controller/chart/resource/tillermigration"
@@ -66,6 +67,21 @@ func newChartResources(config chartResourcesConfig) ([]resource.Interface, error
 		}
 
 		chartMigrationResource, err = chartmigration.New(c)
+		if err != nil {
+			return nil, microerror.Mask(err)
+		}
+	}
+
+	var namespaceResource resource.Interface
+	{
+		c := namespace.Config{
+			K8sClient: config.K8sClient,
+			Logger:    config.Logger,
+
+			K8sWaitTimeout: config.K8sWaitTimeout,
+		}
+
+		namespaceResource, err = namespace.New(c)
 		if err != nil {
 			return nil, microerror.Mask(err)
 		}
@@ -131,6 +147,7 @@ func newChartResources(config chartResourcesConfig) ([]resource.Interface, error
 	resources := []resource.Interface{
 		chartMigrationResource,
 		tillerMigrationResource,
+		namespaceResource,
 		releaseResource,
 		statusResource,
 	}
