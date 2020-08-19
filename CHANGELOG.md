@@ -7,6 +7,10 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+### Changed
+
+- Fixed the timeout value for the namespace resource.
+
 ## [2.2.0] - 2020-08-19
 
 ### Changed
