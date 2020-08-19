@@ -52,6 +52,8 @@ func New(config Config) (*Resource, error) {
 	r := &Resource{
 		k8sClient: config.K8sClient,
 		logger:    config.Logger,
+
+		k8sWaitTimeout: config.K8sWaitTimeout,
 	}
 
 	return r, nil
