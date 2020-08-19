@@ -6,10 +6,13 @@ import (
 	"context"
 	"fmt"
 	"testing"
+	"time"
 
 	"github.com/giantswarm/apiextensions/v2/pkg/apis/application/v1alpha1"
 	"github.com/giantswarm/apiextensions/v2/pkg/label"
+	"github.com/giantswarm/backoff"
 	"github.com/giantswarm/helmclient/v2/pkg/helmclient"
+	"github.com/giantswarm/microerror"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
 	"github.com/giantswarm/chart-operator/v2/integration/key"
@@ -70,12 +73,21 @@ func TestChartLifecycle(t *testing.T) {
 	{
 		config.Logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("checking status for chart CR %#q", key.TestAppReleaseName()))
 
-		cr, err := config.K8sClients.G8sClient().ApplicationV1alpha1().Charts(key.Namespace()).Get(ctx, key.TestAppReleaseName(), metav1.GetOptions{})
+		operation := func() error {
+			cr, err := config.K8sClients.G8sClient().ApplicationV1alpha1().Charts(key.Namespace()).Get(ctx, key.TestAppReleaseName(), metav1.GetOptions{})
+			if err != nil {
+				return microerror.Mask(err)
+			}
+			if cr.Status.Release.Status != helmclient.StatusDeployed {
+				return microerror.Mask(notDeployedError)
+			}
+			return nil
+		}
+
+		b := backoff.NewMaxRetries(10, 3*time.Second)
+		err := backoff.Retry(operation, b)
 		if err != nil {
 			t.Fatalf("expected %#v got %#v", nil, err)
-		}
-		if cr.Status.Release.Status != helmclient.StatusDeployed {
-			t.Fatalf("expected CR release status %#q got %#q", helmclient.StatusDeployed, cr.Status.Release.Status)
 		}
 
 		config.Logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("checked status for chart CR %#q", key.TestAppReleaseName()))
