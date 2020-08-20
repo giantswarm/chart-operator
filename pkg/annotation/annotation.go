@@ -19,6 +19,14 @@ const (
 	// force is used when upgrading the Helm release.
 	ForceHelmUpgrade = "chart-operator.giantswarm.io/force-helm-upgrade"
 
+	// HelmReleaseName is the name of the annotation that identifies which
+	// Helm release a Kubernetes resource belongs to.
+	HelmReleaseName = "meta.helm.sh/release-name"
+
+	// HelmReleaseNamespace is the name of the annotation that identifies which
+	// namespace the Helm release is created in.
+	HelmReleaseNamespace = "meta.helm.sh/release-namespace"
+
 	// RollbackCount is the name of the annotation storing the number of
 	// rollbacks performed from the previous pending status.
 	RollbackCount = "chart-operator.giantswarm.io/rollback-count"

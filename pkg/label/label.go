@@ -5,4 +5,12 @@ package label
 const (
 	// App is a standard label for Kubernetes resources.
 	App = "app"
+
+	// AppKubernetesManagedBy label is used to identify the component managing
+	// Kubernetes resources.
+	AppKubernetesManagedBy = "app.kubernetes.io/managed-by"
+
+	// HelmServiceNameValue is used to identify when resources are managed by
+	// Helm
+	HelmServiceNameValue = "Helm"
 )

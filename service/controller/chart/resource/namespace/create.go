@@ -11,6 +11,8 @@ import (
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
+	"github.com/giantswarm/chart-operator/v2/pkg/annotation"
+	pkglabel "github.com/giantswarm/chart-operator/v2/pkg/label"
 	"github.com/giantswarm/chart-operator/v2/pkg/project"
 	"github.com/giantswarm/chart-operator/v2/service/controller/chart/key"
 )
@@ -24,8 +26,13 @@ func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
 	ns := &corev1.Namespace{
 		ObjectMeta: metav1.ObjectMeta{
 			Name: key.Namespace(cr),
+			Annotations: map[string]string{
+				annotation.HelmReleaseName:      key.ReleaseName(cr),
+				annotation.HelmReleaseNamespace: key.Namespace(cr),
+			},
 			Labels: map[string]string{
-				label.ManagedBy: project.Name(),
+				label.ManagedBy:                 project.Name(),
+				pkglabel.AppKubernetesManagedBy: pkglabel.HelmServiceNameValue,
 			},
 		},
 	}
