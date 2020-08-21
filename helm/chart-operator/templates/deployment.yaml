@@ -73,7 +73,7 @@ spec:
         securityContext:
           runAsUser: {{ .Values.pod.user.id }}
           runAsGroup: {{ .Values.pod.group.id }}
-        {{ end }}
+      {{ end }}
       containers:
       - name: {{ .Chart.Name }}
         {{ if (.Values.Installation) }}
