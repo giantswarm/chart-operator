@@ -7,6 +7,10 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+### Changed
+
+- Using default DNS policy for control planes.
+
 ## [2.2.1] - 2020-08-19
 
 ### Changed
