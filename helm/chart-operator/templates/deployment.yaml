@@ -42,6 +42,9 @@ spec:
       tolerations:
       - key: node-role.kubernetes.io/master
         effect: NoSchedule
+      {{ if (.Values.Installation) }}
+      dnsPolicy: Default
+      {{ else }}
       dnsPolicy: None
       dnsConfig:
         nameservers:
@@ -70,6 +73,7 @@ spec:
         securityContext:
           runAsUser: {{ .Values.pod.user.id }}
           runAsGroup: {{ .Values.pod.group.id }}
+        {{ end }}
       containers:
       - name: {{ .Chart.Name }}
         {{ if (.Values.Installation) }}
