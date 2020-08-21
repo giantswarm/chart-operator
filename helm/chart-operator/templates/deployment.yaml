@@ -61,12 +61,8 @@ spec:
           value: "5"
       initContainers:
       - name: wait-for-quay
-        {{ if (.Values.Installation) }}
-        image: "{{ .Values.Installation.V1.Registry.Domain }}/{{ .Values.image.name }}:{{ .Values.image.tag }}"
-        {{ else }}
         image: "{{ .Values.image.registry }}/{{ .Values.image.name }}:{{ .Values.image.tag }}"
-        {{ end }}
-        command: 
+        command:
         - sh
         - -c
         - until dig quay.io. {{ range (splitList "," .Values.externalDNSIP) }}@{{ . }} {{ end }}; do echo waiting for quay.io; sleep 2; done;
