@@ -5,6 +5,7 @@ metadata:
   namespace: {{ tpl .Values.resource.default.namespace . }}
   labels:
     {{- include "chart-operator.labels" . | nindent 4 }}
+    giantswarm.io/monitoring: "true"
   annotations:
     prometheus.io/scrape: "true"
 spec:
