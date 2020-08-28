@@ -39,6 +39,8 @@ func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange inte
 		return nil
 	}
 
+	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("updating release %#q in namespace %#q", releaseState.Name, key.Namespace(cr)))
+
 	tarballURL := key.TarballURL(cr)
 	tarballPath, err := r.helmClient.PullChartTarball(ctx, tarballURL)
 	if helmclient.IsPullChartFailedError(err) {
@@ -171,7 +173,7 @@ func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange inte
 		return microerror.Mask(err)
 	}
 
-	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("updated release %#q", releaseState.Name))
+	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("updated release %#q in namespace %#q", releaseState.Name, key.Namespace(cr)))
 
 	// We set the checksum annotation so the update state calculation
 	// is accurate when we check in the next reconciliation loop.
