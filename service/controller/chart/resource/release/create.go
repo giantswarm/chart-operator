@@ -33,7 +33,7 @@ func (r *Resource) ApplyCreateChange(ctx context.Context, obj, createChange inte
 		return nil
 	}
 
-	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("creating release %#q", releaseState.Name))
+	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("creating release %#q in namespace %#q", releaseState.Name, key.Namespace(cr)))
 
 	ns := key.Namespace(cr)
 	tarballURL := key.TarballURL(cr)
@@ -152,7 +152,7 @@ func (r *Resource) ApplyCreateChange(ctx context.Context, obj, createChange inte
 		return microerror.Mask(err)
 	}
 
-	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("created release %#q", releaseState.Name))
+	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("created release %#q in namespace %#q", releaseState.Name, key.Namespace(cr)))
 
 	// We set the checksum annotation so the update state calculation
 	// is accurate when we check in the next reconciliation loop.
