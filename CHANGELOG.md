@@ -9,7 +9,11 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ### Added
 
-- Add monitoring labels
+- Add monitoring labels.
+
+### Changed
+
+- add namespace to logging message.
 
 ## [2.3.0] - 2020-08-24
 
