@@ -13,7 +13,11 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ### Changed
 
-- add namespace to logging message.
+- Add namespace to logging message.
+
+### Fixed
+
+- Remove memory limits from deployment.
 
 ## [2.3.0] - 2020-08-24
 
