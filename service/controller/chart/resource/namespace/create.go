@@ -50,6 +50,7 @@ func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
 
 	if apierrors.IsAlreadyExists(err) {
 		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("already created namespace %#q", key.Namespace(cr)))
+		return nil
 	} else if err != nil {
 		return microerror.Mask(err)
 	}
