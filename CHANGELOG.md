@@ -7,6 +7,10 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+### Fixed
+
+- Make collector stop reporting an error in case of helm release not found.
+
 ## [v0.13.2] 2020-06-23
 
 ### Changed
