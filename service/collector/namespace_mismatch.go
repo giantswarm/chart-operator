@@ -70,11 +70,12 @@ func (n *NamespaceMismatch) Collect(ch chan<- prometheus.Metric) error {
 		return microerror.Mask(err)
 	}
 
-	var value float64
 	for _, chart := range charts.Items {
+		var value float64 = 0
+
 		content, err := n.helmClient.GetReleaseContent(ctx, chart.Spec.Name)
 		if err != nil {
-			n.logger.Log("level", "error", "message", "failed to collect namespace consistency", "stack", fmt.Sprintf("%#v", err))
+			n.logger.Log("level", "info", "message", "failed to collect namespace consistency", "stack", fmt.Sprintf("%#v", err))
 			continue
 		}
 
