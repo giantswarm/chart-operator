@@ -74,8 +74,10 @@ func (n *NamespaceMismatch) Collect(ch chan<- prometheus.Metric) error {
 		var value float64 = 0
 
 		content, err := n.helmClient.GetReleaseContent(ctx, chart.Spec.Name)
-		if err != nil {
-			n.logger.Log("level", "info", "message", "failed to collect namespace consistency", "stack", fmt.Sprintf("%#v", err))
+		if helmclient.IsReleaseNotFound(err) {
+			continue
+		} else if err != nil {
+			n.logger.Log("level", "warn", "message", "failed to collect namespace consistency", "stack", fmt.Sprintf("%#v", err))
 			continue
 		}
 
