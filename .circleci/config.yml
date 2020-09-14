@@ -1,6 +1,6 @@
 version: 2.1
 orbs:
-  architect: giantswarm/architect@0.8.9
+  architect: giantswarm/architect@0.10.0
 
 jobs:
   build:
@@ -9,7 +9,7 @@ jobs:
     - checkout
 
     - run: |
-        wget -q $(curl -sS -H "Authorization: token $RELEASE_TOKEN" https://api.github.com/repos/giantswarm/architect/releases/latest | grep browser_download_url | head -n 1 | cut -d '"' -f 4)
+        wget -c $(curl -sS -H "Authorization: token $RELEASE_TOKEN" https://api.github.com/repos/giantswarm/architect/releases/latest | grep browser_download_url | tail -n 1 | cut -d '"' -f 4) -O  - | tar -xz --strip=1
         chmod +x ./architect
         ./architect version
     - run: ./architect build
