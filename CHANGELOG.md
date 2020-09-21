@@ -7,6 +7,10 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+### Added
+
+- Added event count metrics for delete, install, rollback and update of Helm releases.
+
 ### Security
 
 - Updated Helm to v3.3.3.
