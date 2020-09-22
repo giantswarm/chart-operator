@@ -258,8 +258,8 @@ github.com/giantswarm/backoff v0.2.0 h1:kdfAf83pZ/l8X0KiA2dJ2Wq19nS9hISijVn7ZRdF
 github.com/giantswarm/backoff v0.2.0/go.mod h1:Z3WRsFilSJ5H5VlFa4XhraoPr+9pmZgYasoY2OSfNOk=
 github.com/giantswarm/exporterkit v0.2.0 h1:+HTGl4fmT/1OkTox8HbV3JXeavmsZv94+2CDW8cSrq0=
 github.com/giantswarm/exporterkit v0.2.0/go.mod h1:b4fuHVjsvZgznC9OEPfn0y5zvN8SnEKTiI5zTTfck94=
-github.com/giantswarm/helmclient/v2 v2.1.2-0.20200921134730-1c2f21b1da9a h1:hUEw3tJ4aWx7bcvy08twA2qhWi/wkNuEv7JA5GVcf/A=
-github.com/giantswarm/helmclient/v2 v2.1.2-0.20200921134730-1c2f21b1da9a/go.mod h1:uFkKANwMQPAxp+gQIUe3wTgxwMsBW8GLpK79aTYU0AQ=
+github.com/giantswarm/helmclient/v2 v2.1.2-0.20200922075742-8e980b20cc8a h1:ZWBwfMYvFm5VdiBUyIhG+uhYUVXX5Rf0waSmEQc8sEk=
+github.com/giantswarm/helmclient/v2 v2.1.2-0.20200922075742-8e980b20cc8a/go.mod h1:uFkKANwMQPAxp+gQIUe3wTgxwMsBW8GLpK79aTYU0AQ=
 github.com/giantswarm/k8sclient/v4 v4.0.0 h1:K18A0FomGjxTMElcGrjO3uLkYobUtcNh8e8PhTgFr2w=
 github.com/giantswarm/k8sclient/v4 v4.0.0/go.mod h1:jTwQ8q0YbJJu3ZxbjoI6hkXeuvKm15xyI/c+zwxnUH0=
 github.com/giantswarm/kubeconfig/v2 v2.0.0 h1:FC6SsWZN6LXy2D6drTz2W1ULWxYHJECB6O/oYY2oK6s=
