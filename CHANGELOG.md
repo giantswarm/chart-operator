@@ -10,6 +10,9 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 ### Fixed
 
 - Increase wait timeout for accessing Kubernetes API from 10s to 120s.
+- Update deployment annotation to use checksum instead of helm revision to
+reduce how often pods are rolled.
+
 ## [2.3.2] - 2020-09-22
 
 ### Added
