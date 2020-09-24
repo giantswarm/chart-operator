@@ -7,6 +7,9 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+### Fixed
+
+- Increase wait timeout for accessing Kubernetes API from 10s to 120s.
 ## [2.3.2] - 2020-09-22
 
 ### Added
