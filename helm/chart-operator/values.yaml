@@ -10,7 +10,7 @@ helm:
   http:
     clientTimeout: "5s"
   kubernetes:
-    waitTimeout: "10s"
+    waitTimeout: "120s"
   maxRollback: 3
 
 image:

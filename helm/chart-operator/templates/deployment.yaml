@@ -16,7 +16,7 @@ spec:
   template:
     metadata:
       annotations:
-        releaseRevision: {{ .Release.Revision | quote }}
+        app.giantswarm.io/config-checksum: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum | quote }}
       labels:
         {{- include "chart-operator.labels" . | nindent 8 }}
     spec:
