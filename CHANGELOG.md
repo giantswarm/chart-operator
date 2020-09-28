@@ -7,6 +7,11 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+### Fixed
+
+- Updated Helm to v3.3.4.
+- Updated Kubernetes dependencies to v1.18.9.
+
 ## [2.3.2] - 2020-09-22
 
 ### Added
