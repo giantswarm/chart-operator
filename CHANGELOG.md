@@ -7,6 +7,8 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+## [2.3.3] - 2020-09-29
+
 ### Fixed
 
 - Updated Helm to v3.3.4.
@@ -199,7 +201,8 @@ We check progress in the next reconciliation loop. ([#362](https://github.com/gi
 - Separate podsecuritypolicy.
 - Security context in deployment spec with non-root user.
 
-[Unreleased]: https://github.com/giantswarm/chart-operator/compare/v2.3.2...HEAD
+[Unreleased]: https://github.com/giantswarm/chart-operator/compare/v2.3.3...HEAD
+[2.3.3]: https://github.com/giantswarm/chart-operator/compare/v2.3.2...v2.3.3
 [2.3.2]: https://github.com/giantswarm/chart-operator/compare/v2.3.1...v2.3.2
 [2.3.1]: https://github.com/giantswarm/chart-operator/compare/v2.3.0...v2.3.1
 [2.3.0]: https://github.com/giantswarm/chart-operator/compare/v2.2.1...v2.3.0
