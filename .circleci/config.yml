@@ -70,8 +70,8 @@ workflows:
           app_collection_repo: "aws-app-collection"
           unique: "true"
           requires:
-            - push-chart-operator-to-control-plane-app-catalog
             - push-chart-operator-to-aliyun
+            - push-chart-operator-to-control-plane-app-catalog
           filters:
             branches:
               ignore: /.*/
