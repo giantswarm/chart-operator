@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/giantswarm/chart-operator/v2/pkg/annotation"
 	"strings"
 	"time"
 
@@ -17,7 +18,6 @@ import (
 	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/client-go/kubernetes"
 
-	"github.com/giantswarm/chart-operator/v2/pkg/annotation"
 	"github.com/giantswarm/chart-operator/v2/service/controller/chart/controllercontext"
 	"github.com/giantswarm/chart-operator/v2/service/controller/chart/key"
 )
@@ -135,10 +135,66 @@ func (r *Resource) findHelmV2ConfigMaps(ctx context.Context, releaseName string)
 	return len(cms.Items) > 0, nil
 }
 
-// patchAnnotations updates the chart CR annotations if they have changed.
+func (r *Resource) addAnnotation(ctx context.Context, cr *v1alpha1.Chart, key, value string) error {
+	patches := []Patch{}
+
+	if len(cr.Annotations) == 0 {
+		patches = append(patches, Patch{
+			Op:    "add",
+			Path:  "/metadata/annotations",
+			Value: map[string]string{},
+		})
+	}
+
+	patches = append(patches, Patch{
+		Op:    "add",
+		Path:  fmt.Sprintf("/metadata/annotations/%s", replaceToEscape(key)),
+		Value: value,
+	})
+
+	bytes, err := json.Marshal(patches)
+	if err != nil {
+		return microerror.Mask(err)
+	}
+
+	_, err = r.g8sClient.ApplicationV1alpha1().Charts(cr.Namespace).Patch(ctx, cr.Name, types.JSONPatchType, bytes, metav1.PatchOptions{})
+	if err != nil {
+		return microerror.Mask(err)
+	}
+
+	return nil
+}
+
+func (r *Resource) removeAnnotation(ctx context.Context, cr *v1alpha1.Chart, key string) error {
+	if _, ok := cr.GetAnnotations()[key]; !ok {
+		// no-op
+		return nil
+	}
+
+	patches := []Patch{
+		{
+			Op:   "remove",
+			Path: fmt.Sprintf("/metadata/annotations/%s", replaceToEscape(key)),
+		},
+	}
+
+	bytes, err := json.Marshal(patches)
+	if err != nil {
+		return microerror.Mask(err)
+	}
+
+	_, err = r.g8sClient.ApplicationV1alpha1().Charts(cr.Namespace).Patch(ctx, cr.Name, types.JSONPatchType, bytes, metav1.PatchOptions{})
+	if err != nil {
+		return microerror.Mask(err)
+	}
+
+	return nil
+}
+
+// addHashAnnotation updates the chart CR annotations if they have changed.
 // A patch operation is used because app-operator also sets annotations for
 // chart CRs.
-func (r *Resource) patchAnnotations(ctx context.Context, cr v1alpha1.Chart, releaseState ReleaseState) error {
+func (r *Resource) addHashAnnotation(ctx context.Context, cr v1alpha1.Chart, releaseState ReleaseState) error {
 	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("patching annotations for chart CR %#q in namespace %#q", cr.Name, cr.Namespace))
 
 	// Get chart CR again to ensure the resource version and annotations
@@ -151,28 +207,7 @@ func (r *Resource) patchAnnotations(ctx context.Context, cr v1alpha1.Chart, rele
 	currentChecksum := key.ValuesMD5ChecksumAnnotation(*currentCR)
 
 	if releaseState.ValuesMD5Checksum != currentChecksum {
-		patches := []Patch{}
-
-		if len(currentCR.Annotations) == 0 {
-			patches = append(patches, Patch{
-				Op:    "add",
-				Path:  "/metadata/annotations",
-				Value: map[string]string{},
-			})
-		}
-
-		patches = append(patches, Patch{
-			Op:    "add",
-			Path:  fmt.Sprintf("/metadata/annotations/%s", replaceToEscape(annotation.ValuesMD5Checksum)),
-			Value: releaseState.ValuesMD5Checksum,
-		})
-
-		bytes, err := json.Marshal(patches)
-		if err != nil {
-			return microerror.Mask(err)
-		}
-
-		_, err = r.g8sClient.ApplicationV1alpha1().Charts(cr.Namespace).Patch(ctx, cr.Name, types.JSONPatchType, bytes, metav1.PatchOptions{})
+		err := r.addAnnotation(ctx, currentCR, annotation.ValuesMD5Checksum, releaseState.ValuesMD5Checksum)
 		if err != nil {
 			return microerror.Mask(err)
 		}

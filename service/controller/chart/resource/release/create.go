@@ -100,7 +100,7 @@ func (r *Resource) ApplyCreateChange(ctx context.Context, obj, createChange inte
 		// The install will continue in the background. We set the checksum
 		// annotation so the update state calculation is accurate when we check
 		// in the next reconciliation loop.
-		err = r.patchAnnotations(ctx, cr, releaseState)
+		err = r.addHashAnnotation(ctx, cr, releaseState)
 		if err != nil {
 			return microerror.Mask(err)
 		}
@@ -156,7 +156,7 @@ func (r *Resource) ApplyCreateChange(ctx context.Context, obj, createChange inte
 
 	// We set the checksum annotation so the update state calculation
 	// is accurate when we check in the next reconciliation loop.
-	err = r.patchAnnotations(ctx, cr, releaseState)
+	err = r.addHashAnnotation(ctx, cr, releaseState)
 	if err != nil {
 		return microerror.Mask(err)
 	}
