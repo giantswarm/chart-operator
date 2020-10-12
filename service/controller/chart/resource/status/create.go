@@ -42,6 +42,8 @@ func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
 		if err != nil {
 			return microerror.Mask(err)
 		}
+
+		return nil
 	}
 
 	releaseContent, err := r.helmClient.GetReleaseContent(ctx, key.Namespace(cr), releaseName)
