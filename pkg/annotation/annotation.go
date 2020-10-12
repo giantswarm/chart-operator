@@ -19,10 +19,6 @@ const (
 	// force is used when upgrading the Helm release.
 	ForceHelmUpgrade = "chart-operator.giantswarm.io/force-helm-upgrade"
 
-	// UpgradeCount is the name of the annotation storing the number of
-	// rollbacks performed from the previous failed status.
-	UpgradeCount = "chart-operator.giantswarm.io/upgrade-count"
-
 	// RollbackCount is the name of the annotation storing the number of
 	// rollbacks performed from the previous pending status.
 	RollbackCount = "chart-operator.giantswarm.io/rollback-count"
