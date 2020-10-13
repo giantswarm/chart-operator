@@ -2,7 +2,6 @@ package release
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"strconv"
 	"time"
@@ -11,8 +10,6 @@ import (
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/operatorkit/v2/pkg/controller/context/resourcecanceledcontext"
 	"github.com/giantswarm/operatorkit/v2/pkg/resource/crud"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/apimachinery/pkg/types"
 
 	"github.com/giantswarm/chart-operator/v2/pkg/annotation"
 	"github.com/giantswarm/chart-operator/v2/service/controller/chart/controllercontext"
@@ -120,7 +117,7 @@ func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange inte
 		// The update will continue in the background. We set the checksum
 		// annotation so the update state calculation is accurate when we check
 		// in the next reconciliation loop.
-		err = r.patchAnnotations(ctx, cr, releaseState)
+		err = r.addHashAnnotation(ctx, cr, releaseState)
 		if err != nil {
 			return microerror.Mask(err)
 		}
@@ -177,7 +174,7 @@ func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange inte
 
 	// We set the checksum annotation so the update state calculation
 	// is accurate when we check in the next reconciliation loop.
-	err = r.patchAnnotations(ctx, cr, releaseState)
+	err = r.addHashAnnotation(ctx, cr, releaseState)
 	if err != nil {
 		return microerror.Mask(err)
 	}
@@ -250,7 +247,7 @@ func (r *Resource) newUpdateChange(ctx context.Context, obj, currentState, desir
 		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("the %#q release does not have to be updated", desiredReleaseState.Name))
 	}
 
-	err = r.deleteRollbackAnnotation(ctx, obj)
+	err = r.removeAnnotation(ctx, &cr, annotation.RollbackCount)
 	if err != nil {
 		return nil, microerror.Mask(err)
 	}
@@ -303,50 +300,7 @@ func (r *Resource) rollback(ctx context.Context, obj interface{}, currentStatus 
 		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("rollbacked release %#q", key.ReleaseName(cr)))
 	}
 
-	patches := []Patch{
-		{
-			Op:    "add",
-			Path:  fmt.Sprintf("/metadata/annotations/%s", replaceToEscape(annotation.RollbackCount)),
-			Value: fmt.Sprintf("%d", rollbackCount+1),
-		},
-	}
-
-	bytes, err := json.Marshal(patches)
-	if err != nil {
-		return microerror.Mask(err)
-	}
-
-	_, err = r.g8sClient.ApplicationV1alpha1().Charts(cr.Namespace).Patch(ctx, cr.Name, types.JSONPatchType, bytes, metav1.PatchOptions{})
-	if err != nil {
-		return microerror.Mask(err)
-	}
-
-	return nil
-}
-
-func (r *Resource) deleteRollbackAnnotation(ctx context.Context, obj interface{}) error {
-	cr, err := key.ToCustomResource(obj)
-	if err != nil {
-		return microerror.Mask(err)
-	}
-	if _, ok := cr.GetAnnotations()[annotation.RollbackCount]; !ok {
-		// no-op
-		return nil
-	}
-
-	patches := []Patch{
-		{
-			Op:   "remove",
-			Path: fmt.Sprintf("/metadata/annotations/%s", replaceToEscape(annotation.RollbackCount)),
-		},
-	}
-
-	bytes, err := json.Marshal(patches)
-	if err != nil {
-		return microerror.Mask(err)
-	}
-
-	_, err = r.g8sClient.ApplicationV1alpha1().Charts(cr.Namespace).Patch(ctx, cr.Name, types.JSONPatchType, bytes, metav1.PatchOptions{})
+	err = r.addAnnotation(ctx, &cr, annotation.RollbackCount, fmt.Sprintf("%d", rollbackCount+1))
 	if err != nil {
 		return microerror.Mask(err)
 	}
