@@ -47,7 +47,6 @@ workflows:
           chart: "chart-operator"
           requires:
             - push-chart-operator-to-quay
-            - push-chart-operator-to-aliyun
           filters:
             tags:
               only: /^v.*/
@@ -60,7 +59,6 @@ workflows:
           chart: "chart-operator"
           requires:
             - push-chart-operator-to-quay
-            - push-chart-operator-to-aliyun
           filters:
             tags:
               only: /^v.*/
@@ -72,6 +70,7 @@ workflows:
           app_collection_repo: "aws-app-collection"
           unique: "true"
           requires:
+            - push-chart-operator-to-aliyun
             - push-chart-operator-to-control-plane-app-catalog
           filters:
             branches:
