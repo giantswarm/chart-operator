@@ -154,7 +154,7 @@ func (r *Resource) ApplyCreateChange(ctx context.Context, obj, createChange inte
 
 	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("created release %#q in namespace %#q", releaseState.Name, key.Namespace(cr)))
 
-	// We set the checksum annotation so the update state calculation
+	// We set the hash annotation so the update state calculation
 	// is accurate when we check in the next reconciliation loop.
 	err = r.addHashAnnotation(ctx, cr, releaseState)
 	if err != nil {
