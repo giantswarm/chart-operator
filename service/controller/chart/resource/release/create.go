@@ -97,10 +97,9 @@ func (r *Resource) ApplyCreateChange(ctx context.Context, obj, createChange inte
 	case <-time.After(r.k8sWaitTimeout):
 		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("waited for %d secs. release still being created", int64(r.k8sWaitTimeout.Seconds())))
 
-		// The install will continue in the background. We set the checksum
-		// annotation so the update state calculation is accurate when we check
-		// in the next reconciliation loop.
-		err = r.patchAnnotations(ctx, cr, releaseState)
+		// We set the hash annotation so the update state calculation is accurate
+		// when we check in the next reconciliation loop.
+		err = r.addHashAnnotation(ctx, cr, releaseState)
 		if err != nil {
 			return microerror.Mask(err)
 		}
@@ -154,9 +153,9 @@ func (r *Resource) ApplyCreateChange(ctx context.Context, obj, createChange inte
 
 	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("created release %#q in namespace %#q", releaseState.Name, key.Namespace(cr)))
 
-	// We set the checksum annotation so the update state calculation
+	// We set the hash annotation so the update state calculation
 	// is accurate when we check in the next reconciliation loop.
-	err = r.patchAnnotations(ctx, cr, releaseState)
+	err = r.addHashAnnotation(ctx, cr, releaseState)
 	if err != nil {
 		return microerror.Mask(err)
 	}
