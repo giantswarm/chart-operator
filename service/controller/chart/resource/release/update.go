@@ -162,6 +162,8 @@ func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange inte
 		}
 		// Release is failed so the status resource will check the Helm release.
 		if releaseContent.Status == helmclient.StatusFailed {
+			addStatusToContext(cc, releaseContent.Description, helmclient.StatusFailed)
+
 			r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("failed to update release %#q", releaseContent.Name))
 			r.logger.LogCtx(ctx, "level", "debug", "message", "canceling resource")
 			resourcecanceledcontext.SetCanceled(ctx)
