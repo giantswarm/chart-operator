@@ -7,6 +7,10 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+### Fixed
+
+- Stop repeating helm upgrade for the failed helm release.
+
 ## [2.3.4] - 2020-10-01
 
 ### Added
