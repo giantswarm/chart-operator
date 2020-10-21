@@ -14,7 +14,6 @@ import (
 	"github.com/spf13/afero"
 	"k8s.io/client-go/kubernetes"
 
-	"github.com/giantswarm/chart-operator/v2/service/controller/chart/resource/chartmigration"
 	"github.com/giantswarm/chart-operator/v2/service/controller/chart/resource/namespace"
 	"github.com/giantswarm/chart-operator/v2/service/controller/chart/resource/release"
 	"github.com/giantswarm/chart-operator/v2/service/controller/chart/resource/status"
@@ -57,19 +56,6 @@ func newChartResources(config chartResourcesConfig) ([]resource.Interface, error
 
 	if config.TillerNamespace == "" {
 		return nil, microerror.Maskf(invalidConfigError, "%T.TillerNamespace must not be empty", config)
-	}
-
-	var chartMigrationResource resource.Interface
-	{
-		c := chartmigration.Config{
-			G8sClient: config.G8sClient,
-			Logger:    config.Logger,
-		}
-
-		chartMigrationResource, err = chartmigration.New(c)
-		if err != nil {
-			return nil, microerror.Mask(err)
-		}
 	}
 
 	var namespaceResource resource.Interface
@@ -145,7 +131,6 @@ func newChartResources(config chartResourcesConfig) ([]resource.Interface, error
 	}
 
 	resources := []resource.Interface{
-		chartMigrationResource,
 		tillerMigrationResource,
 		namespaceResource,
 		releaseResource,
