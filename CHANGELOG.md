@@ -7,6 +7,11 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+### Removed
+
+- Remove chartmigration resource as migration from chartconfig to chart CRs is
+complete.
+
 ## [2.3.5] - 2020-10-13
 
 ### Fixed
