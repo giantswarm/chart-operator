@@ -9,10 +9,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/giantswarm/apiextensions/v2/pkg/crd"
+	"github.com/giantswarm/apiextensions/v3/pkg/crd"
 	"github.com/giantswarm/appcatalog"
 	"github.com/giantswarm/backoff"
-	"github.com/giantswarm/helmclient/v2/pkg/helmclient"
+	"github.com/giantswarm/helmclient/v3/pkg/helmclient"
 	"github.com/giantswarm/microerror"
 	"github.com/spf13/afero"
 

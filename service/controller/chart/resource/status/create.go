@@ -4,9 +4,10 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/giantswarm/apiextensions/v2/pkg/apis/application/v1alpha1"
-	"github.com/giantswarm/helmclient/v2/pkg/helmclient"
+	"github.com/giantswarm/apiextensions/v3/pkg/apis/application/v1alpha1"
+	"github.com/giantswarm/helmclient/v3/pkg/helmclient"
 	"github.com/giantswarm/microerror"
+	"github.com/giantswarm/to"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
 	"github.com/giantswarm/chart-operator/v2/service/controller/chart/controllercontext"
@@ -76,8 +77,8 @@ func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
 		AppVersion: releaseContent.AppVersion,
 		Reason:     reason,
 		Release: v1alpha1.ChartStatusRelease{
-			LastDeployed: metav1.Time{Time: releaseContent.LastDeployed},
-			Revision:     releaseContent.Revision,
+			LastDeployed: &metav1.Time{Time: releaseContent.LastDeployed},
+			Revision:     to.IntP(releaseContent.Revision),
 			Status:       status,
 		},
 		Version: releaseContent.Version,

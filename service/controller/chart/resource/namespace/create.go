@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/giantswarm/apiextensions/v2/pkg/label"
+	"github.com/giantswarm/apiextensions/v3/pkg/label"
 	"github.com/giantswarm/microerror"
 	corev1 "k8s.io/api/core/v1"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
