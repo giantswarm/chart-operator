@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/giantswarm/chart-operator/v2/pkg/annotation"
 	"net/http"
 
 	"github.com/giantswarm/apiextensions/v2/pkg/apis/application/v1alpha1"
@@ -12,7 +13,6 @@ import (
 	"github.com/giantswarm/microerror"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
-	"github.com/giantswarm/chart-operator/v2/pkg/annotation"
 	"github.com/giantswarm/chart-operator/v2/service/controller/chart/controllercontext"
 	"github.com/giantswarm/chart-operator/v2/service/controller/chart/key"
 )
@@ -88,12 +88,6 @@ func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
 	}
 
 	if !equals(desiredStatus, key.ChartStatus(cr)) {
-		if url, ok := cr.GetAnnotations()[annotation.Webhook]; ok {
-			err := updateEvent(url, desiredStatus)
-			if err != nil {
-				r.logger.LogCtx(ctx, "level", "error", "message", fmt.Sprintf("sending webhook to %#q failed", url), "stack", fmt.Sprintf("%#v", err))
-			}
-		}
 		err = r.setStatus(ctx, cr, desiredStatus)
 		if err != nil {
 			return microerror.Mask(err)
@@ -103,9 +97,17 @@ func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
 	}
 
 	return nil
+
 }
 
 func (r *Resource) setStatus(ctx context.Context, cr v1alpha1.Chart, status v1alpha1.ChartStatus) error {
+	if url, ok := cr.GetAnnotations()[annotation.Webhook]; ok {
+		err := updateEvent(url, status)
+		if err != nil {
+			r.logger.LogCtx(ctx, "level", "error", "message", fmt.Sprintf("sending webhook to %#q failed", url), "stack", fmt.Sprintf("%#v", err))
+		}
+	}
+
 	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("setting status for release %#q status to %#q", key.ReleaseName(cr), status.Release.Status))
 
 	// Get chart CR again to ensure the resource version is correct.
