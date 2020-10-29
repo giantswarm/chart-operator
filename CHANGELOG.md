@@ -7,6 +7,10 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+### Added
+
+- Call status webhook when webhook annotation presents.
+
 ### Removed
 
 - Remove chartmigration resource as migration from chartconfig to chart CRs is
