@@ -22,4 +22,6 @@ const (
 	// ValuesMD5Checksum is the name of the annotation storing an MD5 checksum
 	// of the Helm release values.
 	ValuesMD5Checksum = "chart-operator.giantswarm.io/values-md5-checksum"
+
+	Webhook = "chart-operator.giantswarm.io/webhook-url"
 )
