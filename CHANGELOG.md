@@ -7,6 +7,10 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+### Updated
+
+- - Update apiextensions to v3 and replace CAPI with Giant Swarm fork.
+
 ### Removed
 
 - Remove chartmigration resource as migration from chartconfig to chart CRs is
