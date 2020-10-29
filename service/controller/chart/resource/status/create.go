@@ -82,11 +82,13 @@ func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
 		AppVersion: releaseContent.AppVersion,
 		Reason:     reason,
 		Release: v1alpha1.ChartStatusRelease{
-			LastDeployed: &metav1.Time{Time: releaseContent.LastDeployed},
-			Revision:     to.IntP(releaseContent.Revision),
-			Status:       status,
+			Revision: to.IntP(releaseContent.Revision),
+			Status:   status,
 		},
 		Version: releaseContent.Version,
+	}
+	if !releaseContent.LastDeployed.IsZero() {
+		desiredStatus.Release.LastDeployed = &metav1.Time{Time: releaseContent.LastDeployed}
 	}
 
 	if !equals(desiredStatus, key.ChartStatus(cr)) {
@@ -131,11 +133,13 @@ func (r *Resource) setStatus(ctx context.Context, cr v1alpha1.Chart, status v1al
 
 func updateAppStatus(webhookURL string, status v1alpha1.ChartStatus, timeout time.Duration) error {
 	request := Request{
-		AppVersion:   status.AppVersion,
-		LastDeployed: *status.Release.LastDeployed,
-		Reason:       status.Reason,
-		Status:       status.Release.Status,
-		Version:      status.Version,
+		AppVersion: status.AppVersion,
+		Reason:     status.Reason,
+		Status:     status.Release.Status,
+		Version:    status.Version,
+	}
+	if status.Release.LastDeployed != nil {
+		request.LastDeployed = *status.Release.LastDeployed
 	}
 
 	payload, err := json.Marshal(request)
