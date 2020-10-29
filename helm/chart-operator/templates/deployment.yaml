@@ -43,7 +43,7 @@ spec:
       - key: node-role.kubernetes.io/master
         effect: NoSchedule
       {{ if (.Values.Installation) }}
-      dnsPolicy: Default
+      dnsPolicy: ClusterFirst
       {{ else }}
       dnsPolicy: None
       dnsConfig:
