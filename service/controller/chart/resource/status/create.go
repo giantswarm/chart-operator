@@ -1,14 +1,18 @@
 package status
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
+	"net/http"
 
 	"github.com/giantswarm/apiextensions/v2/pkg/apis/application/v1alpha1"
 	"github.com/giantswarm/helmclient/v2/pkg/helmclient"
 	"github.com/giantswarm/microerror"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
+	"github.com/giantswarm/chart-operator/v2/pkg/annotation"
 	"github.com/giantswarm/chart-operator/v2/service/controller/chart/controllercontext"
 	"github.com/giantswarm/chart-operator/v2/service/controller/chart/key"
 )
@@ -84,6 +88,12 @@ func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
 	}
 
 	if !equals(desiredStatus, key.ChartStatus(cr)) {
+		if url, ok := cr.GetAnnotations()[annotation.Webhook]; ok {
+			err := updateEvent(url, desiredStatus)
+			if err != nil {
+				r.logger.LogCtx(ctx, "level", "error", "message", fmt.Sprintf("sending webhook to %#q failed", url), "stack", fmt.Sprintf("%#v", err))
+			}
+		}
 		err = r.setStatus(ctx, cr, desiredStatus)
 		if err != nil {
 			return microerror.Mask(err)
@@ -112,6 +122,42 @@ func (r *Resource) setStatus(ctx context.Context, cr v1alpha1.Chart, status v1al
 	}
 
 	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("set status for release %#q", key.ReleaseName(cr)))
+
+	return nil
+}
+
+func updateEvent(webhookURL string, status v1alpha1.ChartStatus) error {
+	request := Request{
+		AppVersion:   status.AppVersion,
+		LastDeployed: status.Release.LastDeployed,
+		Reason:       status.Reason,
+		Status:       status.Release.Status,
+		Version:      status.Version,
+	}
+
+	payload, err := json.Marshal(request)
+	if err != nil {
+		return microerror.Mask(err)
+	}
+
+	client := &http.Client{}
+	req, err := http.NewRequest(http.MethodPatch, webhookURL, bytes.NewBuffer(payload))
+	if err != nil {
+		return microerror.Mask(err)
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+
+	resp, err := client.Do(req)
+	if err != nil {
+		return microerror.Mask(err)
+	}
+
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return microerror.Maskf(wrongStatusError, "expected http status '%d', got '%d'", http.StatusOK, resp.StatusCode)
+	}
 
 	return nil
 }
