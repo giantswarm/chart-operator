@@ -101,7 +101,7 @@ func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
 
 func (r *Resource) setStatus(ctx context.Context, cr v1alpha1.Chart, status v1alpha1.ChartStatus) error {
 	if url, ok := cr.GetAnnotations()[annotation.Webhook]; ok {
-		err := updateEvent(url, status)
+		err := updateAppStatus(url, status)
 		if err != nil {
 			r.logger.LogCtx(ctx, "level", "error", "message", fmt.Sprintf("sending webhook to %#q failed", url), "stack", fmt.Sprintf("%#v", err))
 		}
@@ -127,7 +127,7 @@ func (r *Resource) setStatus(ctx context.Context, cr v1alpha1.Chart, status v1al
 	return nil
 }
 
-func updateEvent(webhookURL string, status v1alpha1.ChartStatus) error {
+func updateAppStatus(webhookURL string, status v1alpha1.ChartStatus) error {
 	request := Request{
 		AppVersion:   status.AppVersion,
 		LastDeployed: status.Release.LastDeployed,
