@@ -9,7 +9,7 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ### Added
 
-- Call status webhook when webhook annotation presents.
+- Call status webhook when webhook annotation is present.
 
 ### Removed
 
