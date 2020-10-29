@@ -26,9 +26,10 @@ type Config struct {
 	K8sClient  k8sclient.Interface
 	Logger     micrologger.Logger
 
-	K8sWaitTimeout  time.Duration
-	MaxRollback     int
-	TillerNamespace string
+	HTTPClientTimeout time.Duration
+	K8sWaitTimeout    time.Duration
+	MaxRollback       int
+	TillerNamespace   string
 }
 
 type Chart struct {
@@ -72,9 +73,10 @@ func NewChart(config Config) (*Chart, error) {
 			K8sClient:  config.K8sClient.K8sClient(),
 			Logger:     config.Logger,
 
-			K8sWaitTimeout:  config.K8sWaitTimeout,
-			MaxRollback:     config.MaxRollback,
-			TillerNamespace: config.TillerNamespace,
+			HTTPClientTimeout: config.HTTPClientTimeout,
+			K8sWaitTimeout:    config.K8sWaitTimeout,
+			MaxRollback:       config.MaxRollback,
+			TillerNamespace:   config.TillerNamespace,
 		}
 
 		resources, err = newChartResources(c)

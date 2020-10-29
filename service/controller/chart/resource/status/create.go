@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/giantswarm/apiextensions/v2/pkg/apis/application/v1alpha1"
 	"github.com/giantswarm/helmclient/v2/pkg/helmclient"
@@ -101,7 +102,7 @@ func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
 
 func (r *Resource) setStatus(ctx context.Context, cr v1alpha1.Chart, status v1alpha1.ChartStatus) error {
 	if url, ok := cr.GetAnnotations()[annotation.Webhook]; ok {
-		err := updateAppStatus(url, status)
+		err := updateAppStatus(url, status, r.httpClientTimeout)
 		if err != nil {
 			r.logger.LogCtx(ctx, "level", "error", "message", fmt.Sprintf("sending webhook to %#q failed", url), "stack", fmt.Sprintf("%#v", err))
 		}
@@ -127,7 +128,7 @@ func (r *Resource) setStatus(ctx context.Context, cr v1alpha1.Chart, status v1al
 	return nil
 }
 
-func updateAppStatus(webhookURL string, status v1alpha1.ChartStatus) error {
+func updateAppStatus(webhookURL string, status v1alpha1.ChartStatus, timeout time.Duration) error {
 	request := Request{
 		AppVersion:   status.AppVersion,
 		LastDeployed: status.Release.LastDeployed,
@@ -141,7 +142,7 @@ func updateAppStatus(webhookURL string, status v1alpha1.ChartStatus) error {
 		return microerror.Mask(err)
 	}
 
-	client := &http.Client{}
+	client := &http.Client{Timeout: timeout}
 	req, err := http.NewRequest(http.MethodPatch, webhookURL, bytes.NewBuffer(payload))
 	if err != nil {
 		return microerror.Mask(err)

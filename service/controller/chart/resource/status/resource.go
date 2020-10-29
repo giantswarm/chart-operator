@@ -1,6 +1,8 @@
 package status
 
 import (
+	"time"
+
 	"github.com/giantswarm/apiextensions/v2/pkg/apis/application/v1alpha1"
 	"github.com/giantswarm/apiextensions/v2/pkg/clientset/versioned"
 	"github.com/giantswarm/helmclient/v2/pkg/helmclient"
@@ -11,6 +13,9 @@ import (
 const (
 	Name = "status"
 
+	// defaultHTTPClientTimeout is the timeout when updating app status.
+	defaultHTTPClientTimeout = 5
+
 	releaseStatusCordoned = "CORDONED"
 )
 
@@ -19,6 +24,8 @@ type Config struct {
 	G8sClient  versioned.Interface
 	HelmClient helmclient.Interface
 	Logger     micrologger.Logger
+
+	HTTPClientTimeout time.Duration
 }
 
 // Resource implements the status resource.
@@ -26,6 +33,8 @@ type Resource struct {
 	g8sClient  versioned.Interface
 	helmClient helmclient.Interface
 	logger     micrologger.Logger
+
+	httpClientTimeout time.Duration
 }
 
 // New creates a new configured status resource.
@@ -40,10 +49,16 @@ func New(config Config) (*Resource, error) {
 		return nil, microerror.Maskf(invalidConfigError, "%T.Logger must not be empty", config)
 	}
 
+	if config.HTTPClientTimeout == 0 {
+		config.HTTPClientTimeout = defaultHTTPClientTimeout
+	}
+
 	r := &Resource{
 		g8sClient:  config.G8sClient,
 		helmClient: config.HelmClient,
 		logger:     config.Logger,
+
+		httpClientTimeout: config.HTTPClientTimeout,
 	}
 
 	return r, nil

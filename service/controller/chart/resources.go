@@ -29,9 +29,10 @@ type chartResourcesConfig struct {
 	Logger     micrologger.Logger
 
 	// Settings.
-	K8sWaitTimeout  time.Duration
-	MaxRollback     int
-	TillerNamespace string
+	HTTPClientTimeout time.Duration
+	K8sWaitTimeout    time.Duration
+	MaxRollback       int
+	TillerNamespace   string
 }
 
 func newChartResources(config chartResourcesConfig) ([]resource.Interface, error) {
@@ -106,6 +107,8 @@ func newChartResources(config chartResourcesConfig) ([]resource.Interface, error
 			G8sClient:  config.G8sClient,
 			HelmClient: config.HelmClient,
 			Logger:     config.Logger,
+
+			HTTPClientTimeout: config.HTTPClientTimeout,
 		}
 
 		statusResource, err = status.New(c)
