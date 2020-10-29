@@ -7,15 +7,15 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+### Changed
+
+- - Update apiextensions to v3 and replace CAPI with Giant Swarm fork.
+
 ## [2.4.0] - 2020-10-29
 
 ### Added
 
 - Call status webhook when webhook annotation is present.
-
-### Updated
-
-- - Update apiextensions to v3 and replace CAPI with Giant Swarm fork.
 
 ### Removed
 
