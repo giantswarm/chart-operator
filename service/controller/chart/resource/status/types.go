@@ -7,5 +7,6 @@ type Request struct {
 	LastDeployed v1.Time `json:"last_deployed"`
 	Reason       string  `json:"reason"`
 	Status       string  `json:"status"`
+	Token        string  `json:"token"`
 	Version      string  `json:"version"`
 }

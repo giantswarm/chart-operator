@@ -23,5 +23,11 @@ const (
 	// of the Helm release values.
 	ValuesMD5Checksum = "chart-operator.giantswarm.io/values-md5-checksum"
 
-	Webhook = "chart-operator.giantswarm.io/webhook-url"
+	// WebhookURL is the name of the annotation storing an URL
+	// of the status webhook from app-operator.
+	WebhookURL = "chart-operator.giantswarm.io/webhook-url"
+
+	// WebhookURL is the name of the annotation storing an token which
+	// must be included when calling webhook URL.
+	WebhookToken = "chart-operator.giantswarm.io/webhook-token"
 )

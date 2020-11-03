@@ -101,8 +101,10 @@ func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
 }
 
 func (r *Resource) setStatus(ctx context.Context, cr v1alpha1.Chart, status v1alpha1.ChartStatus) error {
-	if url, ok := cr.GetAnnotations()[annotation.Webhook]; ok {
-		err := updateAppStatus(url, status, r.httpClientTimeout)
+	if url, ok := cr.GetAnnotations()[annotation.WebhookURL]; ok {
+		token, _ := cr.GetAnnotations()[annotation.WebhookToken]
+
+		err := updateAppStatus(url, token, status, r.httpClientTimeout)
 		if err != nil {
 			r.logger.LogCtx(ctx, "level", "error", "message", fmt.Sprintf("sending webhook to %#q failed", url), "stack", fmt.Sprintf("%#v", err))
 		}
@@ -128,13 +130,17 @@ func (r *Resource) setStatus(ctx context.Context, cr v1alpha1.Chart, status v1al
 	return nil
 }
 
-func updateAppStatus(webhookURL string, status v1alpha1.ChartStatus, timeout time.Duration) error {
+func updateAppStatus(webhookURL, token string, status v1alpha1.ChartStatus, timeout time.Duration) error {
 	request := Request{
 		AppVersion:   status.AppVersion,
 		LastDeployed: status.Release.LastDeployed,
 		Reason:       status.Reason,
 		Status:       status.Release.Status,
 		Version:      status.Version,
+	}
+
+	if token != "" {
+		request.Token = token
 	}
 
 	payload, err := json.Marshal(request)
