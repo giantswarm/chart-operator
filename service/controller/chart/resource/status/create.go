@@ -102,7 +102,7 @@ func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
 
 func (r *Resource) setStatus(ctx context.Context, cr v1alpha1.Chart, status v1alpha1.ChartStatus) error {
 	if url, ok := cr.GetAnnotations()[annotation.WebhookURL]; ok {
-		token, _ := cr.GetAnnotations()[annotation.WebhookToken]
+		token := cr.GetAnnotations()[annotation.WebhookToken]
 
 		err := updateAppStatus(url, token, status, r.httpClientTimeout)
 		if err != nil {
