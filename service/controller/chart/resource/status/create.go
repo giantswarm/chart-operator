@@ -105,6 +105,7 @@ func (r *Resource) getAuthToken(ctx context.Context) (string, error) {
 	secret, err := r.k8sClient.CoreV1().Secrets(namespace).Get(ctx, authTokenName, metav1.GetOptions{})
 	if apierrors.IsNotFound(err) {
 		// it is certainly control plane apps or auth secret is not created yet.
+		r.logger.LogCtx(ctx, "level", "debug", "message", "no auth token secret yet in cluster")
 		return "", nil
 	} else if err != nil {
 		return "", microerror.Mask(err)
