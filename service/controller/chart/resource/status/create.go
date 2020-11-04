@@ -5,13 +5,13 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	"net/http"
 	"time"
 
 	"github.com/giantswarm/apiextensions/v2/pkg/apis/application/v1alpha1"
 	"github.com/giantswarm/helmclient/v2/pkg/helmclient"
 	"github.com/giantswarm/microerror"
+	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
 	"github.com/giantswarm/chart-operator/v2/pkg/annotation"
@@ -101,6 +101,18 @@ func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
 	return nil
 }
 
+func (r *Resource) getAuthToken(ctx context.Context) (string, error) {
+	secret, err := r.k8sClient.CoreV1().Secrets(namespace).Get(ctx, authTokenName, metav1.GetOptions{})
+	if apierrors.IsNotFound(err) {
+		// it is certainly control plane apps or auth secret is not created yet.
+		return "", nil
+	} else if err != nil {
+		return "", microerror.Mask(err)
+	}
+
+	return string(secret.Data[token]), nil
+}
+
 func (r *Resource) setStatus(ctx context.Context, cr v1alpha1.Chart, status v1alpha1.ChartStatus) error {
 	if url, ok := cr.GetAnnotations()[annotation.Webhook]; ok {
 		authToken, err := r.getAuthToken(ctx)
@@ -132,18 +144,6 @@ func (r *Resource) setStatus(ctx context.Context, cr v1alpha1.Chart, status v1al
 	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("set status for release %#q", key.ReleaseName(cr)))
 
 	return nil
-}
-
-func (r *Resource) getAuthToken(ctx context.Context) (string, error) {
-	secret, err := r.k8sClient.CoreV1().Secrets(namespace).Get(ctx, authTokenName, metav1.GetOptions{})
-	if apierrors.IsNotFound(err) {
-		// it is certainly control plane apps or auth secret is not created yet.
-		return "", nil
-	} else if err != nil {
-		return "", microerror.Mask(err)
-	}
-
-	return string(secret.Data[token]), nil
 }
 
 func updateAppStatus(webhookURL, authToken string, status v1alpha1.ChartStatus, timeout time.Duration) error {
