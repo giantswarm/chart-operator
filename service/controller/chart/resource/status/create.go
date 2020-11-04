@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	"net/http"
 	"time"
 
@@ -102,7 +103,12 @@ func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
 
 func (r *Resource) setStatus(ctx context.Context, cr v1alpha1.Chart, status v1alpha1.ChartStatus) error {
 	if url, ok := cr.GetAnnotations()[annotation.Webhook]; ok {
-		err := updateAppStatus(url, status, r.httpClientTimeout)
+		authToken, err := r.getAuthToken(ctx)
+		if err != nil {
+			return microerror.Mask(err)
+		}
+
+		err = updateAppStatus(url, authToken, status, r.httpClientTimeout)
 		if err != nil {
 			r.logger.LogCtx(ctx, "level", "error", "message", fmt.Sprintf("sending webhook to %#q failed", url), "stack", fmt.Sprintf("%#v", err))
 		}
@@ -128,7 +134,19 @@ func (r *Resource) setStatus(ctx context.Context, cr v1alpha1.Chart, status v1al
 	return nil
 }
 
-func updateAppStatus(webhookURL string, status v1alpha1.ChartStatus, timeout time.Duration) error {
+func (r *Resource) getAuthToken(ctx context.Context) (string, error) {
+	secret, err := r.k8sClient.CoreV1().Secrets(namespace).Get(ctx, authTokenName, metav1.GetOptions{})
+	if apierrors.IsNotFound(err) {
+		// it is certainly control plane apps or auth secret is not created yet.
+		return "", nil
+	} else if err != nil {
+		return "", microerror.Mask(err)
+	}
+
+	return string(secret.Data[token]), nil
+}
+
+func updateAppStatus(webhookURL, authToken string, status v1alpha1.ChartStatus, timeout time.Duration) error {
 	request := Request{
 		AppVersion:   status.AppVersion,
 		LastDeployed: status.Release.LastDeployed,
@@ -148,6 +166,7 @@ func updateAppStatus(webhookURL string, status v1alpha1.ChartStatus, timeout tim
 		return microerror.Mask(err)
 	}
 
+	req.Header.Set("Authorization", authToken)
 	req.Header.Set("Content-Type", "application/json")
 
 	resp, err := client.Do(req)

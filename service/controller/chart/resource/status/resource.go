@@ -8,21 +8,25 @@ import (
 	"github.com/giantswarm/helmclient/v2/pkg/helmclient"
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/micrologger"
+	"k8s.io/client-go/kubernetes"
 )
 
 const (
 	Name = "status"
 
+	authTokenName = "auth-token"
 	// defaultHTTPClientTimeout is the timeout when updating app status.
 	defaultHTTPClientTimeout = 5
-
-	releaseStatusCordoned = "CORDONED"
+	namespace                = "giantswarm"
+	releaseStatusCordoned    = "CORDONED"
+	token                    = "token"
 )
 
 // Config represents the configuration used to create a new status resource.
 type Config struct {
 	G8sClient  versioned.Interface
 	HelmClient helmclient.Interface
+	K8sClient  kubernetes.Interface
 	Logger     micrologger.Logger
 
 	HTTPClientTimeout time.Duration
@@ -32,6 +36,7 @@ type Config struct {
 type Resource struct {
 	g8sClient  versioned.Interface
 	helmClient helmclient.Interface
+	k8sClient  kubernetes.Interface
 	logger     micrologger.Logger
 
 	httpClientTimeout time.Duration
@@ -45,6 +50,9 @@ func New(config Config) (*Resource, error) {
 	if config.HelmClient == nil {
 		return nil, microerror.Maskf(invalidConfigError, "%T.HelmClient must not be empty", config)
 	}
+	if config.K8sClient == nil {
+		return nil, microerror.Maskf(invalidConfigError, "%T.K8sClient must not be empty", config)
+	}
 	if config.Logger == nil {
 		return nil, microerror.Maskf(invalidConfigError, "%T.Logger must not be empty", config)
 	}
@@ -56,6 +64,7 @@ func New(config Config) (*Resource, error) {
 	r := &Resource{
 		g8sClient:  config.G8sClient,
 		helmClient: config.HelmClient,
+		k8sClient:  config.K8sClient,
 		logger:     config.Logger,
 
 		httpClientTimeout: config.HTTPClientTimeout,
