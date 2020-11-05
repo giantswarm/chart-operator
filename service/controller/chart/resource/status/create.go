@@ -12,6 +12,7 @@ import (
 	"github.com/giantswarm/helmclient/v3/pkg/helmclient"
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/to"
+	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
 	"github.com/giantswarm/chart-operator/v2/pkg/annotation"
@@ -103,9 +104,27 @@ func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
 	return nil
 }
 
+func (r *Resource) getAuthToken(ctx context.Context) (string, error) {
+	secret, err := r.k8sClient.CoreV1().Secrets(namespace).Get(ctx, authTokenName, metav1.GetOptions{})
+	if apierrors.IsNotFound(err) {
+		// There is no auth token secret. It may not have been created yet. Or the app CR is using InCluster.
+		r.logger.LogCtx(ctx, "level", "debug", "message", "no auth token secret found skip calling webhook")
+		return "", nil
+	} else if err != nil {
+		return "", microerror.Mask(err)
+	}
+
+	return string(secret.Data[token]), nil
+}
+
 func (r *Resource) setStatus(ctx context.Context, cr v1alpha1.Chart, status v1alpha1.ChartStatus) error {
 	if url, ok := cr.GetAnnotations()[annotation.Webhook]; ok {
-		err := updateAppStatus(url, status, r.httpClientTimeout)
+		authToken, err := r.getAuthToken(ctx)
+		if err != nil {
+			return microerror.Mask(err)
+		}
+
+		err = updateAppStatus(url, authToken, status, r.httpClientTimeout)
 		if err != nil {
 			r.logger.LogCtx(ctx, "level", "error", "message", fmt.Sprintf("sending webhook to %#q failed", url), "stack", fmt.Sprintf("%#v", err))
 		}
@@ -131,7 +150,7 @@ func (r *Resource) setStatus(ctx context.Context, cr v1alpha1.Chart, status v1al
 	return nil
 }
 
-func updateAppStatus(webhookURL string, status v1alpha1.ChartStatus, timeout time.Duration) error {
+func updateAppStatus(webhookURL, authToken string, status v1alpha1.ChartStatus, timeout time.Duration) error {
 	request := Request{
 		AppVersion: status.AppVersion,
 		Reason:     status.Reason,
@@ -153,6 +172,7 @@ func updateAppStatus(webhookURL string, status v1alpha1.ChartStatus, timeout tim
 		return microerror.Mask(err)
 	}
 
+	req.Header.Set("Authorization", authToken)
 	req.Header.Set("Content-Type", "application/json")
 
 	resp, err := client.Do(req)
