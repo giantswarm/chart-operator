@@ -7,9 +7,13 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
-### Changed
+### Added
 
-- - Update apiextensions to v3 and replace CAPI with Giant Swarm fork.
+- Validate the cache in helmclient to avoid state requests when pulling tarballs.
+
+### Fixed
+
+- Update apiextensions to v3 and replace CAPI with Giant Swarm fork.
 
 ## [2.4.0] - 2020-10-29
 
