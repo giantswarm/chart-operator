@@ -8,9 +8,10 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/giantswarm/apiextensions/v2/pkg/apis/application/v1alpha1"
-	"github.com/giantswarm/helmclient/v2/pkg/helmclient"
+	"github.com/giantswarm/apiextensions/v3/pkg/apis/application/v1alpha1"
+	"github.com/giantswarm/helmclient/v3/pkg/helmclient"
 	"github.com/giantswarm/microerror"
+	"github.com/giantswarm/to"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
@@ -82,11 +83,13 @@ func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
 		AppVersion: releaseContent.AppVersion,
 		Reason:     reason,
 		Release: v1alpha1.ChartStatusRelease{
-			LastDeployed: metav1.Time{Time: releaseContent.LastDeployed},
-			Revision:     releaseContent.Revision,
-			Status:       status,
+			Revision: to.IntP(releaseContent.Revision),
+			Status:   status,
 		},
 		Version: releaseContent.Version,
+	}
+	if !releaseContent.LastDeployed.IsZero() {
+		desiredStatus.Release.LastDeployed = &metav1.Time{Time: releaseContent.LastDeployed}
 	}
 
 	if !equals(desiredStatus, key.ChartStatus(cr)) {
@@ -149,11 +152,13 @@ func (r *Resource) setStatus(ctx context.Context, cr v1alpha1.Chart, status v1al
 
 func updateAppStatus(webhookURL, authToken string, status v1alpha1.ChartStatus, timeout time.Duration) error {
 	request := Request{
-		AppVersion:   status.AppVersion,
-		LastDeployed: status.Release.LastDeployed,
-		Reason:       status.Reason,
-		Status:       status.Release.Status,
-		Version:      status.Version,
+		AppVersion: status.AppVersion,
+		Reason:     status.Reason,
+		Status:     status.Release.Status,
+		Version:    status.Version,
+	}
+	if status.Release.LastDeployed != nil {
+		request.LastDeployed = *status.Release.LastDeployed
 	}
 
 	payload, err := json.Marshal(request)

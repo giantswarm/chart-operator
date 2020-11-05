@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/giantswarm/apiextensions/v2/pkg/clientset/versioned"
-	"github.com/giantswarm/apiextensions/v2/pkg/label"
+	"github.com/giantswarm/apiextensions/v3/pkg/clientset/versioned"
+	"github.com/giantswarm/apiextensions/v3/pkg/label"
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/micrologger"
 	"github.com/prometheus/client_golang/prometheus"

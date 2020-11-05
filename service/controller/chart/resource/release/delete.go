@@ -4,11 +4,11 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/giantswarm/helmclient/v2/pkg/helmclient"
+	"github.com/giantswarm/helmclient/v3/pkg/helmclient"
 	"github.com/giantswarm/microerror"
-	"github.com/giantswarm/operatorkit/v2/pkg/controller/context/finalizerskeptcontext"
-	"github.com/giantswarm/operatorkit/v2/pkg/controller/context/resourcecanceledcontext"
-	"github.com/giantswarm/operatorkit/v2/pkg/resource/crud"
+	"github.com/giantswarm/operatorkit/v4/pkg/controller/context/finalizerskeptcontext"
+	"github.com/giantswarm/operatorkit/v4/pkg/controller/context/resourcecanceledcontext"
+	"github.com/giantswarm/operatorkit/v4/pkg/resource/crud"
 
 	"github.com/giantswarm/chart-operator/v2/service/controller/chart/key"
 )
