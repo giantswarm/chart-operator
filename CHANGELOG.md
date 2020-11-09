@@ -10,6 +10,7 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 ### Added
 
 - Validate the cache in helmclient to avoid state requests when pulling tarballs.
+- Call status webhook with token values.
 
 ### Fixed
 
