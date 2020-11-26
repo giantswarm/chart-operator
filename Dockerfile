@@ -1,4 +1,4 @@
-FROM quay.io/giantswarm/alpine:3.10-giantswarm
+FROM quay.io/giantswarm/alpine:3.11.3-giantswarm
 
 USER root
 
