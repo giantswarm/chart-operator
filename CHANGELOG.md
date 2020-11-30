@@ -7,6 +7,10 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+### Fixed
+
+- Fix comparison of last deployed and revision optional fields in status resource.
+
 ## [2.5.0] - 2020-11-09
 
 ### Added
