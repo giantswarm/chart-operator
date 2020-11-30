@@ -84,7 +84,7 @@ func equals(a, b v1alpha1.ChartStatus) bool {
 		return false
 	}
 	// Compare to nearest second precision.
-	if a.Release.LastDeployed.Rfc3339Copy() != b.Release.LastDeployed.Rfc3339Copy() {
+	if !a.Release.LastDeployed.Equal(b.Release.LastDeployed) {
 		return false
 	}
 	if a.Reason != b.Reason {
