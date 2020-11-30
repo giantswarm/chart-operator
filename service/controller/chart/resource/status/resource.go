@@ -8,6 +8,7 @@ import (
 	"github.com/giantswarm/helmclient/v3/pkg/helmclient"
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/micrologger"
+	"github.com/giantswarm/to"
 	"k8s.io/client-go/kubernetes"
 )
 
@@ -89,7 +90,7 @@ func equals(a, b v1alpha1.ChartStatus) bool {
 	if a.Reason != b.Reason {
 		return false
 	}
-	if a.Release.Revision != b.Release.Revision {
+	if to.Int(a.Release.Revision) != to.Int(b.Release.Revision) {
 		return false
 	}
 	if a.Release.Status != b.Release.Status {
