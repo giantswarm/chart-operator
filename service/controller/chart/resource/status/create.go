@@ -96,6 +96,8 @@ func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
 	}
 
 	if !equals(desiredStatus, key.ChartStatus(cr)) {
+		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("STATUS DIFF %s", cmp.Diff(desiredStatus, key.ChartStatus(cr))))
+
 		err = r.setStatus(ctx, cr, desiredStatus)
 		if err != nil {
 			return microerror.Mask(err)
