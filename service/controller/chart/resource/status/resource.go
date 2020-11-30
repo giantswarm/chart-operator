@@ -1,6 +1,7 @@
 package status
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/giantswarm/apiextensions/v3/pkg/apis/application/v1alpha1"
@@ -103,6 +104,9 @@ func equals(a, b v1alpha1.ChartStatus) bool {
 }
 
 func equalLastDeployed(a, b v1alpha1.ChartStatus) bool {
+	fmt.Printf("A LAST DEPLOYED %s\n", a.Release.LastDeployed)
+	fmt.Printf("B LAST DEPLOYED %s\n", b.Release.LastDeployed)
+
 	if a.Release.LastDeployed.IsZero() && b.Release.LastDeployed.IsZero() {
 		// Both dates are empty.
 		return true
