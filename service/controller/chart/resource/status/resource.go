@@ -83,8 +83,7 @@ func equals(a, b v1alpha1.ChartStatus) bool {
 	if a.AppVersion != b.AppVersion {
 		return false
 	}
-	// Compare to nearest second precision.
-	if !a.Release.LastDeployed.Equal(b.Release.LastDeployed) {
+	if !equalLastDeployed(a, b) {
 		return false
 	}
 	if a.Reason != b.Reason {
@@ -97,6 +96,21 @@ func equals(a, b v1alpha1.ChartStatus) bool {
 		return false
 	}
 	if a.Version != b.Version {
+		return false
+	}
+
+	return true
+}
+
+func equalLastDeployed(a, b v1alpha1.ChartStatus) bool {
+	if a.Release.LastDeployed.IsZero() && b.Release.LastDeployed.IsZero() {
+		// Both dates are empty.
+		return true
+	} else if a.Release.LastDeployed.IsZero() != b.Release.LastDeployed.IsZero() {
+		// One date is empty.
+		return false
+	} else if a.Release.LastDeployed.Format(time.RFC3339) != b.Release.LastDeployed.Format(time.RFC3339) {
+		// Compare last deployed to nearest second precision.
 		return false
 	}
 
