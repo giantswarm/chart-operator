@@ -12,6 +12,7 @@ import (
 	"github.com/giantswarm/helmclient/v3/pkg/helmclient"
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/to"
+	"github.com/google/go-cmp/cmp"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
@@ -37,6 +38,8 @@ func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
 	// controller context in the release resource. So we include this
 	// information in the CR status.
 	if cc.Status.Reason != "" {
+		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("STATUS REASON %#q", cc.Status.Reason))
+
 		status := v1alpha1.ChartStatus{
 			Reason: cc.Status.Reason,
 			Release: v1alpha1.ChartStatusRelease{
@@ -93,6 +96,8 @@ func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
 	}
 
 	if !equals(desiredStatus, key.ChartStatus(cr)) {
+		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("STATUS DIFF %s", cmp.Diff(desiredStatus, key.ChartStatus(cr))))
+
 		err = r.setStatus(ctx, cr, desiredStatus)
 		if err != nil {
 			return microerror.Mask(err)
