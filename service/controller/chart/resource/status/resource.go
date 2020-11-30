@@ -83,7 +83,8 @@ func equals(a, b v1alpha1.ChartStatus) bool {
 	if a.AppVersion != b.AppVersion {
 		return false
 	}
-	if a.Release.LastDeployed != b.Release.LastDeployed {
+	// Compare using Unix epoch as we only care about precision to nearest second.
+	if a.Release.LastDeployed.Unix() != b.Release.LastDeployed.Unix() {
 		return false
 	}
 	if a.Reason != b.Reason {
