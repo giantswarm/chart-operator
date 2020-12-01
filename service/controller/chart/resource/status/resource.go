@@ -8,6 +8,7 @@ import (
 	"github.com/giantswarm/helmclient/v3/pkg/helmclient"
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/micrologger"
+	"github.com/giantswarm/to"
 	"k8s.io/client-go/kubernetes"
 )
 
@@ -83,15 +84,35 @@ func equals(a, b v1alpha1.ChartStatus) bool {
 	if a.AppVersion != b.AppVersion {
 		return false
 	}
-	if a.Release.LastDeployed != b.Release.LastDeployed {
+
+	var lastDeployedA, lastDeployedB int64
+
+	if a.Release.LastDeployed != nil {
+		lastDeployedA = a.Release.LastDeployed.Unix()
+	}
+	if b.Release.LastDeployed != nil {
+		lastDeployedB = b.Release.LastDeployed.Unix()
+	}
+	if lastDeployedA != lastDeployedB {
 		return false
 	}
+
 	if a.Reason != b.Reason {
 		return false
 	}
-	if a.Release.Revision != b.Release.Revision {
+
+	var revisionA, revisionB int
+
+	if a.Release.Revision != nil {
+		revisionA = to.Int(a.Release.Revision)
+	}
+	if b.Release.Revision != nil {
+		revisionB = to.Int(b.Release.Revision)
+	}
+	if revisionA != revisionB {
 		return false
 	}
+
 	if a.Release.Status != b.Release.Status {
 		return false
 	}

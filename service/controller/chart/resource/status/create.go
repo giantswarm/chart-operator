@@ -89,7 +89,10 @@ func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
 		Version: releaseContent.Version,
 	}
 	if !releaseContent.LastDeployed.IsZero() {
-		desiredStatus.Release.LastDeployed = &metav1.Time{Time: releaseContent.LastDeployed}
+		// We convert the timestamp to the nearest second to match the value in
+		// the chart CR status.
+		lastDeployed := releaseContent.LastDeployed.Unix()
+		desiredStatus.Release.LastDeployed = &metav1.Time{Time: time.Unix(lastDeployed, 0)}
 	}
 
 	if !equals(desiredStatus, key.ChartStatus(cr)) {
