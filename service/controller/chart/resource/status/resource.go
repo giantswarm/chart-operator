@@ -90,9 +90,19 @@ func equals(a, b v1alpha1.ChartStatus) bool {
 	if a.Reason != b.Reason {
 		return false
 	}
-	if to.Int(a.Release.Revision) != to.Int(b.Release.Revision) {
+
+	var revisionA, revisionB int
+
+	if a.Release.Revision != nil {
+		revisionA = to.Int(a.Release.Revision)
+	}
+	if b.Release.Revision != nil {
+		revisionB = to.Int(b.Release.Revision)
+	}
+	if revisionA != revisionB {
 		return false
 	}
+
 	if a.Release.Status != b.Release.Status {
 		return false
 	}
