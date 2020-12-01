@@ -130,6 +130,30 @@ func Test_StatusResource_equals(t *testing.T) {
 			},
 			equal: false,
 		},
+		{
+			name: "case 6: last deployed different nanos same seconds",
+			statusA: v1alpha1.ChartStatus{
+				AppVersion: "1.0.0",
+				Reason:     "",
+				Release: v1alpha1.ChartStatusRelease{
+					LastDeployed: &metav1.Time{Time: time.Date(2020, 12, 1, 9, 0, 30, 0, time.UTC)},
+					Revision:     to.IntP(1),
+					Status:       "deployed",
+				},
+				Version: "2.1.0",
+			},
+			statusB: v1alpha1.ChartStatus{
+				AppVersion: "1.0.0",
+				Reason:     "",
+				Release: v1alpha1.ChartStatusRelease{
+					LastDeployed: &metav1.Time{Time: time.Date(2020, 12, 1, 9, 0, 30, 30, time.UTC)},
+					Revision:     to.IntP(1),
+					Status:       "deployed",
+				},
+				Version: "2.1.0",
+			},
+			equal: true,
+		},
 	}
 
 	for i, tc := range testCases {
