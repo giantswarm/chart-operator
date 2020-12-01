@@ -1,0 +1,19 @@
+{{ if (.Values.Installation) }}
+metadata:
+  name: {{ tpl .Values.resource.default.name  . }}
+  namespace: {{ tpl .Values.resource.default.namespace . }}
+  labels:
+    {{- include "chart-operator.labels" . | nindent 4 }}
+spec:
+  resourcePolicy:
+    containerPolicies:
+    - containerName: {{ .Chart.Name }}
+      controlledValues: RequestsAndLimits
+      mode: Auto
+  targetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name:  {{ tpl .Values.resource.default.name  . }}
+  updatePolicy:
+    updateMode: Auto
+{{ end }}

@@ -7,6 +7,10 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+### Added
+
+- Add vertical pod autoscaler support.
+
 ### Fixed
 
 - Fix comparison of last deployed and revision optional fields in status resource.
