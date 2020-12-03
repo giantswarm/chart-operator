@@ -12,6 +12,7 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 ### Fixed
 
 - Fix comparison of last deployed and revision optional fields in status resource.
+- Set memory limit and reduce requests.
 
 ## [2.5.0] - 2020-11-09
 
