@@ -1,23 +1,19 @@
-clusterDNSIP: 172.31.0.10
-
-cnr:
-  address: https://quay.io
-
-e2e: false
-
-externalDNSIP: 8.8.8.8
-
 cluster:
   kubernetes:
     domain: cluster.local
 
+clusterDNSIP: 172.31.0.10
+
 deployment:
   requests:
-    cpu: 400m
-    memory: 390Mi
+    cpu: 50m
+    memory: 100Mi
   limits:
-    cpu: 750m
-    memory: 500Mi
+    memory: 250Mi
+
+externalDNSIP: 8.8.8.8
+
+e2e: false
 
 helm:
   http:

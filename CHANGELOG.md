@@ -9,11 +9,14 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ### Added
 
-- Add vertical pod autoscaler support.
+- Add Vertical Pod Autoscaler support.
+
+## [2.5.1] - 2020-12-01
 
 ### Fixed
 
 - Fix comparison of last deployed and revision optional fields in status resource.
+- Set memory limit and reduce requests.
 
 ## [2.5.0] - 2020-11-09
 
@@ -243,7 +246,8 @@ We check progress in the next reconciliation loop. ([#362](https://github.com/gi
 - Separate podsecuritypolicy.
 - Security context in deployment spec with non-root user.
 
-[Unreleased]: https://github.com/giantswarm/chart-operator/compare/v2.5.0...HEAD
+[Unreleased]: https://github.com/giantswarm/chart-operator/compare/v2.5.1...HEAD
+[2.5.1]: https://github.com/giantswarm/chart-operator/compare/v2.5.0...v2.5.1
 [2.5.0]: https://github.com/giantswarm/chart-operator/compare/v2.4.0...v2.5.0
 [2.4.0]: https://github.com/giantswarm/chart-operator/compare/v2.3.5...v2.4.0
 [2.3.5]: https://github.com/giantswarm/chart-operator/compare/v2.3.4...v2.3.5
