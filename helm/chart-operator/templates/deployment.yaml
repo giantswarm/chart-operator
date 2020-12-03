@@ -103,6 +103,4 @@ spec:
           initialDelaySeconds: 15
           timeoutSeconds: 1
         resources:
-          requests:
-            cpu: 250m
-            memory: 250Mi
+{{ toYaml .Values.deployment | indent 10 }}

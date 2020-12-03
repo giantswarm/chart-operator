@@ -1,10 +1,19 @@
 clusterDNSIP: 172.31.0.10
 
 e2e: false
-cnr:
-  address: https://quay.io
 
 externalDNSIP: 8.8.8.8
+
+cluster:
+  kubernetes:
+    domain: cluster.local
+
+deployment:
+  requests:
+    cpu: 50m
+    memory: 100Mi
+  limits:
+    memory: 250Mi
 
 helm:
   http:
@@ -50,7 +59,3 @@ resource:
 
 tiller:
   namespace: "kube-system"
-
-cluster:
-  kubernetes:
-    domain: cluster.local
