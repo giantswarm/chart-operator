@@ -10,7 +10,9 @@ cluster:
 
 deployment:
   requests:
-    cpu: 250m
+    cpu: 50m
+    memory: 100Mi
+  limits:
     memory: 250Mi
 
 helm:
