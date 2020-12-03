@@ -63,49 +63,6 @@ workflows:
             tags:
               only: /^v.*/
 
-      - architect/push-to-app-collection:
-          context: architect
-          name: push-chart-operator-to-aws-app-collection
-          app_name: "chart-operator"
-          app_collection_repo: "aws-app-collection"
-          unique: "true"
-          requires:
-            - push-chart-operator-to-aliyun
-            - push-chart-operator-to-control-plane-app-catalog
-          filters:
-            branches:
-              ignore: /.*/
-            tags:
-              only: /^v.*/
-
-      - architect/push-to-app-collection:
-          context: architect
-          name: push-chart-operator-to-azure-app-collection
-          app_name: "chart-operator"
-          app_collection_repo: "azure-app-collection"
-          unique: "true"
-          requires:
-            - push-chart-operator-to-control-plane-app-catalog
-          filters:
-            branches:
-              ignore: /.*/
-            tags:
-              only: /^v.*/
-
-      - architect/push-to-app-collection:
-          context: architect
-          name: push-chart-operator-to-kvm-app-collection
-          app_name: "chart-operator"
-          app_collection_repo: "kvm-app-collection"
-          unique: "true"
-          requires:
-            - push-chart-operator-to-control-plane-app-catalog
-          filters:
-            branches:
-              ignore: /.*/
-            tags:
-              only: /^v.*/
-
       - architect/integration-test:
           context: architect
           name: basic-integration-test
