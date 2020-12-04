@@ -195,7 +195,7 @@ func (r *Resource) removeAnnotation(ctx context.Context, cr *v1alpha1.Chart, key
 // A patch operation is used because app-operator also sets annotations for
 // chart CRs.
 func (r *Resource) addHashAnnotation(ctx context.Context, cr v1alpha1.Chart, releaseState ReleaseState) error {
-	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("patching annotations for chart CR %#q in namespace %#q", cr.Name, cr.Namespace))
+	r.logger.Debugf(ctx, "patching annotations for chart CR %#q in namespace %#q", cr.Name, cr.Namespace)
 
 	// Get chart CR again to ensure the resource version and annotations
 	// are correct.
@@ -212,10 +212,10 @@ func (r *Resource) addHashAnnotation(ctx context.Context, cr v1alpha1.Chart, rel
 			return microerror.Mask(err)
 		}
 
-		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("patched annotations for chart CR %#q in namespace %#q", cr.Name, cr.Namespace))
+		r.logger.Debugf(ctx, "patched annotations for chart CR %#q in namespace %#q", cr.Name, cr.Namespace)
 
 	} else {
-		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("no need to patch annotations for chart CR %#q in namespace %#q", cr.Name, cr.Namespace))
+		r.logger.Debugf(ctx, "no need to patch annotations for chart CR %#q in namespace %#q", cr.Name, cr.Namespace)
 	}
 
 	return nil

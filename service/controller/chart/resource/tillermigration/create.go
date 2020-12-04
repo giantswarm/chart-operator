@@ -20,8 +20,8 @@ func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
 
 	// Resource is used to remove tiller. So for other charts we can skip this step.
 	if key.ReleaseName(cr) != project.Name() {
-		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("no need to delete tiller for %#q", key.ReleaseName(cr)))
-		r.logger.LogCtx(ctx, "level", "debug", "message", "canceling resource")
+		r.logger.Debugf(ctx, "no need to delete tiller for %#q", key.ReleaseName(cr))
+		r.logger.Debugf(ctx, "canceling resource")
 		return nil
 	}
 
@@ -59,19 +59,19 @@ func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
 
 	if len(notStarted) > 0 || len(inProgress) > 0 {
 		// If helm v3 migration was not started or in progress, we could not delete tiller resource.
-		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("following releases are not in migration step; %s", notStarted))
-		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("following releases are in progress migration; %s", inProgress))
+		r.logger.Debugf(ctx, "following releases are not in migration step; %s", notStarted)
+		r.logger.Debugf(ctx, "following releases are in progress migration; %s", inProgress)
 
-		r.logger.LogCtx(ctx, "level", "debug", "message", "canceling resource.")
+		r.logger.Debugf(ctx, "canceling resource.")
 		return nil
 	}
 
-	r.logger.LogCtx(ctx, "level", "debug", "message", "no pending or in-progress helm release, deleting all tiller resource")
+	r.logger.Debugf(ctx, "no pending or in-progress helm release, deleting all tiller resource")
 	err = r.ensureTillerDeleted(ctx)
 	if err != nil {
 		return microerror.Mask(err)
 	}
-	r.logger.LogCtx(ctx, "level", "debug", "message", "deleted all tiller resource")
+	r.logger.Debugf(ctx, "deleted all tiller resource")
 
 	return nil
 }

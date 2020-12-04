@@ -69,68 +69,68 @@ func (r *Resource) Name() string {
 func (r *Resource) ensureTillerDeleted(ctx context.Context) error {
 	name := "tiller-giantswarm"
 
-	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("deleting service account %#q in namespace %#q", name, r.tillerNamespace))
+	r.logger.Debugf(ctx, "deleting service account %#q in namespace %#q", name, r.tillerNamespace)
 	err := r.k8sClient.CoreV1().ServiceAccounts(r.tillerNamespace).Delete(ctx, name, metav1.DeleteOptions{})
 	if apierrors.IsNotFound(err) {
 		// no-op
 	} else if err != nil {
 		return microerror.Mask(err)
 	}
-	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("deleted service account %#q in namespace %#q", name, r.tillerNamespace))
+	r.logger.Debugf(ctx, "deleted service account %#q in namespace %#q", name, r.tillerNamespace)
 
-	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("deleting cluster role binding %#q", name))
+	r.logger.Debugf(ctx, "deleting cluster role binding %#q", name)
 	err = r.k8sClient.RbacV1().ClusterRoleBindings().Delete(ctx, name, metav1.DeleteOptions{})
 	if apierrors.IsNotFound(err) {
 		// no-op
 	} else if err != nil {
 		return microerror.Mask(err)
 	}
-	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("deleted cluster role binding %#q", name))
+	r.logger.Debugf(ctx, "deleted cluster role binding %#q", name)
 
 	pspName := fmt.Sprintf("%s-psp", name)
-	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("deleting psp cluster role binding %#q", pspName))
+	r.logger.Debugf(ctx, "deleting psp cluster role binding %#q", pspName)
 	err = r.k8sClient.RbacV1().ClusterRoleBindings().Delete(ctx, "tiller-giantswarm-psp", metav1.DeleteOptions{})
 	if apierrors.IsNotFound(err) {
 		// no-op
 	} else if err != nil {
 		return microerror.Mask(err)
 	}
-	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("deleted psp cluster role binding %#q", pspName))
+	r.logger.Debugf(ctx, "deleted psp cluster role binding %#q", pspName)
 
-	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("deleting psp cluster role %#q", pspName))
+	r.logger.Debugf(ctx, "deleting psp cluster role %#q", pspName)
 	if apierrors.IsNotFound(err) {
 		// no-op
 	} else if err != nil {
 		return microerror.Mask(err)
 	}
-	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("deleted psp cluster role %#q", pspName))
+	r.logger.Debugf(ctx, "deleted psp cluster role %#q", pspName)
 
-	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("deleting pod security policy %#q", pspName))
+	r.logger.Debugf(ctx, "deleting pod security policy %#q", pspName)
 	err = r.k8sClient.PolicyV1beta1().PodSecurityPolicies().Delete(ctx, pspName, metav1.DeleteOptions{})
 	if apierrors.IsNotFound(err) {
 		// no-op
 	} else if err != nil {
 		return microerror.Mask(err)
 	}
-	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("deleted pod security policy %#q", pspName))
+	r.logger.Debugf(ctx, "deleted pod security policy %#q", pspName)
 
-	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("deleting network policy %#q in namespace %#q", pspName, r.tillerNamespace))
+	r.logger.Debugf(ctx, "deleting network policy %#q in namespace %#q", pspName, r.tillerNamespace)
 	err = r.k8sClient.NetworkingV1().NetworkPolicies(r.tillerNamespace).Delete(ctx, "tiller-giantswarm", metav1.DeleteOptions{})
 	if apierrors.IsNotFound(err) {
 		// no-op
 	} else if err != nil {
 		return microerror.Mask(err)
 	}
-	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("deleted network policy %#q in namespace %#q", pspName, r.tillerNamespace))
+	r.logger.Debugf(ctx, "deleted network policy %#q in namespace %#q", pspName, r.tillerNamespace)
 
-	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("deleting deployment `tiller-deploy` in namespace %#q", r.tillerNamespace))
+	r.logger.Debugf(ctx, "deleting deployment `tiller-deploy` in namespace %#q", r.tillerNamespace)
 	err = r.k8sClient.AppsV1().Deployments(r.tillerNamespace).Delete(ctx, "tiller-deploy", metav1.DeleteOptions{})
 	if apierrors.IsNotFound(err) {
 		// no-op
 	} else if err != nil {
 		return microerror.Mask(err)
 	}
-	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("deleted deployment `tiller-deploy` in namespace %#q", r.tillerNamespace))
+	r.logger.Debugf(ctx, "deleted deployment `tiller-deploy` in namespace %#q", r.tillerNamespace)
 
 	return nil
 }

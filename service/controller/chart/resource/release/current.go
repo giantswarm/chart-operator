@@ -24,8 +24,8 @@ func (r *Resource) GetCurrentState(ctx context.Context, obj interface{}) (interf
 	}
 
 	if key.IsCordoned(cr) {
-		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("release %#q has been cordoned until %#q due to reason %#q ", key.ReleaseName(cr), key.CordonUntil(cr), key.CordonReason(cr)))
-		r.logger.LogCtx(ctx, "level", "debug", "message", "canceling resource")
+		r.logger.Debugf(ctx, "release %#q has been cordoned until %#q due to reason %#q ", key.ReleaseName(cr), key.CordonUntil(cr), key.CordonReason(cr))
+		r.logger.Debugf(ctx, "canceling resource")
 		resourcecanceledcontext.SetCanceled(ctx)
 		return nil, nil
 	}
@@ -38,8 +38,8 @@ func (r *Resource) GetCurrentState(ctx context.Context, obj interface{}) (interf
 	}
 
 	if hasConfigmap {
-		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("release %#q has not been migrated from helm 2", key.ReleaseName(cr)))
-		r.logger.LogCtx(ctx, "level", "debug", "message", "canceling resource")
+		r.logger.Debugf(ctx, "release %#q has not been migrated from helm 2", key.ReleaseName(cr))
+		r.logger.Debugf(ctx, "canceling resource")
 		resourcecanceledcontext.SetCanceled(ctx)
 		return nil, nil
 	}
@@ -54,7 +54,7 @@ func (r *Resource) GetCurrentState(ctx context.Context, obj interface{}) (interf
 		addStatusToContext(cc, reason, releaseNotInstalledStatus)
 
 		r.logger.LogCtx(ctx, "level", "warning", "message", reason, "stack", microerror.JSON(err))
-		r.logger.LogCtx(ctx, "level", "debug", "message", "canceling resource")
+		r.logger.Debugf(ctx, "canceling resource")
 		resourcecanceledcontext.SetCanceled(ctx)
 		return nil, nil
 
@@ -63,8 +63,8 @@ func (r *Resource) GetCurrentState(ctx context.Context, obj interface{}) (interf
 	}
 
 	if releaseContent.Status == helmclient.StatusFailed && releaseContent.Name == project.Name() {
-		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("not updating own release %#q since it's %#q", releaseContent.Name, releaseContent.Status))
-		r.logger.LogCtx(ctx, "level", "debug", "message", "canceling resource")
+		r.logger.Debugf(ctx, "not updating own release %#q since it's %#q", releaseContent.Name, releaseContent.Status)
+		r.logger.Debugf(ctx, "canceling resource")
 		resourcecanceledcontext.SetCanceled(ctx)
 		return nil, nil
 	}

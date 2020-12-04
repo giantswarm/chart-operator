@@ -2,7 +2,6 @@ package release
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/giantswarm/helmclient/v3/pkg/helmclient"
 	"github.com/giantswarm/microerror"
@@ -25,11 +24,11 @@ func (r *Resource) ApplyDeleteChange(ctx context.Context, obj, deleteChange inte
 	}
 
 	if releaseState.Name != "" {
-		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("deleting release %#q", releaseState.Name))
+		r.logger.Debugf(ctx, "deleting release %#q", releaseState.Name)
 
 		err = r.helmClient.DeleteRelease(ctx, key.Namespace(cr), releaseState.Name)
 		if helmclient.IsReleaseNotFound(err) {
-			r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("release %#q already deleted", releaseState.Name))
+			r.logger.Debugf(ctx, "release %#q already deleted", releaseState.Name)
 			return nil
 		} else if err != nil {
 			return microerror.Mask(err)
@@ -39,22 +38,22 @@ func (r *Resource) ApplyDeleteChange(ctx context.Context, obj, deleteChange inte
 		if rel != nil {
 			// Release still exists. We cancel the resource and keep the finalizer.
 			// We will retry the delete in the next reconciliation loop.
-			r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("release %#q still exists", releaseState.Name))
+			r.logger.Debugf(ctx, "release %#q still exists", releaseState.Name)
 
 			finalizerskeptcontext.SetKept(ctx)
-			r.logger.LogCtx(ctx, "level", "debug", "message", "keeping finalizers")
+			r.logger.Debugf(ctx, "keeping finalizers")
 
 			resourcecanceledcontext.SetCanceled(ctx)
-			r.logger.LogCtx(ctx, "level", "debug", "message", "canceling resource")
+			r.logger.Debugf(ctx, "canceling resource")
 
 			return nil
 		} else if helmclient.IsReleaseNotFound(err) {
-			r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("deleted release %#q", releaseState.Name))
+			r.logger.Debugf(ctx, "deleted release %#q", releaseState.Name)
 		} else if err != nil {
 			return microerror.Mask(err)
 		}
 	} else {
-		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("not deleting release %#q", releaseState.Name))
+		r.logger.Debugf(ctx, "not deleting release %#q", releaseState.Name)
 	}
 	return nil
 }
@@ -81,14 +80,14 @@ func (r *Resource) newDeleteChange(ctx context.Context, obj, currentState, desir
 		return nil, microerror.Mask(err)
 	}
 
-	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("finding out if the %#q release has to be deleted", desiredReleaseState.Name))
+	r.logger.Debugf(ctx, "finding out if the %#q release has to be deleted", desiredReleaseState.Name)
 
 	if !isEmpty(currentReleaseState) && currentReleaseState.Name == desiredReleaseState.Name {
-		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("the %#q release needs to be deleted", desiredReleaseState.Name))
+		r.logger.Debugf(ctx, "the %#q release needs to be deleted", desiredReleaseState.Name)
 
 		return &desiredReleaseState, nil
 	} else {
-		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("the %#q release does not need to be deleted", desiredReleaseState.Name))
+		r.logger.Debugf(ctx, "the %#q release does not need to be deleted", desiredReleaseState.Name)
 	}
 
 	return nil, nil

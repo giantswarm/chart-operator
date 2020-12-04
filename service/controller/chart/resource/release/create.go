@@ -29,11 +29,11 @@ func (r *Resource) ApplyCreateChange(ctx context.Context, obj, createChange inte
 	}
 
 	if releaseState.Name == "" {
-		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("no release name is provided for %#q", cr.Name))
+		r.logger.Debugf(ctx, "no release name is provided for %#q", cr.Name)
 		return nil
 	}
 
-	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("creating release %#q in namespace %#q", releaseState.Name, key.Namespace(cr)))
+	r.logger.Debugf(ctx, "creating release %#q in namespace %#q", releaseState.Name, key.Namespace(cr))
 
 	ns := key.Namespace(cr)
 	tarballURL := key.TarballURL(cr)
@@ -44,7 +44,7 @@ func (r *Resource) ApplyCreateChange(ctx context.Context, obj, createChange inte
 		addStatusToContext(cc, reason, releaseNotInstalledStatus)
 
 		r.logger.LogCtx(ctx, "level", "warning", "message", reason, "stack", microerror.JSON(err))
-		r.logger.LogCtx(ctx, "level", "debug", "message", "canceling resource")
+		r.logger.Debugf(ctx, "canceling resource")
 		resourcecanceledcontext.SetCanceled(ctx)
 		return nil
 	} else if helmclient.IsPullChartNotFound(err) {
@@ -52,7 +52,7 @@ func (r *Resource) ApplyCreateChange(ctx context.Context, obj, createChange inte
 		addStatusToContext(cc, reason, releaseNotInstalledStatus)
 
 		r.logger.LogCtx(ctx, "level", "warning", "message", reason, "stack", microerror.JSON(err))
-		r.logger.LogCtx(ctx, "level", "debug", "message", "canceling resource")
+		r.logger.Debugf(ctx, "canceling resource")
 		resourcecanceledcontext.SetCanceled(ctx)
 		return nil
 	} else if helmclient.IsPullChartTimeout(err) {
@@ -60,7 +60,7 @@ func (r *Resource) ApplyCreateChange(ctx context.Context, obj, createChange inte
 		addStatusToContext(cc, reason, releaseNotInstalledStatus)
 
 		r.logger.LogCtx(ctx, "level", "warning", "message", reason, "stack", microerror.JSON(err))
-		r.logger.LogCtx(ctx, "level", "debug", "message", "canceling resource")
+		r.logger.Debugf(ctx, "canceling resource")
 		resourcecanceledcontext.SetCanceled(ctx)
 		return nil
 	} else if err != nil {
@@ -70,7 +70,7 @@ func (r *Resource) ApplyCreateChange(ctx context.Context, obj, createChange inte
 	defer func() {
 		err := r.fs.Remove(tarballPath)
 		if err != nil {
-			r.logger.LogCtx(ctx, "level", "error", "message", fmt.Sprintf("deletion of %#q failed", tarballPath), "stack", fmt.Sprintf("%#v", err))
+			r.logger.Errorf(ctx, err, "deletion of %#q failed", tarballPath)
 		}
 	}()
 
@@ -95,7 +95,7 @@ func (r *Resource) ApplyCreateChange(ctx context.Context, obj, createChange inte
 	case <-ch:
 		// Fall through.
 	case <-time.After(r.k8sWaitTimeout):
-		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("waited for %d secs. release still being created", int64(r.k8sWaitTimeout.Seconds())))
+		r.logger.Debugf(ctx, "waited for %d secs. release still being created", int64(r.k8sWaitTimeout.Seconds()))
 
 		// We set the hash annotation so the update state calculation is accurate
 		// when we check in the next reconciliation loop.
@@ -104,37 +104,37 @@ func (r *Resource) ApplyCreateChange(ctx context.Context, obj, createChange inte
 			return microerror.Mask(err)
 		}
 
-		r.logger.LogCtx(ctx, "level", "debug", "message", "canceling resource")
+		r.logger.Debugf(ctx, "canceling resource")
 		return nil
 	}
 	if helmclient.IsValidationFailedError(err) {
 		reason := err.Error()
 		reason = fmt.Sprintf("helm validation error: (%s)", reason)
-		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("helm release %#q failed, %s", releaseState.Name, reason))
+		r.logger.Debugf(ctx, "helm release %#q failed, %s", releaseState.Name, reason)
 		addStatusToContext(cc, reason, validationFailedStatus)
 
-		r.logger.LogCtx(ctx, "level", "debug", "message", "canceling resource")
+		r.logger.Debugf(ctx, "canceling resource")
 		resourcecanceledcontext.SetCanceled(ctx)
 		return nil
 	} else if helmclient.IsInvalidManifest(err) {
 		reason := err.Error()
 		reason = fmt.Sprintf("invalid manifest error: (%s)", reason)
-		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("helm release %#q failed, %s", releaseState.Name, reason))
+		r.logger.Debugf(ctx, "helm release %#q failed, %s", releaseState.Name, reason)
 		addStatusToContext(cc, reason, invalidManifestStatus)
 
-		r.logger.LogCtx(ctx, "level", "debug", "message", "canceling resource")
+		r.logger.Debugf(ctx, "canceling resource")
 		resourcecanceledcontext.SetCanceled(ctx)
 		return nil
 	} else if err != nil {
 		reason := err.Error()
-		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("helm release %#q failed", releaseState.Name), "stack", microerror.JSON(err))
+		r.logger.Errorf(ctx, err, "helm release %#q failed", releaseState.Name)
 
 		releaseContent, err := r.helmClient.GetReleaseContent(ctx, ns, releaseState.Name)
 		if helmclient.IsReleaseNotFound(err) {
 			reason = fmt.Sprintf("helm error: (%s)", reason)
 			addStatusToContext(cc, reason, releaseNotInstalledStatus)
 
-			r.logger.LogCtx(ctx, "level", "debug", "message", "canceling resource")
+			r.logger.Debugf(ctx, "canceling resource")
 			resourcecanceledcontext.SetCanceled(ctx)
 			return nil
 		} else if err != nil {
@@ -143,15 +143,15 @@ func (r *Resource) ApplyCreateChange(ctx context.Context, obj, createChange inte
 
 		// Release is failed so the status resource will check the Helm release.
 		if releaseContent.Status == helmclient.StatusFailed {
-			r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("failed to create release %#q", releaseContent.Name))
-			r.logger.LogCtx(ctx, "level", "debug", "message", "canceling resource")
+			r.logger.Debugf(ctx, "failed to create release %#q", releaseContent.Name)
+			r.logger.Debugf(ctx, "canceling resource")
 			resourcecanceledcontext.SetCanceled(ctx)
 			return nil
 		}
 		return microerror.Mask(err)
 	}
 
-	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("created release %#q in namespace %#q", releaseState.Name, key.Namespace(cr)))
+	r.logger.Debugf(ctx, "created release %#q in namespace %#q", releaseState.Name, key.Namespace(cr))
 
 	// We set the hash annotation so the update state calculation
 	// is accurate when we check in the next reconciliation loop.
@@ -173,16 +173,16 @@ func (r *Resource) newCreateChange(ctx context.Context, obj, currentState, desir
 		return nil, microerror.Mask(err)
 	}
 
-	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("finding out if the %#q release has to be created", desiredReleaseState.Name))
+	r.logger.Debugf(ctx, "finding out if the %#q release has to be created", desiredReleaseState.Name)
 
 	createState := &ReleaseState{}
 
 	if isEmpty(currentReleaseState) {
-		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("the %#q release needs to be created", desiredReleaseState.Name))
+		r.logger.Debugf(ctx, "the %#q release needs to be created", desiredReleaseState.Name)
 
 		createState = &desiredReleaseState
 	} else {
-		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("the %#q release does not need to be created", desiredReleaseState.Name))
+		r.logger.Debugf(ctx, "the %#q release does not need to be created", desiredReleaseState.Name)
 	}
 
 	return createState, nil
