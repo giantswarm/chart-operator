@@ -70,7 +70,7 @@ func (r *Resource) ApplyCreateChange(ctx context.Context, obj, createChange inte
 	defer func() {
 		err := r.fs.Remove(tarballPath)
 		if err != nil {
-			r.logger.Errorf(ctx, err, fmt.Sprintf("deletion of %#q failed", tarballPath))
+			r.logger.Errorf(ctx, err, "deletion of %#q failed", tarballPath)
 		}
 	}()
 

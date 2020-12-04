@@ -71,7 +71,7 @@ func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange inte
 	defer func() {
 		err := r.fs.Remove(tarballPath)
 		if err != nil {
-			r.logger.Errorf(ctx, err, fmt.Sprintf("deletion of %#q failed", tarballPath))
+			r.logger.Errorf(ctx, err, "deletion of %#q failed", tarballPath)
 		}
 	}()
 
