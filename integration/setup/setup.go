@@ -28,7 +28,7 @@ func Setup(m *testing.M, config Config) {
 
 	err = installResources(ctx, config)
 	if err != nil {
-		config.Logger.LogCtx(ctx, "level", "error", "message", "failed to install resources", "stack", fmt.Sprintf("%#v", err))
+		config.Logger.Errorf(ctx, err, "failed to install resources")
 		v = 1
 	}
 
@@ -51,23 +51,23 @@ func installResources(ctx context.Context, config Config) error {
 
 	var operatorTarballPath string
 	{
-		config.Logger.LogCtx(ctx, "level", "debug", "message", "getting tarball URL")
+		config.Logger.Debugf(ctx, "getting tarball URL")
 
 		operatorTarballURL, err := appcatalog.GetLatestChart(ctx, key.DefaultTestCatalogStorageURL(), project.Name(), project.Version())
 		if err != nil {
 			return microerror.Mask(err)
 		}
 
-		config.Logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("tarball URL is %#q", operatorTarballURL))
+		config.Logger.Debugf(ctx, "tarball URL is %#q", operatorTarballURL)
 
-		config.Logger.LogCtx(ctx, "level", "debug", "message", "pulling tarball")
+		config.Logger.Debugf(ctx, "pulling tarball")
 
 		operatorTarballPath, err = config.HelmClient.PullChartTarball(ctx, operatorTarballURL)
 		if err != nil {
 			return microerror.Mask(err)
 		}
 
-		config.Logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("tarball path is %#q", operatorTarballPath))
+		config.Logger.Debugf(ctx, "tarball path is %#q", operatorTarballPath)
 	}
 
 	{
@@ -75,11 +75,11 @@ func installResources(ctx context.Context, config Config) error {
 			fs := afero.NewOsFs()
 			err := fs.Remove(operatorTarballPath)
 			if err != nil {
-				config.Logger.LogCtx(ctx, "level", "error", "message", fmt.Sprintf("deletion of %#q failed", operatorTarballPath), "stack", fmt.Sprintf("%#v", err))
+				config.Logger.Errorf(ctx, err, "deletion of %#q failed", operatorTarballPath)
 			}
 		}()
 
-		config.Logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("installing %#q", project.Name()))
+		config.Logger.Debugf(ctx, "installing %#q", project.Name())
 
 		opts := helmclient.InstallOptions{
 			ReleaseName: project.Name(),
@@ -93,18 +93,18 @@ func installResources(ctx context.Context, config Config) error {
 			return microerror.Mask(err)
 		}
 
-		config.Logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("installed %#q", project.Name()))
+		config.Logger.Debugf(ctx, "installed %#q", project.Name())
 	}
 
 	{
-		config.Logger.LogCtx(ctx, "level", "debug", "message", "ensuring chart CRD exists")
+		config.Logger.Debugf(ctx, "ensuring chart CRD exists")
 
 		err := config.K8sClients.CRDClient().EnsureCreated(ctx, crd.LoadV1("application.giantswarm.io", "Chart"), backoff.NewMaxRetries(7, 1*time.Second))
 		if err != nil {
 			return microerror.Mask(err)
 		}
 
-		config.Logger.LogCtx(ctx, "level", "debug", "message", "ensured chart CRD exists")
+		config.Logger.Debugf(ctx, "ensured chart CRD exists")
 	}
 
 	return nil

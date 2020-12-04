@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"time"
 
@@ -31,7 +30,7 @@ func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
 	}
 
 	releaseName := key.ReleaseName(cr)
-	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("getting status for release %#q", releaseName))
+	r.logger.Debugf(ctx, "getting status for release %#q", releaseName)
 
 	// If something goes wrong outside of Helm we add that to the
 	// controller context in the release resource. So we include this
@@ -54,7 +53,7 @@ func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
 
 	releaseContent, err := r.helmClient.GetReleaseContent(ctx, key.Namespace(cr), releaseName)
 	if helmclient.IsReleaseNotFound(err) {
-		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("release %#q not found", releaseName))
+		r.logger.Debugf(ctx, "release %#q not found", releaseName)
 
 		// There is no Helm release for this chart CR so its likely that
 		// something has gone wrong. This could be for a reason outside
@@ -101,7 +100,7 @@ func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
 			return microerror.Mask(err)
 		}
 	} else {
-		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("status for release %#q already set to %#q", releaseName, releaseContent.Status))
+		r.logger.Debugf(ctx, "status for release %#q already set to %#q", releaseName, releaseContent.Status)
 	}
 
 	return nil
@@ -111,7 +110,7 @@ func (r *Resource) getAuthToken(ctx context.Context) (string, error) {
 	secret, err := r.k8sClient.CoreV1().Secrets(namespace).Get(ctx, authTokenName, metav1.GetOptions{})
 	if apierrors.IsNotFound(err) {
 		// There is no auth token secret. It may not have been created yet. Or the app CR is using InCluster.
-		r.logger.LogCtx(ctx, "level", "debug", "message", "no auth token secret found skip calling webhook")
+		r.logger.Debugf(ctx, "no auth token secret found skip calling webhook")
 		return "", nil
 	} else if err != nil {
 		return "", microerror.Mask(err)
@@ -129,11 +128,11 @@ func (r *Resource) setStatus(ctx context.Context, cr v1alpha1.Chart, status v1al
 
 		err = updateAppStatus(url, authToken, status, r.httpClientTimeout)
 		if err != nil {
-			r.logger.LogCtx(ctx, "level", "error", "message", fmt.Sprintf("sending webhook to %#q failed", url), "stack", fmt.Sprintf("%#v", err))
+			r.logger.Errorf(ctx, err, "sending webhook to %#q failed", url)
 		}
 	}
 
-	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("setting status for release %#q status to %#q", key.ReleaseName(cr), status.Release.Status))
+	r.logger.Debugf(ctx, "setting status for release %#q status to %#q", key.ReleaseName(cr), status.Release.Status)
 
 	// Get chart CR again to ensure the resource version is correct.
 	currentCR, err := r.g8sClient.ApplicationV1alpha1().Charts(cr.Namespace).Get(ctx, cr.Name, metav1.GetOptions{})
@@ -148,7 +147,7 @@ func (r *Resource) setStatus(ctx context.Context, cr v1alpha1.Chart, status v1al
 		return microerror.Mask(err)
 	}
 
-	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("set status for release %#q", key.ReleaseName(cr)))
+	r.logger.Debugf(ctx, "set status for release %#q", key.ReleaseName(cr))
 
 	return nil
 }

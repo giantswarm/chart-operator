@@ -32,11 +32,11 @@ func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange inte
 	}
 
 	if releaseState.Name == "" {
-		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("no release name is provided for %#q", cr.Name))
+		r.logger.Debugf(ctx, "no release name is provided for %#q", cr.Name)
 		return nil
 	}
 
-	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("updating release %#q in namespace %#q", releaseState.Name, key.Namespace(cr)))
+	r.logger.Debugf(ctx, "updating release %#q in namespace %#q", releaseState.Name, key.Namespace(cr))
 
 	tarballURL := key.TarballURL(cr)
 	tarballPath, err := r.helmClient.PullChartTarball(ctx, tarballURL)
@@ -45,7 +45,7 @@ func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange inte
 		addStatusToContext(cc, reason, releaseNotInstalledStatus)
 
 		r.logger.LogCtx(ctx, "level", "warning", "message", reason, "stack", microerror.JSON(err))
-		r.logger.LogCtx(ctx, "level", "debug", "message", "canceling resource")
+		r.logger.Debugf(ctx, "canceling resource")
 		resourcecanceledcontext.SetCanceled(ctx)
 		return nil
 	} else if helmclient.IsPullChartNotFound(err) {
@@ -53,7 +53,7 @@ func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange inte
 		addStatusToContext(cc, reason, releaseNotInstalledStatus)
 
 		r.logger.LogCtx(ctx, "level", "warning", "message", reason, "stack", microerror.JSON(err))
-		r.logger.LogCtx(ctx, "level", "debug", "message", "canceling resource")
+		r.logger.Debugf(ctx, "canceling resource")
 		resourcecanceledcontext.SetCanceled(ctx)
 		return nil
 	} else if helmclient.IsPullChartTimeout(err) {
@@ -61,7 +61,7 @@ func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange inte
 		addStatusToContext(cc, reason, releaseNotInstalledStatus)
 
 		r.logger.LogCtx(ctx, "level", "warning", "message", reason, "stack", microerror.JSON(err))
-		r.logger.LogCtx(ctx, "level", "debug", "message", "canceling resource")
+		r.logger.Debugf(ctx, "canceling resource")
 		resourcecanceledcontext.SetCanceled(ctx)
 		return nil
 	} else if err != nil {
@@ -71,7 +71,7 @@ func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange inte
 	defer func() {
 		err := r.fs.Remove(tarballPath)
 		if err != nil {
-			r.logger.LogCtx(ctx, "level", "error", "message", fmt.Sprintf("deletion of %#q failed", tarballPath), "stack", fmt.Sprintf("%#v", err))
+			r.logger.Errorf(ctx, err, fmt.Sprintf("deletion of %#q failed", tarballPath))
 		}
 	}()
 
@@ -82,7 +82,7 @@ func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange inte
 	//
 	upgradeForce := key.HasForceUpgradeAnnotation(cr)
 	if upgradeForce {
-		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("helm upgrade force is disabled for %#q", releaseState.Name))
+		r.logger.Debugf(ctx, "helm upgrade force is disabled for %#q", releaseState.Name)
 	}
 
 	ch := make(chan error)
@@ -112,7 +112,7 @@ func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange inte
 	case <-ch:
 		// Fall through.
 	case <-time.After(r.k8sWaitTimeout):
-		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("waited for %d secs. release still being updated", int64(r.k8sWaitTimeout.Seconds())))
+		r.logger.Debugf(ctx, "waited for %d secs. release still being updated", int64(r.k8sWaitTimeout.Seconds()))
 
 		// The update will continue in the background. We set the checksum
 		// annotation so the update state calculation is accurate when we check
@@ -122,30 +122,30 @@ func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange inte
 			return microerror.Mask(err)
 		}
 
-		r.logger.LogCtx(ctx, "level", "debug", "message", "canceling resource")
+		r.logger.Debugf(ctx, "canceling resource")
 		return nil
 	}
 
 	if helmclient.IsValidationFailedError(err) {
 		reason := err.Error()
 		reason = fmt.Sprintf("helm validation error: (%s)", reason)
-		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("helm release %#q failed, %s", releaseState.Name, reason))
+		r.logger.Debugf(ctx, "helm release %#q failed, %s", releaseState.Name, reason)
 		addStatusToContext(cc, reason, validationFailedStatus)
 
-		r.logger.LogCtx(ctx, "level", "debug", "message", "canceling resource")
+		r.logger.Debugf(ctx, "canceling resource")
 		resourcecanceledcontext.SetCanceled(ctx)
 		return nil
 	} else if helmclient.IsInvalidManifest(err) {
 		reason := err.Error()
 		reason = fmt.Sprintf("invalid manifest error: (%s)", reason)
-		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("helm release %#q failed, %s", releaseState.Name, reason))
+		r.logger.Debugf(ctx, "helm release %#q failed, %s", releaseState.Name, reason)
 		addStatusToContext(cc, reason, invalidManifestStatus)
 
-		r.logger.LogCtx(ctx, "level", "debug", "message", "canceling resource")
+		r.logger.Debugf(ctx, "canceling resource")
 		resourcecanceledcontext.SetCanceled(ctx)
 		return nil
 	} else if err != nil {
-		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("helm release %#q failed", releaseState.Name), "stack", microerror.JSON(err))
+		r.logger.Errorf(ctx, err, "helm release %#q failed", releaseState.Name)
 
 		releaseContent, err := r.helmClient.GetReleaseContent(ctx, key.Namespace(cr), releaseState.Name)
 		if helmclient.IsReleaseNotFound(err) {
@@ -153,7 +153,7 @@ func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange inte
 			addStatusToContext(cc, reason, releaseNotInstalledStatus)
 
 			r.logger.LogCtx(ctx, "level", "warning", "message", reason, "stack", microerror.JSON(err))
-			r.logger.LogCtx(ctx, "level", "debug", "message", "canceling resource")
+			r.logger.Debugf(ctx, "canceling resource")
 			resourcecanceledcontext.SetCanceled(ctx)
 			return nil
 
@@ -164,15 +164,15 @@ func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange inte
 		if releaseContent.Status == helmclient.StatusFailed {
 			addStatusToContext(cc, releaseContent.Description, helmclient.StatusFailed)
 
-			r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("failed to update release %#q", releaseContent.Name))
-			r.logger.LogCtx(ctx, "level", "debug", "message", "canceling resource")
+			r.logger.Debugf(ctx, "failed to update release %#q", releaseContent.Name)
+			r.logger.Debugf(ctx, "canceling resource")
 			resourcecanceledcontext.SetCanceled(ctx)
 			return nil
 		}
 		return microerror.Mask(err)
 	}
 
-	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("updated release %#q in namespace %#q", releaseState.Name, key.Namespace(cr)))
+	r.logger.Debugf(ctx, "updated release %#q in namespace %#q", releaseState.Name, key.Namespace(cr))
 
 	// We set the checksum annotation so the update state calculation
 	// is accurate when we check in the next reconciliation loop.
@@ -217,7 +217,7 @@ func (r *Resource) newUpdateChange(ctx context.Context, obj, currentState, desir
 		return nil, microerror.Mask(err)
 	}
 
-	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("finding out if the %#q release has to be updated", desiredReleaseState.Name))
+	r.logger.Debugf(ctx, "finding out if the %#q release has to be updated", desiredReleaseState.Name)
 
 	// The release is still being updated so we don't update and check again
 	// in the next reconciliation loop.
@@ -238,15 +238,15 @@ func (r *Resource) newUpdateChange(ctx context.Context, obj, currentState, desir
 	// The release is failed and the values and version have not changed. So we
 	// don't update. We will be alerted so we can investigate.
 	if isReleaseFailed(currentReleaseState, desiredReleaseState) {
-		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("the %#q release is in status %#q and cannot be updated", desiredReleaseState.Name, currentReleaseState.Status))
+		r.logger.Debugf(ctx, "the %#q release is in status %#q and cannot be updated", desiredReleaseState.Name, currentReleaseState.Status)
 		return nil, nil
 	}
 
 	if isReleaseModified(currentReleaseState, desiredReleaseState) {
-		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("the %#q release has to be updated", desiredReleaseState.Name))
+		r.logger.Debugf(ctx, "the %#q release has to be updated", desiredReleaseState.Name)
 		return &desiredReleaseState, nil
 	} else {
-		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("the %#q release does not have to be updated", desiredReleaseState.Name))
+		r.logger.Debugf(ctx, "the %#q release does not have to be updated", desiredReleaseState.Name)
 	}
 
 	err = r.removeAnnotation(ctx, &cr, annotation.RollbackCount)
@@ -277,21 +277,21 @@ func (r *Resource) rollback(ctx context.Context, obj interface{}, currentStatus 
 	}
 
 	if rollbackCount > r.maxRollback {
-		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("the %#q release is in status %#q and has reached max %d rollbacks", key.ReleaseName(cr), currentStatus, r.maxRollback))
+		r.logger.Debugf(ctx, "the %#q release is in status %#q and has reached max %d rollbacks", key.ReleaseName(cr), currentStatus, r.maxRollback)
 		return nil
 	}
 
 	if currentStatus == helmclient.StatusPendingInstall {
-		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("deleting release %#q in %#q status", key.ReleaseName(cr), currentStatus))
+		r.logger.Debugf(ctx, "deleting release %#q in %#q status", key.ReleaseName(cr), currentStatus)
 
 		err = r.helmClient.DeleteRelease(ctx, key.Namespace(cr), key.ReleaseName(cr))
 		if err != nil {
 			return microerror.Mask(err)
 		}
 
-		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("deleted release %#q", key.ReleaseName(cr)))
+		r.logger.Debugf(ctx, "deleted release %#q", key.ReleaseName(cr))
 	} else {
-		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("rollback release %#q in %#q status", key.ReleaseName(cr), currentStatus))
+		r.logger.Debugf(ctx, "rollback release %#q in %#q status", key.ReleaseName(cr), currentStatus)
 
 		// Rollback to revision 0 restore a release to the previous revision.
 		err = r.helmClient.Rollback(ctx, key.Namespace(cr), key.ReleaseName(cr), 0, helmclient.RollbackOptions{})
@@ -299,7 +299,7 @@ func (r *Resource) rollback(ctx context.Context, obj interface{}, currentStatus 
 			return microerror.Mask(err)
 		}
 
-		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("rollbacked release %#q", key.ReleaseName(cr)))
+		r.logger.Debugf(ctx, "rollbacked release %#q", key.ReleaseName(cr))
 	}
 
 	err = r.addAnnotation(ctx, &cr, annotation.RollbackCount, fmt.Sprintf("%d", rollbackCount+1))

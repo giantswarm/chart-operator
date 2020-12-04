@@ -2,7 +2,6 @@ package namespace
 
 import (
 	"context"
-	"fmt"
 	"time"
 
 	"github.com/giantswarm/apiextensions/v3/pkg/label"
@@ -30,7 +29,7 @@ func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
 		},
 	}
 
-	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("creating namespace %#q", ns.Name))
+	r.logger.Debugf(ctx, "creating namespace %#q", ns.Name)
 
 	ch := make(chan error)
 
@@ -43,19 +42,19 @@ func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
 	case <-ch:
 		// Fall through.
 	case <-time.After(r.k8sWaitTimeout):
-		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("timeout creating namespace %#q", key.Namespace(cr)))
-		r.logger.LogCtx(ctx, "level", "debug", "message", "canceling resource")
+		r.logger.Debugf(ctx, "timeout creating namespace %#q", key.Namespace(cr))
+		r.logger.Debugf(ctx, "canceling resource")
 		return nil
 	}
 
 	if apierrors.IsAlreadyExists(err) {
-		r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("already created namespace %#q", key.Namespace(cr)))
+		r.logger.Debugf(ctx, "already created namespace %#q", key.Namespace(cr))
 		return nil
 	} else if err != nil {
 		return microerror.Mask(err)
 	}
 
-	r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("created namespace %#q", key.Namespace(cr)))
+	r.logger.Debugf(ctx, "created namespace %#q", key.Namespace(cr))
 
 	return nil
 }
