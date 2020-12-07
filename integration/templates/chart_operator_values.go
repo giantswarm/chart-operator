@@ -15,4 +15,7 @@ Installation:
         ClientTimeout: 30s
     Registry:
       Domain: quay.io
+
+verticalPodAutoscaler:
+  enabled: false
 `
