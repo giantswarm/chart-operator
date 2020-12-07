@@ -61,4 +61,4 @@ tiller:
   namespace: "kube-system"
 
 verticalPodAutoscaler:
-  enabled: "false"
+  enabled: false
