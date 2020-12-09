@@ -5,14 +5,13 @@ import (
 	"crypto/md5" // #nosec
 	"fmt"
 
-	"github.com/imdario/mergo"
-	"sigs.k8s.io/yaml"
-
 	"github.com/giantswarm/apiextensions/v3/pkg/apis/application/v1alpha1"
 	"github.com/giantswarm/helmclient/v3/pkg/helmclient"
 	"github.com/giantswarm/microerror"
+	"github.com/imdario/mergo"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"sigs.k8s.io/yaml"
 
 	"github.com/giantswarm/chart-operator/v2/service/controller/chart/key"
 )
