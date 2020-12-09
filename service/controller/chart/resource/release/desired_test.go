@@ -137,7 +137,7 @@ func Test_DesiredState(t *testing.T) {
 				ValuesMD5Checksum: "4845bfb2cf922d7527886ac13599ea3b",
 				Values: map[string]interface{}{
 					"provider": "azure",
-					"replicas": float64(2),
+					"replicas": 2,
 				},
 				Version: "0.1.2",
 			},
@@ -226,7 +226,7 @@ func Test_DesiredState(t *testing.T) {
 				Status:            helmclient.StatusDeployed,
 				ValuesMD5Checksum: "2187a8fce91c3765a74d462062af7526",
 				Values: map[string]interface{}{
-					"secretnumber":   float64(2),
+					"secretnumber":   2,
 					"secretpassword": "admin",
 				},
 				Version: "0.1.2",
@@ -289,16 +289,18 @@ func Test_DesiredState(t *testing.T) {
 				},
 				Data: map[string][]byte{
 					"values": []byte(`"username": "admin"
-"secretnumber": 2`),
+"secretnumber": 2
+"floatnumber": 3.14`),
 				},
 			},
 			expectedState: ReleaseState{
 				Name:              "chart-operator-chart",
 				Status:            helmclient.StatusDeployed,
-				ValuesMD5Checksum: "40f61add2413651115ef94f85d8335cf",
+				ValuesMD5Checksum: "3b8440387b1462ecdceb25c4cb9ff065",
 				Values: map[string]interface{}{
-					"replicas":     float64(2),
-					"secretnumber": float64(2),
+					"replicas":     2,
+					"secretnumber": 2,
+					"floatnumber":  3.14,
 					"username":     "admin",
 				},
 				Version: "0.1.2",

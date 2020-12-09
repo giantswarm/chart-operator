@@ -39,6 +39,8 @@ func (r *Resource) GetDesiredState(ctx context.Context, obj interface{}) (interf
 		return nil, microerror.Mask(err)
 	}
 
+	convertFloat(configMapData)
+
 	var valuesMD5Checksum string
 
 	if len(configMapData) > 0 {
