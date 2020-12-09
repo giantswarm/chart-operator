@@ -325,10 +325,10 @@ func toReleaseState(v interface{}) (ReleaseState, error) {
 
 func convertFloat(m map[string]interface{}) {
 	for k, val := range m {
-		switch _ := val.(type) {
+		switch floatVal := val.(type) {
 		case float64:
-			converted := int(val.(float64))
-			if val.(float64) == float64(converted) {
+			converted := int(floatVal)
+			if floatVal == float64(converted) {
 				m[k] = converted
 			}
 		case map[string]interface{}:
