@@ -32,7 +32,7 @@ func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange inte
 	}
 
 	if releaseState.Name == "" {
-		r.logger.Debugf(ctx, "no release name is provided for %#q", cr.Name)
+		// no-op
 		return nil
 	}
 
