@@ -8,8 +8,10 @@ import (
 	"github.com/giantswarm/apiextensions/v3/pkg/apis/application/v1alpha1"
 	"github.com/giantswarm/helmclient/v3/pkg/helmclient"
 	"github.com/giantswarm/microerror"
+	"github.com/imdario/mergo"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"sigs.k8s.io/yaml"
 
 	"github.com/giantswarm/chart-operator/v2/service/controller/chart/key"
 )
@@ -31,18 +33,21 @@ func (r *Resource) GetDesiredState(ctx context.Context, obj interface{}) (interf
 	}
 
 	// Merge configmap and secret to provide a single set of values to Helm.
-	values, err := helmclient.MergeValues(configMapData, secretData)
+	err = mergo.Merge(&configMapData, secretData, mergo.WithOverride)
 	if err != nil {
 		return nil, microerror.Mask(err)
 	}
 
+	// Convert all floats to integers if they have the same value to return the same md5 hash.
+	convertFloat(configMapData)
+
 	var valuesMD5Checksum string
 
-	if len(values) > 0 {
+	if len(configMapData) > 0 {
 		// MD5 is only used for comparison but we need to turn off gosec or
 		// linting errors will occur.
 		h := md5.New() // #nosec
-		_, err := h.Write([]byte(fmt.Sprintf("%v", values)))
+		_, err := h.Write([]byte(fmt.Sprintf("%v", configMapData)))
 		if err != nil {
 			return nil, microerror.Mask(err)
 		}
@@ -54,15 +59,15 @@ func (r *Resource) GetDesiredState(ctx context.Context, obj interface{}) (interf
 		Name:              key.ReleaseName(cr),
 		Status:            helmclient.StatusDeployed,
 		ValuesMD5Checksum: valuesMD5Checksum,
-		Values:            values,
+		Values:            configMapData,
 		Version:           key.Version(cr),
 	}
 
 	return releaseState, nil
 }
 
-func (r *Resource) getConfigMapData(ctx context.Context, cr v1alpha1.Chart) (map[string][]byte, error) {
-	configMapData := map[string][]byte{}
+func (r *Resource) getConfigMapData(ctx context.Context, cr v1alpha1.Chart) (map[string]interface{}, error) {
+	configMapData := map[string]interface{}{}
 
 	// TODO: Improve desired state generation by removing call to key.IsDeleted.
 	//
@@ -84,17 +89,19 @@ func (r *Resource) getConfigMapData(ctx context.Context, cr v1alpha1.Chart) (map
 			return nil, microerror.Mask(err)
 		}
 
-		// Convert strings to byte arrays to match secret types.
-		for k, v := range configMap.Data {
-			configMapData[k] = []byte(v)
+		for _, str := range configMap.Data {
+			err := yaml.Unmarshal([]byte(str), &configMapData)
+			if err != nil {
+				return nil, microerror.Mask(err)
+			}
 		}
 	}
 
 	return configMapData, nil
 }
 
-func (r *Resource) getSecretData(ctx context.Context, cr v1alpha1.Chart) (map[string][]byte, error) {
-	secretData := map[string][]byte{}
+func (r *Resource) getSecretData(ctx context.Context, cr v1alpha1.Chart) (map[string]interface{}, error) {
+	var secretData map[string]interface{}
 
 	// TODO: Improve desired state generation by removing call to key.IsDeleted.
 	//
@@ -116,7 +123,16 @@ func (r *Resource) getSecretData(ctx context.Context, cr v1alpha1.Chart) (map[st
 			return nil, microerror.Mask(err)
 		}
 
-		secretData = secret.Data
+		if len(secret.Data) != 1 {
+			return nil, microerror.Mask(wrongTypeError)
+		}
+
+		for _, bytes := range secret.Data {
+			err := yaml.Unmarshal(bytes, &secretData)
+			if err != nil {
+				return nil, microerror.Mask(err)
+			}
+		}
 	}
 
 	return secretData, nil

@@ -289,16 +289,18 @@ func Test_DesiredState(t *testing.T) {
 				},
 				Data: map[string][]byte{
 					"values": []byte(`"username": "admin"
-"secretnumber": 2`),
+"secretnumber": 2
+"floatnumber": 3.14`),
 				},
 			},
 			expectedState: ReleaseState{
 				Name:              "chart-operator-chart",
 				Status:            helmclient.StatusDeployed,
-				ValuesMD5Checksum: "40f61add2413651115ef94f85d8335cf",
+				ValuesMD5Checksum: "3b8440387b1462ecdceb25c4cb9ff065",
 				Values: map[string]interface{}{
 					"replicas":     2,
 					"secretnumber": 2,
+					"floatnumber":  3.14,
 					"username":     "admin",
 				},
 				Version: "0.1.2",
