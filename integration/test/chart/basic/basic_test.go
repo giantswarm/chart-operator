@@ -27,15 +27,17 @@ const (
 
 	configmapValue = `
 v1:
+  activateAdmission: false
   username: admin
   host:
-    url: quay.io
+    url: "quay.io"
   memory_in_gb: 0
   threshold: 2.17
 replicas: 3
 `
 	secretValue = `
 v1:
+  activateAdmission: true
   username: admin
   host: 
     secret: 
@@ -46,6 +48,7 @@ v1:
 
 	mergedValue = `
 v1:
+  activateAdmission: true
   username: admin
   host:
     url: quay.io
