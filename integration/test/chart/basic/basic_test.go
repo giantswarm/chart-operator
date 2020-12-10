@@ -23,7 +23,7 @@ import (
 
 const (
 	configMapName = "test-app-configmap"
-	secretName    = "test-app-configmap"
+	secretName    = "test-app-secret"
 
 	configmapValue = `
 v1:
@@ -73,7 +73,7 @@ replicas: 3
 func TestChartLifecycle(t *testing.T) {
 	ctx := context.Background()
 
-	// creating dependant configmap & secret
+	// Create dependant configmap & secret.
 	{
 		config.Logger.Debugf(ctx, "creating configmap %#q", configMapName)
 
@@ -92,7 +92,7 @@ func TestChartLifecycle(t *testing.T) {
 			t.Fatalf("expected %#v got %#v", nil, err)
 		}
 
-		config.Logger.Debugf(ctx, "creating configmap %#q", configMapName)
+		config.Logger.Debugf(ctx, "created configmap %#q", configMapName)
 
 		config.Logger.Debugf(ctx, "creating secret %#q", secretName)
 
@@ -111,7 +111,7 @@ func TestChartLifecycle(t *testing.T) {
 			t.Fatalf("expected %#v got %#v", nil, err)
 		}
 
-		config.Logger.Debugf(ctx, "creating secret %#q", secretName)
+		config.Logger.Debugf(ctx, "created secret %#q", secretName)
 	}
 
 	// Test creation.

@@ -38,7 +38,7 @@ func (r *Resource) GetDesiredState(ctx context.Context, obj interface{}) (interf
 		return nil, microerror.Mask(err)
 	}
 
-	// Converting all float numbers to integer if it has the same value to return the same md5 hash.
+	// Convert all floats to integers if they have the same value to return the same md5 hash.
 	convertFloat(configMapData)
 
 	var valuesMD5Checksum string
