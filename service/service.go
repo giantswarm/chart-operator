@@ -6,7 +6,7 @@ import (
 
 	applicationv1alpha1 "github.com/giantswarm/apiextensions/v3/pkg/apis/application/v1alpha1"
 	corev1alpha1 "github.com/giantswarm/apiextensions/v3/pkg/apis/core/v1alpha1"
-	"github.com/giantswarm/helmclient/v3/pkg/helmclient"
+	"github.com/giantswarm/helmclient/v4/pkg/helmclient"
 	"github.com/giantswarm/k8sclient/v5/pkg/k8sclient"
 	"github.com/giantswarm/k8sclient/v5/pkg/k8srestconfig"
 	"github.com/giantswarm/microendpoint/service/version"
@@ -104,9 +104,11 @@ func New(config Config) (*Service, error) {
 	var helmClient *helmclient.Client
 	{
 		c := helmclient.Config{
-			Fs:        fs,
-			K8sClient: k8sClient,
-			Logger:    config.Logger,
+			Fs:         fs,
+			K8sClient:  k8sClient.K8sClient(),
+			Logger:     config.Logger,
+			RestClient: k8sClient.RESTClient(),
+			RestConfig: k8sClient.RESTConfig(),
 
 			HTTPClientTimeout: config.Viper.GetDuration(config.Flag.Service.Helm.HTTP.ClientTimeout),
 		}
