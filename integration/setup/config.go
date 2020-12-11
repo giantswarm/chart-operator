@@ -3,7 +3,7 @@
 package setup
 
 import (
-	"github.com/giantswarm/helmclient/v3/pkg/helmclient"
+	"github.com/giantswarm/helmclient/v4/pkg/helmclient"
 	"github.com/giantswarm/k8sclient/v5/pkg/k8sclient"
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/micrologger"
@@ -66,9 +66,11 @@ func NewConfig() (Config, error) {
 	var helmClient *helmclient.Client
 	{
 		c := helmclient.Config{
-			Fs:        fs,
-			K8sClient: cpK8sClients,
-			Logger:    logger,
+			Fs:         fs,
+			K8sClient:  cpK8sClients.K8sClient(),
+			Logger:     logger,
+			RestClient: cpK8sClients.RESTClient(),
+			RestConfig: cpK8sClients.RESTConfig(),
 		}
 		helmClient, err = helmclient.New(c)
 		if err != nil {

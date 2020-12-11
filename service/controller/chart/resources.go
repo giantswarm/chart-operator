@@ -4,7 +4,7 @@ import (
 	"time"
 
 	"github.com/giantswarm/apiextensions/v3/pkg/clientset/versioned"
-	"github.com/giantswarm/helmclient/v3/pkg/helmclient"
+	"github.com/giantswarm/helmclient/v4/pkg/helmclient"
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/micrologger"
 	"github.com/giantswarm/operatorkit/v4/pkg/resource"

@@ -7,8 +7,8 @@ import (
 
 	"github.com/giantswarm/apiextensions/v3/pkg/apis/application/v1alpha1"
 	"github.com/giantswarm/apiextensions/v3/pkg/clientset/versioned/fake"
-	"github.com/giantswarm/helmclient/v3/pkg/helmclient"
-	"github.com/giantswarm/helmclient/v3/pkg/helmclienttest"
+	"github.com/giantswarm/helmclient/v4/pkg/helmclient"
+	"github.com/giantswarm/helmclient/v4/pkg/helmclienttest"
 	"github.com/giantswarm/micrologger/microloggertest"
 	"github.com/google/go-cmp/cmp"
 	"github.com/spf13/afero"

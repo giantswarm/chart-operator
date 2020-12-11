@@ -6,7 +6,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/giantswarm/helmclient/v3/pkg/helmclient"
+	"github.com/giantswarm/helmclient/v4/pkg/helmclient"
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/operatorkit/v4/pkg/controller/context/resourcecanceledcontext"
 	"github.com/giantswarm/operatorkit/v4/pkg/resource/crud"
