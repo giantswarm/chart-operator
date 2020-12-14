@@ -8,7 +8,7 @@ require (
 	github.com/giantswarm/appcatalog v0.3.2
 	github.com/giantswarm/backoff v0.2.0
 	github.com/giantswarm/exporterkit v0.2.0
-	github.com/giantswarm/helmclient/v4 v4.0.0
+	github.com/giantswarm/helmclient/v4 v4.0.1-0.20201214091549-6e0fd3ddb220
 	github.com/giantswarm/k8sclient/v5 v5.0.0
 	github.com/giantswarm/microendpoint v0.2.0
 	github.com/giantswarm/microerror v0.3.0
@@ -23,9 +23,9 @@ require (
 	github.com/prometheus/client_golang v1.8.0
 	github.com/spf13/afero v1.5.1
 	github.com/spf13/viper v1.7.1
-	k8s.io/api v0.18.9
-	k8s.io/apimachinery v0.18.9
-	k8s.io/client-go v0.18.9
+	k8s.io/api v0.19.4
+	k8s.io/apimachinery v0.19.4
+	k8s.io/client-go v0.19.4
 	sigs.k8s.io/yaml v1.2.0
 )
 
