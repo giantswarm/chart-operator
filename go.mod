@@ -21,7 +21,7 @@ require (
 	github.com/imdario/mergo v0.3.11
 	github.com/opencontainers/runc v1.0.0-rc2.0.20190611121236-6cc515888830 // indirect
 	github.com/prometheus/client_golang v1.8.0
-	github.com/spf13/afero v1.4.1
+	github.com/spf13/afero v1.5.1
 	github.com/spf13/viper v1.7.1
 	k8s.io/api v0.18.9
 	k8s.io/apimachinery v0.18.9
