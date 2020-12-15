@@ -35,7 +35,7 @@ replace (
 	// Use moby v20.10.0-beta1 to fix build issue on darwin.
 	github.com/docker/docker => github.com/moby/moby v20.10.0-beta1+incompatible
 
-	// Use go-logr/logr v0.1.0 since some they have breaking changes other component couldn't apply
+	// Use go-logr/logr v0.1.0 due to breaking changes in v0.2.0 that can't be applied.
 	github.com/go-logr/logr v0.2.0 => github.com/go-logr/logr v0.1.0
 
 	// Use mergo 0.3.11 due to bug in 0.3.9 merging Go structs.
