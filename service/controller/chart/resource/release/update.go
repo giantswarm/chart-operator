@@ -245,10 +245,7 @@ func (r *Resource) newUpdateChange(ctx context.Context, obj, currentState, desir
 
 	if isReleaseModified(currentReleaseState, desiredReleaseState) {
 		opt := cmp.FilterPath(func(p cmp.Path) bool {
-			if p.String() == "Values" {
-				return true
-			}
-			return false
+			return p.String() == "Values"
 		}, cmp.Ignore())
 
 		if diff := cmp.Diff(currentReleaseState, desiredReleaseState, opt); diff != "" {
