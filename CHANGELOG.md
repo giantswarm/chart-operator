@@ -9,7 +9,7 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ### Added
 
-- Printing difference between current release and desired release.
+- Print difference between current release and desired release.
 
 ### Changed
 
