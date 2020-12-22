@@ -249,7 +249,7 @@ func (r *Resource) newUpdateChange(ctx context.Context, obj, currentState, desir
 		}, cmp.Ignore())
 
 		if diff := cmp.Diff(currentReleaseState, desiredReleaseState, opt); diff != "" {
-			fmt.Printf("release %#q have to be updated, (-current +desired):\n%s", cr.Name, diff)
+			fmt.Printf("release %#q has to be updated, (-current +desired):\n%s", cr.Name, diff)
 		}
 
 		return &desiredReleaseState, nil
