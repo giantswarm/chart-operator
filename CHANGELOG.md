@@ -7,6 +7,10 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+### Added
+
+- Printing difference between current release and desired release.
+
 ### Changed
 
 - Updated Helm to v3.4.2.
