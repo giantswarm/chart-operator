@@ -244,7 +244,14 @@ func (r *Resource) newUpdateChange(ctx context.Context, obj, currentState, desir
 	}
 
 	if isReleaseModified(currentReleaseState, desiredReleaseState) {
-		if diff := cmp.Diff(currentReleaseState, desiredReleaseState); diff != "" {
+		opt := cmp.FilterPath(func(p cmp.Path) bool {
+			if p.String() == "Values" {
+				return true
+			}
+			return false
+		}, cmp.Ignore())
+
+		if diff := cmp.Diff(currentReleaseState, desiredReleaseState, opt); diff != "" {
 			fmt.Printf("release %#q have to be updated, (-current +desired):\n%s", cr.Name, diff)
 		}
 
