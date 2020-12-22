@@ -244,7 +244,7 @@ func (r *Resource) newUpdateChange(ctx context.Context, obj, currentState, desir
 	}
 
 	if isReleaseModified(currentReleaseState, desiredReleaseState) {
-		// Ignoring `Values` among diff since it could contain secret data.
+		// Ignoring `Values` in diff since it could contain secret data and we use MD5 hash for comparison.
 		opt := cmp.FilterPath(func(p cmp.Path) bool {
 			return p.String() == "Values"
 		}, cmp.Ignore())
