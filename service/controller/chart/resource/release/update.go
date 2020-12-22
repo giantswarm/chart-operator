@@ -10,6 +10,7 @@ import (
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/operatorkit/v4/pkg/controller/context/resourcecanceledcontext"
 	"github.com/giantswarm/operatorkit/v4/pkg/resource/crud"
+	"github.com/google/go-cmp/cmp"
 
 	"github.com/giantswarm/chart-operator/v2/pkg/annotation"
 	"github.com/giantswarm/chart-operator/v2/service/controller/chart/controllercontext"
@@ -243,10 +244,11 @@ func (r *Resource) newUpdateChange(ctx context.Context, obj, currentState, desir
 	}
 
 	if isReleaseModified(currentReleaseState, desiredReleaseState) {
-		r.logger.Debugf(ctx, "the %#q release has to be updated", desiredReleaseState.Name)
+		if diff := cmp.Diff(currentReleaseState, desiredReleaseState); diff != "" {
+			fmt.Printf("release %#q have to be updated, (-current +desired):\n%s", cr.Name, diff)
+		}
+
 		return &desiredReleaseState, nil
-	} else {
-		r.logger.Debugf(ctx, "the %#q release does not have to be updated", desiredReleaseState.Name)
 	}
 
 	err = r.removeAnnotation(ctx, &cr, annotation.RollbackCount)
