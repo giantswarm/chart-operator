@@ -7,6 +7,10 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+### Added
+
+- Added last reconciled timestamp as metrics.
+
 ## [2.6.0] - 2020-12-21
 
 ### Added
