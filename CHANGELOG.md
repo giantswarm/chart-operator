@@ -7,6 +7,12 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+## [2.7.0] - 2021-01-07
+
+### Added
+
+- Added last reconciled timestamp as metrics.
+
 ## [2.6.0] - 2020-12-21
 
 ### Added
@@ -258,7 +264,8 @@ We check progress in the next reconciliation loop. ([#362](https://github.com/gi
 - Separate podsecuritypolicy.
 - Security context in deployment spec with non-root user.
 
-[Unreleased]: https://github.com/giantswarm/chart-operator/compare/v2.6.0...HEAD
+[Unreleased]: https://github.com/giantswarm/chart-operator/compare/v2.7.0...HEAD
+[2.7.0]: https://github.com/giantswarm/chart-operator/compare/v2.6.0...v2.7.0
 [2.6.0]: https://github.com/giantswarm/chart-operator/compare/v2.5.2...v2.6.0
 [2.5.2]: https://github.com/giantswarm/chart-operator/compare/v2.5.1...v2.5.2
 [2.5.1]: https://github.com/giantswarm/chart-operator/compare/v2.5.0...v2.5.1
