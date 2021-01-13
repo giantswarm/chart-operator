@@ -7,6 +7,10 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+### Fixed
+
+- Only create VPA if autoscaling API group is present.
+
 ## [2.7.0] - 2021-01-07
 
 ### Added
