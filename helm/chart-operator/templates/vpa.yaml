@@ -1,4 +1,4 @@
-{{ if or (.Values.verticalPodAutoscaler.enabled) (.Values.Installation) }}
+{{ if and (.Capabilities.APIVersions.Has autoscaling.k8s.io/v1) (.Values.verticalPodAutoscaler.enabled) }}
 apiVersion: autoscaling.k8s.io/v1
 kind: VerticalPodAutoscaler
 metadata:
