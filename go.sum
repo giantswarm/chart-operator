@@ -258,8 +258,8 @@ github.com/ghodss/yaml v1.0.1-0.20190212211648-25d852aebe32/go.mod h1:GIjDIg/heH
 github.com/giantswarm/apiextensions/v3 v3.4.0/go.mod h1:MMLkRJta4mbTbrikP9LewADiCL+55LmsagyhdTU7XAY=
 github.com/giantswarm/apiextensions/v3 v3.13.0 h1:Sqf/DZJhd4aMzCjrmUVD7xffRORpZSnC9dPPqjKG7Nc=
 github.com/giantswarm/apiextensions/v3 v3.13.0/go.mod h1:f+dFUDLroK50aCGzvpqPw/jCFCCgJqdEMf/xNSJBI+A=
-github.com/giantswarm/apiextensions/v3 v3.14.1 h1:P9jBH8T4bgtq1e+2aFbSb4hmJZ6OFT6qlwXNiGPKYhE=
-github.com/giantswarm/apiextensions/v3 v3.14.1/go.mod h1:4XD4M9+H2xhalpdXPB8x0MIA6NhYzXGIS5eb7Q7pMz0=
+github.com/giantswarm/apiextensions/v3 v3.15.0 h1:QFQfXX5F8N+DanUVxEvJemMiwoV0K6slqRk0MU9Ebvc=
+github.com/giantswarm/apiextensions/v3 v3.15.0/go.mod h1:4XD4M9+H2xhalpdXPB8x0MIA6NhYzXGIS5eb7Q7pMz0=
 github.com/giantswarm/appcatalog v0.3.2 h1:pH0ASrizU7QcAK4oZtrPXAi4pqMFJOsjCPRLY0uLFEo=
 github.com/giantswarm/appcatalog v0.3.2/go.mod h1:cjOuCqi8gWudFY0ogbp4ukSV4Vff6kfInR9VdrX+7yI=
 github.com/giantswarm/backoff v0.2.0 h1:kdfAf83pZ/l8X0KiA2dJ2Wq19nS9hISijVn7ZRdFhfU=
