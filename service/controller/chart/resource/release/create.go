@@ -37,6 +37,7 @@ func (r *Resource) ApplyCreateChange(ctx context.Context, obj, createChange inte
 
 	ns := key.Namespace(cr)
 	tarballURL := key.TarballURL(cr)
+	skipCRDs := key.SkipCRDs(cr)
 
 	tarballPath, err := r.helmClient.PullChartTarball(ctx, tarballURL)
 	if helmclient.IsPullChartFailedError(err) {
@@ -82,8 +83,12 @@ func (r *Resource) ApplyCreateChange(ctx context.Context, obj, createChange inte
 	// If we do timeout the install will continue in the background.
 	// We will check the progress in the next reconciliation loop.
 	go func() {
+		if skipCRDs {
+			r.logger.Debugf(ctx, "helm release %#q has SkipCRDs set to true, not installing release CRDs", releaseState.Name)
+		}
 		opts := helmclient.InstallOptions{
 			ReleaseName: releaseState.Name,
+			SkipCRDs:    skipCRDs,
 		}
 		// We need to pass the ValueOverrides option to make the install process
 		// use the default values and prevent errors on nested values.

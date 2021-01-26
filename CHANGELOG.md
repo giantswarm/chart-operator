@@ -7,6 +7,8 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+- Add SkipCRDs to CR, this will be passed on to helmclient
+
 ## [2.7.1] - 2021-01-13
 
 ### Fixed
@@ -144,7 +146,7 @@ reduce how often pods are rolled.
 
 - Updated backward incompatible Kubernetes dependencies to v1.18.5.
 - Updated Helm to v3.2.4.
-- Fix the rollback in a loop problem. 
+- Fix the rollback in a loop problem.
 
 ## [1.0.7] - 2020-08-05
 
@@ -170,7 +172,7 @@ reduce how often pods are rolled.
 
 ### Changed
 
-- Update MD5 Hash only if chart-operator upgrade the release successfully. 
+- Update MD5 Hash only if chart-operator upgrade the release successfully.
 - Make kubernetes wait timeout configurable when installing and updating
 releases.
 - Set release revision in CR status.
@@ -185,12 +187,12 @@ releases.
 
 ### Changed
 
-- Disabled force-upgrade from helmclient. 
+- Disabled force-upgrade from helmclient.
 - Canceling the release resource when migration is done yet.
 
 ## [v1.0.1] 2020-05-26
 
-### Changed 
+### Changed
 
 - Using helmclient v1.0.1 for security fix.
 - Cancel the release resource when the manifest validation failed.
