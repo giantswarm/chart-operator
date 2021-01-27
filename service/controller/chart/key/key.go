@@ -14,6 +14,10 @@ func ChartStatus(customResource v1alpha1.Chart) v1alpha1.ChartStatus {
 	return customResource.Status
 }
 
+func SkipCRDs(customResource v1alpha1.Chart) bool {
+	return customResource.Spec.Install.SkipCRDs
+}
+
 func ConfigMapName(customResource v1alpha1.Chart) string {
 	return customResource.Spec.Config.ConfigMap.Name
 }
