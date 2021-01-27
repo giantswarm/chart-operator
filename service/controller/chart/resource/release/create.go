@@ -84,7 +84,7 @@ func (r *Resource) ApplyCreateChange(ctx context.Context, obj, createChange inte
 	// We will check the progress in the next reconciliation loop.
 	go func() {
 		if skipCRDs {
-			r.logger.Debugf(ctx, "helm release %#q has SkipCRDs set to true, not installing release CRDs", releaseState.Name)
+			r.logger.Debugf(ctx, "helm release %#q has SkipCRDs set to true, not installing CRDs", releaseState.Name)
 		}
 		opts := helmclient.InstallOptions{
 			ReleaseName: releaseState.Name,
