@@ -9,7 +9,7 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ### Added
 
-- Add SkipCRDs to CR, this will be passed on to helmclient
+- Add support for skip CRD flag when installing Helm releases.
 
 ## [2.7.1] - 2021-01-13
 
