@@ -7,6 +7,8 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+## [2.8.0] - 2021-01-27
+
 ### Added
 
 - Add support for skip CRD flag when installing Helm releases.
@@ -274,7 +276,8 @@ We check progress in the next reconciliation loop. ([#362](https://github.com/gi
 - Separate podsecuritypolicy.
 - Security context in deployment spec with non-root user.
 
-[Unreleased]: https://github.com/giantswarm/chart-operator/compare/v2.7.1...HEAD
+[Unreleased]: https://github.com/giantswarm/chart-operator/compare/v2.8.0...HEAD
+[2.8.0]: https://github.com/giantswarm/chart-operator/compare/v2.7.1...v2.8.0
 [2.7.1]: https://github.com/giantswarm/chart-operator/compare/v2.7.0...v2.7.1
 [2.7.0]: https://github.com/giantswarm/chart-operator/compare/v2.6.0...v2.7.0
 [2.6.0]: https://github.com/giantswarm/chart-operator/compare/v2.5.2...v2.6.0
