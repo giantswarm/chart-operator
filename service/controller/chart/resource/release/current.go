@@ -76,5 +76,14 @@ func (r *Resource) GetCurrentState(ctx context.Context, obj interface{}) (interf
 		Version:           releaseContent.Version,
 	}
 
+	releaseHistory, err := r.helmClient.GetReleaseHistory(ctx, key.Namespace(cr), releaseName)
+	if err != nil {
+		return nil, microerror.Mask(err)
+	}
+
+	for i, history := range releaseHistory {
+		r.logger.Debugf(ctx, "history: %d %#v", i, history)
+	}
+
 	return releaseState, nil
 }
