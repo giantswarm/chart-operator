@@ -238,14 +238,10 @@ func (r *Resource) isReleaseFailedMaxAttempts(ctx context.Context, namespace, re
 
 	failCount := 0
 
-	r.logger.Debugf(ctx, "history before sort %#v", history)
-
 	// Sort history by descending revision number.
 	sort.Slice(history, func(i, j int) bool {
-		return history[i].Revision < history[j].Revision
+		return history[i].Revision > history[j].Revision
 	})
-
-	r.logger.Debugf(ctx, "history after sort %#v", history)
 
 	for _, hist := range history {
 		if hist.Status != helmclient.StatusFailed {
