@@ -236,25 +236,19 @@ func (r *Resource) isReleaseFailedMaxAttempts(ctx context.Context, namespace, re
 		return false, microerror.Mask(err)
 	}
 
-	failCount := 0
-
 	// Sort history by descending revision number.
 	sort.Slice(history, func(i, j int) bool {
 		return history[i].Revision > history[j].Revision
 	})
 
-	for _, hist := range history {
-		if hist.Status != helmclient.StatusFailed {
+	for i := 0; i < releaseFailedMaxAttempts; i++ {
+		if history[i].Status != helmclient.StatusFailed {
 			return false, nil
-		}
-
-		failCount++
-		if failCount >= releaseFailedMaxAttempts {
-			return true, nil
 		}
 	}
 
-	return false, nil
+	// All failed so we exceeded the max attempts.
+	return true, nil
 }
 
 // addStatusToContext adds the status to the controller context. It will be
