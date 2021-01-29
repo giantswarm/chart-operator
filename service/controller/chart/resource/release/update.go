@@ -250,7 +250,7 @@ func (r *Resource) newUpdateChange(ctx context.Context, obj, currentState, desir
 		}, cmp.Ignore())
 
 		if diff := cmp.Diff(currentReleaseState, desiredReleaseState, opt); diff != "" {
-			r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("release %#q has to be updated", cr.Name), "diff", diff)
+			r.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("release %#q has to be updated", cr.Name), "diff", fmt.Sprintf("(-current +desired):\n%s", diff))
 		}
 
 		return &desiredReleaseState, nil
