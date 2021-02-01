@@ -241,6 +241,10 @@ func (r *Resource) isReleaseFailedMaxAttempts(ctx context.Context, namespace, re
 		return history[i].Revision > history[j].Revision
 	})
 
+	if len(history) < releaseFailedMaxAttempts {
+		return false, nil
+	}
+
 	for i := 0; i < releaseFailedMaxAttempts; i++ {
 		if history[i].Status != helmclient.StatusFailed {
 			return false, nil
