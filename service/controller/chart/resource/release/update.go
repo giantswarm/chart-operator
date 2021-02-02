@@ -243,6 +243,19 @@ func (r *Resource) newUpdateChange(ctx context.Context, obj, currentState, desir
 		return nil, nil
 	}
 
+	// We check the release history and if it has failed more than the max number
+	// of attempts we stop updating. Otherwise too many secrets will be created.
+	if currentReleaseState.Status == helmclient.StatusFailed {
+		isFailedMaxAttempts, err := r.isReleaseFailedMaxAttempts(ctx, key.Namespace(cr), desiredReleaseState.Name)
+		if err != nil {
+			return nil, microerror.Mask(err)
+		}
+		if isFailedMaxAttempts {
+			r.logger.Debugf(ctx, "the %#q release is in status %#q and has failed %d times", desiredReleaseState.Name, currentReleaseState.Status, releaseFailedMaxAttempts)
+			return nil, nil
+		}
+	}
+
 	if isReleaseModified(currentReleaseState, desiredReleaseState) {
 		// Ignoring `Values` in diff since it could contain secret data and we use MD5 hash for comparison.
 		opt := cmp.FilterPath(func(p cmp.Path) bool {

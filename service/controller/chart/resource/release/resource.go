@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"sort"
 	"strings"
 	"time"
 
@@ -37,6 +38,11 @@ const (
 	// releaseNotInstalledStatus is set in the CR status when there is no Helm
 	// Release to check.
 	releaseNotInstalledStatus = "not-installed"
+
+	// releaseFailedMaxAttempts when a release fails this number of times in a
+	// row we stop updating. This is because the Helm max history setting does
+	// not apply for failures.
+	releaseFailedMaxAttempts = 5
 
 	// validationFailedStatus is set in the CR status when it failed to pass
 	// OpenAPI validation on release manifest.
@@ -219,6 +225,34 @@ func (r *Resource) addHashAnnotation(ctx context.Context, cr v1alpha1.Chart, rel
 	}
 
 	return nil
+}
+
+// isReleaseFailedMaxAttempts checks the release history to see if it has
+// failed the max number of attempts. If it has we stop updating. This is
+// needed as the max history setting for Helm update does not count failures.
+func (r *Resource) isReleaseFailedMaxAttempts(ctx context.Context, namespace, releaseName string) (bool, error) {
+	history, err := r.helmClient.GetReleaseHistory(ctx, namespace, releaseName)
+	if err != nil {
+		return false, microerror.Mask(err)
+	}
+
+	if len(history) < releaseFailedMaxAttempts {
+		return false, nil
+	}
+
+	// Sort history by descending revision number.
+	sort.Slice(history, func(i, j int) bool {
+		return history[i].Revision > history[j].Revision
+	})
+
+	for i := 0; i < releaseFailedMaxAttempts; i++ {
+		if history[i].Status != helmclient.StatusFailed {
+			return false, nil
+		}
+	}
+
+	// All failed so we exceeded the max attempts.
+	return true, nil
 }
 
 // addStatusToContext adds the status to the controller context. It will be
