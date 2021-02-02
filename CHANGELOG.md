@@ -7,6 +7,10 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+### Added
+
+- Use diff key when logging differences between the current and desired release.
+
 ### Fixed
 
 - Stop updating Helm release if it has failed the previous 5 attempts.
