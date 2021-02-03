@@ -7,6 +7,8 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+## [2.9.0] - 2021-02-03
+
 ### Added
 
 - Use diff key when logging differences between the current and desired release.
@@ -284,7 +286,8 @@ We check progress in the next reconciliation loop. ([#362](https://github.com/gi
 - Separate podsecuritypolicy.
 - Security context in deployment spec with non-root user.
 
-[Unreleased]: https://github.com/giantswarm/chart-operator/compare/v2.8.0...HEAD
+[Unreleased]: https://github.com/giantswarm/chart-operator/compare/v2.9.0...HEAD
+[2.9.0]: https://github.com/giantswarm/chart-operator/compare/v2.8.0...v2.9.0
 [2.8.0]: https://github.com/giantswarm/chart-operator/compare/v2.7.1...v2.8.0
 [2.7.1]: https://github.com/giantswarm/chart-operator/compare/v2.7.0...v2.7.1
 [2.7.0]: https://github.com/giantswarm/chart-operator/compare/v2.6.0...v2.7.0
