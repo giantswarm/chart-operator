@@ -7,6 +7,10 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+### Added
+
+- Pause Chart CR reconciliation when it has chart-operator.giantswarm.io/paused=true annotation.
+
 ## [2.9.0] - 2021-02-03
 
 ### Added

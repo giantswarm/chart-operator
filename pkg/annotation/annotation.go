@@ -3,6 +3,10 @@
 package annotation
 
 const (
+	// ChartOperatorPaused annotation when present prevents chart-operator from
+	// reconciling the resource.
+	ChartOperatorPaused = "chart-operator.giantswarm.io/paused"
+
 	// CordonReason is the name of the annotation that indicates
 	// the reason of why chart-operator should not apply any update on this chart CR.
 	CordonReason = "chart-operator.giantswarm.io/cordon-reason"
