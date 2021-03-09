@@ -4,6 +4,8 @@ version: [[ .Version ]]
 appVersion: [[ .AppVersion ]]
 home: https://github.com/giantswarm/chart-operator
 description: A Helm chart for the chart-operator
+annotations:
+  application.giantswarm.io/team: "batman"
 restrictions:
   clusterSingleton: true
   namespaceSingleton: true

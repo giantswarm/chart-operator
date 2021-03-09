@@ -14,6 +14,7 @@ import (
 	"github.com/spf13/afero"
 	"k8s.io/apimachinery/pkg/runtime"
 
+	"github.com/giantswarm/chart-operator/v2/pkg/annotation"
 	"github.com/giantswarm/chart-operator/v2/pkg/project"
 	"github.com/giantswarm/chart-operator/v2/service/controller/chart/controllercontext"
 )
@@ -91,6 +92,9 @@ func NewChart(config Config) (*Chart, error) {
 			InitCtx:   initCtxFunc,
 			K8sClient: config.K8sClient,
 			Logger:    config.Logger,
+			Pause: map[string]string{
+				annotation.ChartOperatorPaused: "true",
+			},
 			Resources: resources,
 			NewRuntimeObjectFunc: func() runtime.Object {
 				return new(v1alpha1.Chart)
