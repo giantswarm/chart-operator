@@ -15,6 +15,7 @@ import (
 	"github.com/giantswarm/microerror"
 	"github.com/spf13/afero"
 
+	"github.com/giantswarm/chart-operator/v2/integration/env"
 	"github.com/giantswarm/chart-operator/v2/integration/key"
 	"github.com/giantswarm/chart-operator/v2/pkg/project"
 )
@@ -52,7 +53,7 @@ func installResources(ctx context.Context, config Config) error {
 	{
 		config.Logger.Debugf(ctx, "getting tarball URL")
 
-		operatorTarballURL, err := appcatalog.GetLatestChart(ctx, key.DefaultTestCatalogStorageURL(), project.Name(), project.Version())
+		operatorTarballURL, err := appcatalog.GetLatestChart(ctx, key.DefaultTestCatalogStorageURL(), project.Name(), env.CircleSHA())
 		if err != nil {
 			return microerror.Mask(err)
 		}
