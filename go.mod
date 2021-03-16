@@ -4,7 +4,7 @@ go 1.15
 
 require (
 	github.com/ghodss/yaml v1.0.1-0.20190212211648-25d852aebe32 // indirect
-	github.com/giantswarm/apiextensions/v3 v3.19.0
+	github.com/giantswarm/apiextensions/v3 v3.21.0
 	github.com/giantswarm/appcatalog v0.4.1
 	github.com/giantswarm/backoff v0.2.0
 	github.com/giantswarm/exporterkit v0.2.1
@@ -18,7 +18,7 @@ require (
 	github.com/giantswarm/to v0.3.0
 	github.com/giantswarm/versionbundle v0.2.0
 	github.com/google/go-cmp v0.5.5
-	github.com/imdario/mergo v0.3.11
+	github.com/imdario/mergo v0.3.12
 	github.com/opencontainers/runc v1.0.0-rc2.0.20190611121236-6cc515888830 // indirect
 	github.com/prometheus/client_golang v1.9.0
 	github.com/spf13/afero v1.5.1
