@@ -11,6 +11,10 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 - Pause Chart CR reconciliation when it has chart-operator.giantswarm.io/paused=true annotation.
 
+### Changed
+
+- Deploy `giantswarm-critical` PriorityClass when it's not found.
+
 ## [2.9.0] - 2021-02-03
 
 ### Added
