@@ -29,6 +29,10 @@ func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
 		},
 	}
 
+	if ns.Labels != nil {
+		ns.Labels = map[string]string{}
+	}
+
 	ns.Labels[label.ManagedBy] = project.Name()
 
 	r.logger.Debugf(ctx, "creating namespace %#q", ns.Name)
