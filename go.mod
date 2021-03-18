@@ -4,7 +4,7 @@ go 1.15
 
 require (
 	github.com/ghodss/yaml v1.0.1-0.20190212211648-25d852aebe32 // indirect
-	github.com/giantswarm/apiextensions/v3 v3.21.0
+	github.com/giantswarm/apiextensions/v3 v3.22.0
 	github.com/giantswarm/appcatalog v0.4.1
 	github.com/giantswarm/backoff v0.2.0
 	github.com/giantswarm/exporterkit v0.2.1
@@ -14,7 +14,7 @@ require (
 	github.com/giantswarm/microerror v0.3.0
 	github.com/giantswarm/microkit v0.2.2
 	github.com/giantswarm/micrologger v0.5.0
-	github.com/giantswarm/operatorkit/v4 v4.2.0
+	github.com/giantswarm/operatorkit/v4 v4.3.0
 	github.com/giantswarm/to v0.3.0
 	github.com/giantswarm/versionbundle v0.2.0
 	github.com/google/go-cmp v0.5.5
