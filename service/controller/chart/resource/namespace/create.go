@@ -106,10 +106,14 @@ func (r *Resource) ensureNamespaceUpdated(ctx context.Context, cr v1alpha1.Chart
 		return nil
 	}
 
+	r.logger.Debugf(ctx, "updating namespace %#q", namespace.Name)
+
 	_, err = r.k8sClient.CoreV1().Namespaces().Update(ctx, namespace, metav1.UpdateOptions{})
 	if err != nil {
 		return microerror.Mask(err)
 	}
+
+	r.logger.Debugf(ctx, "updated namespace %#q", namespace.Name)
 
 	return nil
 }
