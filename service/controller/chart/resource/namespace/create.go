@@ -79,11 +79,19 @@ func (r *Resource) ensureNamespaceUpdated(ctx context.Context, cr v1alpha1.Chart
 
 	updated := true
 
+	if namespace.GetLabels() == nil {
+		namespace.Labels = map[string]string{}
+	}
+
 	for k, v := range key.NamespaceLabels(cr) {
 		if namespace.GetLabels()[k] != v {
 			namespace.GetLabels()[k] = v
 			updated = false
 		}
+	}
+
+	if namespace.GetAnnotations() == nil {
+		namespace.Annotations = map[string]string{}
 	}
 
 	for k, v := range key.NamespaceAnnotations(cr) {
