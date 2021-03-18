@@ -29,7 +29,7 @@ func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
 		},
 	}
 
-	if ns.Labels != nil {
+	if ns.Labels == nil {
 		ns.Labels = map[string]string{}
 	}
 
