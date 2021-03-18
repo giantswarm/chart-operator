@@ -7,6 +7,10 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+### Added
+
+- Updating namespace metadata using namespaceConfig in `Chart` CRs.
+
 ## [2.10.0] - 2021-03-17
 
 ### Added
