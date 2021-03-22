@@ -70,6 +70,14 @@ func Namespace(customResource v1alpha1.Chart) string {
 	return customResource.Spec.Namespace
 }
 
+func NamespaceAnnotations(customResource v1alpha1.Chart) map[string]string {
+	return customResource.Spec.NamespaceConfig.Annotations
+}
+
+func NamespaceLabels(customResource v1alpha1.Chart) map[string]string {
+	return customResource.Spec.NamespaceConfig.Labels
+}
+
 func ReleaseName(customResource v1alpha1.Chart) string {
 	return customResource.Spec.Name
 }
