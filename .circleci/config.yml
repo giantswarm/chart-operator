@@ -110,3 +110,16 @@ workflows:
               ignore: /.*/
             tags:
               only: /^v.*/
+              
+      - architect/push-to-app-collection:
+          context: architect
+          name: push-chart-operator-to-vmware-app-collection
+          app_name: "chart-operator"
+          app_collection_repo: "vmware-app-collection"
+          requires:
+            - push-chart-operator-to-control-plane-app-catalog
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^v.*/
