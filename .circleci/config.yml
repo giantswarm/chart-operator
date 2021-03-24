@@ -1,6 +1,6 @@
 version: 2.1
 orbs:
-  architect: giantswarm/architect@2.3.0
+  architect: giantswarm/architect@2.4.0
 
 workflows:
   build:
@@ -70,6 +70,20 @@ workflows:
           requires:
           - go-build
           - push-chart-operator-to-default-app-catalog
+
+      - architect/push-to-app-collection:
+          context: architect
+          name: push-chart-operator-to-shared-app-collection
+          app_name: "chart-operator"
+          app_collection_repo: "shared-app-collection"
+          requires:
+            - push-chart-operator-to-aliyun
+            - push-chart-operator-to-control-plane-app-catalog
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^v.*/
 
       - architect/push-to-app-collection:
           context: architect
