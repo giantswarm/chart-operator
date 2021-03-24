@@ -1,6 +1,6 @@
 version: 2.1
 orbs:
-  architect: giantswarm/architect@dev:use-architect-with-ct-schema
+  architect: giantswarm/architect@2.4.1
 
 workflows:
   build:
