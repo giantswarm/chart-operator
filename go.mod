@@ -20,8 +20,8 @@ require (
 	github.com/google/go-cmp v0.5.5
 	github.com/imdario/mergo v0.3.12
 	github.com/opencontainers/runc v1.0.0-rc2.0.20190611121236-6cc515888830 // indirect
-	github.com/prometheus/client_golang v1.9.0
-	github.com/spf13/afero v1.5.1
+	github.com/prometheus/client_golang v1.10.0
+	github.com/spf13/afero v1.6.0
 	github.com/spf13/viper v1.7.1
 	k8s.io/api v0.19.4
 	k8s.io/apimachinery v0.19.4

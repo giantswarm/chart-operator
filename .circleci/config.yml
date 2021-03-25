@@ -1,6 +1,6 @@
 version: 2.1
 orbs:
-  architect: giantswarm/architect@2.3.0
+  architect: giantswarm/architect@2.4.2
 
 workflows:
   build:
@@ -73,6 +73,20 @@ workflows:
 
       - architect/push-to-app-collection:
           context: architect
+          name: push-chart-operator-to-shared-app-collection
+          app_name: "chart-operator"
+          app_collection_repo: "shared-app-collection"
+          requires:
+            - push-chart-operator-to-aliyun
+            - push-chart-operator-to-control-plane-app-catalog
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^v.*/
+
+      - architect/push-to-app-collection:
+          context: architect
           name: push-chart-operator-to-aws-app-collection
           app_name: "chart-operator"
           app_collection_repo: "aws-app-collection"
@@ -103,6 +117,19 @@ workflows:
           name: push-chart-operator-to-kvm-app-collection
           app_name: "chart-operator"
           app_collection_repo: "kvm-app-collection"
+          requires:
+            - push-chart-operator-to-control-plane-app-catalog
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^v.*/
+              
+      - architect/push-to-app-collection:
+          context: architect
+          name: push-chart-operator-to-vmware-app-collection
+          app_name: "chart-operator"
+          app_collection_repo: "vmware-app-collection"
           requires:
             - push-chart-operator-to-control-plane-app-catalog
           filters:
