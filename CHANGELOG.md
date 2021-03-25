@@ -7,6 +7,10 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+### Changed
+
+- Handover RESTMapper object to helmclient to reduce the number of REST API calls.
+
 ## [2.11.0] - 2021-03-19
 
 ### Added
