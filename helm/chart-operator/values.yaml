@@ -23,7 +23,7 @@ helm:
   maxRollback: 3
 
 image:
-  registry: "quay.io"
+  registry: "docker.io"
   name: "giantswarm/chart-operator"
   tag: "[[ .Version ]]"
 
