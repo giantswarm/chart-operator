@@ -7,6 +7,8 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+## [2.11.1] - 2021-03-26
+
 ### Changed
 
 - Set docker.io as the default registry
@@ -308,7 +310,8 @@ We check progress in the next reconciliation loop. ([#362](https://github.com/gi
 - Separate podsecuritypolicy.
 - Security context in deployment spec with non-root user.
 
-[Unreleased]: https://github.com/giantswarm/chart-operator/compare/v2.11.0...HEAD
+[Unreleased]: https://github.com/giantswarm/chart-operator/compare/v2.11.1...HEAD
+[2.11.1]: https://github.com/giantswarm/chart-operator/compare/v2.11.0...v2.11.1
 [2.11.0]: https://github.com/giantswarm/chart-operator/compare/v2.10.0...v2.11.0
 [2.10.0]: https://github.com/giantswarm/chart-operator/compare/v2.9.0...v2.10.0
 [2.9.0]: https://github.com/giantswarm/chart-operator/compare/v2.8.0...v2.9.0
