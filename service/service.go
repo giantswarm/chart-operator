@@ -16,6 +16,7 @@ import (
 	"github.com/spf13/afero"
 	"github.com/spf13/viper"
 	"k8s.io/client-go/rest"
+	"sigs.k8s.io/controller-runtime/pkg/client/apiutil"
 
 	"github.com/giantswarm/chart-operator/v2/flag"
 	"github.com/giantswarm/chart-operator/v2/pkg/project"
@@ -103,12 +104,18 @@ func New(config Config) (*Service, error) {
 
 	var helmClient *helmclient.Client
 	{
+		restMapper, err := apiutil.NewDynamicRESTMapper(rest.CopyConfig(k8sClient.RESTConfig()))
+		if err != nil {
+			return nil, microerror.Mask(err)
+		}
+
 		c := helmclient.Config{
 			Fs:         fs,
 			K8sClient:  k8sClient.K8sClient(),
 			Logger:     config.Logger,
 			RestClient: k8sClient.RESTClient(),
 			RestConfig: k8sClient.RESTConfig(),
+			RestMapper: restMapper,
 
 			HTTPClientTimeout: config.Viper.GetDuration(config.Flag.Service.Helm.HTTP.ClientTimeout),
 		}
