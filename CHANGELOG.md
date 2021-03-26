@@ -9,7 +9,7 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ### Changed
 
-- Handover RESTMapper object to helmclient to reduce the number of REST API calls.
+- Pass RESTMapper to helmclient to reduce the number of REST API calls.
 
 ## [2.11.0] - 2021-03-19
 
