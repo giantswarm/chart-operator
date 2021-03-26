@@ -10,6 +10,7 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 ### Changed
 
 - Pass RESTMapper to helmclient to reduce the number of REST API calls.
+- Updated Helm to v3.5.3.
 
 ## [2.11.0] - 2021-03-19
 
