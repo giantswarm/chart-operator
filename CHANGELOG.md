@@ -7,6 +7,8 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+- `giantswarm-critical` PriorityClass only managed when E2E.
+
 ## [2.12.0] - 2021-03-26
 
 ### Changed
