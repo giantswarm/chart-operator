@@ -7,6 +7,8 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+## [2.13.0] - 2021-03-31
+
 - `giantswarm-critical` PriorityClass only managed when E2E.
 
 ## [2.12.0] - 2021-03-26
@@ -312,7 +314,8 @@ We check progress in the next reconciliation loop. ([#362](https://github.com/gi
 - Separate podsecuritypolicy.
 - Security context in deployment spec with non-root user.
 
-[Unreleased]: https://github.com/giantswarm/chart-operator/compare/v2.12.0...HEAD
+[Unreleased]: https://github.com/giantswarm/chart-operator/compare/v2.13.0...HEAD
+[2.13.0]: https://github.com/giantswarm/chart-operator/compare/v2.12.0...v2.13.0
 [2.12.0]: https://github.com/giantswarm/chart-operator/compare/v2.11.0...v2.12.0
 [2.11.0]: https://github.com/giantswarm/chart-operator/compare/v2.10.0...v2.11.0
 [2.10.0]: https://github.com/giantswarm/chart-operator/compare/v2.9.0...v2.10.0
