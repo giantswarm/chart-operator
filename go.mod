@@ -39,6 +39,8 @@ replace (
 	github.com/docker/docker => github.com/moby/moby v20.10.0-beta1+incompatible
 	// Use go-logr/logr v0.1.0 due to breaking changes in v0.2.0 that can't be applied.
 	github.com/go-logr/logr v0.2.0 => github.com/go-logr/logr v0.1.0
+	// CVE-2021-3121
+	github.com/gogo/protobuf v1.3.1 => github.com/gogo/protobuf v1.3.2
 	// Use mergo 0.3.11 due to bug in 0.3.9 merging Go structs.
 	github.com/imdario/mergo => github.com/imdario/mergo v0.3.11
 	// Use v1.0.0-rc7 of runc to fix nancy alert.
