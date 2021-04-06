@@ -7,7 +7,13 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+### Fixed
+
+- Updated OperatorKit to v4.3.1 for Kubernetes 1.20 support.
+
 ## [2.13.0] - 2021-03-31
+
+### Changed
 
 - `giantswarm-critical` PriorityClass only managed when E2E.
 
