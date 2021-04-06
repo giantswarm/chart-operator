@@ -1,6 +1,6 @@
 version: 2.1
 orbs:
-  architect: giantswarm/architect@dev:k8s-1-20
+  architect: giantswarm/architect@2.4.2
 
 workflows:
   build:
