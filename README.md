@@ -37,7 +37,7 @@ spec:
     secret:
       name: "prometheus-secrets"
       namespace: "monitoring"
-  tarballURL: "https://giantswarm.github.com/app-catalog/prometheus-1-0-0.tgz"
+  tarballURL: "https://giantswarm.github.io/app-catalog/prometheus-1-0-0.tgz"
 ```
 
 ## Getting Project
