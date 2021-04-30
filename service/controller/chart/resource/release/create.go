@@ -112,7 +112,16 @@ func (r *Resource) ApplyCreateChange(ctx context.Context, obj, createChange inte
 		r.logger.Debugf(ctx, "canceling resource")
 		return nil
 	}
-	if helmclient.IsValidationFailedError(err) {
+	if helmclient.IsResourceAlreadyExists(err) {
+		reason := err.Error()
+		reason = fmt.Sprintf("object already exists: (%s)", reason)
+		r.logger.Debugf(ctx, "helm release %#q failed, %s", releaseState.Name, reason)
+		addStatusToContext(cc, reason, alreadyExistsStatus)
+
+		r.logger.Debugf(ctx, "canceling resource")
+		resourcecanceledcontext.SetCanceled(ctx)
+		return nil
+	} else if helmclient.IsValidationFailedError(err) {
 		reason := err.Error()
 		reason = fmt.Sprintf("helm validation error: (%s)", reason)
 		r.logger.Debugf(ctx, "helm release %#q failed, %s", releaseState.Name, reason)

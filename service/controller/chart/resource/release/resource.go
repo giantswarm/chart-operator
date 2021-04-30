@@ -31,6 +31,10 @@ const (
 	// installing or updating a release before moving to process the next CR.
 	defaultK8sWaitTimeout = 10 * time.Second
 
+	// alreadyExistsStatus is set in the CR status when it failed to create
+	// a manifest object because it exists already.
+	alreadyExistsStatus = "already-exists"
+
 	// invalidManifestStatus is set in the CR status when it failed to create
 	// manifest objects with helm resources.
 	invalidManifestStatus = "invalid-manifest"
