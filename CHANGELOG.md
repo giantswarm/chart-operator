@@ -7,6 +7,8 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+## [2.14.0] - 2021-04-30
+
 ### Changed
 
 - Cancel the release resource when the manifest object already exists.
@@ -326,7 +328,8 @@ We check progress in the next reconciliation loop. ([#362](https://github.com/gi
 - Separate podsecuritypolicy.
 - Security context in deployment spec with non-root user.
 
-[Unreleased]: https://github.com/giantswarm/chart-operator/compare/v2.13.1...HEAD
+[Unreleased]: https://github.com/giantswarm/chart-operator/compare/v2.14.0...HEAD
+[2.14.0]: https://github.com/giantswarm/chart-operator/compare/v2.13.1...v2.14.0
 [2.13.1]: https://github.com/giantswarm/chart-operator/compare/v2.13.0...v2.13.1
 [2.13.0]: https://github.com/giantswarm/chart-operator/compare/v2.12.0...v2.13.0
 [2.12.0]: https://github.com/giantswarm/chart-operator/compare/v2.11.0...v2.12.0
