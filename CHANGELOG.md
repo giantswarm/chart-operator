@@ -7,6 +7,10 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+### Changed
+
+- Cancel the release resource when the manifest object already exists.
+
 ## [2.13.1] - 2021-04-06
 
 ### Fixed
