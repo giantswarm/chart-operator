@@ -1,4 +1,4 @@
-{{- if or .Values.e2e (not (lookup "scheduling.k8s.io/v1" "PriorityClass" "" "giantswarm-critical")) }}
+{{- if .Values.e2e  }}
 apiVersion: scheduling.k8s.io/v1
 kind: PriorityClass
 metadata:
