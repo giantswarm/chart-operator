@@ -140,7 +140,6 @@ func (r *Resource) ApplyCreateChange(ctx context.Context, obj, createChange inte
 		resourcecanceledcontext.SetCanceled(ctx)
 		return nil
 	} else if err != nil {
-		//reason := err.Error()
 		r.logger.Errorf(ctx, err, "helm release %#q failed", releaseState.Name)
 
 		releaseContent, relErr := r.helmClient.GetReleaseContent(ctx, ns, releaseState.Name)
