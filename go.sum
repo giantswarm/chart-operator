@@ -284,8 +284,8 @@ github.com/giantswarm/cluster-api v0.3.13-gs h1:ZgOMYkSuM1KnRmdDkPTfYj8G+Bdn6K1+
 github.com/giantswarm/cluster-api v0.3.13-gs/go.mod h1:BCtzLFd2R77eDAvZGd5P1OlG38exdHlQietjFA/7u+0=
 github.com/giantswarm/exporterkit v0.2.1 h1:M/Avqdg6O+NdyGtY+LSy5cCpJzhG15WRHQRkhOY/dKs=
 github.com/giantswarm/exporterkit v0.2.1/go.mod h1:LkZNK+2qTcbHspbizA6JBBXpQW99u7u7UisUaWrSoVY=
-github.com/giantswarm/helmclient/v4 v4.5.1-0.20210430080600-653555481d8d h1:ae5J8oJ5UfeSGqejfnlht9VrERJkWKw22tSRc1FDpWk=
-github.com/giantswarm/helmclient/v4 v4.5.1-0.20210430080600-653555481d8d/go.mod h1:gY3K2owjP36p7CR9zs6I3T5c1lq1OIydzRYJH8BsoUs=
+github.com/giantswarm/helmclient/v4 v4.5.1-0.20210430111125-2afb37ea4dbe h1:tSesGnDjXuaf7TRkdk2q0HMkIa4slnfsXYu3NIhQIQA=
+github.com/giantswarm/helmclient/v4 v4.5.1-0.20210430111125-2afb37ea4dbe/go.mod h1:+Zz246Rygu4Xns0897EcvIpGayYzXa2YNNyj8H6WsW4=
 github.com/giantswarm/k8sclient/v5 v5.10.0/go.mod h1:HHSHvERGfLhNqTsqKBUQSQ5VXGhLfVRojplYwio6jDU=
 github.com/giantswarm/k8sclient/v5 v5.11.0 h1:LZwtscRz53Wz+hf0Sc7L1PEJdeUTDzgUjai4+9EbNjY=
 github.com/giantswarm/k8sclient/v5 v5.11.0/go.mod h1:3if9oaz3gwTKMuVNxU8vJfrzADyTuExOj+uu8N0+LsM=
