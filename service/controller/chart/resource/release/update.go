@@ -127,9 +127,9 @@ func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange inte
 		return nil
 	}
 
-	if helmclient.IsAlreadyExists(err) {
+	if helmclient.IsResourceAlreadyExists(err) {
 		reason := err.Error()
-		reason = fmt.Sprintf("object already exists: (%s)", reason)
+		reason = fmt.Sprintf("resource already exists: (%s)", reason)
 		r.logger.Debugf(ctx, "helm release %#q failed, %s", releaseState.Name, reason)
 		addStatusToContext(cc, reason, alreadyExistsStatus)
 
