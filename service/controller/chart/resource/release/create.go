@@ -140,29 +140,35 @@ func (r *Resource) ApplyCreateChange(ctx context.Context, obj, createChange inte
 		resourcecanceledcontext.SetCanceled(ctx)
 		return nil
 	} else if err != nil {
-		reason := err.Error()
+		//reason := err.Error()
 		r.logger.Errorf(ctx, err, "helm release %#q failed", releaseState.Name)
 
-		releaseContent, err := r.helmClient.GetReleaseContent(ctx, ns, releaseState.Name)
-		if helmclient.IsReleaseNotFound(err) {
-			reason = fmt.Sprintf("helm error: (%s)", reason)
-			addStatusToContext(cc, reason, releaseNotInstalledStatus)
+		releaseContent, relErr := r.helmClient.GetReleaseContent(ctx, ns, releaseState.Name)
+		if helmclient.IsReleaseNotFound(relErr) {
+			addStatusToContext(cc, err.Error(), releaseNotInstalledStatus)
 
 			r.logger.Debugf(ctx, "canceling resource")
 			resourcecanceledcontext.SetCanceled(ctx)
 			return nil
-		} else if err != nil {
-			return microerror.Mask(err)
+		} else if relErr != nil {
+			return microerror.Mask(relErr)
 		}
 
 		// Release is failed so the status resource will check the Helm release.
 		if releaseContent.Status == helmclient.StatusFailed {
+			addStatusToContext(cc, releaseContent.Description, helmclient.StatusFailed)
+
 			r.logger.Debugf(ctx, "failed to create release %#q", releaseContent.Name)
 			r.logger.Debugf(ctx, "canceling resource")
 			resourcecanceledcontext.SetCanceled(ctx)
 			return nil
 		}
-		return microerror.Mask(err)
+
+		addStatusToContext(cc, err.Error(), unknownError)
+
+		r.logger.Debugf(ctx, "canceling resource")
+		resourcecanceledcontext.SetCanceled(ctx)
+		return nil
 	}
 
 	r.logger.Debugf(ctx, "created release %#q in namespace %#q", releaseState.Name, key.Namespace(cr))
