@@ -48,7 +48,7 @@ const (
 	// not apply for failures.
 	releaseFailedMaxAttempts = 5
 
-	// unknownError when a release fails by unknown reasons.
+	// unknownError when a release fails for unknown reasons.
 	unknownError = "unknown-error"
 
 	// validationFailedStatus is set in the CR status when it failed to pass
