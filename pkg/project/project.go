@@ -5,7 +5,7 @@ var (
 	gitSHA      = "n/a"
 	name        = "chart-operator"
 	source      = "https://github.com/giantswarm/chart-operator"
-	version     = "2.14.0"
+	version     = "2.14.1-dev"
 )
 
 // ChartVersion is fixed for chart CRs. This is because they exist in both
