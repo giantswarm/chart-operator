@@ -12,6 +12,7 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 ### Changed
 
 - Cancel the release resource when the manifest object already exists.
+- Cancel the release resource when the helm have an unknown error.
 
 ## [2.13.1] - 2021-04-06
 
