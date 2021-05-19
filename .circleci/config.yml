@@ -1,6 +1,6 @@
 version: 2.1
 orbs:
-  architect: giantswarm/architect@2.3.0
+  architect: giantswarm/architect@2.9.0
 
 workflows:
   build:
@@ -110,7 +110,7 @@ workflows:
               ignore: /.*/
             tags:
               only: /^v.*/
-              
+
       - architect/push-to-app-collection:
           context: architect
           name: push-chart-operator-to-vmware-app-collection
