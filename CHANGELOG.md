@@ -7,6 +7,10 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+### Added
+
+- Proxy support in helm template.
+
 ## [2.14.0] - 2021-04-30
 
 ### Changed

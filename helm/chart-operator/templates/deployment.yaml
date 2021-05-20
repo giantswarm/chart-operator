@@ -72,6 +72,21 @@ spec:
       {{ end }}
       containers:
       - name: {{ .Chart.Name }}
+        {{- if .Values.proxy.enabled }}
+        env:
+        {{- if .Values.proxy.http }}
+        - name: HTTP_PROXY
+          value: {{ .Values.proxy.http }}
+        {{- end }}
+        {{- if .Values.proxy.https }}
+        - name: HTTPS_PROXY
+          value: {{ .Values.proxy.https }}
+        {{- end }}
+        {{- if .Values.proxy.noProxy }}
+        - name: NO_PROXY
+          value: {{ join "," .Values.proxy.noProxy }}
+        {{- end }}
+        {{- end }}
         {{ if (.Values.Installation) }}
         image: "{{ .Values.Installation.V1.Registry.Domain }}/{{ .Values.image.name }}:{{ .Values.image.tag }}"
         {{ else }}
