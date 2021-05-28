@@ -7,6 +7,11 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+### Changed
+
+- Use host network, so chart-operator can install CNI packaged as an app.
+- Add tolerations to start on `NotReady` nodes.
+
 ## [2.15.0] - 2021-05-20
 
 ### Added

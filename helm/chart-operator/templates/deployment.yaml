@@ -39,9 +39,18 @@ spec:
             path: config.yaml
       priorityClassName: giantswarm-critical
       serviceAccountName: {{ tpl .Values.resource.default.name  . }}
+      {{- if .Values.chartOperator.cni.install }}
+      hostNetwork: true
+      tolerations:
+      - effect: NoSchedule
+        operator: Exists
+      - effect: NoExecute
+        operator: Exists
+      {{- else }}
       tolerations:
       - key: node-role.kubernetes.io/master
         effect: NoSchedule
+      {{- end }}
       {{ if (.Values.Installation) }}
       dnsPolicy: ClusterFirst
       {{ else }}
