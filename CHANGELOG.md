@@ -9,8 +9,8 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ### Changed
 
-- Use host network, so chart-operator can install CNI packaged as an app.
-- Add tolerations to start on `NotReady` nodes.
+- For CAPI clusters use host network, so chart-operator can install CNI packaged as an app.
+- For CAPI clusters add tolerations to start on `NotReady` nodes for installing CNI.
 
 ## [2.15.0] - 2021-05-20
 
