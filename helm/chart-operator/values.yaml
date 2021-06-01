@@ -1,3 +1,8 @@
+# For CAPI clusters this will be set to true. So charts for CNI apps can be installed.
+chartOperator:
+  cni:
+    install: false
+
 cluster:
   kubernetes:
     domain: cluster.local
