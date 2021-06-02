@@ -9,8 +9,11 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ### Changed
 
-- Use host network, so chart-operator can install CNI packaged as an app.
-- Add tolerations to start on `NotReady` nodes.
+For CAPI clusters:
+
+- Add tolerations to start on `NotReady` nodes for installing CNI.
+- Create `giantswarm-critical` priority class.
+- Use host network to allow installing CNI packaged as an app.
 
 ## [2.15.0] - 2021-05-20
 

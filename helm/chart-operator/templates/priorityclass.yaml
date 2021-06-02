@@ -1,4 +1,4 @@
-{{- if .Values.e2e  }}
+{{- if .Values.chartOperator.cni.install || .Values.e2e  }}
 apiVersion: scheduling.k8s.io/v1
 kind: PriorityClass
 metadata:
