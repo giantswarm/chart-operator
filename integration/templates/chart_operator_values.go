@@ -8,13 +8,9 @@ const ChartOperatorValues = `cnr:
 clusterDNSIP: 10.96.0.10
 e2e: false
 
-Installation:
-  V1:
-    Helm:
-      HTTP:
-        ClientTimeout: 30s
-    Registry:
-      Domain: quay.io
+isManagementCluster: true
+registry:
+  domain: quay.io
 
 verticalPodAutoscaler:
   enabled: false

@@ -16,17 +16,9 @@ data:
     service:
       helm:
         http:
-          {{ if (.Values.Installation) }}
-          clientTimeout: '{{ .Values.Installation.V1.Helm.HTTP.ClientTimeout }}'
-          {{ else }}
           clientTimeout: '{{ .Values.helm.http.clientTimeout }}'
-          {{ end }}
         kubernetes:
-          {{ if (.Values.Installation) }}
-          waitTimeout: '{{ .Values.Installation.V1.Helm.Kubernetes.WaitTimeout }}'
-          {{ else }}
           waitTimeout: '{{ .Values.helm.kubernetes.waitTimeout }}'
-          {{ end }}
         maxRollback: '{{ .Values.helm.maxRollback }}'
         tillerNamespace:  '{{ .Values.tiller.namespace }}'
       image:

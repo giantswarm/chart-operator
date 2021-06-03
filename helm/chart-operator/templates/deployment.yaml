@@ -51,7 +51,7 @@ spec:
       - key: node-role.kubernetes.io/master
         effect: NoSchedule
       {{- end }}
-      {{ if (.Values.Installation) }}
+      {{ if .Values.isManagementCluster }}
       dnsPolicy: ClusterFirst
       {{ else }}
       dnsPolicy: None
@@ -70,7 +70,11 @@ spec:
           value: "5"
       initContainers:
       - name: wait-for-quay
+        {{ if .Values.isManagementCluster }}
+        image: "{{ .Values.registry.domain }}/{{ .Values.image.name }}:{{ .Values.image.tag }}"
+        {{ else }}
         image: "{{ .Values.image.registry }}/{{ .Values.image.name }}:{{ .Values.image.tag }}"
+        {{ end }}
         command:
         - sh
         - -c
@@ -96,8 +100,8 @@ spec:
           value: {{ join "," .Values.proxy.noProxy }}
         {{- end }}
         {{- end }}
-        {{ if (.Values.Installation) }}
-        image: "{{ .Values.Installation.V1.Registry.Domain }}/{{ .Values.image.name }}:{{ .Values.image.tag }}"
+        {{ if .Values.isManagementCluster }}
+        image: "{{ .Values.registry.domain }}/{{ .Values.image.name }}:{{ .Values.image.tag }}"
         {{ else }}
         image: "{{ .Values.image.registry }}/{{ .Values.image.name }}:{{ .Values.image.tag }}"
         {{ end }}
