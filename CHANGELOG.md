@@ -7,6 +7,11 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+### Changed
+
+- Prepare helm values to configuration management.
+- Update architect-orb to v3.0.0.
+
 ## [2.16.0] - 2021-06-03
 
 ### Changed

@@ -6,6 +6,7 @@ home: https://github.com/giantswarm/chart-operator
 description: A Helm chart for the chart-operator
 annotations:
   application.giantswarm.io/team: "batman"
+  config.giantswarm.io/version: 1.x.x
 restrictions:
   clusterSingleton: true
   namespaceSingleton: true

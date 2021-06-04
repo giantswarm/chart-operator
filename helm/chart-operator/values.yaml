@@ -32,6 +32,9 @@ image:
   name: "giantswarm/chart-operator"
   tag: "[[ .Version ]]"
 
+registry:
+  domain: docker.io
+
 pod:
   user:
     id: 1000
@@ -70,3 +73,5 @@ tiller:
 
 verticalPodAutoscaler:
   enabled: true
+
+isManagementCluster: false
