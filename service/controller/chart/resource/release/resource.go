@@ -19,6 +19,7 @@ import (
 	"k8s.io/client-go/kubernetes"
 
 	"github.com/giantswarm/chart-operator/v2/pkg/annotation"
+	"github.com/giantswarm/chart-operator/v2/pkg/project"
 	"github.com/giantswarm/chart-operator/v2/service/controller/chart/controllercontext"
 	"github.com/giantswarm/chart-operator/v2/service/controller/chart/key"
 )
@@ -42,11 +43,6 @@ const (
 	// releaseNotInstalledStatus is set in the CR status when there is no Helm
 	// Release to check.
 	releaseNotInstalledStatus = "not-installed"
-
-	// releaseFailedMaxAttempts when a release fails this number of times in a
-	// row we stop updating. This is because the Helm max history setting does
-	// not apply for failures.
-	releaseFailedMaxAttempts = 5
 
 	// unknownError when a release fails for unknown reasons.
 	unknownError = "unknown-error"
@@ -243,7 +239,7 @@ func (r *Resource) isReleaseFailedMaxAttempts(ctx context.Context, namespace, re
 		return false, microerror.Mask(err)
 	}
 
-	if len(history) < releaseFailedMaxAttempts {
+	if len(history) < project.ReleaseFailedMaxAttempts {
 		return false, nil
 	}
 
@@ -252,7 +248,7 @@ func (r *Resource) isReleaseFailedMaxAttempts(ctx context.Context, namespace, re
 		return history[i].Revision > history[j].Revision
 	})
 
-	for i := 0; i < releaseFailedMaxAttempts; i++ {
+	for i := 0; i < project.ReleaseFailedMaxAttempts; i++ {
 		if history[i].Status != helmclient.StatusFailed {
 			return false, nil
 		}

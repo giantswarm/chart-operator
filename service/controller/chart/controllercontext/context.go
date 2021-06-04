@@ -20,7 +20,8 @@ type Status struct {
 }
 
 type Release struct {
-	Status string
+	FailedMaxAttempts bool
+	Status            string
 }
 
 func NewContext(ctx context.Context, c Context) context.Context {
