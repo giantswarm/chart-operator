@@ -13,6 +13,7 @@ import (
 	"github.com/google/go-cmp/cmp"
 
 	"github.com/giantswarm/chart-operator/v2/pkg/annotation"
+	"github.com/giantswarm/chart-operator/v2/pkg/project"
 	"github.com/giantswarm/chart-operator/v2/service/controller/chart/controllercontext"
 	"github.com/giantswarm/chart-operator/v2/service/controller/chart/key"
 )
@@ -220,6 +221,10 @@ func (r *Resource) newUpdateChange(ctx context.Context, obj, currentState, desir
 	if err != nil {
 		return nil, microerror.Mask(err)
 	}
+	cc, err := controllercontext.FromContext(ctx)
+	if err != nil {
+		return nil, microerror.Mask(err)
+	}
 
 	currentReleaseState, err := toReleaseState(currentState)
 	if err != nil {
@@ -264,7 +269,9 @@ func (r *Resource) newUpdateChange(ctx context.Context, obj, currentState, desir
 			return nil, microerror.Mask(err)
 		}
 		if isFailedMaxAttempts {
-			r.logger.Debugf(ctx, "the %#q release is in status %#q and has failed %d times", desiredReleaseState.Name, currentReleaseState.Status, releaseFailedMaxAttempts)
+			// Add to the context so we can include in the CR status.
+			cc.Status.Release.FailedMaxAttempts = true
+			r.logger.Debugf(ctx, "the %#q release is in status %#q and has failed %d times", desiredReleaseState.Name, currentReleaseState.Status, project.ReleaseFailedMaxAttempts)
 			return nil, nil
 		}
 	}

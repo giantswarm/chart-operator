@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"time"
 
@@ -15,6 +16,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
 	"github.com/giantswarm/chart-operator/v2/pkg/annotation"
+	"github.com/giantswarm/chart-operator/v2/pkg/project"
 	"github.com/giantswarm/chart-operator/v2/service/controller/chart/controllercontext"
 	"github.com/giantswarm/chart-operator/v2/service/controller/chart/key"
 )
@@ -73,7 +75,13 @@ func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
 		} else {
 			status = releaseContent.Status
 			if releaseContent.Status != helmclient.StatusDeployed {
-				reason = releaseContent.Description
+				if cc.Status.Release.FailedMaxAttempts {
+					reason = fmt.Sprintf("Release has failed %d times and will not be updated.\nReason: %s",
+						project.ReleaseFailedMaxAttempts,
+						releaseContent.Description)
+				} else {
+					reason = releaseContent.Description
+				}
 			}
 		}
 	}

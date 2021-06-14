@@ -14,6 +14,10 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 - Prepare helm values to configuration management.
 - Update architect-orb to v3.0.0.
 
+### Fixed
+
+- Improve status message when helm release has failed max number of attempts.
+
 ## [2.16.0] - 2021-06-03
 
 ### Changed

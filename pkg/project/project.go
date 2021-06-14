@@ -8,6 +8,13 @@ var (
 	version     = "2.17.1-dev"
 )
 
+const (
+	// ReleaseFailedMaxAttempts when a release fails this number of times in a
+	// row we stop updating. This is because the Helm max history setting does
+	// not apply for failures.
+	ReleaseFailedMaxAttempts = 5
+)
+
 // ChartVersion is fixed for chart CRs. This is because they exist in both
 // control plane and tenant clusters and their version is not linked to a
 // release. We may revisit this in future.

@@ -11,6 +11,8 @@ import (
 	"github.com/giantswarm/micrologger/microloggertest"
 	"github.com/spf13/afero"
 	k8sfake "k8s.io/client-go/kubernetes/fake"
+
+	"github.com/giantswarm/chart-operator/v2/service/controller/chart/controllercontext"
 )
 
 func Test_Resource_Release_newUpdateChange(t *testing.T) {
@@ -162,9 +164,15 @@ func Test_Resource_Release_newUpdateChange(t *testing.T) {
 		}
 	}
 
+	var ctx context.Context
+	{
+		c := controllercontext.Context{}
+		ctx = controllercontext.NewContext(context.Background(), c)
+	}
+
 	for i, tc := range testCases {
 		t.Run(strconv.Itoa(i), func(t *testing.T) {
-			result, err := newResource.newUpdateChange(context.TODO(), &tc.obj, tc.currentState, tc.desiredState)
+			result, err := newResource.newUpdateChange(ctx, &tc.obj, tc.currentState, tc.desiredState)
 			if err != nil {
 				t.Fatal("expected", nil, "got", err)
 			}
