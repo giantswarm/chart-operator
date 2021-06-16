@@ -7,6 +7,11 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+## Added
+
+- Add releasemaxhistory resource so we still retry when the helm release has
+failed max number of attempts but at a slower rate.
+
 ## [2.17.0] - 2021-06-09
 
 ### Changed

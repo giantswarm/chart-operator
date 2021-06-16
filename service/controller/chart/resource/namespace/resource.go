@@ -34,7 +34,7 @@ type Resource struct {
 	k8sWaitTimeout time.Duration
 }
 
-// New creates a new configured tcnamespace resource.
+// New creates a new configured namespace resource.
 func New(config Config) (*Resource, error) {
 	// Dependencies.
 	if config.K8sClient == nil {

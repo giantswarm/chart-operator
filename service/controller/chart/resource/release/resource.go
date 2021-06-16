@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"sort"
 	"strings"
 	"time"
 
@@ -19,7 +18,6 @@ import (
 	"k8s.io/client-go/kubernetes"
 
 	"github.com/giantswarm/chart-operator/v2/pkg/annotation"
-	"github.com/giantswarm/chart-operator/v2/pkg/project"
 	"github.com/giantswarm/chart-operator/v2/service/controller/chart/controllercontext"
 	"github.com/giantswarm/chart-operator/v2/service/controller/chart/key"
 )
@@ -228,34 +226,6 @@ func (r *Resource) addHashAnnotation(ctx context.Context, cr v1alpha1.Chart, rel
 	}
 
 	return nil
-}
-
-// isReleaseFailedMaxAttempts checks the release history to see if it has
-// failed the max number of attempts. If it has we stop updating. This is
-// needed as the max history setting for Helm update does not count failures.
-func (r *Resource) isReleaseFailedMaxAttempts(ctx context.Context, namespace, releaseName string) (bool, error) {
-	history, err := r.helmClient.GetReleaseHistory(ctx, namespace, releaseName)
-	if err != nil {
-		return false, microerror.Mask(err)
-	}
-
-	if len(history) < project.ReleaseFailedMaxAttempts {
-		return false, nil
-	}
-
-	// Sort history by descending revision number.
-	sort.Slice(history, func(i, j int) bool {
-		return history[i].Revision > history[j].Revision
-	})
-
-	for i := 0; i < project.ReleaseFailedMaxAttempts; i++ {
-		if history[i].Status != helmclient.StatusFailed {
-			return false, nil
-		}
-	}
-
-	// All failed so we exceeded the max attempts.
-	return true, nil
 }
 
 // addStatusToContext adds the status to the controller context. It will be
