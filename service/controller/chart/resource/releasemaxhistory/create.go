@@ -86,7 +86,7 @@ func (r *Resource) deleteFailedRelease(ctx context.Context, namespace, releaseNa
 	}
 
 	secret := secrets.Items[0]
-	diff := time.Now().Sub(secret.CreationTimestamp.Time)
+	diff := time.Since(secret.CreationTimestamp.Time)
 	if diff.Minutes() < 1 {
 		r.logger.Debugf(ctx, "revision %d for release %#q is < 1 minutes old", rev.Revision, releaseName)
 		r.logger.Debugf(ctx, "canceling resource")
