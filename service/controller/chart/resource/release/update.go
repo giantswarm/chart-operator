@@ -254,13 +254,6 @@ func (r *Resource) newUpdateChange(ctx context.Context, obj, currentState, desir
 		}
 	}
 
-	// The release is failed and the values and version have not changed. So we
-	// don't update. We will be alerted so we can investigate.
-	if isReleaseFailed(currentReleaseState, desiredReleaseState) {
-		r.logger.Debugf(ctx, "the %#q release is in status %#q and cannot be updated", desiredReleaseState.Name, currentReleaseState.Status)
-		return nil, nil
-	}
-
 	// We check the controller context and if the release has failed more
 	// than the max number of attempts we stop updating. Otherwise too many
 	// release secrets will be created.

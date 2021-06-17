@@ -261,34 +261,6 @@ func isEmpty(c ReleaseState) bool {
 	return equals(c, ReleaseState{})
 }
 
-// isReleaseFailed checks if the release is failed. If the values or version
-// has changed we return false and will attempt to update the release. As this
-// may fix the problem.
-func isReleaseFailed(current, desired ReleaseState) bool {
-	result := false
-
-	if !isEmpty(current) {
-		// Values have changed so we should try to update even if the release
-		// is failed.
-		if current.ValuesMD5Checksum != desired.ValuesMD5Checksum {
-			return false
-		}
-
-		// Version has changed so we should try to update even if the release
-		// is failed.
-		if current.Version != desired.Version {
-			return false
-		}
-
-		// Release is failed and should not be updated.
-		if current.Status == helmclient.StatusFailed {
-			result = true
-		}
-	}
-
-	return result
-}
-
 func isReleaseInTransitionState(r ReleaseState) bool {
 	return helmclient.ReleaseTransitionStatuses[r.Status]
 }
