@@ -64,6 +64,10 @@ func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
 }
 
 func (r *Resource) deleteFailedRelease(ctx context.Context, namespace, releaseName string, history []helmclient.ReleaseHistory) (bool, error) {
+	if len(history) < project.ReleaseFailedMaxAttempts {
+		// Fall through
+		return false, nil
+	}
 	rev := history[project.ReleaseFailedMaxAttempts-1]
 
 	r.logger.Debugf(ctx, "deleting failed revision %d for release %#q", rev.Revision, releaseName)

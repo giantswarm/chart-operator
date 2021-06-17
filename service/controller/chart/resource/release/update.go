@@ -258,8 +258,8 @@ func (r *Resource) newUpdateChange(ctx context.Context, obj, currentState, desir
 	// than the max number of attempts we stop updating. Otherwise too many
 	// release secrets will be created.
 	//
-	// The releasemaxhistory resource handles deleting 1 secret if it is over
-	// 1 minute old. So we still retry but at a slower rate.
+	// The releasemaxhistory resource handles deleting the oldest secret if
+	// it is over 1 minute old. So we still retry but at a slower rate.
 	if currentReleaseState.Status == helmclient.StatusFailed && cc.Status.Release.FailedMaxAttempts {
 		r.logger.Debugf(ctx, "the %#q release is in status %#q and has failed %d times", desiredReleaseState.Name, currentReleaseState.Status, project.ReleaseFailedMaxAttempts)
 		return nil, nil

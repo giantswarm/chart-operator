@@ -9,8 +9,13 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## Added
 
-- Add releasemaxhistory resource so we still retry when the helm release has
-failed max number of attempts but at a slower rate.
+- Add releasemaxhistory resource which ensures we retry at a reduced rate when
+there are repeated failed upgrades.
+
+### Changed
+
+- Upgrade Helm release when failed even if version or values have not changed
+to handle situations like failed webhooks.
 
 ## [2.17.0] - 2021-06-09
 
