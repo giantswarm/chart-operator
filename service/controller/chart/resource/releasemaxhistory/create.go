@@ -108,7 +108,10 @@ func (r *Resource) deleteFailedRelease(ctx context.Context, namespace, releaseNa
 
 func (r *Resource) getReleaseHistory(ctx context.Context, namespace, releaseName string) ([]helmclient.ReleaseHistory, error) {
 	history, err := r.helmClient.GetReleaseHistory(ctx, namespace, releaseName)
-	if err != nil {
+	if helmclient.IsReleaseNotFound(err) {
+		// Fall through
+		return nil, nil
+	} else if err != nil {
 		return nil, microerror.Mask(err)
 	}
 
