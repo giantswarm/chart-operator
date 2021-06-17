@@ -15,7 +15,7 @@ there are repeated failed upgrades.
 ### Changed
 
 - Upgrade Helm release when failed even if version or values have not changed
-to handle situations like failed webhooks.
+to handle situations like failed webhooks where we should retry.
 
 ## [2.17.0] - 2021-06-09
 
