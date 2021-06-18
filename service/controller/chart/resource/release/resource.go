@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"sort"
 	"strings"
 	"time"
 
@@ -19,7 +18,6 @@ import (
 	"k8s.io/client-go/kubernetes"
 
 	"github.com/giantswarm/chart-operator/v2/pkg/annotation"
-	"github.com/giantswarm/chart-operator/v2/pkg/project"
 	"github.com/giantswarm/chart-operator/v2/service/controller/chart/controllercontext"
 	"github.com/giantswarm/chart-operator/v2/service/controller/chart/key"
 )
@@ -230,34 +228,6 @@ func (r *Resource) addHashAnnotation(ctx context.Context, cr v1alpha1.Chart, rel
 	return nil
 }
 
-// isReleaseFailedMaxAttempts checks the release history to see if it has
-// failed the max number of attempts. If it has we stop updating. This is
-// needed as the max history setting for Helm update does not count failures.
-func (r *Resource) isReleaseFailedMaxAttempts(ctx context.Context, namespace, releaseName string) (bool, error) {
-	history, err := r.helmClient.GetReleaseHistory(ctx, namespace, releaseName)
-	if err != nil {
-		return false, microerror.Mask(err)
-	}
-
-	if len(history) < project.ReleaseFailedMaxAttempts {
-		return false, nil
-	}
-
-	// Sort history by descending revision number.
-	sort.Slice(history, func(i, j int) bool {
-		return history[i].Revision > history[j].Revision
-	})
-
-	for i := 0; i < project.ReleaseFailedMaxAttempts; i++ {
-		if history[i].Status != helmclient.StatusFailed {
-			return false, nil
-		}
-	}
-
-	// All failed so we exceeded the max attempts.
-	return true, nil
-}
-
 // addStatusToContext adds the status to the controller context. It will be
 // used to set the CR status in the status resource.
 func addStatusToContext(cc *controllercontext.Context, reason, status string) {
@@ -289,34 +259,6 @@ func equals(a, b ReleaseState) bool {
 // isEmpty checks if a ReleaseState is empty.
 func isEmpty(c ReleaseState) bool {
 	return equals(c, ReleaseState{})
-}
-
-// isReleaseFailed checks if the release is failed. If the values or version
-// has changed we return false and will attempt to update the release. As this
-// may fix the problem.
-func isReleaseFailed(current, desired ReleaseState) bool {
-	result := false
-
-	if !isEmpty(current) {
-		// Values have changed so we should try to update even if the release
-		// is failed.
-		if current.ValuesMD5Checksum != desired.ValuesMD5Checksum {
-			return false
-		}
-
-		// Version has changed so we should try to update even if the release
-		// is failed.
-		if current.Version != desired.Version {
-			return false
-		}
-
-		// Release is failed and should not be updated.
-		if current.Status == helmclient.StatusFailed {
-			result = true
-		}
-	}
-
-	return result
 }
 
 func isReleaseInTransitionState(r ReleaseState) bool {

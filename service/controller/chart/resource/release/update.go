@@ -254,26 +254,15 @@ func (r *Resource) newUpdateChange(ctx context.Context, obj, currentState, desir
 		}
 	}
 
-	// The release is failed and the values and version have not changed. So we
-	// don't update. We will be alerted so we can investigate.
-	if isReleaseFailed(currentReleaseState, desiredReleaseState) {
-		r.logger.Debugf(ctx, "the %#q release is in status %#q and cannot be updated", desiredReleaseState.Name, currentReleaseState.Status)
+	// We check the controller context and if the release has failed more
+	// than the max number of attempts we stop updating. Otherwise too many
+	// release secrets will be created.
+	//
+	// The releasemaxhistory resource handles deleting the oldest secret if
+	// it is over 1 minute old. So we still retry but at a slower rate.
+	if currentReleaseState.Status == helmclient.StatusFailed && cc.Status.Release.FailedMaxAttempts {
+		r.logger.Debugf(ctx, "the %#q release is in status %#q and has failed %d times", desiredReleaseState.Name, currentReleaseState.Status, project.ReleaseFailedMaxAttempts)
 		return nil, nil
-	}
-
-	// We check the release history and if it has failed more than the max number
-	// of attempts we stop updating. Otherwise too many secrets will be created.
-	if currentReleaseState.Status == helmclient.StatusFailed {
-		isFailedMaxAttempts, err := r.isReleaseFailedMaxAttempts(ctx, key.Namespace(cr), desiredReleaseState.Name)
-		if err != nil {
-			return nil, microerror.Mask(err)
-		}
-		if isFailedMaxAttempts {
-			// Add to the context so we can include in the CR status.
-			cc.Status.Release.FailedMaxAttempts = true
-			r.logger.Debugf(ctx, "the %#q release is in status %#q and has failed %d times", desiredReleaseState.Name, currentReleaseState.Status, project.ReleaseFailedMaxAttempts)
-			return nil, nil
-		}
 	}
 
 	if isReleaseModified(currentReleaseState, desiredReleaseState) {

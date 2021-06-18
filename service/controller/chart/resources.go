@@ -16,6 +16,7 @@ import (
 
 	"github.com/giantswarm/chart-operator/v2/service/controller/chart/resource/namespace"
 	"github.com/giantswarm/chart-operator/v2/service/controller/chart/resource/release"
+	"github.com/giantswarm/chart-operator/v2/service/controller/chart/resource/releasemaxhistory"
 	"github.com/giantswarm/chart-operator/v2/service/controller/chart/resource/status"
 	"github.com/giantswarm/chart-operator/v2/service/controller/chart/resource/tillermigration"
 )
@@ -101,6 +102,21 @@ func newChartResources(config chartResourcesConfig) ([]resource.Interface, error
 		}
 	}
 
+	var releaseMaxHistoryResource resource.Interface
+	{
+		c := releasemaxhistory.Config{
+			// Dependencies
+			HelmClient: config.HelmClient,
+			K8sClient:  config.K8sClient,
+			Logger:     config.Logger,
+		}
+
+		releaseMaxHistoryResource, err = releasemaxhistory.New(c)
+		if err != nil {
+			return nil, microerror.Mask(err)
+		}
+	}
+
 	var statusResource resource.Interface
 	{
 		c := status.Config{
@@ -135,9 +151,15 @@ func newChartResources(config chartResourcesConfig) ([]resource.Interface, error
 	}
 
 	resources := []resource.Interface{
+		// tiller migration deletes tiller once helm 3 migration is done.
 		tillerMigrationResource,
+		// namespace creates the release namespace and allows setting metadata.
 		namespaceResource,
+		// release max history ensures not too many helm release secrets are created.
+		releaseMaxHistoryResource,
+		// release manages Helm releases and is the most important resource.
 		releaseResource,
+		// status resource manages the chart CR status.
 		statusResource,
 	}
 

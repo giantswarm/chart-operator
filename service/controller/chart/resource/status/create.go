@@ -76,7 +76,7 @@ func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
 			status = releaseContent.Status
 			if releaseContent.Status != helmclient.StatusDeployed {
 				if cc.Status.Release.FailedMaxAttempts {
-					reason = fmt.Sprintf("Release has failed %d times and will not be updated.\nReason: %s",
+					reason = fmt.Sprintf("Release has failed %d times.\nReason: %s",
 						project.ReleaseFailedMaxAttempts,
 						releaseContent.Description)
 				} else {
