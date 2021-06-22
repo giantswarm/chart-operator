@@ -78,7 +78,11 @@ spec:
         command:
         - sh
         - -c
-        - until dig quay.io. {{ range (splitList "," .Values.externalDNSIP) }}@{{ . }} {{ end }}; do echo waiting for quay.io; sleep 2; done;
+        {{ if .Values.isManagementCluster }}
+        - until dig {{ .Values.registry.domain }}. {{ range (splitList "," .Values.externalDNSIP) }}@{{ . }} {{ end }}; do echo waiting for {{ .Values.registry.domain }}; sleep 2; done;
+        {{ else }}
+        - until dig {{ .Values.image.registry }}. {{ range (splitList "," .Values.externalDNSIP) }}@{{ . }} {{ end }}; do echo waiting for {{ .Values.image.registry }}; sleep 2; done;
+        {{ end }}
         securityContext:
           runAsUser: {{ .Values.pod.user.id }}
           runAsGroup: {{ .Values.pod.group.id }}
