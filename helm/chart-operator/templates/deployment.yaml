@@ -70,19 +70,11 @@ spec:
           value: "5"
       initContainers:
       - name: wait-for-quay
-        {{ if .Values.isManagementCluster }}
-        image: "{{ .Values.registry.domain }}/{{ .Values.image.name }}:{{ .Values.image.tag }}"
-        {{ else }}
         image: "{{ .Values.image.registry }}/{{ .Values.image.name }}:{{ .Values.image.tag }}"
-        {{ end }}
         command:
         - sh
         - -c
-        {{ if .Values.isManagementCluster }}
-        - until dig {{ .Values.registry.domain }}. {{ range (splitList "," .Values.externalDNSIP) }}@{{ . }} {{ end }}; do echo waiting for {{ .Values.registry.domain }}; sleep 2; done;
-        {{ else }}
         - until dig {{ .Values.image.registry }}. {{ range (splitList "," .Values.externalDNSIP) }}@{{ . }} {{ end }}; do echo waiting for {{ .Values.image.registry }}; sleep 2; done;
-        {{ end }}
         securityContext:
           runAsUser: {{ .Values.pod.user.id }}
           runAsGroup: {{ .Values.pod.group.id }}
