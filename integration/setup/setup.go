@@ -8,7 +8,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/giantswarm/apiextensions/v3/pkg/crd"
 	"github.com/giantswarm/appcatalog"
 	"github.com/giantswarm/backoff"
 	"github.com/giantswarm/helmclient/v4/pkg/helmclient"
@@ -99,7 +98,13 @@ func installResources(ctx context.Context, config Config) error {
 	{
 		config.Logger.Debugf(ctx, "ensuring chart CRD exists")
 
-		err := config.K8sClients.CRDClient().EnsureCreated(ctx, crd.LoadV1("application.giantswarm.io", "Chart"), backoff.NewMaxRetries(7, 1*time.Second))
+		chartCRD, err := config.CRDGetter.LoadCRD(ctx, "application.giantswarm.io", "Chart")
+
+		if err != nil {
+			return microerror.Mask(err)
+		}
+
+		err = config.K8sClients.CRDClient().EnsureCreated(ctx, chartCRD, backoff.NewMaxRetries(7, 1*time.Second))
 		if err != nil {
 			return microerror.Mask(err)
 		}

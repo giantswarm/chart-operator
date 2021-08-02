@@ -3,6 +3,7 @@
 package setup
 
 import (
+	"github.com/giantswarm/app/v5/pkg/crd"
 	"github.com/giantswarm/helmclient/v4/pkg/helmclient"
 	"github.com/giantswarm/k8sclient/v5/pkg/k8sclient"
 	"github.com/giantswarm/microerror"
@@ -14,6 +15,7 @@ import (
 )
 
 type Config struct {
+	CRDGetter  *crd.CRDGetter
 	HelmClient helmclient.Interface
 	K8s        *k8sclient.Setup
 	K8sClients k8sclient.Interface
@@ -34,7 +36,16 @@ func NewConfig() (Config, error) {
 		}
 	}
 
-	var cpK8sClients *k8sclient.Clients
+	var crdGetter *crd.CRDGetter
+	{
+		c := crd.Config{
+			Logger: logger,
+		}
+
+		crdGetter, err = crd.NewCRDGetter(c)
+	}
+
+	var k8sClients *k8sclient.Clients
 	{
 		c := k8sclient.ClientsConfig{
 			Logger: logger,
@@ -42,7 +53,7 @@ func NewConfig() (Config, error) {
 			KubeConfigPath: env.KubeConfigPath(),
 		}
 
-		cpK8sClients, err = k8sclient.NewClients(c)
+		k8sClients, err = k8sclient.NewClients(c)
 		if err != nil {
 			return Config{}, microerror.Mask(err)
 		}
@@ -51,7 +62,7 @@ func NewConfig() (Config, error) {
 	var k8sSetup *k8sclient.Setup
 	{
 		c := k8sclient.SetupConfig{
-			Clients: cpK8sClients,
+			Clients: k8sClients,
 			Logger:  logger,
 		}
 
@@ -67,10 +78,10 @@ func NewConfig() (Config, error) {
 	{
 		c := helmclient.Config{
 			Fs:         fs,
-			K8sClient:  cpK8sClients.K8sClient(),
+			K8sClient:  k8sClients.K8sClient(),
 			Logger:     logger,
-			RestClient: cpK8sClients.RESTClient(),
-			RestConfig: cpK8sClients.RESTConfig(),
+			RestClient: k8sClients.RESTClient(),
+			RestConfig: k8sClients.RESTConfig(),
 		}
 		helmClient, err = helmclient.New(c)
 		if err != nil {
@@ -92,9 +103,10 @@ func NewConfig() (Config, error) {
 	}
 
 	c := Config{
+		CRDGetter:  crdGetter,
 		HelmClient: helmClient,
 		K8s:        k8sSetup,
-		K8sClients: cpK8sClients,
+		K8sClients: k8sClients,
 		Logger:     logger,
 		Release:    newRelease,
 	}
