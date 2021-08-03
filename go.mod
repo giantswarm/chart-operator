@@ -9,7 +9,7 @@ require (
 	github.com/giantswarm/appcatalog v0.6.0
 	github.com/giantswarm/backoff v0.2.0
 	github.com/giantswarm/exporterkit v0.2.1
-	github.com/giantswarm/helmclient/v4 v4.6.0
+	github.com/giantswarm/helmclient/v4 v4.7.0
 	github.com/giantswarm/k8sclient/v5 v5.11.0
 	github.com/giantswarm/microendpoint v0.2.0
 	github.com/giantswarm/microerror v0.3.0
@@ -18,15 +18,18 @@ require (
 	github.com/giantswarm/operatorkit/v4 v4.3.1
 	github.com/giantswarm/to v0.3.0
 	github.com/giantswarm/versionbundle v0.2.0
+	github.com/golangplus/bytes v0.0.0-20160111154220-45c989fe5450 // indirect
+	github.com/golangplus/fmt v0.0.0-20150411045040-2a5d6d7d2995 // indirect
 	github.com/google/go-cmp v0.5.6
 	github.com/imdario/mergo v0.3.12
 	github.com/prometheus/client_golang v1.11.0
 	github.com/spf13/afero v1.6.0
 	github.com/spf13/viper v1.8.1
-	k8s.io/api v0.20.4
-	k8s.io/apimachinery v0.20.4
-	k8s.io/client-go v0.20.4
+	k8s.io/api v0.21.0
+	k8s.io/apimachinery v0.21.0
+	k8s.io/client-go v0.21.0
 	sigs.k8s.io/controller-runtime v0.6.5
+	sigs.k8s.io/kustomize v2.0.3+incompatible // indirect
 	sigs.k8s.io/yaml v1.2.0
 )
 
