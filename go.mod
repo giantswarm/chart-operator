@@ -3,7 +3,6 @@ module github.com/giantswarm/chart-operator/v2
 go 1.16
 
 require (
-	github.com/ghodss/yaml v1.0.1-0.20190212211648-25d852aebe32 // indirect
 	github.com/giantswarm/apiextensions/v3 v3.30.0
 	github.com/giantswarm/app/v5 v5.0.1
 	github.com/giantswarm/appcatalog v0.6.0
@@ -18,8 +17,6 @@ require (
 	github.com/giantswarm/operatorkit/v4 v4.3.1
 	github.com/giantswarm/to v0.3.0
 	github.com/giantswarm/versionbundle v0.2.0
-	github.com/golangplus/bytes v0.0.0-20160111154220-45c989fe5450 // indirect
-	github.com/golangplus/fmt v0.0.0-20150411045040-2a5d6d7d2995 // indirect
 	github.com/google/go-cmp v0.5.6
 	github.com/imdario/mergo v0.3.12
 	github.com/prometheus/client_golang v1.11.0
@@ -29,7 +26,6 @@ require (
 	k8s.io/apimachinery v0.21.0
 	k8s.io/client-go v0.21.0
 	sigs.k8s.io/controller-runtime v0.6.5
-	sigs.k8s.io/kustomize v2.0.3+incompatible // indirect
 	sigs.k8s.io/yaml v1.2.0
 )
 
