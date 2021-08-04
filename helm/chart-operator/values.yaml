@@ -14,7 +14,7 @@ deployment:
     cpu: 50m
     memory: 100Mi
   limits:
-    memory: 250Mi
+    memory: 350Mi
 
 externalDNSIP: 8.8.8.8
 
