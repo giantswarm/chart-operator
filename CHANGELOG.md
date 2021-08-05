@@ -7,6 +7,10 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+### Changed
+
+- Increase memory limit for deploying large charts in workload clusters.
+
 ## [2.18.0] - 2021-06-21
 
 ## Added
