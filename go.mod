@@ -3,13 +3,12 @@ module github.com/giantswarm/chart-operator/v2
 go 1.16
 
 require (
-	github.com/ghodss/yaml v1.0.1-0.20190212211648-25d852aebe32 // indirect
 	github.com/giantswarm/apiextensions/v3 v3.30.0
 	github.com/giantswarm/app/v5 v5.0.1
 	github.com/giantswarm/appcatalog v0.6.0
 	github.com/giantswarm/backoff v0.2.0
 	github.com/giantswarm/exporterkit v0.2.1
-	github.com/giantswarm/helmclient/v4 v4.6.0
+	github.com/giantswarm/helmclient/v4 v4.7.0
 	github.com/giantswarm/k8sclient/v5 v5.11.0
 	github.com/giantswarm/microendpoint v0.2.0
 	github.com/giantswarm/microerror v0.3.0
@@ -23,9 +22,9 @@ require (
 	github.com/prometheus/client_golang v1.11.0
 	github.com/spf13/afero v1.6.0
 	github.com/spf13/viper v1.8.1
-	k8s.io/api v0.20.4
-	k8s.io/apimachinery v0.20.4
-	k8s.io/client-go v0.20.4
+	k8s.io/api v0.21.0
+	k8s.io/apimachinery v0.21.0
+	k8s.io/client-go v0.21.0
 	sigs.k8s.io/controller-runtime v0.6.5
 	sigs.k8s.io/yaml v1.2.0
 )
