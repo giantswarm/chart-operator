@@ -18,7 +18,6 @@ import (
 	"github.com/giantswarm/chart-operator/v2/service/controller/chart/resource/release"
 	"github.com/giantswarm/chart-operator/v2/service/controller/chart/resource/releasemaxhistory"
 	"github.com/giantswarm/chart-operator/v2/service/controller/chart/resource/status"
-	"github.com/giantswarm/chart-operator/v2/service/controller/chart/resource/tillermigration"
 )
 
 type chartResourcesConfig struct {
@@ -134,25 +133,7 @@ func newChartResources(config chartResourcesConfig) ([]resource.Interface, error
 		}
 	}
 
-	var tillerMigrationResource resource.Interface
-	{
-		c := tillermigration.Config{
-			G8sClient: config.G8sClient,
-			K8sClient: config.K8sClient,
-			Logger:    config.Logger,
-
-			TillerNamespace: config.TillerNamespace,
-		}
-
-		tillerMigrationResource, err = tillermigration.New(c)
-		if err != nil {
-			return nil, microerror.Mask(err)
-		}
-	}
-
 	resources := []resource.Interface{
-		// tiller migration deletes tiller once helm 3 migration is done.
-		tillerMigrationResource,
 		// namespace creates the release namespace and allows setting metadata.
 		namespaceResource,
 		// release max history ensures not too many helm release secrets are created.
