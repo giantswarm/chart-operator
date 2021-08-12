@@ -7,6 +7,10 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+### Removed
+
+- Remove `tillermigration` resource now Helm 3 migration is complete.
+
 ## [2.18.1] - 2021-08-05
 
 ### Changed
