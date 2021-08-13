@@ -7,6 +7,8 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+## [2.19.0] - 2021-08-13
+
 ### Removed
 
 - Remove `tillermigration` resource now Helm 3 migration is complete.
@@ -378,7 +380,8 @@ We check progress in the next reconciliation loop. ([#362](https://github.com/gi
 - Separate podsecuritypolicy.
 - Security context in deployment spec with non-root user.
 
-[Unreleased]: https://github.com/giantswarm/chart-operator/compare/v2.18.1...HEAD
+[Unreleased]: https://github.com/giantswarm/chart-operator/compare/v2.19.0...HEAD
+[2.19.0]: https://github.com/giantswarm/chart-operator/compare/v2.18.1...v2.19.0
 [2.18.1]: https://github.com/giantswarm/chart-operator/compare/v2.18.0...v2.18.1
 [2.18.0]: https://github.com/giantswarm/chart-operator/compare/v2.17.0...v2.18.0
 [2.17.0]: https://github.com/giantswarm/chart-operator/compare/v2.16.0...v2.17.0
