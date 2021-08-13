@@ -4,13 +4,13 @@ go 1.16
 
 require (
 	github.com/ghodss/yaml v1.0.1-0.20190212211648-25d852aebe32 // indirect
-	github.com/giantswarm/apiextensions/v3 v3.30.0
-	github.com/giantswarm/app/v5 v5.0.1
+	github.com/giantswarm/apiextensions/v3 v3.32.0
+	github.com/giantswarm/app/v5 v5.1.0
 	github.com/giantswarm/appcatalog v0.6.0
 	github.com/giantswarm/backoff v0.2.0
 	github.com/giantswarm/exporterkit v0.2.1
-	github.com/giantswarm/helmclient/v4 v4.6.0
-	github.com/giantswarm/k8sclient/v5 v5.11.0
+	github.com/giantswarm/helmclient/v4 v4.8.0
+	github.com/giantswarm/k8sclient/v5 v5.12.0
 	github.com/giantswarm/microendpoint v0.2.0
 	github.com/giantswarm/microerror v0.3.0
 	github.com/giantswarm/microkit v0.2.2
