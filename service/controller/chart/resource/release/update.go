@@ -8,8 +8,8 @@ import (
 
 	"github.com/giantswarm/helmclient/v4/pkg/helmclient"
 	"github.com/giantswarm/microerror"
-	"github.com/giantswarm/operatorkit/v4/pkg/controller/context/resourcecanceledcontext"
-	"github.com/giantswarm/operatorkit/v4/pkg/resource/crud"
+	"github.com/giantswarm/operatorkit/v5/pkg/controller/context/resourcecanceledcontext"
+	"github.com/giantswarm/operatorkit/v5/pkg/resource/crud"
 	"github.com/google/go-cmp/cmp"
 
 	"github.com/giantswarm/chart-operator/v2/pkg/annotation"
