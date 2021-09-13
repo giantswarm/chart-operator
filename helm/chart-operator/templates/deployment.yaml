@@ -74,7 +74,7 @@ spec:
         command:
         - sh
         - -c
-        - until dig {{ .Values.image.registry }}. {{ range (splitList "," .Values.externalDNSIP) }}@{{ . }} {{ end }}; do echo waiting for {{ .Values.image.registry }}; sleep 2; done;
+        - max_retry=30; counter=0; until dig {{ .Values.image.registry }}. {{ range (splitList "," .Values.externalDNSIP) }}@{{ . }} {{ end }}; do echo waiting for {{ .Values.image.registry }}; sleep 2; [[ counter -eq $max_retry ]] && echo "Failed!" && exit 0; counter++ done;
         securityContext:
           runAsUser: {{ .Values.pod.user.id }}
           runAsGroup: {{ .Values.pod.group.id }}
