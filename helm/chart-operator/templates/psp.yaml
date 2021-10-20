@@ -25,6 +25,6 @@ spec:
     - 'configMap'
     - 'secret'
   allowPrivilegeEscalation: false
-  hostNetwork: false
+  hostNetwork: {{ .Values.chartOperator.cni.install }}
   hostIPC: false
   hostPID: false
