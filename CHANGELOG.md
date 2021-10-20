@@ -7,6 +7,10 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+### Changed
+
+- Deployment `hostNetwork` is enabled or not depending on `chartOperator.cni.install` value.
+
 ## [2.19.0] - 2021-08-13
 
 ### Removed
