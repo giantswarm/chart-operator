@@ -1,7 +1,7 @@
 {
   "extends": [
     "config:base",
-    ":reviewer(team:giantswarm/team-batman-engineers)"
+    ":reviewer(team:team-honeybadger)"
   ],
   "packageRules": [
     {
