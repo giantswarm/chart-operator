@@ -14,6 +14,19 @@ workflows:
               only: /^v.*/
 
       - architect/push-to-docker:
+          context: "architect"
+          name: push-chart-operator-to-docker
+          image: "docker.io/giantswarm/cluster-apps-operator"
+          username_envar: "DOCKER_USERNAME"
+          password_envar: "DOCKER_PASSWORD"
+          requires:
+            - go-build
+          # Needed to trigger job also on git tag.
+          filters:
+            tags:
+              only: /^v.*/
+
+      - architect/push-to-docker:
           context: architect
           name: push-chart-operator-to-quay
           image: "quay.io/giantswarm/chart-operator"
@@ -58,6 +71,7 @@ workflows:
           app_catalog_test: "default-test-catalog"
           chart: "chart-operator"
           requires:
+            - push-chart-operator-to-docker
             - push-chart-operator-to-quay
           filters:
             tags:
