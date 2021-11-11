@@ -5,7 +5,7 @@ appVersion: [[ .AppVersion ]]
 home: https://github.com/giantswarm/chart-operator
 description: A Helm chart for the chart-operator
 annotations:
-  application.giantswarm.io/team: "batman"
+  application.giantswarm.io/team: "honeybadger"
   config.giantswarm.io/version: 1.x.x
 restrictions:
   clusterSingleton: true
