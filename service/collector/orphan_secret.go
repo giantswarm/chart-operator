@@ -5,13 +5,13 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/giantswarm/apiextensions/v3/pkg/clientset/versioned"
+	"github.com/giantswarm/apiextensions/v3/pkg/apis/application/v1alpha1"
 	"github.com/giantswarm/apiextensions/v3/pkg/label"
+	"github.com/giantswarm/k8sclient/v5/pkg/k8sclient"
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/micrologger"
 	"github.com/prometheus/client_golang/prometheus"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/client-go/kubernetes"
 
 	"github.com/giantswarm/chart-operator/v2/service/controller/chart/key"
 )
@@ -26,21 +26,16 @@ var (
 )
 
 type OrphanSecretConfig struct {
-	G8sClient versioned.Interface
-	K8sClient kubernetes.Interface
+	K8sClient k8sclient.Interface
 	Logger    micrologger.Logger
 }
 
 type OrphanSecret struct {
-	g8sClient versioned.Interface
-	k8sClient kubernetes.Interface
+	k8sClient k8sclient.Interface
 	logger    micrologger.Logger
 }
 
 func NewOrphanSecret(config OrphanSecretConfig) (*OrphanSecret, error) {
-	if config.G8sClient == nil {
-		return nil, microerror.Maskf(invalidConfigError, "%T.G8sClient must not be empty", config)
-	}
 	if config.K8sClient == nil {
 		return nil, microerror.Maskf(invalidConfigError, "%T.K8sClient must not be empty", config)
 	}
@@ -49,7 +44,6 @@ func NewOrphanSecret(config OrphanSecretConfig) (*OrphanSecret, error) {
 	}
 
 	oc := &OrphanSecret{
-		g8sClient: config.G8sClient,
 		k8sClient: config.K8sClient,
 		logger:    config.Logger,
 	}
@@ -60,21 +54,25 @@ func NewOrphanSecret(config OrphanSecretConfig) (*OrphanSecret, error) {
 func (oc *OrphanSecret) Collect(ch chan<- prometheus.Metric) error {
 	ctx := context.Background()
 
-	charts, err := oc.g8sClient.ApplicationV1alpha1().Charts("").List(ctx, metav1.ListOptions{})
+	chartList := &v1alpha1.ChartList{}
+	err := oc.k8sClient.CtrlClient().List(
+		ctx,
+		chartList,
+	)
 	if err != nil {
 		return microerror.Mask(err)
 	}
 
 	desiredSecrets := make(map[[2]string]bool)
 
-	for _, chart := range charts.Items {
+	for _, chart := range chartList.Items {
 		desiredSecrets[[2]string{key.SecretNamespace(chart), key.SecretName(chart)}] = true
 	}
 
 	lo := metav1.ListOptions{
 		LabelSelector: fmt.Sprintf("%s=%s", label.ManagedBy, "app-operator"),
 	}
-	secrets, err := oc.k8sClient.CoreV1().Secrets("").List(ctx, lo)
+	secrets, err := oc.k8sClient.K8sClient().CoreV1().Secrets("").List(ctx, lo)
 	if err != nil {
 		return microerror.Mask(err)
 	}
