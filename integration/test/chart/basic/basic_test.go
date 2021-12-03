@@ -17,6 +17,7 @@ import (
 	"github.com/google/go-cmp/cmp"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/types"
 	"sigs.k8s.io/yaml"
 
 	"github.com/giantswarm/chart-operator/v2/integration/key"
@@ -76,6 +77,9 @@ replicas: 3
 //
 func TestChartLifecycle(t *testing.T) {
 	ctx := context.Background()
+
+	var cr v1alpha1.Chart
+	var err error
 
 	// Create dependant configmap & secret.
 	{
@@ -147,7 +151,7 @@ func TestChartLifecycle(t *testing.T) {
 				Version:    "0.1.0",
 			},
 		}
-		_, err := config.K8sClients.G8sClient().ApplicationV1alpha1().Charts(key.Namespace()).Create(ctx, cr, metav1.CreateOptions{})
+		err = config.K8sClients.CtrlClient().Create(ctx, cr)
 		if err != nil {
 			t.Fatalf("expected %#v got %#v", nil, err)
 		}
@@ -169,7 +173,11 @@ func TestChartLifecycle(t *testing.T) {
 		config.Logger.Debugf(ctx, "checking status for chart CR %#q", key.TestAppReleaseName())
 
 		operation := func() error {
-			cr, err := config.K8sClients.G8sClient().ApplicationV1alpha1().Charts(key.Namespace()).Get(ctx, key.TestAppReleaseName(), metav1.GetOptions{})
+			err = config.K8sClients.CtrlClient().Get(
+				ctx,
+				types.NamespacedName{Name: key.TestAppReleaseName(), Namespace: key.Namespace()},
+				&cr,
+			)
 			if err != nil {
 				return microerror.Mask(err)
 			}
@@ -192,7 +200,11 @@ func TestChartLifecycle(t *testing.T) {
 	{
 		config.Logger.Debugf(ctx, "updating chart %#q", key.TestAppReleaseName())
 
-		cr, err := config.K8sClients.G8sClient().ApplicationV1alpha1().Charts(key.Namespace()).Get(ctx, key.TestAppReleaseName(), metav1.GetOptions{})
+		err = config.K8sClients.CtrlClient().Get(
+			ctx,
+			types.NamespacedName{Name: key.TestAppReleaseName(), Namespace: key.Namespace()},
+			&cr,
+		)
 		if err != nil {
 			t.Fatalf("expected %#v got %#v", nil, err)
 		}
@@ -200,7 +212,7 @@ func TestChartLifecycle(t *testing.T) {
 		cr.Spec.TarballURL = "https://giantswarm.github.io/default-catalog/test-app-0.1.1.tgz"
 		cr.Spec.Version = "0.1.1"
 
-		_, err = config.K8sClients.G8sClient().ApplicationV1alpha1().Charts(key.Namespace()).Update(ctx, cr, metav1.UpdateOptions{})
+		err = config.K8sClients.CtrlClient().Update(ctx, &cr)
 		if err != nil {
 			t.Fatalf("expected %#v got %#v", nil, err)
 		}
@@ -245,7 +257,7 @@ func TestChartLifecycle(t *testing.T) {
 	{
 		config.Logger.Debugf(ctx, "deleting chart %#q", key.TestAppReleaseName())
 
-		err := config.K8sClients.G8sClient().ApplicationV1alpha1().Charts(key.Namespace()).Delete(ctx, key.TestAppReleaseName(), metav1.DeleteOptions{})
+		err := config.K8sClients.CtrlClient().Delete(ctx, &cr)
 		if err != nil {
 			t.Fatalf("expected %#v got %#v", nil, err)
 		}
