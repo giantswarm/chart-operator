@@ -2,13 +2,11 @@ package release
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"strings"
 	"time"
 
 	"github.com/giantswarm/apiextensions/v3/pkg/apis/application/v1alpha1"
-	"github.com/giantswarm/apiextensions/v3/pkg/clientset/versioned"
 	"github.com/giantswarm/helmclient/v4/pkg/helmclient"
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/micrologger"
@@ -16,6 +14,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/client-go/kubernetes"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 
 	"github.com/giantswarm/chart-operator/v2/pkg/annotation"
 	"github.com/giantswarm/chart-operator/v2/service/controller/chart/controllercontext"
@@ -54,7 +53,7 @@ const (
 type Config struct {
 	// Dependencies.
 	Fs         afero.Fs
-	G8sClient  versioned.Interface
+	CtrlClient client.Client
 	HelmClient helmclient.Interface
 	K8sClient  kubernetes.Interface
 	Logger     micrologger.Logger
@@ -69,7 +68,7 @@ type Config struct {
 type Resource struct {
 	// Dependencies.
 	fs         afero.Fs
-	g8sClient  versioned.Interface
+	ctrlClient client.Client
 	helmClient helmclient.Interface
 	k8sClient  kubernetes.Interface
 	logger     micrologger.Logger
@@ -86,8 +85,8 @@ func New(config Config) (*Resource, error) {
 	if config.Fs == nil {
 		return nil, microerror.Maskf(invalidConfigError, "%T.Fs must not be empty", config)
 	}
-	if config.G8sClient == nil {
-		return nil, microerror.Maskf(invalidConfigError, "%T.G8sClient must not be empty", config)
+	if config.CtrlClient == nil {
+		return nil, microerror.Maskf(invalidConfigError, "%T.CtrlClient must not be empty", config)
 	}
 	if config.HelmClient == nil {
 		return nil, microerror.Maskf(invalidConfigError, "%T.HelmClient must not be empty", config)
@@ -110,7 +109,7 @@ func New(config Config) (*Resource, error) {
 	r := &Resource{
 		// Dependencies.
 		fs:         config.Fs,
-		g8sClient:  config.G8sClient,
+		ctrlClient: config.CtrlClient,
 		helmClient: config.HelmClient,
 		k8sClient:  config.K8sClient,
 		logger:     config.Logger,
@@ -142,29 +141,11 @@ func (r *Resource) findHelmV2ConfigMaps(ctx context.Context, releaseName string)
 	return len(cms.Items) > 0, nil
 }
 
-func (r *Resource) addAnnotation(ctx context.Context, cr *v1alpha1.Chart, key, value string) error {
-	patches := []Patch{}
+func (r *Resource) addAnnotation(ctx context.Context, cr v1alpha1.Chart, key, value string) error {
+	modifiedChart := cr.DeepCopy()
+	modifiedChart.Annotations[key] = value
 
-	if len(cr.Annotations) == 0 {
-		patches = append(patches, Patch{
-			Op:    "add",
-			Path:  "/metadata/annotations",
-			Value: map[string]string{},
-		})
-	}
-
-	patches = append(patches, Patch{
-		Op:    "add",
-		Path:  fmt.Sprintf("/metadata/annotations/%s", replaceToEscape(key)),
-		Value: value,
-	})
-
-	bytes, err := json.Marshal(patches)
-	if err != nil {
-		return microerror.Mask(err)
-	}
-
-	_, err = r.g8sClient.ApplicationV1alpha1().Charts(cr.Namespace).Patch(ctx, cr.Name, types.JSONPatchType, bytes, metav1.PatchOptions{})
+	err := r.ctrlClient.Patch(ctx, modifiedChart, client.MergeFrom(&cr))
 	if err != nil {
 		return microerror.Mask(err)
 	}
@@ -172,25 +153,16 @@ func (r *Resource) addAnnotation(ctx context.Context, cr *v1alpha1.Chart, key, v
 	return nil
 }
 
-func (r *Resource) removeAnnotation(ctx context.Context, cr *v1alpha1.Chart, key string) error {
+func (r *Resource) removeAnnotation(ctx context.Context, cr v1alpha1.Chart, key string) error {
 	if _, ok := cr.GetAnnotations()[key]; !ok {
 		// no-op
 		return nil
 	}
 
-	patches := []Patch{
-		{
-			Op:   "remove",
-			Path: fmt.Sprintf("/metadata/annotations/%s", replaceToEscape(key)),
-		},
-	}
+	modifiedChart := cr.DeepCopy()
+	delete(modifiedChart.Annotations, key)
 
-	bytes, err := json.Marshal(patches)
-	if err != nil {
-		return microerror.Mask(err)
-	}
-
-	_, err = r.g8sClient.ApplicationV1alpha1().Charts(cr.Namespace).Patch(ctx, cr.Name, types.JSONPatchType, bytes, metav1.PatchOptions{})
+	err := r.ctrlClient.Patch(ctx, modifiedChart, client.MergeFrom(&cr))
 	if err != nil {
 		return microerror.Mask(err)
 	}
@@ -206,12 +178,18 @@ func (r *Resource) addHashAnnotation(ctx context.Context, cr v1alpha1.Chart, rel
 
 	// Get chart CR again to ensure the resource version and annotations
 	// are correct.
-	currentCR, err := r.g8sClient.ApplicationV1alpha1().Charts(cr.Namespace).Get(ctx, cr.Name, metav1.GetOptions{})
+	var currentCR v1alpha1.Chart
+
+	err := r.ctrlClient.Get(
+		ctx,
+		types.NamespacedName{Name: cr.Name, Namespace: cr.Namespace},
+		&currentCR,
+	)
 	if err != nil {
 		return microerror.Mask(err)
 	}
 
-	currentChecksum := key.ValuesMD5ChecksumAnnotation(*currentCR)
+	currentChecksum := key.ValuesMD5ChecksumAnnotation(currentCR)
 
 	if releaseState.ValuesMD5Checksum != currentChecksum {
 		err := r.addAnnotation(ctx, currentCR, annotation.ValuesMD5Checksum, releaseState.ValuesMD5Checksum)

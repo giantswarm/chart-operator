@@ -6,7 +6,6 @@ import (
 	"testing"
 
 	"github.com/giantswarm/apiextensions/v3/pkg/apis/application/v1alpha1"
-	"github.com/giantswarm/apiextensions/v3/pkg/clientset/versioned/fake"
 	"github.com/giantswarm/helmclient/v4/pkg/helmclient"
 	"github.com/giantswarm/helmclient/v4/pkg/helmclienttest"
 	"github.com/giantswarm/micrologger/microloggertest"
@@ -16,6 +15,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	k8sfake "k8s.io/client-go/kubernetes/fake"
+	"sigs.k8s.io/controller-runtime/pkg/client/fake" //nolint:staticcheck
 	"sigs.k8s.io/yaml"
 
 	"github.com/giantswarm/chart-operator/v2/service/controller/chart/controllercontext"
@@ -326,7 +326,7 @@ func Test_DesiredState(t *testing.T) {
 
 			c := Config{
 				Fs:         afero.NewMemMapFs(),
-				G8sClient:  fake.NewSimpleClientset(),
+				CtrlClient: fake.NewFakeClient(),
 				HelmClient: helmclienttest.New(helmclienttest.Config{}),
 				K8sClient:  k8sfake.NewSimpleClientset(objs...),
 				Logger:     microloggertest.New(),

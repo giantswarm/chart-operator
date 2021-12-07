@@ -14,6 +14,7 @@ import (
 	"github.com/giantswarm/to"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/types"
 
 	"github.com/giantswarm/chart-operator/v2/pkg/annotation"
 	"github.com/giantswarm/chart-operator/v2/pkg/project"
@@ -143,14 +144,20 @@ func (r *Resource) setStatus(ctx context.Context, cr v1alpha1.Chart, status v1al
 	r.logger.Debugf(ctx, "setting status for release %#q status to %#q", key.ReleaseName(cr), status.Release.Status)
 
 	// Get chart CR again to ensure the resource version is correct.
-	currentCR, err := r.g8sClient.ApplicationV1alpha1().Charts(cr.Namespace).Get(ctx, cr.Name, metav1.GetOptions{})
+	var currentCR v1alpha1.Chart
+
+	err := r.ctrlClient.Get(
+		ctx,
+		types.NamespacedName{Name: cr.Name, Namespace: cr.Namespace},
+		&currentCR,
+	)
 	if err != nil {
 		return microerror.Mask(err)
 	}
 
 	currentCR.Status = status
 
-	_, err = r.g8sClient.ApplicationV1alpha1().Charts(cr.Namespace).UpdateStatus(ctx, currentCR, metav1.UpdateOptions{})
+	err = r.ctrlClient.Status().Update(ctx, &currentCR)
 	if err != nil {
 		return microerror.Mask(err)
 	}

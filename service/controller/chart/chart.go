@@ -69,7 +69,7 @@ func NewChart(config Config) (*Chart, error) {
 	{
 		c := chartResourcesConfig{
 			Fs:         config.Fs,
-			G8sClient:  config.K8sClient.G8sClient(),
+			CtrlClient: config.K8sClient.CtrlClient(),
 			HelmClient: config.HelmClient,
 			K8sClient:  config.K8sClient.K8sClient(),
 			Logger:     config.Logger,

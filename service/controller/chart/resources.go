@@ -3,7 +3,6 @@ package chart
 import (
 	"time"
 
-	"github.com/giantswarm/apiextensions/v3/pkg/clientset/versioned"
 	"github.com/giantswarm/helmclient/v4/pkg/helmclient"
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/micrologger"
@@ -13,6 +12,7 @@ import (
 	"github.com/giantswarm/operatorkit/v5/pkg/resource/wrapper/retryresource"
 	"github.com/spf13/afero"
 	"k8s.io/client-go/kubernetes"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 
 	"github.com/giantswarm/chart-operator/v2/service/controller/chart/resource/namespace"
 	"github.com/giantswarm/chart-operator/v2/service/controller/chart/resource/release"
@@ -23,7 +23,7 @@ import (
 type chartResourcesConfig struct {
 	// Dependencies.
 	Fs         afero.Fs
-	G8sClient  versioned.Interface
+	CtrlClient client.Client
 	HelmClient helmclient.Interface
 	K8sClient  kubernetes.Interface
 	Logger     micrologger.Logger
@@ -42,8 +42,8 @@ func newChartResources(config chartResourcesConfig) ([]resource.Interface, error
 	if config.Fs == nil {
 		return nil, microerror.Maskf(invalidConfigError, "%T.Fs must not be empty", config)
 	}
-	if config.G8sClient == nil {
-		return nil, microerror.Maskf(invalidConfigError, "%T.G8sClient must not be empty", config)
+	if config.CtrlClient == nil {
+		return nil, microerror.Maskf(invalidConfigError, "%T.CtrlClient must not be empty", config)
 	}
 	if config.HelmClient == nil {
 		return nil, microerror.Maskf(invalidConfigError, "%T.HelmClient must not be empty", config)
@@ -79,7 +79,7 @@ func newChartResources(config chartResourcesConfig) ([]resource.Interface, error
 		c := release.Config{
 			// Dependencies
 			Fs:         config.Fs,
-			G8sClient:  config.G8sClient,
+			CtrlClient: config.CtrlClient,
 			HelmClient: config.HelmClient,
 			K8sClient:  config.K8sClient,
 			Logger:     config.Logger,
@@ -119,7 +119,7 @@ func newChartResources(config chartResourcesConfig) ([]resource.Interface, error
 	var statusResource resource.Interface
 	{
 		c := status.Config{
-			G8sClient:  config.G8sClient,
+			CtrlClient: config.CtrlClient,
 			HelmClient: config.HelmClient,
 			K8sClient:  config.K8sClient,
 			Logger:     config.Logger,
