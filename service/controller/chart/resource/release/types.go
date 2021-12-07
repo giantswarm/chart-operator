@@ -1,7 +1,5 @@
 package release
 
-import "k8s.io/apimachinery/pkg/runtime"
-
 type Patch struct {
 	Op    string      `json:"op"`
 	Path  string      `json:"path"`
@@ -27,5 +25,3 @@ type ReleaseState struct {
 	// e.g. 0.1.2
 	Version string
 }
-
-type schemeBuilder []func(*runtime.Scheme) error

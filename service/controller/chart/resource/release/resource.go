@@ -3,7 +3,6 @@ package release
 import (
 	"context"
 	"fmt"
-	"strings"
 	"time"
 
 	"github.com/giantswarm/apiextensions/v3/pkg/apis/application/v1alpha1"
@@ -261,10 +260,6 @@ func isReleaseModified(a, b ReleaseState) bool {
 	}
 
 	return result
-}
-
-func replaceToEscape(from string) string {
-	return strings.Replace(from, "/", "~1", -1)
 }
 
 func toReleaseState(v interface{}) (ReleaseState, error) {
