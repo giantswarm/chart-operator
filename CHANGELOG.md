@@ -7,6 +7,10 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+### Removed
+
+- Remove unused helm 2 release collector.
+
 ## [2.19.1] - 2021-10-20
 
 ### Changed

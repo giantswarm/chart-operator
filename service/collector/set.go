@@ -40,21 +40,6 @@ func NewSet(config SetConfig) (*Set, error) {
 
 	var err error
 
-	var helmV2ReleaseCollector *HelmV2Release
-	{
-		c := HelmV2ReleaseConfig{
-			K8sClient: config.K8sClient.K8sClient(),
-			Logger:    config.Logger,
-
-			TillerNamespace: config.TillerNamespace,
-		}
-
-		helmV2ReleaseCollector, err = NewHelmV2Release(c)
-		if err != nil {
-			return nil, microerror.Mask(err)
-		}
-	}
-
 	var orphanConfigMapCollector *OrphanConfigMap
 	{
 		c := OrphanConfigMapConfig{
@@ -87,7 +72,6 @@ func NewSet(config SetConfig) (*Set, error) {
 	{
 		c := collector.SetConfig{
 			Collectors: []collector.Interface{
-				helmV2ReleaseCollector,
 				orphanConfigMapCollector,
 				orphanSecretCollector,
 			},
