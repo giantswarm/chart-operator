@@ -142,6 +142,10 @@ func (r *Resource) findHelmV2ConfigMaps(ctx context.Context, releaseName string)
 
 func (r *Resource) addAnnotation(ctx context.Context, cr v1alpha1.Chart, key, value string) error {
 	modifiedChart := cr.DeepCopy()
+
+	if len(modifiedChart.Annotations) == 0 {
+		modifiedChart.Annotations = map[string]string{}
+	}
 	modifiedChart.Annotations[key] = value
 
 	err := r.ctrlClient.Patch(ctx, modifiedChart, client.MergeFrom(&cr))
