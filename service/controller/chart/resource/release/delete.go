@@ -5,9 +5,9 @@ import (
 
 	"github.com/giantswarm/helmclient/v4/pkg/helmclient"
 	"github.com/giantswarm/microerror"
-	"github.com/giantswarm/operatorkit/v5/pkg/controller/context/finalizerskeptcontext"
-	"github.com/giantswarm/operatorkit/v5/pkg/controller/context/resourcecanceledcontext"
-	"github.com/giantswarm/operatorkit/v5/pkg/resource/crud"
+	"github.com/giantswarm/operatorkit/v6/pkg/controller/context/finalizerskeptcontext"
+	"github.com/giantswarm/operatorkit/v6/pkg/controller/context/resourcecanceledcontext"
+	"github.com/giantswarm/operatorkit/v6/pkg/resource/crud"
 
 	"github.com/giantswarm/chart-operator/v2/service/controller/chart/key"
 )
