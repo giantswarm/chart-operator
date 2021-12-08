@@ -3,9 +3,9 @@ module github.com/giantswarm/chart-operator/v2
 go 1.16
 
 require (
+	github.com/MakeNowJust/heredoc v1.0.0 // indirect
 	github.com/ghodss/yaml v1.0.1-0.20190212211648-25d852aebe32 // indirect
 	github.com/giantswarm/apiextensions-application v0.1.0
-	github.com/giantswarm/apiextensions/v3 v3.39.0
 	github.com/giantswarm/app/v6 v6.0.0
 	github.com/giantswarm/appcatalog v0.6.0
 	github.com/giantswarm/backoff v0.2.0
@@ -22,9 +22,11 @@ require (
 	github.com/giantswarm/versionbundle v0.2.0
 	github.com/google/go-cmp v0.5.6
 	github.com/imdario/mergo v0.3.12
+	github.com/mattn/go-isatty v0.0.12 // indirect
 	github.com/prometheus/client_golang v1.11.0
 	github.com/spf13/afero v1.6.0
 	github.com/spf13/viper v1.8.1
+	golang.org/x/oauth2 v0.0.0-20211104180415-d3ed0bb246c8 // indirect
 	k8s.io/api v0.21.4
 	k8s.io/apimachinery v0.21.4
 	k8s.io/client-go v0.21.4
