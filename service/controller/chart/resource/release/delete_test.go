@@ -6,11 +6,11 @@ import (
 	"testing"
 
 	"github.com/giantswarm/apiextensions/v3/pkg/apis/core/v1alpha1"
-	"github.com/giantswarm/apiextensions/v3/pkg/clientset/versioned/fake"
 	"github.com/giantswarm/helmclient/v4/pkg/helmclienttest"
 	"github.com/giantswarm/micrologger/microloggertest"
 	"github.com/spf13/afero"
 	k8sfake "k8s.io/client-go/kubernetes/fake"
+	"sigs.k8s.io/controller-runtime/pkg/client/fake" //nolint:staticcheck
 )
 
 func Test_Resource_Release_newDeleteChange(t *testing.T) {
@@ -73,7 +73,7 @@ func Test_Resource_Release_newDeleteChange(t *testing.T) {
 	{
 		c := Config{
 			Fs:         afero.NewMemMapFs(),
-			G8sClient:  fake.NewSimpleClientset(),
+			CtrlClient: fake.NewFakeClient(),
 			HelmClient: helmclienttest.New(helmclienttest.Config{}),
 			K8sClient:  k8sfake.NewSimpleClientset(),
 			Logger:     microloggertest.New(),

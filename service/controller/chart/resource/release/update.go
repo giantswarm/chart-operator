@@ -278,7 +278,7 @@ func (r *Resource) newUpdateChange(ctx context.Context, obj, currentState, desir
 		return &desiredReleaseState, nil
 	}
 
-	err = r.removeAnnotation(ctx, &cr, annotation.RollbackCount)
+	err = r.removeAnnotation(ctx, cr, annotation.RollbackCount)
 	if err != nil {
 		return nil, microerror.Mask(err)
 	}
@@ -331,7 +331,7 @@ func (r *Resource) rollback(ctx context.Context, obj interface{}, currentStatus 
 		r.logger.Debugf(ctx, "rollbacked release %#q", key.ReleaseName(cr))
 	}
 
-	err = r.addAnnotation(ctx, &cr, annotation.RollbackCount, fmt.Sprintf("%d", rollbackCount+1))
+	err = r.addAnnotation(ctx, cr, annotation.RollbackCount, fmt.Sprintf("%d", rollbackCount+1))
 	if err != nil {
 		return microerror.Mask(err)
 	}

@@ -7,6 +7,10 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+### Changed
+
+- Use controller-runtime client to remove CAPI dependency.
+
 ### Removed
 
 - Remove unused helm 2 release collector.

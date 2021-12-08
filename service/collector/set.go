@@ -43,8 +43,7 @@ func NewSet(config SetConfig) (*Set, error) {
 	var orphanConfigMapCollector *OrphanConfigMap
 	{
 		c := OrphanConfigMapConfig{
-			G8sClient: config.K8sClient.G8sClient(),
-			K8sClient: config.K8sClient.K8sClient(),
+			K8sClient: config.K8sClient,
 			Logger:    config.Logger,
 		}
 
@@ -57,8 +56,7 @@ func NewSet(config SetConfig) (*Set, error) {
 	var orphanSecretCollector *OrphanSecret
 	{
 		c := OrphanSecretConfig{
-			G8sClient: config.K8sClient.G8sClient(),
-			K8sClient: config.K8sClient.K8sClient(),
+			K8sClient: config.K8sClient,
 			Logger:    config.Logger,
 		}
 
