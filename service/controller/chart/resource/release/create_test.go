@@ -72,7 +72,7 @@ func Test_Resource_Release_newCreate(t *testing.T) {
 	{
 		c := Config{
 			Fs:         afero.NewMemMapFs(),
-			CtrlClient: fake.NewFakeClient(),
+			CtrlClient: fake.NewFakeClient(), //nolint:staticcheck
 			HelmClient: helmclienttest.New(helmclienttest.Config{}),
 			K8sClient:  k8sfake.NewSimpleClientset(),
 			Logger:     microloggertest.New(),

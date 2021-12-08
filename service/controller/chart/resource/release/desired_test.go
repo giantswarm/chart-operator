@@ -326,7 +326,7 @@ func Test_DesiredState(t *testing.T) {
 
 			c := Config{
 				Fs:         afero.NewMemMapFs(),
-				CtrlClient: fake.NewFakeClient(),
+				CtrlClient: fake.NewFakeClient(), //nolint:staticcheck
 				HelmClient: helmclienttest.New(helmclienttest.Config{}),
 				K8sClient:  k8sfake.NewSimpleClientset(objs...),
 				Logger:     microloggertest.New(),
