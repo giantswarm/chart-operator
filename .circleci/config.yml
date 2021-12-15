@@ -1,6 +1,6 @@
 version: 2.1
 orbs:
-  architect: giantswarm/architect@4.8.1
+  architect: giantswarm/architect@apptestctl2
 
 workflows:
   build:
@@ -80,6 +80,7 @@ workflows:
       - architect/integration-test:
           context: architect
           name: basic-integration-test
+          setup-script: integration/setup/setup.sh
           test-dir: "integration/test/chart/basic"
           requires:
           - go-build
