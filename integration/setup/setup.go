@@ -84,7 +84,6 @@ func installResources(ctx context.Context, config Config) error {
 		}
 		values := map[string]interface{}{
 			"clusterDNSIP": "10.96.0.10",
-			"e2e":          "true",
 		}
 		err = config.HelmClient.InstallReleaseFromTarball(ctx, operatorTarballPath, key.Namespace(), values, opts)
 		if err != nil {
