@@ -84,7 +84,6 @@ func installResources(ctx context.Context, config Config) error {
 		}
 		values := map[string]interface{}{
 			"clusterDNSIP": "10.96.0.10",
-			"e2e":          "true",
 		}
 		err = config.HelmClient.InstallReleaseFromTarball(ctx, operatorTarballPath, key.Namespace(), values, opts)
 		if err != nil {
@@ -92,23 +91,6 @@ func installResources(ctx context.Context, config Config) error {
 		}
 
 		config.Logger.Debugf(ctx, "installed %#q", project.Name())
-	}
-
-	{
-		config.Logger.Debugf(ctx, "ensuring chart CRD exists")
-
-		chartCRD, err := config.CRDGetter.LoadCRD(ctx, "application.giantswarm.io", "Chart")
-
-		if err != nil {
-			return microerror.Mask(err)
-		}
-
-		err = config.K8sClients.CtrlClient().Create(ctx, chartCRD)
-		if err != nil {
-			return microerror.Mask(err)
-		}
-
-		config.Logger.Debugf(ctx, "ensured chart CRD exists")
 	}
 
 	return nil

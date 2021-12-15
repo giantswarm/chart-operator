@@ -5,7 +5,6 @@ package setup
 
 import (
 	"github.com/giantswarm/apiextensions-application/api/v1alpha1"
-	"github.com/giantswarm/app/v6/pkg/crd"
 	"github.com/giantswarm/helmclient/v4/pkg/helmclient"
 	"github.com/giantswarm/k8sclient/v6/pkg/k8sclient"
 	"github.com/giantswarm/microerror"
@@ -17,7 +16,6 @@ import (
 )
 
 type Config struct {
-	CRDGetter  *crd.CRDGetter
 	HelmClient helmclient.Interface
 	K8s        *k8sclient.Setup
 	K8sClients k8sclient.Interface
@@ -36,15 +34,6 @@ func NewConfig() (Config, error) {
 		if err != nil {
 			return Config{}, microerror.Mask(err)
 		}
-	}
-
-	var crdGetter *crd.CRDGetter
-	{
-		c := crd.Config{
-			Logger: logger,
-		}
-
-		crdGetter, err = crd.NewCRDGetter(c)
 	}
 
 	var k8sClients *k8sclient.Clients
@@ -108,7 +97,6 @@ func NewConfig() (Config, error) {
 	}
 
 	c := Config{
-		CRDGetter:  crdGetter,
 		HelmClient: helmClient,
 		K8s:        k8sSetup,
 		K8sClients: k8sClients,
