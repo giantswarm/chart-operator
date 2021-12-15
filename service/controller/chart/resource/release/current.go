@@ -6,7 +6,7 @@ import (
 
 	"github.com/giantswarm/helmclient/v4/pkg/helmclient"
 	"github.com/giantswarm/microerror"
-	"github.com/giantswarm/operatorkit/v5/pkg/controller/context/resourcecanceledcontext"
+	"github.com/giantswarm/operatorkit/v6/pkg/controller/context/resourcecanceledcontext"
 
 	"github.com/giantswarm/chart-operator/v2/pkg/project"
 	"github.com/giantswarm/chart-operator/v2/service/controller/chart/controllercontext"

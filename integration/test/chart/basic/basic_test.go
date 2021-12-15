@@ -9,10 +9,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/giantswarm/apiextensions/v3/pkg/apis/application/v1alpha1"
-	"github.com/giantswarm/apiextensions/v3/pkg/label"
+	"github.com/giantswarm/apiextensions-application/api/v1alpha1"
 	"github.com/giantswarm/backoff"
 	"github.com/giantswarm/helmclient/v4/pkg/helmclient"
+	"github.com/giantswarm/k8smetadata/pkg/label"
 	"github.com/giantswarm/microerror"
 	"github.com/google/go-cmp/cmp"
 	corev1 "k8s.io/api/core/v1"

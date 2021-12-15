@@ -4,11 +4,10 @@ import (
 	"context"
 	"sync"
 
-	applicationv1alpha1 "github.com/giantswarm/apiextensions/v3/pkg/apis/application/v1alpha1"
-	corev1alpha1 "github.com/giantswarm/apiextensions/v3/pkg/apis/core/v1alpha1"
+	applicationv1alpha1 "github.com/giantswarm/apiextensions-application/api/v1alpha1"
 	"github.com/giantswarm/helmclient/v4/pkg/helmclient"
-	"github.com/giantswarm/k8sclient/v5/pkg/k8sclient"
-	"github.com/giantswarm/k8sclient/v5/pkg/k8srestconfig"
+	"github.com/giantswarm/k8sclient/v6/pkg/k8sclient"
+	"github.com/giantswarm/k8sclient/v6/pkg/k8srestconfig"
 	"github.com/giantswarm/microendpoint/service/version"
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/micrologger"
@@ -88,7 +87,6 @@ func New(config Config) (*Service, error) {
 			Logger: config.Logger,
 			SchemeBuilder: k8sclient.SchemeBuilder{
 				applicationv1alpha1.AddToScheme,
-				corev1alpha1.AddToScheme,
 			},
 
 			RestConfig: restConfig,

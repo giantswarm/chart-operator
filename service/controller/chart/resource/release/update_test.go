@@ -5,7 +5,7 @@ import (
 	"strconv"
 	"testing"
 
-	"github.com/giantswarm/apiextensions/v3/pkg/apis/application/v1alpha1"
+	"github.com/giantswarm/apiextensions-application/api/v1alpha1"
 	"github.com/giantswarm/helmclient/v4/pkg/helmclienttest"
 	"github.com/giantswarm/micrologger/microloggertest"
 	"github.com/spf13/afero"
@@ -150,7 +150,7 @@ func Test_Resource_Release_newUpdateChange(t *testing.T) {
 	{
 		c := Config{
 			Fs:         afero.NewMemMapFs(),
-			CtrlClient: fake.NewFakeClient(),
+			CtrlClient: fake.NewFakeClient(), //nolint:staticcheck
 			HelmClient: helmclienttest.New(helmclienttest.Config{}),
 			K8sClient:  k8sfake.NewSimpleClientset(),
 			Logger:     microloggertest.New(),

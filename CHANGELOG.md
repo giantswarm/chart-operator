@@ -9,6 +9,7 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ### Changed
 
+- Update Helm to v3.6.3.
 - Use controller-runtime client to remove CAPI dependency.
 
 ### Removed

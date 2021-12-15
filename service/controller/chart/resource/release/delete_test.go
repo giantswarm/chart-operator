@@ -5,7 +5,7 @@ import (
 	"strconv"
 	"testing"
 
-	"github.com/giantswarm/apiextensions/v3/pkg/apis/core/v1alpha1"
+	"github.com/giantswarm/apiextensions-application/api/v1alpha1"
 	"github.com/giantswarm/helmclient/v4/pkg/helmclienttest"
 	"github.com/giantswarm/micrologger/microloggertest"
 	"github.com/spf13/afero"
@@ -15,7 +15,7 @@ import (
 
 func Test_Resource_Release_newDeleteChange(t *testing.T) {
 	testCases := []struct {
-		obj                  v1alpha1.ChartConfig
+		obj                  v1alpha1.Chart
 		currentState         *ReleaseState
 		desiredState         *ReleaseState
 		expectedDeleteChange *ReleaseState
@@ -73,7 +73,7 @@ func Test_Resource_Release_newDeleteChange(t *testing.T) {
 	{
 		c := Config{
 			Fs:         afero.NewMemMapFs(),
-			CtrlClient: fake.NewFakeClient(),
+			CtrlClient: fake.NewFakeClient(), //nolint:staticcheck
 			HelmClient: helmclienttest.New(helmclienttest.Config{}),
 			K8sClient:  k8sfake.NewSimpleClientset(),
 			Logger:     microloggertest.New(),
