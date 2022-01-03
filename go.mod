@@ -5,18 +5,18 @@ go 1.16
 require (
 	github.com/MakeNowJust/heredoc v1.0.0 // indirect
 	github.com/ghodss/yaml v1.0.1-0.20190212211648-25d852aebe32 // indirect
-	github.com/giantswarm/apiextensions-application v0.2.0
+	github.com/giantswarm/apiextensions-application v0.3.0
 	github.com/giantswarm/appcatalog v0.6.0
 	github.com/giantswarm/backoff v1.0.0
 	github.com/giantswarm/exporterkit v1.0.0
 	github.com/giantswarm/helmclient/v4 v4.9.0
-	github.com/giantswarm/k8sclient/v6 v6.0.0
+	github.com/giantswarm/k8sclient/v6 v6.1.0
 	github.com/giantswarm/k8smetadata v0.7.1
 	github.com/giantswarm/microendpoint v1.0.0
 	github.com/giantswarm/microerror v0.4.0
 	github.com/giantswarm/microkit v1.0.0
 	github.com/giantswarm/micrologger v0.6.0
-	github.com/giantswarm/operatorkit/v6 v6.0.0
+	github.com/giantswarm/operatorkit/v6 v6.1.0
 	github.com/giantswarm/to v0.4.0
 	github.com/google/go-cmp v0.5.6
 	github.com/imdario/mergo v0.3.12
