@@ -16,7 +16,7 @@ workflows:
       - architect/push-to-docker:
           context: "architect"
           name: push-chart-operator-to-docker
-          image: "docker.io/giantswarm/cluster-apps-operator"
+          image: "docker.io/giantswarm/chart-operator"
           username_envar: "DOCKER_USERNAME"
           password_envar: "DOCKER_PASSWORD"
           requires:
