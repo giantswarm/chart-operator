@@ -9,6 +9,7 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ### Changed
 
+- Change the default port to 8150 to avoid port conflicts in the CAPI setup.
 - Use `apptestctl` to install CRDs in integration tests to avoid hitting GitHub rate limits.
 
 ## [2.20.0] - 2021-12-15
