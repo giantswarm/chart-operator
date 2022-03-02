@@ -7,8 +7,10 @@ import (
 	"context"
 	"os"
 	"testing"
+	"time"
 
 	"github.com/giantswarm/appcatalog"
+	"github.com/giantswarm/backoff"
 	"github.com/giantswarm/helmclient/v4/pkg/helmclient"
 	"github.com/giantswarm/microerror"
 	"github.com/spf13/afero"
@@ -47,17 +49,32 @@ func installResources(ctx context.Context, config Config) error {
 		}
 	}
 
-	var operatorTarballPath string
+	var operatorTarballURL string
 	{
-		config.Logger.Debugf(ctx, "getting tarball URL")
+		config.Logger.Debugf(ctx, "getting %#q tarball URL", project.Name())
 
-		operatorTarballURL, err := appcatalog.GetLatestChart(ctx, key.DefaultTestCatalogStorageURL(), project.Name(), env.CircleSHA())
+		o := func() error {
+			operatorTarballURL, err = appcatalog.GetLatestChart(ctx, key.DefaultTestCatalogStorageURL(), project.Name(), env.CircleSHA())
+			if err != nil {
+				return microerror.Mask(err)
+			}
+
+			return nil
+		}
+
+		b := backoff.NewConstant(5*time.Minute, 10*time.Second)
+		n := backoff.NewNotifier(config.Logger, ctx)
+
+		err = backoff.RetryNotify(o, b, n)
 		if err != nil {
 			return microerror.Mask(err)
 		}
 
 		config.Logger.Debugf(ctx, "tarball URL is %#q", operatorTarballURL)
+	}
 
+	var operatorTarballPath string
+	{
 		config.Logger.Debugf(ctx, "pulling tarball")
 
 		operatorTarballPath, err = config.HelmClient.PullChartTarball(ctx, operatorTarballURL)
