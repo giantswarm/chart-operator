@@ -35,32 +35,31 @@ func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
 	releaseName := key.ReleaseName(cr)
 	r.logger.Debugf(ctx, "getting status for release %#q", releaseName)
 
-	// If something goes wrong outside of Helm we add that to the
-	// controller context in the release resource. So we include this
-	// information in the CR status.
-	if cc.Status.Reason != "" {
-		status := v1alpha1.ChartStatus{
-			Reason: cc.Status.Reason,
-			Release: v1alpha1.ChartStatusRelease{
-				Status: cc.Status.Release.Status,
-			},
-		}
-
-		err = r.setStatus(ctx, cr, status)
-		if err != nil {
-			return microerror.Mask(err)
-		}
-
-		return nil
-	}
-
 	releaseContent, err := r.helmClient.GetReleaseContent(ctx, key.Namespace(cr), releaseName)
 	if helmclient.IsReleaseNotFound(err) {
 		r.logger.Debugf(ctx, "release %#q not found", releaseName)
 
-		// There is no Helm release for this chart CR so its likely that
-		// something has gone wrong. This could be for a reason outside
-		// of Helm like the tarball URL is incorrect.
+		// If something goes wrong outside of Helm we add that to the
+		// controller context in the release resource. So we include this
+		// information in the CR status.
+		if cc.Status.Reason != "" {
+			status := v1alpha1.ChartStatus{
+				Reason: cc.Status.Reason,
+				Release: v1alpha1.ChartStatusRelease{
+					Status: cc.Status.Release.Status,
+				},
+			}
+
+			err = r.setStatus(ctx, cr, status)
+			if err != nil {
+				return microerror.Mask(err)
+			}
+
+			return nil
+		}
+
+		// There is no Helm release and no information added to the
+		// context by the release resource.
 		//
 		// Return early. We will retry on the next execution.
 		return nil
