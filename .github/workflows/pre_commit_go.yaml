@@ -1,0 +1,26 @@
+name: pre-commit
+
+on:
+  pull_request:
+  push:
+    branches: [master]
+
+jobs:
+  pre-commit:
+    runs-on: ubuntu-20.04
+    steps:
+    - uses: actions/checkout@v3
+    - uses: actions/setup-python@v3
+    - uses: actions/setup-go@v3
+      with:
+        go-version: "1.17.7"
+    - name: Install goimports
+      run: |
+        go install golang.org/x/tools/cmd/goimports@latest
+    - name: Install golangci-lint
+      env:
+        GOLANGCI_LINT_VERSION: "v1.42.1"
+      run: |
+        curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | \
+            sudo sh -s -- -b $GOPATH/bin ${GOLANGCI_LINT_VERSION}
+    - uses: pre-commit/action@v2.0.3
