@@ -41,8 +41,8 @@ replicas: 3
 v1:
   activateAdmission: true
   username: admin
-  host: 
-    secret: 
+  host:
+    secret:
       authToken: xer32wnq
   githubToken: nnbhwk1dk
   memory_in_gb: 3.14
@@ -54,7 +54,7 @@ v1:
   username: admin
   host:
     url: quay.io
-    secret: 
+    secret:
       authToken: xer32wnq
   githubToken: nnbhwk1dk
   memory_in_gb: 3.14
