@@ -7,6 +7,8 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+## [2.21.0] - 2022-04-07
+
 ### Changed
 
 - Update `helmclient` to v4.10.0.
@@ -411,7 +413,8 @@ We check progress in the next reconciliation loop. ([#362](https://github.com/gi
 - Separate podsecuritypolicy.
 - Security context in deployment spec with non-root user.
 
-[Unreleased]: https://github.com/giantswarm/chart-operator/compare/v2.20.1...HEAD
+[Unreleased]: https://github.com/giantswarm/chart-operator/compare/v2.21.0...HEAD
+[2.21.0]: https://github.com/giantswarm/chart-operator/compare/v2.20.1...v2.21.0
 [2.20.1]: https://github.com/giantswarm/chart-operator/compare/v2.20.0...v2.20.1
 [2.20.0]: https://github.com/giantswarm/chart-operator/compare/v2.19.1...v2.20.0
 [2.19.1]: https://github.com/giantswarm/chart-operator/compare/v2.19.0...v2.19.1
