@@ -138,10 +138,10 @@ func New(config Config) (*Service, error) {
 	var chartController *chart.Chart
 	{
 		c := chart.Config{
-			Fs:         fs,
-			ClientPair: helmClients,
-			Logger:     config.Logger,
-			K8sClient:  k8sPrvClient,
+			Fs:          fs,
+			HelmClients: helmClients,
+			Logger:      config.Logger,
+			K8sClient:   k8sPrvClient,
 
 			HTTPClientTimeout: config.Viper.GetDuration(config.Flag.Service.Helm.HTTP.ClientTimeout),
 			K8sWaitTimeout:    config.Viper.GetDuration(config.Flag.Service.Helm.Kubernetes.WaitTimeout),
