@@ -19,6 +19,8 @@ import (
 	"sigs.k8s.io/yaml"
 
 	"github.com/giantswarm/chart-operator/v2/service/controller/chart/controllercontext"
+
+	"github.com/giantswarm/chart-operator/v2/service/internal/clientpair"
 )
 
 func Test_DesiredState(t *testing.T) {
@@ -324,10 +326,18 @@ func Test_DesiredState(t *testing.T) {
 				ctx = controllercontext.NewContext(context.Background(), c)
 			}
 
+			cp, err := clientpair.NewClientPair(clientpair.ClientPairConfig{
+				PrvHelmClient: helmclienttest.New(helmclienttest.Config{}),
+				PubHelmClient: helmclienttest.New(helmclienttest.Config{}),
+			})
+			if err != nil {
+				t.Fatal("expected", nil, "got", err)
+			}
+
 			c := Config{
 				Fs:         afero.NewMemMapFs(),
 				CtrlClient: fake.NewFakeClient(), //nolint:staticcheck
-				HelmClient: helmclienttest.New(helmclienttest.Config{}),
+				ClientPair: cp,
 				K8sClient:  k8sfake.NewSimpleClientset(objs...),
 				Logger:     microloggertest.New(),
 

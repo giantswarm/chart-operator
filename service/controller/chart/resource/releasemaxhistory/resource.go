@@ -1,10 +1,11 @@
 package releasemaxhistory
 
 import (
-	"github.com/giantswarm/helmclient/v4/pkg/helmclient"
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/micrologger"
 	"k8s.io/client-go/kubernetes"
+
+	"github.com/giantswarm/chart-operator/v2/service/internal/clientpair"
 )
 
 const (
@@ -13,14 +14,14 @@ const (
 
 type Config struct {
 	// Dependencies.
-	HelmClient helmclient.Interface
+	ClientPair *clientpair.ClientPair
 	K8sClient  kubernetes.Interface
 	Logger     micrologger.Logger
 }
 
 type Resource struct {
 	// Dependencies.
-	helmClient helmclient.Interface
+	clientPair *clientpair.ClientPair
 	k8sClient  kubernetes.Interface
 	logger     micrologger.Logger
 }
@@ -28,8 +29,8 @@ type Resource struct {
 // New creates a new configured releasemaxhistory resource.
 func New(config Config) (*Resource, error) {
 	// Dependencies.
-	if config.HelmClient == nil {
-		return nil, microerror.Maskf(invalidConfigError, "%T.HelmClient must not be empty", config)
+	if config.ClientPair == nil {
+		return nil, microerror.Maskf(invalidConfigError, "%T.ClientPair must not be empty", config)
 	}
 	if config.K8sClient == nil {
 		return nil, microerror.Maskf(invalidConfigError, "%T.K8sClient must not be empty", config)
@@ -39,7 +40,7 @@ func New(config Config) (*Resource, error) {
 	}
 
 	r := &Resource{
-		helmClient: config.HelmClient,
+		clientPair: config.ClientPair,
 		k8sClient:  config.K8sClient,
 		logger:     config.Logger,
 	}

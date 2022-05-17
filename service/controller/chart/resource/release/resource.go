@@ -18,6 +18,8 @@ import (
 	"github.com/giantswarm/chart-operator/v2/pkg/annotation"
 	"github.com/giantswarm/chart-operator/v2/service/controller/chart/controllercontext"
 	"github.com/giantswarm/chart-operator/v2/service/controller/chart/key"
+
+	"github.com/giantswarm/chart-operator/v2/service/internal/clientpair"
 )
 
 const (
@@ -53,7 +55,7 @@ type Config struct {
 	// Dependencies.
 	Fs         afero.Fs
 	CtrlClient client.Client
-	HelmClient helmclient.Interface
+	ClientPair *clientpair.ClientPair
 	K8sClient  kubernetes.Interface
 	Logger     micrologger.Logger
 
@@ -68,7 +70,7 @@ type Resource struct {
 	// Dependencies.
 	fs         afero.Fs
 	ctrlClient client.Client
-	helmClient helmclient.Interface
+	clientPair *clientpair.ClientPair
 	k8sClient  kubernetes.Interface
 	logger     micrologger.Logger
 
@@ -87,8 +89,8 @@ func New(config Config) (*Resource, error) {
 	if config.CtrlClient == nil {
 		return nil, microerror.Maskf(invalidConfigError, "%T.CtrlClient must not be empty", config)
 	}
-	if config.HelmClient == nil {
-		return nil, microerror.Maskf(invalidConfigError, "%T.HelmClient must not be empty", config)
+	if config.ClientPair == nil {
+		return nil, microerror.Maskf(invalidConfigError, "%T.ClientPair must not be empty", config)
 	}
 	if config.K8sClient == nil {
 		return nil, microerror.Maskf(invalidConfigError, "%T.K8sClient must not be empty", config)
@@ -109,7 +111,7 @@ func New(config Config) (*Resource, error) {
 		// Dependencies.
 		fs:         config.Fs,
 		ctrlClient: config.CtrlClient,
-		helmClient: config.HelmClient,
+		clientPair: config.ClientPair,
 		k8sClient:  config.K8sClient,
 		logger:     config.Logger,
 

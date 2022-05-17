@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"fmt"
 	"sync"
 
 	applicationv1alpha1 "github.com/giantswarm/apiextensions-application/api/v1alpha1"
@@ -20,6 +21,13 @@ import (
 	"github.com/giantswarm/chart-operator/v2/pkg/project"
 	"github.com/giantswarm/chart-operator/v2/service/collector"
 	"github.com/giantswarm/chart-operator/v2/service/controller/chart"
+
+	"github.com/giantswarm/chart-operator/v2/service/internal/clientpair"
+)
+
+const (
+	publicClientSAName      = "automation"
+	publicClientSANamespace = "default"
 )
 
 // Config represents the configuration used to create a new service.
@@ -58,7 +66,6 @@ func New(config Config) (*Service, error) {
 	}
 
 	var err error
-
 	var restConfig *rest.Config
 	{
 		c := k8srestconfig.Config{
@@ -80,59 +87,65 @@ func New(config Config) (*Service, error) {
 		}
 	}
 
-	var k8sClient k8sclient.Interface
-	{
-		c := k8sclient.ClientsConfig{
-			Logger: config.Logger,
-			SchemeBuilder: k8sclient.SchemeBuilder{
-				applicationv1alpha1.AddToScheme,
-			},
+	// k8sPrvClient runs under the chart-operator default permissions and hence
+	// has elevated privileges in the cluster. It is meant to be used for
+	// reconciling giantswarm-protected namespaces
+	k8sPrvClient, err := newK8sClient(config, restConfig)
+	if err != nil {
+		return nil, microerror.Mask(err)
+	}
 
-			RestConfig: restConfig,
+	if config.Viper.GetBool(config.Flag.Service.Helm.SplitAccount) {
+		restConfig.Impersonate = rest.ImpersonationConfig{
+			UserName: fmt.Sprintf(
+				"system:serviceaccount:%s:%s",
+				publicClientSANamespace,
+				publicClientSAName,
+			),
 		}
+	}
 
-		k8sClient, err = k8sclient.NewClients(c)
-		if err != nil {
-			return nil, microerror.Mask(err)
-		}
+	// k8sPubClient runs under `default:automation` Service Account when using
+	// split client configuration. This client is meant to be used for reconciling
+	// customer namespaces
+	k8sPubClient, err := newK8sClient(config, restConfig)
+	if err != nil {
+		return nil, microerror.Mask(err)
 	}
 
 	fs := afero.NewOsFs()
 
-	var helmClient *helmclient.Client
-	{
-		restMapper, err := apiutil.NewDynamicRESTMapper(rest.CopyConfig(k8sClient.RESTConfig()))
-		if err != nil {
-			return nil, microerror.Mask(err)
-		}
+	prvHelmClient, err := newHelmClient(config, k8sPrvClient, fs)
+	if err != nil {
+		return nil, microerror.Mask(err)
+	}
 
-		c := helmclient.Config{
-			Fs:         fs,
-			K8sClient:  k8sClient.K8sClient(),
-			Logger:     config.Logger,
-			RestClient: k8sClient.RESTClient(),
-			RestConfig: k8sClient.RESTConfig(),
-			RestMapper: restMapper,
+	pubHelmClient, err := newHelmClient(config, k8sPubClient, fs)
+	if err != nil {
+		return nil, microerror.Mask(err)
+	}
 
-			HTTPClientTimeout: config.Viper.GetDuration(config.Flag.Service.Helm.HTTP.ClientTimeout),
-		}
+	cpConfig := clientpair.ClientPairConfig{
+		PrvHelmClient: prvHelmClient,
+		PubHelmClient: pubHelmClient,
+	}
 
-		helmClient, err = helmclient.New(c)
-		if err != nil {
-			return nil, microerror.Mask(err)
-		}
+	clientPair, err := clientpair.NewClientPair(cpConfig)
+	if err != nil {
+		return nil, microerror.Mask(err)
 	}
 
 	var chartController *chart.Chart
 	{
 		c := chart.Config{
 			Fs:         fs,
-			HelmClient: helmClient,
+			ClientPair: clientPair,
 			Logger:     config.Logger,
-			K8sClient:  k8sClient,
+			K8sClient:  k8sPrvClient,
 
 			HTTPClientTimeout: config.Viper.GetDuration(config.Flag.Service.Helm.HTTP.ClientTimeout),
 			K8sWaitTimeout:    config.Viper.GetDuration(config.Flag.Service.Helm.Kubernetes.WaitTimeout),
+			K8sWatchNamespace: config.Viper.GetString(config.Flag.Service.Kubernetes.Watch.Namespace),
 			MaxRollback:       config.Viper.GetInt(config.Flag.Service.Helm.MaxRollback),
 			TillerNamespace:   config.Viper.GetString(config.Flag.Service.Helm.TillerNamespace),
 		}
@@ -146,9 +159,10 @@ func New(config Config) (*Service, error) {
 	var operatorCollector *collector.Set
 	{
 		c := collector.SetConfig{
-			HelmClient: helmClient,
-			K8sClient:  k8sClient,
-			Logger:     config.Logger,
+			// Collector must use client with elevated privileges in order to
+			// look for orphaned ConfigMap and Secrets
+			K8sClient: k8sPrvClient,
+			Logger:    config.Logger,
 
 			TillerNamespace: config.Viper.GetString(config.Flag.Service.Helm.TillerNamespace),
 		}
@@ -198,4 +212,47 @@ func (s *Service) Boot(ctx context.Context) {
 
 		go s.chartController.Boot(ctx)
 	})
+}
+
+func newHelmClient(config Config, k8sClient k8sclient.Interface, fs afero.Fs) (*helmclient.Client, error) {
+	restMapper, err := apiutil.NewDynamicRESTMapper(rest.CopyConfig(k8sClient.RESTConfig()))
+	if err != nil {
+		return nil, microerror.Mask(err)
+	}
+
+	c := helmclient.Config{
+		Fs:         fs,
+		K8sClient:  k8sClient.K8sClient(),
+		Logger:     config.Logger,
+		RestClient: k8sClient.RESTClient(),
+		RestConfig: k8sClient.RESTConfig(),
+		RestMapper: restMapper,
+
+		HTTPClientTimeout: config.Viper.GetDuration(config.Flag.Service.Helm.HTTP.ClientTimeout),
+	}
+
+	helmClient, err := helmclient.New(c)
+	if err != nil {
+		return nil, microerror.Mask(err)
+	}
+
+	return helmClient, err
+}
+
+func newK8sClient(config Config, restConfig *rest.Config) (k8sclient.Interface, error) {
+	c := k8sclient.ClientsConfig{
+		Logger: config.Logger,
+		SchemeBuilder: k8sclient.SchemeBuilder{
+			applicationv1alpha1.AddToScheme,
+		},
+
+		RestConfig: restConfig,
+	}
+
+	k8sClient, err := k8sclient.NewClients(c)
+	if err != nil {
+		return nil, microerror.Mask(err)
+	}
+
+	return k8sClient, nil
 }

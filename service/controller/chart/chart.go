@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/giantswarm/apiextensions-application/api/v1alpha1"
-	"github.com/giantswarm/helmclient/v4/pkg/helmclient"
 	"github.com/giantswarm/k8sclient/v6/pkg/k8sclient"
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/micrologger"
@@ -17,18 +16,21 @@ import (
 	"github.com/giantswarm/chart-operator/v2/pkg/annotation"
 	"github.com/giantswarm/chart-operator/v2/pkg/project"
 	"github.com/giantswarm/chart-operator/v2/service/controller/chart/controllercontext"
+
+	"github.com/giantswarm/chart-operator/v2/service/internal/clientpair"
 )
 
 const chartControllerSuffix = "-chart"
 
 type Config struct {
 	Fs         afero.Fs
-	HelmClient helmclient.Interface
+	ClientPair *clientpair.ClientPair
 	K8sClient  k8sclient.Interface
 	Logger     micrologger.Logger
 
 	HTTPClientTimeout time.Duration
 	K8sWaitTimeout    time.Duration
+	K8sWatchNamespace string
 	MaxRollback       int
 	TillerNamespace   string
 }
@@ -40,6 +42,9 @@ type Chart struct {
 func NewChart(config Config) (*Chart, error) {
 	var err error
 
+	if config.ClientPair == nil {
+		return nil, microerror.Maskf(invalidConfigError, "%T.ClientPair must not be empty", config)
+	}
 	if config.Fs == nil {
 		return nil, microerror.Maskf(invalidConfigError, "%T.Fs must not be empty", config)
 	}
@@ -70,7 +75,7 @@ func NewChart(config Config) (*Chart, error) {
 		c := chartResourcesConfig{
 			Fs:         config.Fs,
 			CtrlClient: config.K8sClient.CtrlClient(),
-			HelmClient: config.HelmClient,
+			ClientPair: config.ClientPair,
 			K8sClient:  config.K8sClient.K8sClient(),
 			Logger:     config.Logger,
 
@@ -100,7 +105,8 @@ func NewChart(config Config) (*Chart, error) {
 				return new(v1alpha1.Chart)
 			},
 
-			Name: project.Name() + chartControllerSuffix,
+			Name:      project.Name() + chartControllerSuffix,
+			Namespace: config.K8sWatchNamespace,
 		}
 
 		chartController, err = controller.New(c)

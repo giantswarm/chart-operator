@@ -11,6 +11,8 @@ import (
 	"github.com/spf13/afero"
 	k8sfake "k8s.io/client-go/kubernetes/fake"
 	"sigs.k8s.io/controller-runtime/pkg/client/fake" //nolint:staticcheck
+
+	"github.com/giantswarm/chart-operator/v2/service/internal/clientpair"
 )
 
 func Test_Resource_Release_newCreate(t *testing.T) {
@@ -67,13 +69,19 @@ func Test_Resource_Release_newCreate(t *testing.T) {
 	}
 
 	var newResource *Resource
-	var err error
-
 	{
+		cp, err := clientpair.NewClientPair(clientpair.ClientPairConfig{
+			PrvHelmClient: helmclienttest.New(helmclienttest.Config{}),
+			PubHelmClient: helmclienttest.New(helmclienttest.Config{}),
+		})
+		if err != nil {
+			t.Fatal("expected", nil, "got", err)
+		}
+
 		c := Config{
 			Fs:         afero.NewMemMapFs(),
 			CtrlClient: fake.NewFakeClient(), //nolint:staticcheck
-			HelmClient: helmclienttest.New(helmclienttest.Config{}),
+			ClientPair: cp,
 			K8sClient:  k8sfake.NewSimpleClientset(),
 			Logger:     microloggertest.New(),
 

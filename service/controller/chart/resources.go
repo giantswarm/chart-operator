@@ -3,7 +3,6 @@ package chart
 import (
 	"time"
 
-	"github.com/giantswarm/helmclient/v4/pkg/helmclient"
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/micrologger"
 	"github.com/giantswarm/operatorkit/v6/pkg/resource"
@@ -18,13 +17,15 @@ import (
 	"github.com/giantswarm/chart-operator/v2/service/controller/chart/resource/release"
 	"github.com/giantswarm/chart-operator/v2/service/controller/chart/resource/releasemaxhistory"
 	"github.com/giantswarm/chart-operator/v2/service/controller/chart/resource/status"
+
+	"github.com/giantswarm/chart-operator/v2/service/internal/clientpair"
 )
 
 type chartResourcesConfig struct {
 	// Dependencies.
 	Fs         afero.Fs
 	CtrlClient client.Client
-	HelmClient helmclient.Interface
+	ClientPair *clientpair.ClientPair
 	K8sClient  kubernetes.Interface
 	Logger     micrologger.Logger
 
@@ -45,8 +46,8 @@ func newChartResources(config chartResourcesConfig) ([]resource.Interface, error
 	if config.CtrlClient == nil {
 		return nil, microerror.Maskf(invalidConfigError, "%T.CtrlClient must not be empty", config)
 	}
-	if config.HelmClient == nil {
-		return nil, microerror.Maskf(invalidConfigError, "%T.HelmClient must not be empty", config)
+	if config.ClientPair == nil {
+		return nil, microerror.Maskf(invalidConfigError, "%T.ClientPair must not be empty", config)
 	}
 	if config.K8sClient == nil {
 		return nil, microerror.Maskf(invalidConfigError, "%T.K8sClient must not be empty", config)
@@ -80,7 +81,7 @@ func newChartResources(config chartResourcesConfig) ([]resource.Interface, error
 			// Dependencies
 			Fs:         config.Fs,
 			CtrlClient: config.CtrlClient,
-			HelmClient: config.HelmClient,
+			ClientPair: config.ClientPair,
 			K8sClient:  config.K8sClient,
 			Logger:     config.Logger,
 
@@ -105,7 +106,7 @@ func newChartResources(config chartResourcesConfig) ([]resource.Interface, error
 	{
 		c := releasemaxhistory.Config{
 			// Dependencies
-			HelmClient: config.HelmClient,
+			ClientPair: config.ClientPair,
 			K8sClient:  config.K8sClient,
 			Logger:     config.Logger,
 		}
@@ -120,7 +121,7 @@ func newChartResources(config chartResourcesConfig) ([]resource.Interface, error
 	{
 		c := status.Config{
 			CtrlClient: config.CtrlClient,
-			HelmClient: config.HelmClient,
+			ClientPair: config.ClientPair,
 			K8sClient:  config.K8sClient,
 			Logger:     config.Logger,
 
