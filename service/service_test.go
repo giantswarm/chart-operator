@@ -122,7 +122,3 @@ func Test_Service_New(t *testing.T) {
 		})
 	}
 }
-
-func Test_newHelmClient(t *testing.T) {
-
-}
