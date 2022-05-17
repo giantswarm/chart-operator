@@ -130,7 +130,7 @@ func New(config Config) (*Service, error) {
 		PubHelmClient: pubHelmClient,
 	}
 
-	clientPair, err := clientpair.NewClientPair(cpConfig)
+	helmClients, err := clientpair.NewClientPair(cpConfig)
 	if err != nil {
 		return nil, microerror.Mask(err)
 	}
@@ -139,7 +139,7 @@ func New(config Config) (*Service, error) {
 	{
 		c := chart.Config{
 			Fs:         fs,
-			ClientPair: clientPair,
+			ClientPair: helmClients,
 			Logger:     config.Logger,
 			K8sClient:  k8sPrvClient,
 

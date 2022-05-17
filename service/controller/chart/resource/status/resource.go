@@ -26,20 +26,20 @@ const (
 
 // Config represents the configuration used to create a new status resource.
 type Config struct {
-	CtrlClient client.Client
-	ClientPair *clientpair.ClientPair
-	K8sClient  kubernetes.Interface
-	Logger     micrologger.Logger
+	CtrlClient  client.Client
+	HelmClients *clientpair.ClientPair
+	K8sClient   kubernetes.Interface
+	Logger      micrologger.Logger
 
 	HTTPClientTimeout time.Duration
 }
 
 // Resource implements the status resource.
 type Resource struct {
-	ctrlClient client.Client
-	clientPair *clientpair.ClientPair
-	k8sClient  kubernetes.Interface
-	logger     micrologger.Logger
+	ctrlClient  client.Client
+	helmClients *clientpair.ClientPair
+	k8sClient   kubernetes.Interface
+	logger      micrologger.Logger
 
 	httpClientTimeout time.Duration
 }
@@ -49,8 +49,8 @@ func New(config Config) (*Resource, error) {
 	if config.CtrlClient == nil {
 		return nil, microerror.Maskf(invalidConfigError, "%T.CtrlClient must not be empty", config)
 	}
-	if config.ClientPair == nil {
-		return nil, microerror.Maskf(invalidConfigError, "%T.ClientPair must not be empty", config)
+	if config.HelmClients == nil {
+		return nil, microerror.Maskf(invalidConfigError, "%T.HelmClient must not be empty", config)
 	}
 	if config.K8sClient == nil {
 		return nil, microerror.Maskf(invalidConfigError, "%T.K8sClient must not be empty", config)
@@ -64,10 +64,10 @@ func New(config Config) (*Resource, error) {
 	}
 
 	r := &Resource{
-		ctrlClient: config.CtrlClient,
-		clientPair: config.ClientPair,
-		k8sClient:  config.K8sClient,
-		logger:     config.Logger,
+		ctrlClient:  config.CtrlClient,
+		helmClients: config.HelmClients,
+		k8sClient:   config.K8sClient,
+		logger:      config.Logger,
 
 		httpClientTimeout: config.HTTPClientTimeout,
 	}

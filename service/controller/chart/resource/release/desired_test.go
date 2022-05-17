@@ -326,7 +326,7 @@ func Test_DesiredState(t *testing.T) {
 				ctx = controllercontext.NewContext(context.Background(), c)
 			}
 
-			cp, err := clientpair.NewClientPair(clientpair.ClientPairConfig{
+			helmClients, err := clientpair.NewClientPair(clientpair.ClientPairConfig{
 				PrvHelmClient: helmclienttest.New(helmclienttest.Config{}),
 				PubHelmClient: helmclienttest.New(helmclienttest.Config{}),
 			})
@@ -335,11 +335,11 @@ func Test_DesiredState(t *testing.T) {
 			}
 
 			c := Config{
-				Fs:         afero.NewMemMapFs(),
-				CtrlClient: fake.NewFakeClient(), //nolint:staticcheck
-				ClientPair: cp,
-				K8sClient:  k8sfake.NewSimpleClientset(objs...),
-				Logger:     microloggertest.New(),
+				Fs:          afero.NewMemMapFs(),
+				CtrlClient:  fake.NewFakeClient(), //nolint:staticcheck
+				HelmClients: helmClients,
+				K8sClient:   k8sfake.NewSimpleClientset(objs...),
+				Logger:      microloggertest.New(),
 
 				TillerNamespace: "giantswarm",
 			}

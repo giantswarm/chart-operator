@@ -18,7 +18,7 @@ func (r *Resource) ApplyDeleteChange(ctx context.Context, obj, deleteChange inte
 		return microerror.Mask(err)
 	}
 
-	hc := r.clientPair.Get(cr)
+	hc := r.helmClients.Get(cr)
 
 	releaseState, err := toReleaseState(deleteChange)
 	if err != nil {

@@ -41,8 +41,8 @@ func NewClientPair(config ClientPairConfig) (*ClientPair, error) {
 	return cp, nil
 }
 
-// Get determines which client to use base on the namespace, the corresponding
-// App CR is located in. For Workload Cluster private and public Helm clients are identical.
+// Get determines which client to use base on the namespace the corresponding App CR
+// is located in. For Workload Cluster private and public Helm clients are identical
 func (cp *ClientPair) Get(cr v1alpha1.Chart) helmclient.Interface {
 	if key.AppNamespace(cr) == privateNamespace {
 		return cp.prvHelmClient

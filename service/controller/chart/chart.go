@@ -23,10 +23,10 @@ import (
 const chartControllerSuffix = "-chart"
 
 type Config struct {
-	Fs         afero.Fs
-	ClientPair *clientpair.ClientPair
-	K8sClient  k8sclient.Interface
-	Logger     micrologger.Logger
+	Fs          afero.Fs
+	HelmClients *clientpair.ClientPair
+	K8sClient   k8sclient.Interface
+	Logger      micrologger.Logger
 
 	HTTPClientTimeout time.Duration
 	K8sWaitTimeout    time.Duration
@@ -42,8 +42,8 @@ type Chart struct {
 func NewChart(config Config) (*Chart, error) {
 	var err error
 
-	if config.ClientPair == nil {
-		return nil, microerror.Maskf(invalidConfigError, "%T.ClientPair must not be empty", config)
+	if config.HelmClients == nil {
+		return nil, microerror.Maskf(invalidConfigError, "%T.HelmClients must not be empty", config)
 	}
 	if config.Fs == nil {
 		return nil, microerror.Maskf(invalidConfigError, "%T.Fs must not be empty", config)
@@ -73,11 +73,11 @@ func NewChart(config Config) (*Chart, error) {
 	var resources []resource.Interface
 	{
 		c := chartResourcesConfig{
-			Fs:         config.Fs,
-			CtrlClient: config.K8sClient.CtrlClient(),
-			ClientPair: config.ClientPair,
-			K8sClient:  config.K8sClient.K8sClient(),
-			Logger:     config.Logger,
+			Fs:          config.Fs,
+			CtrlClient:  config.K8sClient.CtrlClient(),
+			HelmClients: config.HelmClients,
+			K8sClient:   config.K8sClient.K8sClient(),
+			Logger:      config.Logger,
 
 			HTTPClientTimeout: config.HTTPClientTimeout,
 			K8sWaitTimeout:    config.K8sWaitTimeout,

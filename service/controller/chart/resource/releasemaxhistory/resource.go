@@ -14,22 +14,22 @@ const (
 
 type Config struct {
 	// Dependencies.
-	ClientPair *clientpair.ClientPair
-	K8sClient  kubernetes.Interface
-	Logger     micrologger.Logger
+	HelmClients *clientpair.ClientPair
+	K8sClient   kubernetes.Interface
+	Logger      micrologger.Logger
 }
 
 type Resource struct {
 	// Dependencies.
-	clientPair *clientpair.ClientPair
-	k8sClient  kubernetes.Interface
-	logger     micrologger.Logger
+	helmClients *clientpair.ClientPair
+	k8sClient   kubernetes.Interface
+	logger      micrologger.Logger
 }
 
 // New creates a new configured releasemaxhistory resource.
 func New(config Config) (*Resource, error) {
 	// Dependencies.
-	if config.ClientPair == nil {
+	if config.HelmClients == nil {
 		return nil, microerror.Maskf(invalidConfigError, "%T.ClientPair must not be empty", config)
 	}
 	if config.K8sClient == nil {
@@ -40,9 +40,9 @@ func New(config Config) (*Resource, error) {
 	}
 
 	r := &Resource{
-		clientPair: config.ClientPair,
-		k8sClient:  config.K8sClient,
-		logger:     config.Logger,
+		helmClients: config.HelmClients,
+		k8sClient:   config.K8sClient,
+		logger:      config.Logger,
 	}
 
 	return r, nil

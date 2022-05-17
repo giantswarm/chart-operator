@@ -24,7 +24,7 @@ func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange inte
 		return microerror.Mask(err)
 	}
 
-	hc := r.clientPair.Get(cr)
+	hc := r.helmClients.Get(cr)
 
 	cc, err := controllercontext.FromContext(ctx)
 	if err != nil {
@@ -295,7 +295,7 @@ func (r *Resource) rollback(ctx context.Context, obj interface{}, currentStatus 
 		return microerror.Mask(err)
 	}
 
-	hc := r.clientPair.Get(cr)
+	hc := r.helmClients.Get(cr)
 
 	count, ok := cr.GetAnnotations()[annotation.RollbackCount]
 

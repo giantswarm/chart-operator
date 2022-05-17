@@ -72,7 +72,7 @@ func Test_Resource_Release_newDeleteChange(t *testing.T) {
 
 	var newResource *Resource
 	{
-		cp, err := clientpair.NewClientPair(clientpair.ClientPairConfig{
+		helmClients, err := clientpair.NewClientPair(clientpair.ClientPairConfig{
 			PrvHelmClient: helmclienttest.New(helmclienttest.Config{}),
 			PubHelmClient: helmclienttest.New(helmclienttest.Config{}),
 		})
@@ -81,11 +81,11 @@ func Test_Resource_Release_newDeleteChange(t *testing.T) {
 		}
 
 		c := Config{
-			Fs:         afero.NewMemMapFs(),
-			CtrlClient: fake.NewFakeClient(), //nolint:staticcheck
-			ClientPair: cp,
-			K8sClient:  k8sfake.NewSimpleClientset(),
-			Logger:     microloggertest.New(),
+			Fs:          afero.NewMemMapFs(),
+			CtrlClient:  fake.NewFakeClient(), //nolint:staticcheck
+			HelmClients: helmClients,
+			K8sClient:   k8sfake.NewSimpleClientset(),
+			Logger:      microloggertest.New(),
 
 			TillerNamespace: "giantswarm",
 		}
