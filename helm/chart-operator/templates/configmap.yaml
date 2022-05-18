@@ -15,7 +15,7 @@ data:
         address: 'http://0.0.0.0:{{ .Values.pod.port }}'
     service:
       helm:
-        splitAccount: '{{ .Values.helm.splitAccount }}'
+        splitClient: '{{ .Values.helm.splitClient }}'
         http:
           clientTimeout: '{{ .Values.helm.http.clientTimeout }}'
         kubernetes:

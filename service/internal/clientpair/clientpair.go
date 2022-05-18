@@ -11,7 +11,7 @@ import (
 const (
 	// privateNamespace defines GS-protected namespace the prvHelmClient
 	// is meant for. For App CRs created outside this namespace, the
-	// pubHelmClient should be used.
+	// pubHelmClient should be used
 	privateNamespace = "giantswarm"
 )
 
@@ -29,9 +29,6 @@ func NewClientPair(config ClientPairConfig) (*ClientPair, error) {
 	if config.PrvHelmClient == nil {
 		return nil, microerror.Maskf(invalidConfigError, "%T.PrvHelmClient must not be empty", config)
 	}
-	if config.PubHelmClient == nil {
-		return nil, microerror.Maskf(invalidConfigError, "%T.PubHelmClient must not be empty", config)
-	}
 
 	cp := &ClientPair{
 		prvHelmClient: config.PrvHelmClient,
@@ -41,10 +38,11 @@ func NewClientPair(config ClientPairConfig) (*ClientPair, error) {
 	return cp, nil
 }
 
-// Get determines which client to use base on the namespace the corresponding App CR
-// is located in. For Workload Cluster private and public Helm clients are identical
+// Get determines which client to use based on the namespace the corresponding App CR
+// is located in. For Workload Cluster chart operator is permitted to operate under
+// cluster-wide permissions, so there is only prvHelmClient used
 func (cp *ClientPair) Get(cr v1alpha1.Chart) helmclient.Interface {
-	if key.AppNamespace(cr) == privateNamespace {
+	if cp.pubHelmClient == nil || key.AppNamespace(cr) == privateNamespace {
 		return cp.prvHelmClient
 	}
 

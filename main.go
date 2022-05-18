@@ -109,7 +109,7 @@ func mainWithError() error {
 	daemonCommand.PersistentFlags().String(f.Service.Helm.HTTP.ClientTimeout, "5s", "HTTP timeout for pulling chart tarballs.")
 	daemonCommand.PersistentFlags().String(f.Service.Helm.Kubernetes.WaitTimeout, "10s", "Wait timeout when calling the Kubernetes API.")
 	daemonCommand.PersistentFlags().Int(f.Service.Helm.MaxRollback, 3, "the maximum number of rollback attempts for pending apps.")
-	daemonCommand.PersistentFlags().Bool(f.Service.Helm.SplitAccount, false, "Use separate Helm Client for apps outside Giantswarm-protected namespace.")
+	daemonCommand.PersistentFlags().Bool(f.Service.Helm.SplitClient, false, "Use separate Helm Client for apps outside Giantswarm-protected namespace.")
 	daemonCommand.PersistentFlags().String(f.Service.Helm.TillerNamespace, "giantswarm", "Namespace for the Tiller pod.")
 	daemonCommand.PersistentFlags().String(f.Service.Image.Registry, "quay.io", "Container image registry.")
 	daemonCommand.PersistentFlags().String(f.Service.Kubernetes.Address, "", "Address used to connect to Kubernetes. When empty in-cluster config is created.")

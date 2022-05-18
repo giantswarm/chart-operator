@@ -87,15 +87,31 @@ func New(config Config) (*Service, error) {
 		}
 	}
 
+	fs := afero.NewOsFs()
+
 	// k8sPrvClient runs under the chart-operator default permissions and hence
 	// has elevated privileges in the cluster. It is meant to be used for
 	// reconciling giantswarm-protected namespaces
-	k8sPrvClient, err := newK8sClient(config, restConfig)
-	if err != nil {
-		return nil, microerror.Mask(err)
+	var k8sPrvClient k8sclient.Interface
+	var prvHelmClient helmclient.Interface
+	{
+		k8sPrvClient, err = newK8sClient(config, restConfig)
+		if err != nil {
+			return nil, microerror.Mask(err)
+		}
+		prvHelmClient, err = newHelmClient(config, k8sPrvClient, fs)
+		if err != nil {
+			return nil, microerror.Mask(err)
+		}
 	}
 
-	if config.Viper.GetBool(config.Flag.Service.Helm.SplitAccount) {
+	// k8sPubClient runs under `default:automation` Service Account when using
+	// split client configuration. This client is meant to be used for reconciling
+	// customer namespaces. For Workload Clusters it is `nil` and only prvHelmClient
+	// use used
+	var k8sPubClient k8sclient.Interface
+	var pubHelmClient helmclient.Interface
+	if config.Viper.GetBool(config.Flag.Service.Helm.SplitClient) {
 		restConfig.Impersonate = rest.ImpersonationConfig{
 			UserName: fmt.Sprintf(
 				"system:serviceaccount:%s:%s",
@@ -103,26 +119,16 @@ func New(config Config) (*Service, error) {
 				publicClientSAName,
 			),
 		}
-	}
 
-	// k8sPubClient runs under `default:automation` Service Account when using
-	// split client configuration. This client is meant to be used for reconciling
-	// customer namespaces
-	k8sPubClient, err := newK8sClient(config, restConfig)
-	if err != nil {
-		return nil, microerror.Mask(err)
-	}
+		k8sPubClient, err = newK8sClient(config, restConfig)
+		if err != nil {
+			return nil, microerror.Mask(err)
+		}
 
-	fs := afero.NewOsFs()
-
-	prvHelmClient, err := newHelmClient(config, k8sPrvClient, fs)
-	if err != nil {
-		return nil, microerror.Mask(err)
-	}
-
-	pubHelmClient, err := newHelmClient(config, k8sPubClient, fs)
-	if err != nil {
-		return nil, microerror.Mask(err)
+		pubHelmClient, err = newHelmClient(config, k8sPubClient, fs)
+		if err != nil {
+			return nil, microerror.Mask(err)
+		}
 	}
 
 	cpConfig := clientpair.ClientPairConfig{

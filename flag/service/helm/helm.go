@@ -10,11 +10,11 @@ type Helm struct {
 	Kubernetes  kubernetes.Kubernetes
 	MaxRollback string
 
-	// SplitAccout determines usage of additional pubHelmClient impersonating
+	// SplitClient determines usage of additional pubHelmClient impersonating
 	// `default:automation` Service Account for App CRs created outside the
 	// `giantswarm` namespace. When `false` Chart Operator runs under full
 	// cluster admin permissions no matter the App CR namespace.
-	SplitAccount string
+	SplitClient string
 
 	TillerNamespace string
 }

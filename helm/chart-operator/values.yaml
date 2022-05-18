@@ -21,7 +21,7 @@ externalDNSIP: 8.8.8.8
 e2e: false
 
 helm:
-  splitAccount: false
+  splitClient: false
   http:
     clientTimeout: "5s"
   kubernetes:
