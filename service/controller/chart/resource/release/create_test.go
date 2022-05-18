@@ -71,6 +71,8 @@ func Test_Resource_Release_newCreate(t *testing.T) {
 	var newResource *Resource
 	{
 		helmClients, err := clientpair.NewClientPair(clientpair.ClientPairConfig{
+			Logger: microloggertest.New(),
+
 			PrvHelmClient: helmclienttest.New(helmclienttest.Config{}),
 			PubHelmClient: helmclienttest.New(helmclienttest.Config{}),
 		})

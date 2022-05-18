@@ -142,6 +142,8 @@ func Test_CurrentState(t *testing.T) {
 			}
 
 			helmClients, err := clientpair.NewClientPair(clientpair.ClientPairConfig{
+				Logger: microloggertest.New(),
+
 				PrvHelmClient: helmClient,
 				PubHelmClient: helmClient,
 			})
