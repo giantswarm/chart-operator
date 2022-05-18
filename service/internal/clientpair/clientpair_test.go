@@ -90,8 +90,11 @@ func Test_Get(t *testing.T) {
 		clientPair     *ClientPair
 		expectedClient helmclient.Interface
 	}{
+		// this is the mode the chart operator runs in for
+		// Workload Clusters and Management Clusters with older
+		// chart operator versions.
 		{
-			name: "flawless, single client, outside giantswarm ns",
+			name: "single client, customer app",
 			chart: v1alpha1.Chart{
 				ObjectMeta: metav1.ObjectMeta{
 					Annotations: map[string]string{
@@ -104,7 +107,22 @@ func Test_Get(t *testing.T) {
 			expectedClient: prvHC,
 		},
 		{
-			name: "flawless, split client, outside giantswarm ns",
+			name: "single client, giantswarm app",
+			chart: v1alpha1.Chart{
+				ObjectMeta: metav1.ObjectMeta{
+					Annotations: map[string]string{
+						annotation.AppNamespace: privateNamespace,
+						annotation.AppName:      "kyverno",
+					},
+				},
+			},
+			clientPair:     singleClient,
+			expectedClient: prvHC,
+		},
+		// this is the mode the chart operator runs in for the
+		// Management Clusters with new chart operator version.
+		{
+			name: "split client, customer app",
 			chart: v1alpha1.Chart{
 				ObjectMeta: metav1.ObjectMeta{
 					Annotations: map[string]string{
@@ -117,20 +135,7 @@ func Test_Get(t *testing.T) {
 			expectedClient: pubHC,
 		},
 		{
-			name: "flawless, single client, giantswarm ns",
-			chart: v1alpha1.Chart{
-				ObjectMeta: metav1.ObjectMeta{
-					Annotations: map[string]string{
-						annotation.AppNamespace: privateNamespace,
-						annotation.AppName:      "kyverno",
-					},
-				},
-			},
-			clientPair:     singleClient,
-			expectedClient: prvHC,
-		},
-		{
-			name: "flawless, split client, giantswarm ns",
+			name: "split client, giantswarm app",
 			chart: v1alpha1.Chart{
 				ObjectMeta: metav1.ObjectMeta{
 					Annotations: map[string]string{
@@ -141,6 +146,38 @@ func Test_Get(t *testing.T) {
 			},
 			clientPair:     splitClient,
 			expectedClient: prvHC,
+		},
+		{
+			name: "split client, WC app operator",
+			chart: v1alpha1.Chart{
+				ObjectMeta: metav1.ObjectMeta{
+					Annotations: map[string]string{
+						annotation.AppNamespace: "demo0",
+						annotation.AppName:      "app-operator-demo0",
+					},
+				},
+				Spec: v1alpha1.ChartSpec{
+					TarballURL: appOperatorChart + "-5.9.0.tgz",
+				},
+			},
+			clientPair:     splitClient,
+			expectedClient: prvHC,
+		},
+		{
+			name: "split client, WC app operator modified",
+			chart: v1alpha1.Chart{
+				ObjectMeta: metav1.ObjectMeta{
+					Annotations: map[string]string{
+						annotation.AppNamespace: "demo0",
+						annotation.AppName:      "app-operator-demo0",
+					},
+				},
+				Spec: v1alpha1.ChartSpec{
+					TarballURL: "https://demo.github.io/demo-catalog/app-operator-5.9.0.tgz",
+				},
+			},
+			clientPair:     splitClient,
+			expectedClient: pubHC,
 		},
 	}
 

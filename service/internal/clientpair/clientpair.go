@@ -2,6 +2,7 @@ package clientpair
 
 import (
 	"context"
+	"strings"
 
 	"github.com/giantswarm/apiextensions-application/api/v1alpha1"
 	"github.com/giantswarm/helmclient/v4/pkg/helmclient"
@@ -16,6 +17,16 @@ const (
 	// is meant for. For App CRs created outside this namespace, the
 	// pubHelmClient should be used
 	privateNamespace = "giantswarm"
+
+	// WC App Operators are the only cases where the elevated prvHelmClient
+	// has to be used outside the `giantswarm` namespace. It is due to these
+	// apps installing reources the `default:automation` does not have access to.
+	// However, existance of the App CR for unique App Operator outside the
+	// `giantswarm` namespace opens a door to scenarios described here:
+	// https://github.com/giantswarm/giantswarm/issues/22100
+	// appOperatorChart defines legal prefix for what elevated Helm Client
+	// can install outside the `giantswarm` namespace
+	appOperatorChart = "https://giantswarm.github.io/control-plane-catalog/app-operator"
 )
 
 type ClientPairConfig struct {
@@ -54,16 +65,30 @@ func NewClientPair(config ClientPairConfig) (*ClientPair, error) {
 // is located in. For Workload Cluster chart operator is permitted to operate under
 // cluster-wide permissions, so there is only prvHelmClient used
 func (cp *ClientPair) Get(ctx context.Context, cr v1alpha1.Chart) helmclient.Interface {
+	// nil pubHelmClient means chart-operator runs in a single-client mode
+	// under cluster admin privileges
 	if cp.pubHelmClient == nil {
 		return cp.prvHelmClient
 	}
 
+	// for App CRs created inside the `giantswarm` namespace, use the prvHelmClient
+	// that runs under cluster admin privileges
 	if key.AppNamespace(cr) == privateNamespace {
 		cp.logger.Debugf(ctx, "selecting private Helm client for `%s` App in `%s` namespace", key.AppName(cr), key.AppNamespace(cr))
 
 		return cp.prvHelmClient
 	}
 
+	if key.AppNamespace(cr) != privateNamespace && strings.HasPrefix(key.TarballURL(cr), appOperatorChart) {
+		cp.logger.Debugf(ctx, "selecting private Helm client for `%s` App in `%s` namespace", key.AppName(cr), key.AppNamespace(cr))
+
+		return cp.prvHelmClient
+	}
+
+	// for App CRs created outside the `giantswarm` namespace, or not carrying the
+	// annotation in question, use the pubHelmClient that runs under `automation`
+	// Service Account privileges
 	cp.logger.Debugf(ctx, "selecting public Helm client for `%s` App in `%s` namespace", key.AppName(cr), key.AppNamespace(cr))
+
 	return cp.pubHelmClient
 }
