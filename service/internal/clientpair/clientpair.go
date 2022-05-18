@@ -59,11 +59,11 @@ func (cp *ClientPair) Get(ctx context.Context, cr v1alpha1.Chart) helmclient.Int
 	}
 
 	if key.AppNamespace(cr) == privateNamespace {
-		cp.logger.Debug(ctx, "selecting private Helm client")
+		cp.logger.Debugf(ctx, "selecting private Helm client for `%s` App in `%s` namespace", key.AppName(cr), key.AppNamespace(cr))
 
 		return cp.prvHelmClient
 	}
 
-	cp.logger.Debug(ctx, "selecting public Helm client")
+	cp.logger.Debugf(ctx, "selecting public Helm client for `%s` App in `%s` namespace", key.AppName(cr), key.AppNamespace(cr))
 	return cp.pubHelmClient
 }

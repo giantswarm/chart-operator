@@ -112,6 +112,13 @@ func New(config Config) (*Service, error) {
 	var k8sPubClient k8sclient.Interface
 	var pubHelmClient helmclient.Interface
 	if config.Viper.GetBool(config.Flag.Service.Helm.SplitClient) {
+
+		// Using public client should result in permissions error, like for example
+		// Upgrade "hello-world" failed: failed to create resource:
+		//   rolebindings.rbac.authorization.k8s.io is forbidden:
+		//     User "system:serviceaccount:default:automation" cannot create resource
+		//     "rolebindings" in API group "rbac.authorization.k8s.io" in the namespace
+		//     "giantswarm"
 		restConfig.Impersonate = rest.ImpersonationConfig{
 			UserName: fmt.Sprintf(
 				"system:serviceaccount:%s:%s",

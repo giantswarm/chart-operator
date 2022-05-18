@@ -11,6 +11,10 @@ import (
 	chartmeta "github.com/giantswarm/chart-operator/v2/pkg/annotation"
 )
 
+func AppName(customResource v1alpha1.Chart) string {
+	return customResource.GetAnnotations()[annotation.AppName]
+}
+
 func AppNamespace(customResource v1alpha1.Chart) string {
 	return customResource.GetAnnotations()[annotation.AppNamespace]
 }

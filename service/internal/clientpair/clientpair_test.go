@@ -96,6 +96,7 @@ func Test_Get(t *testing.T) {
 				ObjectMeta: metav1.ObjectMeta{
 					Annotations: map[string]string{
 						annotation.AppNamespace: "org-acme",
+						annotation.AppName:      "test",
 					},
 				},
 			},
@@ -108,6 +109,7 @@ func Test_Get(t *testing.T) {
 				ObjectMeta: metav1.ObjectMeta{
 					Annotations: map[string]string{
 						annotation.AppNamespace: "org-acme",
+						annotation.AppName:      "test",
 					},
 				},
 			},
@@ -120,6 +122,7 @@ func Test_Get(t *testing.T) {
 				ObjectMeta: metav1.ObjectMeta{
 					Annotations: map[string]string{
 						annotation.AppNamespace: privateNamespace,
+						annotation.AppName:      "kyverno",
 					},
 				},
 			},
@@ -132,6 +135,7 @@ func Test_Get(t *testing.T) {
 				ObjectMeta: metav1.ObjectMeta{
 					Annotations: map[string]string{
 						annotation.AppNamespace: privateNamespace,
+						annotation.AppName:      "kyverno",
 					},
 				},
 			},
