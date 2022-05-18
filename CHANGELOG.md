@@ -7,6 +7,10 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+### Added
+
+- Split Helm client into private Helm client for `giantswarm`-namespaced apps and public Helm client for rest of the apps.
+
 ## [2.21.1] - 2022-05-19
 
 ### Added
