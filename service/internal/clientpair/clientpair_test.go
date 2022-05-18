@@ -1,6 +1,7 @@
 package clientpair
 
 import (
+	"context"
 	"fmt"
 	"testing"
 
@@ -8,6 +9,7 @@ import (
 	"github.com/giantswarm/helmclient/v4/pkg/helmclient"
 	"github.com/giantswarm/helmclient/v4/pkg/helmclienttest"
 	"github.com/giantswarm/k8smetadata/pkg/annotation"
+	"github.com/giantswarm/micrologger/microloggertest"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -20,6 +22,7 @@ func Test_NewClientPair(t *testing.T) {
 		{
 			name: "flawless, single client",
 			config: ClientPairConfig{
+				Logger:        microloggertest.New(),
 				PrvHelmClient: helmclienttest.New(helmclienttest.Config{}),
 				PubHelmClient: nil,
 			},
@@ -27,6 +30,7 @@ func Test_NewClientPair(t *testing.T) {
 		{
 			name: "flawless, split client",
 			config: ClientPairConfig{
+				Logger:        microloggertest.New(),
 				PrvHelmClient: helmclienttest.New(helmclienttest.Config{}),
 				PubHelmClient: helmclienttest.New(helmclienttest.Config{}),
 			},
@@ -34,6 +38,7 @@ func Test_NewClientPair(t *testing.T) {
 		{
 			name: "missing private client",
 			config: ClientPairConfig{
+				Logger:        microloggertest.New(),
 				PrvHelmClient: nil,
 				PubHelmClient: helmclienttest.New(helmclienttest.Config{}),
 			},
@@ -62,6 +67,7 @@ func Test_Get(t *testing.T) {
 	pubHC := helmclienttest.New(helmclienttest.Config{})
 
 	singleClient, err := NewClientPair(ClientPairConfig{
+		Logger:        microloggertest.New(),
 		PrvHelmClient: prvHC,
 		PubHelmClient: nil,
 	})
@@ -70,6 +76,7 @@ func Test_Get(t *testing.T) {
 	}
 
 	splitClient, err := NewClientPair(ClientPairConfig{
+		Logger:        microloggertest.New(),
 		PrvHelmClient: prvHC,
 		PubHelmClient: pubHC,
 	})
@@ -135,7 +142,7 @@ func Test_Get(t *testing.T) {
 
 	for i, tc := range testCases {
 		t.Run(fmt.Sprintf("case %d: %s", i, tc.name), func(t *testing.T) {
-			client := tc.clientPair.Get(tc.chart)
+			client := tc.clientPair.Get(context.TODO(), tc.chart)
 
 			if client != tc.expectedClient {
 				t.Fatalf("got wrong client")

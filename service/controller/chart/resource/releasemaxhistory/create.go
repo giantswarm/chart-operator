@@ -111,7 +111,7 @@ func (r *Resource) deleteFailedRelease(ctx context.Context, namespace, releaseNa
 }
 
 func (r *Resource) getReleaseHistory(ctx context.Context, cr v1alpha1.Chart) ([]helmclient.ReleaseHistory, error) {
-	history, err := r.helmClients.Get(cr).GetReleaseHistory(ctx, key.Namespace(cr), key.ReleaseName(cr))
+	history, err := r.helmClients.Get(ctx, cr).GetReleaseHistory(ctx, key.Namespace(cr), key.ReleaseName(cr))
 	if helmclient.IsReleaseNotFound(err) {
 		// Fall through
 		return nil, nil
