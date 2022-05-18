@@ -132,6 +132,7 @@ func New(config Config) (*Service, error) {
 	}
 
 	cpConfig := clientpair.ClientPairConfig{
+		Logger:        config.Logger,
 		PrvHelmClient: prvHelmClient,
 		PubHelmClient: pubHelmClient,
 	}
