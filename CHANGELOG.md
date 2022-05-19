@@ -7,6 +7,8 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+## [2.21.1] - 2022-05-19
+
 ### Added
 
 - Add Helm release failure reason when it is known, and if there is a currently successfully released version
@@ -417,7 +419,8 @@ We check progress in the next reconciliation loop. ([#362](https://github.com/gi
 - Separate podsecuritypolicy.
 - Security context in deployment spec with non-root user.
 
-[Unreleased]: https://github.com/giantswarm/chart-operator/compare/v2.21.0...HEAD
+[Unreleased]: https://github.com/giantswarm/chart-operator/compare/v2.21.1...HEAD
+[2.21.1]: https://github.com/giantswarm/chart-operator/compare/v2.21.0...v2.21.1
 [2.21.0]: https://github.com/giantswarm/chart-operator/compare/v2.20.1...v2.21.0
 [2.20.1]: https://github.com/giantswarm/chart-operator/compare/v2.20.0...v2.20.1
 [2.20.0]: https://github.com/giantswarm/chart-operator/compare/v2.19.1...v2.20.0
