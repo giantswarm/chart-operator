@@ -19,7 +19,7 @@ require (
 	github.com/giantswarm/to v0.4.0
 	github.com/google/go-cmp v0.5.8
 	github.com/imdario/mergo v0.3.12
-	github.com/prometheus/client_golang v1.12.1
+	github.com/prometheus/client_golang v1.12.2
 	github.com/spf13/afero v1.8.2
 	github.com/spf13/viper v1.11.0
 	k8s.io/api v0.23.5
