@@ -1,8 +1,10 @@
 # ignore vim swap files
 *.swp
 
+.idea
+
 # build result
-chart-operator
+/chart-operator*
 
 # don't apply earlier restrictions under vendor
 !vendor/**
