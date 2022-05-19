@@ -7,6 +7,10 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+### Added
+
+- Add Helm release failure reason when it is known, and if there is a currently successfully released version
+
 ## [2.21.0] - 2022-04-07
 
 ### Changed
