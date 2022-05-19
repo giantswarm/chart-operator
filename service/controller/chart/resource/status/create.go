@@ -35,8 +35,6 @@ func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
 	releaseName := key.ReleaseName(cr)
 	r.logger.Debugf(ctx, "getting status for release %#q", releaseName)
 
-	r.logger.Debugf(ctx, "the controller context for %#q is: %#q", releaseName, cc)
-
 	releaseContent, err := r.helmClient.GetReleaseContent(ctx, key.Namespace(cr), releaseName)
 	if helmclient.IsReleaseNotFound(err) {
 		r.logger.Debugf(ctx, "release %#q not found", releaseName)
@@ -75,15 +73,14 @@ func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
 			status = releaseStatusCordoned
 			reason = key.CordonReason(cr)
 		} else {
-			// releaseContent contains the actual status got from the current Helm release
-			status = releaseContent.Status                          // deployed
-			if releaseContent.Status != helmclient.StatusDeployed { // we compare the actual to the desired, and we ignore what is in the controller context
-				if cc.Status.Release.FailedMaxAttempts { // but then we check the controller context here, wut?
+			status = releaseContent.Status
+			if releaseContent.Status != helmclient.StatusDeployed {
+				if cc.Status.Release.FailedMaxAttempts {
 					reason = fmt.Sprintf("Release has failed %d times.\nReason: %s",
 						project.ReleaseFailedMaxAttempts,
 						releaseContent.Description)
 				} else {
-					reason = releaseContent.Description // and again we reuse the actual Helm release state
+					reason = releaseContent.Description
 				}
 			} else if cc.Status.Reason != "" {
 				// It can be that there was previous successful deployment and that is the current status of the Helm release
@@ -94,13 +91,13 @@ func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
 	}
 
 	desiredStatus := v1alpha1.ChartStatus{
-		AppVersion: releaseContent.AppVersion, // The desired should depend on the version set in the Chart, not what is deployed by Helm
-		Reason:     reason,                    // ...?
-		Release: v1alpha1.ChartStatusRelease{ // I don't see how this makes sense
-			Revision: to.IntP(releaseContent.Revision), // What is the desire to match a certain revision?
-			Status:   status,                           // ...?
+		AppVersion: releaseContent.AppVersion,
+		Reason:     reason,
+		Release: v1alpha1.ChartStatusRelease{
+			Revision: to.IntP(releaseContent.Revision),
+			Status:   status,
 		},
-		Version: releaseContent.Version, // ...?
+		Version: releaseContent.Version,
 	}
 	if !releaseContent.LastDeployed.IsZero() {
 		// We convert the timestamp to the nearest second to match the value in

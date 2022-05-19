@@ -213,9 +213,9 @@ func (r *Resource) addHashAnnotation(ctx context.Context, cr v1alpha1.Chart, rel
 // used to set the CR status in the status resource.
 func addStatusToContext(cc *controllercontext.Context, reason, status string) {
 	cc.Status = controllercontext.Status{
-		Reason: reason, // err.Error()
+		Reason: reason,
 		Release: controllercontext.Release{
-			Status: status, // unknown-error
+			Status: status,
 		},
 	}
 }
