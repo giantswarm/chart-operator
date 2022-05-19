@@ -85,6 +85,10 @@ func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
 				} else {
 					reason = releaseContent.Description // and again we reuse the actual Helm release state
 				}
+			} else if cc.Status.Reason != "" {
+				// It can be that there was previous successful deployment and that is the current status of the Helm release
+				// but a follow-up deployment failed for another version, so we want to set a reason indicating the issue
+				reason = fmt.Sprintf("Deployment failed for %#q with %#q: %#q", cr.Spec.Version, cc.Status.Release.Status, cc.Status.Reason)
 			}
 		}
 	}
