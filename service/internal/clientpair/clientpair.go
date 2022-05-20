@@ -23,8 +23,8 @@ const (
 	// apps installing reources the `default:automation` does not have access to.
 	// However, existance of the App CR for unique App Operator outside the
 	// `giantswarm` namespace opens a door to scenarios described here:
-	// https://github.com/giantswarm/giantswarm/issues/22100
-	// appOperatorChart defines legal prefix for what elevated Helm Client
+	// https://github.com/giantswarm/giantswarm/issues/22100.
+	// The appOperatorChart defines legal prefix for what elevated Helm Client
 	// can install outside the `giantswarm` namespace
 	appOperatorChart = "https://giantswarm.github.io/control-plane-catalog/app-operator"
 )
@@ -62,7 +62,7 @@ func NewClientPair(config ClientPairConfig) (*ClientPair, error) {
 }
 
 // Get determines which client to use based on the namespace the corresponding App CR
-// is located in. For Workload Cluster chart operator is permitted to operate under
+// is located in. For Workload Cluster, chart operator is permitted to operate under
 // cluster-wide permissions, so there is only prvHelmClient used
 func (cp *ClientPair) Get(ctx context.Context, cr v1alpha1.Chart) helmclient.Interface {
 	// nil pubHelmClient means chart-operator runs in a single-client mode
@@ -79,6 +79,7 @@ func (cp *ClientPair) Get(ctx context.Context, cr v1alpha1.Chart) helmclient.Int
 		return cp.prvHelmClient
 	}
 
+	// for app operators outside the `giantswarm` namespace, use the prvHelmClient
 	if key.AppNamespace(cr) != privateNamespace && strings.HasPrefix(key.TarballURL(cr), appOperatorChart) {
 		cp.logger.Debugf(ctx, "selecting private Helm client for `%s` App in `%s` namespace", key.AppName(cr), key.AppNamespace(cr))
 
