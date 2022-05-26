@@ -91,7 +91,7 @@ func New(config Config) (*Service, error) {
 
 	// k8sPrvClient runs under the chart-operator default permissions and hence
 	// has elevated privileges in the cluster. It is meant to be used for
-	// reconciling giantswarm-protected namespaces
+	// reconciling giantswarm-protected namespaces.
 	var k8sPrvClient k8sclient.Interface
 	var prvHelmClient helmclient.Interface
 	{
@@ -108,7 +108,7 @@ func New(config Config) (*Service, error) {
 	// k8sPubClient runs under `default:automation` Service Account when using
 	// split client configuration. This client is meant to be used for reconciling
 	// customer namespaces. For Workload Clusters it is `nil` and only prvHelmClient
-	// use used
+	// use used.
 	var k8sPubClient k8sclient.Interface
 	var pubHelmClient helmclient.Interface
 	if config.Viper.GetBool(config.Flag.Service.Helm.SplitClient) {
@@ -118,7 +118,7 @@ func New(config Config) (*Service, error) {
 		//   rolebindings.rbac.authorization.k8s.io is forbidden:
 		//     User "system:serviceaccount:default:automation" cannot create resource
 		//     "rolebindings" in API group "rbac.authorization.k8s.io" in the namespace
-		//     "giantswarm"
+		//     "giantswarm".
 		restConfig.Impersonate = rest.ImpersonationConfig{
 			UserName: fmt.Sprintf(
 				"system:serviceaccount:%s:%s",
