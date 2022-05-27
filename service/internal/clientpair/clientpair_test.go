@@ -76,9 +76,10 @@ func Test_Get(t *testing.T) {
 	}
 
 	splitClient, err := NewClientPair(ClientPairConfig{
-		Logger:        microloggertest.New(),
-		PrvHelmClient: prvHC,
-		PubHelmClient: pubHC,
+		Logger:             microloggertest.New(),
+		NamespaceWhitelist: []string{"org-giantswarm"},
+		PrvHelmClient:      prvHC,
+		PubHelmClient:      pubHC,
 	})
 	if err != nil {
 		t.Fatalf("error == %#v, want nil", err)
@@ -140,6 +141,19 @@ func Test_Get(t *testing.T) {
 				ObjectMeta: metav1.ObjectMeta{
 					Annotations: map[string]string{
 						annotation.AppNamespace: privateNamespace,
+						annotation.AppName:      "kyverno",
+					},
+				},
+			},
+			clientPair:     splitClient,
+			expectedClient: prvHC,
+		},
+		{
+			name: "split client, org-giantswarm app",
+			chart: v1alpha1.Chart{
+				ObjectMeta: metav1.ObjectMeta{
+					Annotations: map[string]string{
+						annotation.AppNamespace: "org-giantswarm",
 						annotation.AppName:      "kyverno",
 					},
 				},

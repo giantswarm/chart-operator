@@ -22,6 +22,8 @@ e2e: false
 
 helm:
   splitClient: false
+  namepaceWhitelist:
+    - org-giantswarm
   http:
     clientTimeout: "5s"
   kubernetes:

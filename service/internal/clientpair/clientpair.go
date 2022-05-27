@@ -32,12 +32,16 @@ const (
 type ClientPairConfig struct {
 	Logger micrologger.Logger
 
+	NamespaceWhitelist []string
+
 	PrvHelmClient helmclient.Interface
 	PubHelmClient helmclient.Interface
 }
 
 type ClientPair struct {
 	logger micrologger.Logger
+
+	namespaceWhitelist []string
 
 	prvHelmClient helmclient.Interface
 	pubHelmClient helmclient.Interface
@@ -53,6 +57,8 @@ func NewClientPair(config ClientPairConfig) (*ClientPair, error) {
 
 	cp := &ClientPair{
 		logger: config.Logger,
+
+		namespaceWhitelist: config.NamespaceWhitelist,
 
 		prvHelmClient: config.PrvHelmClient,
 		pubHelmClient: config.PubHelmClient,
@@ -77,6 +83,16 @@ func (cp *ClientPair) Get(ctx context.Context, cr v1alpha1.Chart) helmclient.Int
 		cp.logger.Debugf(ctx, "selecting private Helm client for `%s` App in `%s` namespace", key.AppName(cr), key.AppNamespace(cr))
 
 		return cp.prvHelmClient
+	}
+
+	// extra check against additional whitelisted namespaces. The privateNamespace
+	// is hardcoded because it is well-known namespace.
+	for _, ns := range cp.namespaceWhitelist {
+		if key.AppNamespace(cr) == ns {
+			cp.logger.Debugf(ctx, "selecting private Helm client for `%s` App in `%s` namespace", key.AppName(cr), key.AppNamespace(cr))
+
+			return cp.prvHelmClient
+		}
 	}
 
 	// for app operators outside the `giantswarm` namespace, use the prvHelmClient.
