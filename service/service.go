@@ -139,7 +139,10 @@ func New(config Config) (*Service, error) {
 	}
 
 	cpConfig := clientpair.ClientPairConfig{
-		Logger:        config.Logger,
+		Logger: config.Logger,
+
+		NamespaceWhitelist: config.Viper.GetStringSlice(config.Flag.Service.Helm.SplitClient),
+
 		PrvHelmClient: prvHelmClient,
 		PubHelmClient: pubHelmClient,
 	}
