@@ -16,6 +16,14 @@ data:
     service:
       helm:
         splitClient: '{{ .Values.helm.splitClient }}'
+        {{- if empty .Values.helm.namespaceWhitelist }}
+        namespaceWhitelist: []
+        {{- else }}
+        namespaceWhitelist:
+        {{- range .Values.helm.namespaceWhitelist }}
+        - {{ . }}
+        {{- end }}
+        {{- end }}
         http:
           clientTimeout: '{{ .Values.helm.http.clientTimeout }}'
         kubernetes:
