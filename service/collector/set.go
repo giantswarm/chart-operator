@@ -2,16 +2,14 @@ package collector
 
 import (
 	"github.com/giantswarm/exporterkit/collector"
-	"github.com/giantswarm/helmclient/v4/pkg/helmclient"
 	"github.com/giantswarm/k8sclient/v6/pkg/k8sclient"
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/micrologger"
 )
 
 type SetConfig struct {
-	K8sClient  k8sclient.Interface
-	HelmClient *helmclient.Client
-	Logger     micrologger.Logger
+	K8sClient k8sclient.Interface
+	Logger    micrologger.Logger
 
 	TillerNamespace string
 }
@@ -26,9 +24,6 @@ type Set struct {
 func NewSet(config SetConfig) (*Set, error) {
 	if config.K8sClient == nil {
 		return nil, microerror.Maskf(invalidConfigError, "%T.K8sClient must not be empty", config)
-	}
-	if config.HelmClient == nil {
-		return nil, microerror.Maskf(invalidConfigError, "%T.HelmClient must not be empty", config)
 	}
 	if config.Logger == nil {
 		return nil, microerror.Maskf(invalidConfigError, "%T.Logger must not be empty", config)

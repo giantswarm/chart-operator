@@ -4,11 +4,20 @@ import (
 	"strconv"
 
 	"github.com/giantswarm/apiextensions-application/api/v1alpha1"
+	"github.com/giantswarm/k8smetadata/pkg/annotation"
 	"github.com/giantswarm/k8smetadata/pkg/label"
 	"github.com/giantswarm/microerror"
 
-	"github.com/giantswarm/chart-operator/v2/pkg/annotation"
+	chartmeta "github.com/giantswarm/chart-operator/v2/pkg/annotation"
 )
+
+func AppName(customResource v1alpha1.Chart) string {
+	return customResource.GetAnnotations()[annotation.AppName]
+}
+
+func AppNamespace(customResource v1alpha1.Chart) string {
+	return customResource.GetAnnotations()[annotation.AppNamespace]
+}
 
 func ChartStatus(customResource v1alpha1.Chart) v1alpha1.ChartStatus {
 	return customResource.Status
@@ -27,15 +36,15 @@ func ConfigMapNamespace(customResource v1alpha1.Chart) string {
 }
 
 func CordonReason(customResource v1alpha1.Chart) string {
-	return customResource.GetAnnotations()[annotation.CordonReason]
+	return customResource.GetAnnotations()[chartmeta.CordonReason]
 }
 
 func CordonUntil(customResource v1alpha1.Chart) string {
-	return customResource.GetAnnotations()[annotation.CordonUntilDate]
+	return customResource.GetAnnotations()[chartmeta.CordonUntilDate]
 }
 
 func HasForceUpgradeAnnotation(customResource v1alpha1.Chart) bool {
-	val, ok := customResource.Annotations[annotation.ForceHelmUpgrade]
+	val, ok := customResource.Annotations[chartmeta.ForceHelmUpgrade]
 	if !ok {
 		return false
 	}
@@ -51,8 +60,8 @@ func HasForceUpgradeAnnotation(customResource v1alpha1.Chart) bool {
 }
 
 func IsCordoned(customResource v1alpha1.Chart) bool {
-	_, reasonOk := customResource.Annotations[annotation.CordonReason]
-	_, untilOk := customResource.Annotations[annotation.CordonUntilDate]
+	_, reasonOk := customResource.Annotations[chartmeta.CordonReason]
+	_, untilOk := customResource.Annotations[chartmeta.CordonUntilDate]
 
 	if reasonOk && untilOk {
 		return true
@@ -112,7 +121,7 @@ func ToCustomResource(v interface{}) (v1alpha1.Chart, error) {
 // ValuesMD5ChecksumAnnotation returns the annotation value to determine if the
 // Helm release values have changed.
 func ValuesMD5ChecksumAnnotation(customResource v1alpha1.Chart) string {
-	if val, ok := customResource.ObjectMeta.Annotations[annotation.ValuesMD5Checksum]; ok {
+	if val, ok := customResource.ObjectMeta.Annotations[chartmeta.ValuesMD5Checksum]; ok {
 		return val
 	} else {
 		return ""

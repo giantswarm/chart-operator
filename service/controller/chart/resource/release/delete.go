@@ -18,6 +18,8 @@ func (r *Resource) ApplyDeleteChange(ctx context.Context, obj, deleteChange inte
 		return microerror.Mask(err)
 	}
 
+	hc := r.helmClients.Get(ctx, cr)
+
 	releaseState, err := toReleaseState(deleteChange)
 	if err != nil {
 		return microerror.Mask(err)
@@ -26,7 +28,7 @@ func (r *Resource) ApplyDeleteChange(ctx context.Context, obj, deleteChange inte
 	if releaseState.Name != "" {
 		r.logger.Debugf(ctx, "deleting release %#q", releaseState.Name)
 
-		err = r.helmClient.DeleteRelease(ctx, key.Namespace(cr), releaseState.Name)
+		err = hc.DeleteRelease(ctx, key.Namespace(cr), releaseState.Name)
 		if helmclient.IsReleaseNotFound(err) {
 			r.logger.Debugf(ctx, "release %#q already deleted", releaseState.Name)
 			return nil
@@ -34,7 +36,7 @@ func (r *Resource) ApplyDeleteChange(ctx context.Context, obj, deleteChange inte
 			return microerror.Mask(err)
 		}
 
-		rel, err := r.helmClient.GetReleaseContent(ctx, key.Namespace(cr), releaseState.Name)
+		rel, err := hc.GetReleaseContent(ctx, key.Namespace(cr), releaseState.Name)
 		if rel != nil {
 			// Release still exists. We cancel the resource and keep the finalizer.
 			// We will retry the delete in the next reconciliation loop.

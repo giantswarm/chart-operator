@@ -3,7 +3,6 @@ package chart
 import (
 	"time"
 
-	"github.com/giantswarm/helmclient/v4/pkg/helmclient"
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/micrologger"
 	"github.com/giantswarm/operatorkit/v6/pkg/resource"
@@ -18,15 +17,17 @@ import (
 	"github.com/giantswarm/chart-operator/v2/service/controller/chart/resource/release"
 	"github.com/giantswarm/chart-operator/v2/service/controller/chart/resource/releasemaxhistory"
 	"github.com/giantswarm/chart-operator/v2/service/controller/chart/resource/status"
+
+	"github.com/giantswarm/chart-operator/v2/service/internal/clientpair"
 )
 
 type chartResourcesConfig struct {
 	// Dependencies.
-	Fs         afero.Fs
-	CtrlClient client.Client
-	HelmClient helmclient.Interface
-	K8sClient  kubernetes.Interface
-	Logger     micrologger.Logger
+	Fs          afero.Fs
+	CtrlClient  client.Client
+	HelmClients *clientpair.ClientPair
+	K8sClient   kubernetes.Interface
+	Logger      micrologger.Logger
 
 	// Settings.
 	HTTPClientTimeout time.Duration
@@ -45,8 +46,8 @@ func newChartResources(config chartResourcesConfig) ([]resource.Interface, error
 	if config.CtrlClient == nil {
 		return nil, microerror.Maskf(invalidConfigError, "%T.CtrlClient must not be empty", config)
 	}
-	if config.HelmClient == nil {
-		return nil, microerror.Maskf(invalidConfigError, "%T.HelmClient must not be empty", config)
+	if config.HelmClients == nil {
+		return nil, microerror.Maskf(invalidConfigError, "%T.HelmClients must not be empty", config)
 	}
 	if config.K8sClient == nil {
 		return nil, microerror.Maskf(invalidConfigError, "%T.K8sClient must not be empty", config)
@@ -78,11 +79,11 @@ func newChartResources(config chartResourcesConfig) ([]resource.Interface, error
 	{
 		c := release.Config{
 			// Dependencies
-			Fs:         config.Fs,
-			CtrlClient: config.CtrlClient,
-			HelmClient: config.HelmClient,
-			K8sClient:  config.K8sClient,
-			Logger:     config.Logger,
+			Fs:          config.Fs,
+			CtrlClient:  config.CtrlClient,
+			HelmClients: config.HelmClients,
+			K8sClient:   config.K8sClient,
+			Logger:      config.Logger,
 
 			// Settings
 			K8sWaitTimeout:  config.K8sWaitTimeout,
@@ -105,9 +106,9 @@ func newChartResources(config chartResourcesConfig) ([]resource.Interface, error
 	{
 		c := releasemaxhistory.Config{
 			// Dependencies
-			HelmClient: config.HelmClient,
-			K8sClient:  config.K8sClient,
-			Logger:     config.Logger,
+			HelmClients: config.HelmClients,
+			K8sClient:   config.K8sClient,
+			Logger:      config.Logger,
 		}
 
 		releaseMaxHistoryResource, err = releasemaxhistory.New(c)
@@ -119,10 +120,10 @@ func newChartResources(config chartResourcesConfig) ([]resource.Interface, error
 	var statusResource resource.Interface
 	{
 		c := status.Config{
-			CtrlClient: config.CtrlClient,
-			HelmClient: config.HelmClient,
-			K8sClient:  config.K8sClient,
-			Logger:     config.Logger,
+			CtrlClient:  config.CtrlClient,
+			HelmClients: config.HelmClients,
+			K8sClient:   config.K8sClient,
+			Logger:      config.Logger,
 
 			HTTPClientTimeout: config.HTTPClientTimeout,
 		}

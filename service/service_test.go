@@ -67,6 +67,7 @@ func Test_Service_New(t *testing.T) {
 
 				c.Viper.Set(c.Flag.Service.Helm.HTTP.ClientTimeout, "5s")
 				c.Viper.Set(c.Flag.Service.Helm.TillerNamespace, "giantswarm")
+				c.Viper.Set(c.Flag.Service.Helm.NamespaceWhitelist, []string{"giantswarm"})
 				c.Viper.Set(c.Flag.Service.Kubernetes.Address, ts.URL)
 				c.Viper.Set(c.Flag.Service.Kubernetes.InCluster, false)
 
@@ -75,7 +76,27 @@ func Test_Service_New(t *testing.T) {
 			errorMatcher: nil,
 		},
 		{
-			name: "case 1: invalid config returns error",
+			name: "case 1: valid config returns no error",
+			config: func() Config {
+				c := Config{
+					Flag:   flag.New(),
+					Logger: microloggertest.New(),
+					Viper:  viper.New(),
+				}
+
+				c.Viper.Set(c.Flag.Service.Helm.HTTP.ClientTimeout, "5s")
+				c.Viper.Set(c.Flag.Service.Helm.NamespaceWhitelist, []string{"giantswarm", "org-giantswarm"})
+				c.Viper.Set(c.Flag.Service.Helm.SplitClient, true)
+				c.Viper.Set(c.Flag.Service.Helm.TillerNamespace, "giantswarm")
+				c.Viper.Set(c.Flag.Service.Kubernetes.Address, ts.URL)
+				c.Viper.Set(c.Flag.Service.Kubernetes.InCluster, false)
+
+				return c
+			},
+			errorMatcher: nil,
+		},
+		{
+			name: "case 2: invalid config returns error",
 			config: func() Config {
 				c := Config{
 					Flag:  flag.New(),
