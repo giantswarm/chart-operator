@@ -7,6 +7,8 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+## [2.22.0] - 2022-05-30
+
 ### Added
 
 - Split Helm client into private Helm client for `giantswarm`-namespaced apps and public Helm client for rest of the apps.
@@ -423,7 +425,8 @@ We check progress in the next reconciliation loop. ([#362](https://github.com/gi
 - Separate podsecuritypolicy.
 - Security context in deployment spec with non-root user.
 
-[Unreleased]: https://github.com/giantswarm/chart-operator/compare/v2.21.1...HEAD
+[Unreleased]: https://github.com/giantswarm/chart-operator/compare/v2.22.0...HEAD
+[2.22.0]: https://github.com/giantswarm/chart-operator/compare/v2.21.1...v2.22.0
 [2.21.1]: https://github.com/giantswarm/chart-operator/compare/v2.21.0...v2.21.1
 [2.21.0]: https://github.com/giantswarm/chart-operator/compare/v2.20.1...v2.21.0
 [2.20.1]: https://github.com/giantswarm/chart-operator/compare/v2.20.0...v2.20.1
