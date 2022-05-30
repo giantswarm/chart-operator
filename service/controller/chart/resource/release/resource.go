@@ -18,6 +18,8 @@ import (
 	"github.com/giantswarm/chart-operator/v2/pkg/annotation"
 	"github.com/giantswarm/chart-operator/v2/service/controller/chart/controllercontext"
 	"github.com/giantswarm/chart-operator/v2/service/controller/chart/key"
+
+	"github.com/giantswarm/chart-operator/v2/service/internal/clientpair"
 )
 
 const (
@@ -51,11 +53,11 @@ const (
 // Config represents the configuration used to create a new release resource.
 type Config struct {
 	// Dependencies.
-	Fs         afero.Fs
-	CtrlClient client.Client
-	HelmClient helmclient.Interface
-	K8sClient  kubernetes.Interface
-	Logger     micrologger.Logger
+	Fs          afero.Fs
+	CtrlClient  client.Client
+	HelmClients *clientpair.ClientPair
+	K8sClient   kubernetes.Interface
+	Logger      micrologger.Logger
 
 	// Settings.
 	K8sWaitTimeout  time.Duration
@@ -66,11 +68,11 @@ type Config struct {
 // Resource implements the chart resource.
 type Resource struct {
 	// Dependencies.
-	fs         afero.Fs
-	ctrlClient client.Client
-	helmClient helmclient.Interface
-	k8sClient  kubernetes.Interface
-	logger     micrologger.Logger
+	fs          afero.Fs
+	ctrlClient  client.Client
+	helmClients *clientpair.ClientPair
+	k8sClient   kubernetes.Interface
+	logger      micrologger.Logger
 
 	// Settings.
 	k8sWaitTimeout  time.Duration
@@ -87,8 +89,8 @@ func New(config Config) (*Resource, error) {
 	if config.CtrlClient == nil {
 		return nil, microerror.Maskf(invalidConfigError, "%T.CtrlClient must not be empty", config)
 	}
-	if config.HelmClient == nil {
-		return nil, microerror.Maskf(invalidConfigError, "%T.HelmClient must not be empty", config)
+	if config.HelmClients == nil {
+		return nil, microerror.Maskf(invalidConfigError, "%T.HelmClients must not be empty", config)
 	}
 	if config.K8sClient == nil {
 		return nil, microerror.Maskf(invalidConfigError, "%T.K8sClient must not be empty", config)
@@ -107,11 +109,11 @@ func New(config Config) (*Resource, error) {
 
 	r := &Resource{
 		// Dependencies.
-		fs:         config.Fs,
-		ctrlClient: config.CtrlClient,
-		helmClient: config.HelmClient,
-		k8sClient:  config.K8sClient,
-		logger:     config.Logger,
+		fs:          config.Fs,
+		ctrlClient:  config.CtrlClient,
+		helmClients: config.HelmClients,
+		k8sClient:   config.K8sClient,
+		logger:      config.Logger,
 
 		// Settings.
 		k8sWaitTimeout:  config.K8sWaitTimeout,

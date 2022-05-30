@@ -21,10 +21,14 @@ externalDNSIP: 8.8.8.8
 e2e: false
 
 helm:
+  splitClient: false
+  namespaceWhitelist: []
   http:
     clientTimeout: "5s"
   kubernetes:
     waitTimeout: "120s"
+    watch:
+      namespace: "giantswarm"
   maxRollback: 3
 
 image:
