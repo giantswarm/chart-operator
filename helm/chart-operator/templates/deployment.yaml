@@ -41,11 +41,14 @@ spec:
       serviceAccountName: {{ tpl .Values.resource.default.name  . }}
       {{- if .Values.chartOperator.cni.install }}
       hostNetwork: true
+      nodeSelector:
+        node-role.kubernetes.io/master: ""
       tolerations:
       - effect: NoSchedule
         operator: Exists
-      - effect: NoExecute
-        operator: Exists
+      env:
+        - name: KUBERNETES_SERVICE_HOST
+          value: 127.0.0.1
       {{- else }}
       tolerations:
       - key: node-role.kubernetes.io/master
