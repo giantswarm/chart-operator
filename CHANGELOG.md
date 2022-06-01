@@ -9,6 +9,7 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ### Changed
 
+- Always create `giantswarm-critical` priority class if it does not exist.
 - When running in `cni.install` mode, ensure the pod is scheduled on masters only and avoid need for kube-proxy.
 
 ## [2.22.0] - 2022-05-30

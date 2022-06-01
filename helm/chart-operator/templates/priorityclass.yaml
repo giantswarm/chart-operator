@@ -1,4 +1,5 @@
-{{- if or .Values.chartOperator.cni.install .Values.e2e  }}
+{{- $existing := lookup "scheduling.k8s.io/v1" "PriorityClass" .Release.Namespace "giantswarm-critical" -}}
+{{- if not $existing -}}
 apiVersion: scheduling.k8s.io/v1
 kind: PriorityClass
 metadata:
