@@ -39,10 +39,12 @@ spec:
             path: config.yaml
       priorityClassName: giantswarm-critical
       serviceAccountName: {{ tpl .Values.resource.default.name  . }}
-      {{- if or .Values.chartOperator.cni.install .Values.initialBoostrapMode }}
-      hostNetwork: true
+      {{- if .Values.initialBoostrapMode }}
       nodeSelector:
         node-role.kubernetes.io/master: ""
+      {{- end }}
+      {{- if or .Values.chartOperator.cni.install .Values.initialBoostrapMode }}
+      hostNetwork: true
       tolerations:
       - effect: NoSchedule
         operator: Exists
