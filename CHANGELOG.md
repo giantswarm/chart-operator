@@ -12,6 +12,7 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 ### Changed
 
 - Always create `giantswarm-critical` priority class if it does not exist.
+- Add initialBootstrapMode flag to allow deploying CNI as managed apps.
 
 ## [2.22.0] - 2022-05-30
 
