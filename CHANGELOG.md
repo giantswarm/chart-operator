@@ -7,6 +7,10 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+### Changed
+
+- Always create `giantswarm-critical` priority class if it does not exist.
+
 ## [2.22.0] - 2022-05-30
 
 ### Added
