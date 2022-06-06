@@ -39,12 +39,12 @@ spec:
             path: config.yaml
       priorityClassName: giantswarm-critical
       serviceAccountName: {{ tpl .Values.resource.default.name  . }}
-      {{- if .Values.chartOperator.cni.install }}
+      {{- if or .Values.chartOperator.cni.install .Values.initialBoostrapMode }}
       hostNetwork: true
+      nodeSelector:
+        node-role.kubernetes.io/master: ""
       tolerations:
       - effect: NoSchedule
-        operator: Exists
-      - effect: NoExecute
         operator: Exists
       {{- else }}
       tolerations:
@@ -81,8 +81,12 @@ spec:
       {{ end }}
       containers:
       - name: {{ .Chart.Name }}
-        {{- if .Values.proxy.enabled }}
+        {{- if or .Values.proxy.enabled .Values.initialBootstrapMode }}
         env:
+        {{- if .Values.initialBootstrapMode }}
+        - name: KUBERNETES_SERVICE_HOST
+          value: 127.0.0.1
+        {{- end }}
         {{- if .Values.proxy.http }}
         - name: HTTP_PROXY
           value: {{ .Values.proxy.http }}
@@ -96,11 +100,11 @@ spec:
           value: {{ join "," .Values.proxy.noProxy }}
         {{- end }}
         {{- end }}
-        {{ if .Values.isManagementCluster }}
+        {{- if .Values.isManagementCluster }}
         image: "{{ .Values.registry.domain }}/{{ .Values.image.name }}:{{ .Values.image.tag }}"
-        {{ else }}
+        {{- else }}
         image: "{{ .Values.image.registry }}/{{ .Values.image.name }}:{{ .Values.image.tag }}"
-        {{ end }}
+        {{- end }}
         volumeMounts:
         - name: {{ tpl .Values.resource.default.name  . }}-configmap
           mountPath: /var/run/{{ .Chart.Name }}/configmap/
