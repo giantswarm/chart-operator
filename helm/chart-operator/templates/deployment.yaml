@@ -39,11 +39,11 @@ spec:
             path: config.yaml
       priorityClassName: giantswarm-critical
       serviceAccountName: {{ tpl .Values.resource.default.name  . }}
-      {{- if .Values.initialBoostrapMode }}
+      {{- if .Values.initialBootstrapMode }}
       nodeSelector:
         node-role.kubernetes.io/master: ""
       {{- end }}
-      {{- if or .Values.chartOperator.cni.install .Values.initialBoostrapMode }}
+      {{- if or .Values.chartOperator.cni.install .Values.initialBootstrapMode }}
       hostNetwork: true
       tolerations:
       - effect: NoSchedule
@@ -53,9 +53,9 @@ spec:
       - key: node-role.kubernetes.io/master
         effect: NoSchedule
       {{- end }}
-      {{ if .Values.isManagementCluster }}
+      {{- if .Values.isManagementCluster }}
       dnsPolicy: ClusterFirst
-      {{ else }}
+      {{- else }}
       dnsPolicy: None
       dnsConfig:
         nameservers:
@@ -80,7 +80,7 @@ spec:
         securityContext:
           runAsUser: {{ .Values.pod.user.id }}
           runAsGroup: {{ .Values.pod.group.id }}
-      {{ end }}
+      {{- end }}
       containers:
       - name: {{ .Chart.Name }}
         {{- if or .Values.proxy.enabled .Values.initialBootstrapMode }}
