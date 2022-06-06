@@ -1,7 +1,7 @@
 apiVersion: v1
 name: chart-operator
-version: 1.0.0
-appVersion: 1.0.0
+version: [[ .Version ]]
+appVersion: [[ .AppVersion ]]
 home: https://github.com/giantswarm/chart-operator
 description: A Helm chart for the chart-operator
 annotations:
