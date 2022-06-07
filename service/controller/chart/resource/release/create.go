@@ -45,7 +45,7 @@ func (r *Resource) ApplyCreateChange(ctx context.Context, obj, createChange inte
 	tarballPath, err := hc.PullChartTarball(ctx, tarballURL)
 	if helmclient.IsPullChartFailedError(err) {
 		reason := fmt.Sprintf("pulling chart %#q failed", tarballURL)
-		addStatusToContext(cc, reason, releaseNotInstalledStatus)
+		addStatusToContext(cc, reason, chartPullFailedStatus)
 
 		r.logger.LogCtx(ctx, "level", "warning", "message", reason, "stack", microerror.JSON(err))
 		r.logger.Debugf(ctx, "canceling resource")
@@ -53,7 +53,7 @@ func (r *Resource) ApplyCreateChange(ctx context.Context, obj, createChange inte
 		return nil
 	} else if helmclient.IsPullChartNotFound(err) {
 		reason := fmt.Sprintf("chart %#q not found", tarballURL)
-		addStatusToContext(cc, reason, releaseNotInstalledStatus)
+		addStatusToContext(cc, reason, chartPullFailedStatus)
 
 		r.logger.LogCtx(ctx, "level", "warning", "message", reason, "stack", microerror.JSON(err))
 		r.logger.Debugf(ctx, "canceling resource")
@@ -61,7 +61,7 @@ func (r *Resource) ApplyCreateChange(ctx context.Context, obj, createChange inte
 		return nil
 	} else if helmclient.IsPullChartTimeout(err) {
 		reason := fmt.Sprintf("timeout pulling %#q", tarballURL)
-		addStatusToContext(cc, reason, releaseNotInstalledStatus)
+		addStatusToContext(cc, reason, chartPullFailedStatus)
 
 		r.logger.LogCtx(ctx, "level", "warning", "message", reason, "stack", microerror.JSON(err))
 		r.logger.Debugf(ctx, "canceling resource")
