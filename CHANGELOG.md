@@ -7,6 +7,10 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+### Removed 
+
+- Remove ci push to opentsack-app-collection.
+
 ## [2.23.0] - 2022-06-06
 
 ### Changed
