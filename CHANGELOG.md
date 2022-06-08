@@ -7,6 +7,10 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+### Fixed
+
+- Fix `CVE-2022-31030` by bumping `containerd` version from `v1.5.9` to `v1.5.13`
+
 ## [2.23.0] - 2022-06-06
 
 ### Changed

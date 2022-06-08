@@ -33,6 +33,8 @@ replace (
 	github.com/Microsoft/hcsshim v0.8.7 => github.com/Microsoft/hcsshim v0.8.10
 	// Apply fix for CVE-2020-15114 not yet released in github.com/spf13/viper.
 	github.com/bketelsen/crypt => github.com/bketelsen/crypt v0.0.3
+	// CVE-2022-31030
+	github.com/containerd/containerd v1.5.9 => github.com/containerd/containerd v1.5.13
 	github.com/dgrijalva/jwt-go => github.com/dgrijalva/jwt-go/v4 v4.0.0-preview1
 	github.com/docker/distribution => github.com/docker/distribution v0.0.0-20191216044856-a8371794149d
 	// Use moby v20.10.0-beta1 to fix build issue on darwin.
