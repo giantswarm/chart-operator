@@ -4,6 +4,9 @@ go 1.16
 
 require (
 	github.com/MakeNowJust/heredoc v1.0.0 // indirect
+	github.com/Microsoft/go-winio v0.5.2 // indirect
+	github.com/containerd/cgroups v1.0.4 // indirect
+	github.com/containerd/containerd v1.6.6 // indirect
 	github.com/giantswarm/apiextensions-application v0.3.0
 	github.com/giantswarm/appcatalog v0.7.0
 	github.com/giantswarm/backoff v1.0.0
@@ -18,10 +21,16 @@ require (
 	github.com/giantswarm/operatorkit/v6 v6.1.0
 	github.com/giantswarm/to v0.4.0
 	github.com/google/go-cmp v0.5.8
+	github.com/google/uuid v1.3.0 // indirect
 	github.com/imdario/mergo v0.3.12
+	github.com/klauspost/compress v1.15.6 // indirect
+	github.com/moby/sys/mountinfo v0.6.2 // indirect
 	github.com/prometheus/client_golang v1.12.2
 	github.com/spf13/afero v1.8.2
 	github.com/spf13/viper v1.11.0
+	golang.org/x/net v0.0.0-20220607020251-c690dde0001d // indirect
+	golang.org/x/sync v0.0.0-20220601150217-0de741cfad7f // indirect
+	google.golang.org/genproto v0.0.0-20220607223854-30acc4cbd2aa // indirect
 	k8s.io/api v0.23.5
 	k8s.io/apimachinery v0.23.5
 	k8s.io/client-go v0.23.5
