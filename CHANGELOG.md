@@ -7,6 +7,10 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+### Changed
+
+- Add `chart-pull-failed` error to differentiate between issues when pulling chart tarball and other problems.
+
 ## [2.23.0] - 2022-06-06
 
 ### Changed
