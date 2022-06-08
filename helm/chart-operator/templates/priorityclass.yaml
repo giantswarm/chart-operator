@@ -1,5 +1,15 @@
+{{- $render := false -}}
 {{- $existing := lookup "scheduling.k8s.io/v1" "PriorityClass" "" "giantswarm-critical" -}}
-{{- if or (not $existing) (eq (index $existing.metadata.labels "app.kubernetes.io/instance") "chart-operator") -}}
+{{- if not $existing -}}
+{{- $render = true -}}
+{{- else -}}
+{{- if $existing.metadata.labels -}}
+{{- if eq (index $existing.metadata.labels "app.kubernetes.io/instance") "chart-operator" -}}
+{{- $render = true -}}
+{{- end -}}
+{{- end -}}
+{{- end -}}
+{{- if $render -}}
 apiVersion: scheduling.k8s.io/v1
 kind: PriorityClass
 metadata:

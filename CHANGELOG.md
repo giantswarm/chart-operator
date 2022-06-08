@@ -11,6 +11,10 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 - Add `chart-pull-failed` error to differentiate between issues when pulling chart tarball and other problems.
 
+### Fixed
+
+- Fix missing `PriorityClass` issue.
+
 ## [2.23.0] - 2022-06-06
 
 ### Changed
