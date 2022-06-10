@@ -170,6 +170,8 @@ func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange inte
 			resourcecanceledcontext.SetCanceled(ctx)
 			return nil
 		} else if relErr != nil {
+			r.logger.Debugf(ctx, "Original Error is: %#q", err)
+			r.logger.Debugf(ctx, "Release Error is: %#q", relErr)
 			return microerror.Mask(relErr)
 		}
 
