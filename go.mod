@@ -8,12 +8,12 @@ require (
 	github.com/containerd/cgroups v1.0.4 // indirect
 	github.com/containerd/containerd v1.6.6 // indirect
 	github.com/giantswarm/apiextensions-application v0.3.0
-	github.com/giantswarm/appcatalog v0.7.0
+	github.com/giantswarm/appcatalog v0.8.0
 	github.com/giantswarm/backoff v1.0.0
 	github.com/giantswarm/exporterkit v1.0.0
 	github.com/giantswarm/helmclient/v4 v4.10.0
 	github.com/giantswarm/k8sclient/v6 v6.1.0
-	github.com/giantswarm/k8smetadata v0.11.0
+	github.com/giantswarm/k8smetadata v0.11.1
 	github.com/giantswarm/microendpoint v1.0.0
 	github.com/giantswarm/microerror v0.4.0
 	github.com/giantswarm/microkit v1.0.0
