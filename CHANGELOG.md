@@ -7,6 +7,10 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+### Changed
+
+- Update `helmclient` to v4.10.1.
+
 ## [2.24.0] - 2022-06-09
 
 ### Changed
