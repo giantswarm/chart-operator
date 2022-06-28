@@ -90,3 +90,21 @@ isManagementCluster: false
 # (such as the CNI or the out-of-tree cloud controller managers) as a managed app.
 # After the cluster is fully deployed, this flag should be switched to false.
 initialBootstrapMode: false
+
+# Pod securityContext
+podSecurityContext:
+  runAsNonRoot: true
+  seccompProfile:
+    type: RuntimeDefault
+
+# Container securityContext
+securityContext:
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+    - ALL
+  privileged: false
+  readOnlyRootFilesystem: true
+  runAsNonRoot: true
+  seccompProfile:
+    type: RuntimeDefault
