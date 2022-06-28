@@ -80,6 +80,9 @@ spec:
         securityContext:
           runAsUser: {{ .Values.pod.user.id }}
           runAsGroup: {{ .Values.pod.group.id }}
+          {{- with .Values.podSecurityContext }}
+            {{- . | toYaml | nindent 12 }}
+          {{- end }}
       {{- end }}
       containers:
       - name: {{ .Chart.Name }}
@@ -120,6 +123,9 @@ spec:
         securityContext:
           runAsUser: {{ .Values.pod.user.id }}
           runAsGroup: {{ .Values.pod.group.id }}
+          {{- with .Values.securityContext }}
+            {{- . | toYaml | nindent 12 }}
+          {{- end }}
         livenessProbe:
           httpGet:
             path: /healthz
