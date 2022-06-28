@@ -39,6 +39,12 @@ spec:
             path: config.yaml
       priorityClassName: giantswarm-critical
       serviceAccountName: {{ tpl .Values.resource.default.name  . }}
+      securityContext:
+        runAsUser: {{ .Values.pod.user.id }}
+        runAsGroup: {{ .Values.pod.group.id }}
+        {{- with .Values.podSecurityContext }}
+          {{- . | toYaml | nindent 10 }}
+        {{- end }}
       {{- if .Values.initialBootstrapMode }}
       nodeSelector:
         node-role.kubernetes.io/master: ""
@@ -80,7 +86,7 @@ spec:
         securityContext:
           runAsUser: {{ .Values.pod.user.id }}
           runAsGroup: {{ .Values.pod.group.id }}
-          {{- with .Values.podSecurityContext }}
+          {{- with .Values.securityContext }}
             {{- . | toYaml | nindent 12 }}
           {{- end }}
       {{- end }}
