@@ -39,11 +39,11 @@ spec:
             path: config.yaml
       priorityClassName: giantswarm-critical
       serviceAccountName: {{ tpl .Values.resource.default.name  . }}
-      {{- if .Values.initialBootstrapMode }}
+      {{- if .Values.initialBootstrapMode.enabled }}
       nodeSelector:
         node-role.kubernetes.io/master: ""
       {{- end }}
-      {{- if or .Values.chartOperator.cni.install .Values.initialBootstrapMode }}
+      {{- if or .Values.chartOperator.cni.install .Values.initialBootstrapMode.enabled }}
       hostNetwork: true
       tolerations:
       - effect: NoSchedule
@@ -83,11 +83,15 @@ spec:
       {{- end }}
       containers:
       - name: {{ .Chart.Name }}
-        {{- if or .Values.proxy.enabled .Values.initialBootstrapMode }}
+        {{- if or .Values.proxy.enabled .Values.initialBootstrapMode.enabled }}
         env:
-        {{- if .Values.initialBootstrapMode }}
+        {{- if .Values.initialBootstrapMode.enabled }}
         - name: KUBERNETES_SERVICE_HOST
-          value: 127.0.0.1
+          valueFrom:
+            fieldRef:
+              fieldPath: status.hostIP
+        - name: KUBERNETES_SERVICE_PORT
+          value: {{ .Values.initialBootstrapMode.apiServerPodPort | quote }}
         {{- end }}
         {{- if .Values.proxy.http }}
         - name: HTTP_PROXY

@@ -7,6 +7,14 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+### Changed
+
+- Use downward API to set deployment env var `KUBERNETES_SERVICE_HOST` to `status.hostIP`.
+
+### Added
+
+- Allow to set api server pod port when enabling `initialBootstrapMode`.
+
 ## [2.24.1] - 2022-06-22
 
 ### Changed
