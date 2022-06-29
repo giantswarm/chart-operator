@@ -7,6 +7,10 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+### Changed
+
+- Tighten pod and container security contexts for PSS restricted policies.
+
 ## [2.24.1] - 2022-06-22
 
 ### Changed
