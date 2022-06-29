@@ -43,7 +43,7 @@ spec:
         runAsUser: {{ .Values.pod.user.id }}
         runAsGroup: {{ .Values.pod.group.id }}
         {{- with .Values.podSecurityContext }}
-          {{- . | toYaml | nindent 10 }}
+          {{- . | toYaml | nindent 8 }}
         {{- end }}
       {{- if .Values.initialBootstrapMode }}
       nodeSelector:
@@ -87,7 +87,7 @@ spec:
           runAsUser: {{ .Values.pod.user.id }}
           runAsGroup: {{ .Values.pod.group.id }}
           {{- with .Values.securityContext }}
-            {{- . | toYaml | nindent 12 }}
+            {{- . | toYaml | nindent 10 }}
           {{- end }}
       {{- end }}
       containers:
@@ -130,7 +130,7 @@ spec:
           runAsUser: {{ .Values.pod.user.id }}
           runAsGroup: {{ .Values.pod.group.id }}
           {{- with .Values.securityContext }}
-            {{- . | toYaml | nindent 12 }}
+            {{- . | toYaml | nindent 10 }}
           {{- end }}
         livenessProbe:
           httpGet:
