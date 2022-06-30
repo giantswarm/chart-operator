@@ -27,6 +27,6 @@ spec:
     - 'configMap'
     - 'secret'
   allowPrivilegeEscalation: false
-  hostNetwork: {{ or .Values.chartOperator.cni.install .Values.initialBootstrapMode }}
+  hostNetwork: {{ or .Values.chartOperator.cni.install .Values.initialBootstrapMode.enabled }}
   hostIPC: false
   hostPID: false

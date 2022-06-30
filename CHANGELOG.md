@@ -10,6 +10,11 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 ### Changed
 
 - Tighten pod and container security contexts for PSS restricted policies.
+- Use downward API to set deployment env var `KUBERNETES_SERVICE_HOST` to `status.hostIP`.
+
+### Added
+
+- Allow to set api server pod port when enabling `initialBootstrapMode`.
 
 ## [2.24.1] - 2022-06-22
 
