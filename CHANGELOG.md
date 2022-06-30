@@ -10,6 +10,7 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 ### Changed
 
 - Use downward API to set deployment env var `KUBERNETES_SERVICE_HOST` to `status.hostIP`.
+- Change `initialBootstrapMode` configuration value to `bootstrapMode`.
 
 ### Added
 
