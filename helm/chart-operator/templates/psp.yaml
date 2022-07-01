@@ -4,6 +4,8 @@ metadata:
   name: {{ tpl .Values.resource.psp.name . }}
   labels:
     {{- include "chart-operator.labels" . | nindent 4 }}
+  annotations:
+    seccomp.security.alpha.kubernetes.io/allowedProfileNames: 'runtime/default'
 spec:
   runAsUser:
     rule: MustRunAsNonRoot
