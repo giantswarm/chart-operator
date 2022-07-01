@@ -9,6 +9,7 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ### Changed
 
+- Tighten pod and container security contexts for PSS restricted policies.
 - Use downward API to set deployment env var `KUBERNETES_SERVICE_HOST` to `status.hostIP`.
 
 ### Added
