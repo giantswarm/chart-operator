@@ -45,11 +45,11 @@ spec:
         {{- with .Values.podSecurityContext }}
           {{- . | toYaml | nindent 8 }}
         {{- end }}
-      {{- if .Values.initialBootstrapMode.enabled }}
+      {{- if .Values.bootstrapMode.enabled }}
       nodeSelector:
         node-role.kubernetes.io/master: ""
       {{- end }}
-      {{- if or .Values.chartOperator.cni.install .Values.initialBootstrapMode.enabled }}
+      {{- if or .Values.chartOperator.cni.install .Values.bootstrapMode.enabled }}
       hostNetwork: true
       tolerations:
       - effect: NoSchedule
@@ -92,15 +92,15 @@ spec:
       {{- end }}
       containers:
       - name: {{ .Chart.Name }}
-        {{- if or .Values.proxy.enabled .Values.initialBootstrapMode.enabled }}
+        {{- if or .Values.proxy.enabled .Values.bootstrapMode.enabled }}
         env:
-        {{- if .Values.initialBootstrapMode.enabled }}
+        {{- if .Values.bootstrapMode.enabled }}
         - name: KUBERNETES_SERVICE_HOST
           valueFrom:
             fieldRef:
               fieldPath: status.hostIP
         - name: KUBERNETES_SERVICE_PORT
-          value: {{ .Values.initialBootstrapMode.apiServerPodPort | quote }}
+          value: {{ .Values.bootstrapMode.apiServerPodPort | quote }}
         {{- end }}
         {{- if .Values.proxy.http }}
         - name: HTTP_PROXY

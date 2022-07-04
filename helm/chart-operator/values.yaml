@@ -89,7 +89,7 @@ isManagementCluster: false
 # This mode is meant to be used during bootstrap of clusters to be able to deploy basic system services
 # (such as the CNI or the out-of-tree cloud controller managers) as a managed app.
 # After the cluster is fully deployed, this flag should be switched to false.
-initialBootstrapMode:
+bootstrapMode:
   apiServerPodPort: 443
   enabled: false
 
