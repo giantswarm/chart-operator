@@ -27,6 +27,10 @@ const (
 	// The appOperatorChart defines legal prefix for what elevated Helm Client
 	// can install outside the `giantswarm` namespace.
 	appOperatorChart = "https://giantswarm.github.io/control-plane-catalog/app-operator"
+	// The appOperatorTestChart defines another legal prefix to use the elevated Helm client
+	// used when we are testing changes for workload cluster app-operators that are
+	// generally not located in the giantswarm namespace.
+	appOperatorTestChart = "https://giantswarm.github.io/control-plane-test-catalog/app-operator"
 )
 
 type ClientPairConfig struct {
@@ -96,7 +100,7 @@ func (cp *ClientPair) Get(ctx context.Context, cr v1alpha1.Chart) helmclient.Int
 	}
 
 	// for app operators outside the `giantswarm` namespace, use the prvHelmClient.
-	if key.AppNamespace(cr) != privateNamespace && strings.HasPrefix(key.TarballURL(cr), appOperatorChart) {
+	if key.AppNamespace(cr) != privateNamespace && (strings.HasPrefix(key.TarballURL(cr), appOperatorChart) || strings.HasPrefix(key.TarballURL(cr), appOperatorTestChart)) {
 		cp.logger.Debugf(ctx, "selecting private Helm client for `%s` App in `%s` namespace", key.AppName(cr), key.AppNamespace(cr))
 
 		return cp.prvHelmClient
