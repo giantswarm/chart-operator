@@ -7,6 +7,8 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+## [2.25.0] - 2022-07-04
+
 ### Changed
 
 - Tighten pod and container security contexts for PSS restricted policies.
@@ -459,7 +461,8 @@ We check progress in the next reconciliation loop. ([#362](https://github.com/gi
 - Separate podsecuritypolicy.
 - Security context in deployment spec with non-root user.
 
-[Unreleased]: https://github.com/giantswarm/chart-operator/compare/v2.24.1...HEAD
+[Unreleased]: https://github.com/giantswarm/chart-operator/compare/v2.25.0...HEAD
+[2.25.0]: https://github.com/giantswarm/chart-operator/compare/v2.24.1...v2.25.0
 [2.24.1]: https://github.com/giantswarm/chart-operator/compare/v2.24.0...v2.24.1
 [2.24.0]: https://github.com/giantswarm/chart-operator/compare/v2.23.0...v2.24.0
 [2.23.0]: https://github.com/giantswarm/chart-operator/compare/v2.22.0...v2.23.0
