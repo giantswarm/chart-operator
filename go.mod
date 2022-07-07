@@ -7,7 +7,7 @@ require (
 	github.com/containerd/cgroups v1.0.4 // indirect
 	github.com/containerd/containerd v1.6.6 // indirect
 	github.com/giantswarm/apiextensions-application v0.3.0
-	github.com/giantswarm/appcatalog v0.8.0
+	github.com/giantswarm/appcatalog v0.9.1
 	github.com/giantswarm/backoff v1.0.0
 	github.com/giantswarm/exporterkit v1.0.0
 	github.com/giantswarm/helmclient/v4 v4.10.1
