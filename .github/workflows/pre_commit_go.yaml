@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
     - uses: actions/checkout@v3
-    - uses: actions/setup-python@v4
+    - uses: actions/setup-python@v3
     - uses: actions/setup-go@v3
       with:
         go-version: "1.17.7"
@@ -23,4 +23,4 @@ jobs:
       run: |
         curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | \
             sudo sh -s -- -b $GOPATH/bin ${GOLANGCI_LINT_VERSION}
-    - uses: pre-commit/action@v3.0.0
+    - uses: pre-commit/action@v2.0.3
