@@ -7,6 +7,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/giantswarm/apiextensions-application/api/v1alpha1"
 	"github.com/giantswarm/helmclient/v4/pkg/helmclient"
 	"github.com/giantswarm/microerror"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
@@ -33,7 +34,7 @@ func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
 
 	r.logger.Debugf(ctx, "finding out if release %#q in namespace %#q has failed max attempts", key.ReleaseName(cr), key.Namespace(cr))
 
-	history, err := r.getReleaseHistory(ctx, key.Namespace(cr), key.ReleaseName(cr))
+	history, err := r.getReleaseHistory(ctx, cr) // key.Namespace(cr), key.ReleaseName(cr))
 	if err != nil {
 		return microerror.Mask(err)
 	}
@@ -109,8 +110,8 @@ func (r *Resource) deleteFailedRelease(ctx context.Context, namespace, releaseNa
 	return true, nil
 }
 
-func (r *Resource) getReleaseHistory(ctx context.Context, namespace, releaseName string) ([]helmclient.ReleaseHistory, error) {
-	history, err := r.helmClient.GetReleaseHistory(ctx, namespace, releaseName)
+func (r *Resource) getReleaseHistory(ctx context.Context, cr v1alpha1.Chart) ([]helmclient.ReleaseHistory, error) {
+	history, err := r.helmClients.Get(ctx, cr).GetReleaseHistory(ctx, key.Namespace(cr), key.ReleaseName(cr))
 	if helmclient.IsReleaseNotFound(err) {
 		// Fall through
 		return nil, nil

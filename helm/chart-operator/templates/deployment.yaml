@@ -39,21 +39,29 @@ spec:
             path: config.yaml
       priorityClassName: giantswarm-critical
       serviceAccountName: {{ tpl .Values.resource.default.name  . }}
-      {{- if .Values.chartOperator.cni.install }}
+      securityContext:
+        runAsUser: {{ .Values.pod.user.id }}
+        runAsGroup: {{ .Values.pod.group.id }}
+        {{- with .Values.podSecurityContext }}
+          {{- . | toYaml | nindent 8 }}
+        {{- end }}
+      {{- if .Values.bootstrapMode.enabled }}
+      nodeSelector:
+        node-role.kubernetes.io/master: ""
+      {{- end }}
+      {{- if or .Values.chartOperator.cni.install .Values.bootstrapMode.enabled }}
       hostNetwork: true
       tolerations:
       - effect: NoSchedule
-        operator: Exists
-      - effect: NoExecute
         operator: Exists
       {{- else }}
       tolerations:
       - key: node-role.kubernetes.io/master
         effect: NoSchedule
       {{- end }}
-      {{ if .Values.isManagementCluster }}
+      {{- if .Values.isManagementCluster }}
       dnsPolicy: ClusterFirst
-      {{ else }}
+      {{- else }}
       dnsPolicy: None
       dnsConfig:
         nameservers:
@@ -78,11 +86,22 @@ spec:
         securityContext:
           runAsUser: {{ .Values.pod.user.id }}
           runAsGroup: {{ .Values.pod.group.id }}
-      {{ end }}
+          {{- with .Values.securityContext }}
+            {{- . | toYaml | nindent 10 }}
+          {{- end }}
+      {{- end }}
       containers:
       - name: {{ .Chart.Name }}
-        {{- if .Values.proxy.enabled }}
+        {{- if or .Values.proxy.enabled .Values.bootstrapMode.enabled }}
         env:
+        {{- if .Values.bootstrapMode.enabled }}
+        - name: KUBERNETES_SERVICE_HOST
+          valueFrom:
+            fieldRef:
+              fieldPath: status.hostIP
+        - name: KUBERNETES_SERVICE_PORT
+          value: {{ .Values.bootstrapMode.apiServerPodPort | quote }}
+        {{- end }}
         {{- if .Values.proxy.http }}
         - name: HTTP_PROXY
           value: {{ .Values.proxy.http }}
@@ -96,11 +115,11 @@ spec:
           value: {{ join "," .Values.proxy.noProxy }}
         {{- end }}
         {{- end }}
-        {{ if .Values.isManagementCluster }}
+        {{- if .Values.isManagementCluster }}
         image: "{{ .Values.registry.domain }}/{{ .Values.image.name }}:{{ .Values.image.tag }}"
-        {{ else }}
+        {{- else }}
         image: "{{ .Values.image.registry }}/{{ .Values.image.name }}:{{ .Values.image.tag }}"
-        {{ end }}
+        {{- end }}
         volumeMounts:
         - name: {{ tpl .Values.resource.default.name  . }}-configmap
           mountPath: /var/run/{{ .Chart.Name }}/configmap/
@@ -114,6 +133,9 @@ spec:
         securityContext:
           runAsUser: {{ .Values.pod.user.id }}
           runAsGroup: {{ .Values.pod.group.id }}
+          {{- with .Values.securityContext }}
+            {{- . | toYaml | nindent 10 }}
+          {{- end }}
         livenessProbe:
           httpGet:
             path: /healthz

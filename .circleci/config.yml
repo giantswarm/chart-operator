@@ -1,6 +1,6 @@
 version: 2.1
 orbs:
-  architect: giantswarm/architect@4.18.0
+  architect: giantswarm/architect@4.24.0
 
 workflows:
   build:
@@ -118,19 +118,6 @@ workflows:
           name: push-chart-operator-to-kvm-app-collection
           app_name: "chart-operator"
           app_collection_repo: "kvm-app-collection"
-          requires:
-            - push-chart-operator-to-control-plane-app-catalog
-          filters:
-            branches:
-              ignore: /.*/
-            tags:
-              only: /^v.*/
-
-      - architect/push-to-app-collection:
-          context: architect
-          name: push-chart-operator-to-openstack-app-collection
-          app_name: "chart-operator"
-          app_collection_repo: "openstack-app-collection"
           requires:
             - push-chart-operator-to-control-plane-app-catalog
           filters:

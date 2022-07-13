@@ -4,6 +4,8 @@ metadata:
   name: {{ tpl .Values.resource.psp.name . }}
   labels:
     {{- include "chart-operator.labels" . | nindent 4 }}
+  annotations:
+    seccomp.security.alpha.kubernetes.io/allowedProfileNames: 'runtime/default'
 spec:
   runAsUser:
     rule: MustRunAsNonRoot
@@ -25,6 +27,6 @@ spec:
     - 'configMap'
     - 'secret'
   allowPrivilegeEscalation: false
-  hostNetwork: {{ .Values.chartOperator.cni.install }}
+  hostNetwork: {{ or .Values.chartOperator.cni.install .Values.bootstrapMode.enabled }}
   hostIPC: false
   hostPID: false

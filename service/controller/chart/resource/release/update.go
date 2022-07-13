@@ -23,6 +23,9 @@ func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange inte
 	if err != nil {
 		return microerror.Mask(err)
 	}
+
+	hc := r.helmClients.Get(ctx, cr)
+
 	cc, err := controllercontext.FromContext(ctx)
 	if err != nil {
 		return microerror.Mask(err)
@@ -41,10 +44,10 @@ func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange inte
 	r.logger.Debugf(ctx, "updating release %#q in namespace %#q", releaseState.Name, key.Namespace(cr))
 
 	tarballURL := key.TarballURL(cr)
-	tarballPath, err := r.helmClient.PullChartTarball(ctx, tarballURL)
+	tarballPath, err := hc.PullChartTarball(ctx, tarballURL)
 	if helmclient.IsPullChartFailedError(err) {
 		reason := fmt.Sprintf("pulling chart %#q failed", tarballURL)
-		addStatusToContext(cc, reason, releaseNotInstalledStatus)
+		addStatusToContext(cc, reason, chartPullFailedStatus)
 
 		r.logger.LogCtx(ctx, "level", "warning", "message", reason, "stack", microerror.JSON(err))
 		r.logger.Debugf(ctx, "canceling resource")
@@ -52,7 +55,7 @@ func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange inte
 		return nil
 	} else if helmclient.IsPullChartNotFound(err) {
 		reason := fmt.Sprintf("chart %#q not found", tarballURL)
-		addStatusToContext(cc, reason, releaseNotInstalledStatus)
+		addStatusToContext(cc, reason, chartPullFailedStatus)
 
 		r.logger.LogCtx(ctx, "level", "warning", "message", reason, "stack", microerror.JSON(err))
 		r.logger.Debugf(ctx, "canceling resource")
@@ -60,7 +63,7 @@ func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange inte
 		return nil
 	} else if helmclient.IsPullChartTimeout(err) {
 		reason := fmt.Sprintf("timeout pulling %#q", tarballURL)
-		addStatusToContext(cc, reason, releaseNotInstalledStatus)
+		addStatusToContext(cc, reason, chartPullFailedStatus)
 
 		r.logger.LogCtx(ctx, "level", "warning", "message", reason, "stack", microerror.JSON(err))
 		r.logger.Debugf(ctx, "canceling resource")
@@ -101,7 +104,7 @@ func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange inte
 
 		// We need to pass the ValueOverrides option to make the update process
 		// use the default values and prevent errors on nested values.
-		err = r.helmClient.UpdateReleaseFromTarball(ctx,
+		err = hc.UpdateReleaseFromTarball(ctx,
 			tarballPath,
 			key.Namespace(cr),
 			releaseState.Name,
@@ -158,7 +161,7 @@ func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange inte
 	} else if err != nil {
 		r.logger.Errorf(ctx, err, "helm release %#q failed", releaseState.Name)
 
-		releaseContent, relErr := r.helmClient.GetReleaseContent(ctx, key.Namespace(cr), releaseState.Name)
+		releaseContent, relErr := hc.GetReleaseContent(ctx, key.Namespace(cr), releaseState.Name)
 		if helmclient.IsReleaseNotFound(relErr) {
 			reason := fmt.Sprintf("release %#q not found", releaseState.Name)
 			addStatusToContext(cc, reason, releaseNotInstalledStatus)
@@ -292,6 +295,8 @@ func (r *Resource) rollback(ctx context.Context, obj interface{}, currentStatus 
 		return microerror.Mask(err)
 	}
 
+	hc := r.helmClients.Get(ctx, cr)
+
 	count, ok := cr.GetAnnotations()[annotation.RollbackCount]
 
 	var rollbackCount int
@@ -313,7 +318,7 @@ func (r *Resource) rollback(ctx context.Context, obj interface{}, currentStatus 
 	if currentStatus == helmclient.StatusPendingInstall {
 		r.logger.Debugf(ctx, "deleting release %#q in %#q status", key.ReleaseName(cr), currentStatus)
 
-		err = r.helmClient.DeleteRelease(ctx, key.Namespace(cr), key.ReleaseName(cr))
+		err = hc.DeleteRelease(ctx, key.Namespace(cr), key.ReleaseName(cr))
 		if err != nil {
 			return microerror.Mask(err)
 		}
@@ -323,7 +328,7 @@ func (r *Resource) rollback(ctx context.Context, obj interface{}, currentStatus 
 		r.logger.Debugf(ctx, "rollback release %#q in %#q status", key.ReleaseName(cr), currentStatus)
 
 		// Rollback to revision 0 restore a release to the previous revision.
-		err = r.helmClient.Rollback(ctx, key.Namespace(cr), key.ReleaseName(cr), 0, helmclient.RollbackOptions{})
+		err = hc.Rollback(ctx, key.Namespace(cr), key.ReleaseName(cr), 0, helmclient.RollbackOptions{})
 		if err != nil {
 			return microerror.Mask(err)
 		}

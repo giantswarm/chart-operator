@@ -4,12 +4,13 @@ import (
 	"time"
 
 	"github.com/giantswarm/apiextensions-application/api/v1alpha1"
-	"github.com/giantswarm/helmclient/v4/pkg/helmclient"
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/micrologger"
 	"github.com/giantswarm/to"
 	"k8s.io/client-go/kubernetes"
 	"sigs.k8s.io/controller-runtime/pkg/client"
+
+	"github.com/giantswarm/chart-operator/v2/service/internal/clientpair"
 )
 
 const (
@@ -25,20 +26,20 @@ const (
 
 // Config represents the configuration used to create a new status resource.
 type Config struct {
-	CtrlClient client.Client
-	HelmClient helmclient.Interface
-	K8sClient  kubernetes.Interface
-	Logger     micrologger.Logger
+	CtrlClient  client.Client
+	HelmClients *clientpair.ClientPair
+	K8sClient   kubernetes.Interface
+	Logger      micrologger.Logger
 
 	HTTPClientTimeout time.Duration
 }
 
 // Resource implements the status resource.
 type Resource struct {
-	ctrlClient client.Client
-	helmClient helmclient.Interface
-	k8sClient  kubernetes.Interface
-	logger     micrologger.Logger
+	ctrlClient  client.Client
+	helmClients *clientpair.ClientPair
+	k8sClient   kubernetes.Interface
+	logger      micrologger.Logger
 
 	httpClientTimeout time.Duration
 }
@@ -48,7 +49,7 @@ func New(config Config) (*Resource, error) {
 	if config.CtrlClient == nil {
 		return nil, microerror.Maskf(invalidConfigError, "%T.CtrlClient must not be empty", config)
 	}
-	if config.HelmClient == nil {
+	if config.HelmClients == nil {
 		return nil, microerror.Maskf(invalidConfigError, "%T.HelmClient must not be empty", config)
 	}
 	if config.K8sClient == nil {
@@ -63,10 +64,10 @@ func New(config Config) (*Resource, error) {
 	}
 
 	r := &Resource{
-		ctrlClient: config.CtrlClient,
-		helmClient: config.HelmClient,
-		k8sClient:  config.K8sClient,
-		logger:     config.Logger,
+		ctrlClient:  config.CtrlClient,
+		helmClients: config.HelmClients,
+		k8sClient:   config.K8sClient,
+		logger:      config.Logger,
 
 		httpClientTimeout: config.HTTPClientTimeout,
 	}

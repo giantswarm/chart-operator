@@ -5,10 +5,27 @@ import (
 	"testing"
 
 	"github.com/giantswarm/apiextensions-application/api/v1alpha1"
+	"github.com/giantswarm/k8smetadata/pkg/annotation"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
-	"github.com/giantswarm/chart-operator/v2/pkg/annotation"
+	chartmeta "github.com/giantswarm/chart-operator/v2/pkg/annotation"
 )
+
+func Test_AppNamespace(t *testing.T) {
+	expectedAppNamepace := "org-acme"
+
+	obj := v1alpha1.Chart{
+		ObjectMeta: metav1.ObjectMeta{
+			Annotations: map[string]string{
+				annotation.AppNamespace: "org-acme",
+			},
+		},
+	}
+
+	if AppNamespace(obj) != expectedAppNamepace {
+		t.Fatalf("App CR namespace %#q, want %#q", AppNamespace(obj), expectedAppNamepace)
+	}
+}
 
 func Test_ConfigMapName(t *testing.T) {
 	expectedConfigMapName := "prometheus-values"
@@ -54,7 +71,7 @@ func Test_CordonReason(t *testing.T) {
 	obj := v1alpha1.Chart{
 		ObjectMeta: metav1.ObjectMeta{
 			Annotations: map[string]string{
-				annotation.CordonReason: "manual upgrade",
+				chartmeta.CordonReason: "manual upgrade",
 			},
 		},
 	}
@@ -70,7 +87,7 @@ func Test_CordonUntil(t *testing.T) {
 	obj := v1alpha1.Chart{
 		ObjectMeta: metav1.ObjectMeta{
 			Annotations: map[string]string{
-				annotation.CordonUntilDate: "2019-12-31T23:59:59Z",
+				chartmeta.CordonUntilDate: "2019-12-31T23:59:59Z",
 			},
 		},
 	}
@@ -161,8 +178,8 @@ func Test_IsCordoned(t *testing.T) {
 			chart: v1alpha1.Chart{
 				ObjectMeta: metav1.ObjectMeta{
 					Annotations: map[string]string{
-						annotation.CordonReason:    "testing manual upgrade",
-						annotation.CordonUntilDate: "2019-12-31T23:59:59Z",
+						chartmeta.CordonReason:    "testing manual upgrade",
+						chartmeta.CordonUntilDate: "2019-12-31T23:59:59Z",
 					},
 				},
 			},
@@ -305,7 +322,7 @@ func Test_ValuesMD5ChecksumAnnotation(t *testing.T) {
 	obj := v1alpha1.Chart{
 		ObjectMeta: metav1.ObjectMeta{
 			Annotations: map[string]string{
-				annotation.ValuesMD5Checksum: "1ee001c5286ca00fdf64d9660c04bde2",
+				chartmeta.ValuesMD5Checksum: "1ee001c5286ca00fdf64d9660c04bde2",
 			},
 		},
 	}

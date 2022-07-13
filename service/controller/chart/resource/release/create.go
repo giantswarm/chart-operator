@@ -18,6 +18,9 @@ func (r *Resource) ApplyCreateChange(ctx context.Context, obj, createChange inte
 	if err != nil {
 		return microerror.Mask(err)
 	}
+
+	hc := r.helmClients.Get(ctx, cr)
+
 	cc, err := controllercontext.FromContext(ctx)
 	if err != nil {
 		return microerror.Mask(err)
@@ -39,10 +42,10 @@ func (r *Resource) ApplyCreateChange(ctx context.Context, obj, createChange inte
 	tarballURL := key.TarballURL(cr)
 	skipCRDs := key.SkipCRDs(cr)
 
-	tarballPath, err := r.helmClient.PullChartTarball(ctx, tarballURL)
+	tarballPath, err := hc.PullChartTarball(ctx, tarballURL)
 	if helmclient.IsPullChartFailedError(err) {
 		reason := fmt.Sprintf("pulling chart %#q failed", tarballURL)
-		addStatusToContext(cc, reason, releaseNotInstalledStatus)
+		addStatusToContext(cc, reason, chartPullFailedStatus)
 
 		r.logger.LogCtx(ctx, "level", "warning", "message", reason, "stack", microerror.JSON(err))
 		r.logger.Debugf(ctx, "canceling resource")
@@ -50,7 +53,7 @@ func (r *Resource) ApplyCreateChange(ctx context.Context, obj, createChange inte
 		return nil
 	} else if helmclient.IsPullChartNotFound(err) {
 		reason := fmt.Sprintf("chart %#q not found", tarballURL)
-		addStatusToContext(cc, reason, releaseNotInstalledStatus)
+		addStatusToContext(cc, reason, chartPullFailedStatus)
 
 		r.logger.LogCtx(ctx, "level", "warning", "message", reason, "stack", microerror.JSON(err))
 		r.logger.Debugf(ctx, "canceling resource")
@@ -58,7 +61,7 @@ func (r *Resource) ApplyCreateChange(ctx context.Context, obj, createChange inte
 		return nil
 	} else if helmclient.IsPullChartTimeout(err) {
 		reason := fmt.Sprintf("timeout pulling %#q", tarballURL)
-		addStatusToContext(cc, reason, releaseNotInstalledStatus)
+		addStatusToContext(cc, reason, chartPullFailedStatus)
 
 		r.logger.LogCtx(ctx, "level", "warning", "message", reason, "stack", microerror.JSON(err))
 		r.logger.Debugf(ctx, "canceling resource")
@@ -92,7 +95,7 @@ func (r *Resource) ApplyCreateChange(ctx context.Context, obj, createChange inte
 		}
 		// We need to pass the ValueOverrides option to make the install process
 		// use the default values and prevent errors on nested values.
-		err = r.helmClient.InstallReleaseFromTarball(ctx, tarballPath, ns, releaseState.Values, opts)
+		err = hc.InstallReleaseFromTarball(ctx, tarballPath, ns, releaseState.Values, opts)
 		close(ch)
 	}()
 
@@ -142,7 +145,7 @@ func (r *Resource) ApplyCreateChange(ctx context.Context, obj, createChange inte
 	} else if err != nil {
 		r.logger.Errorf(ctx, err, "helm release %#q failed", releaseState.Name)
 
-		releaseContent, relErr := r.helmClient.GetReleaseContent(ctx, ns, releaseState.Name)
+		releaseContent, relErr := hc.GetReleaseContent(ctx, ns, releaseState.Name)
 		if helmclient.IsReleaseNotFound(relErr) {
 			addStatusToContext(cc, err.Error(), releaseNotInstalledStatus)
 
