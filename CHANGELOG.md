@@ -7,6 +7,35 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+## [2.25.0] - 2022-07-04
+
+### Changed
+
+- Tighten pod and container security contexts for PSS restricted policies.
+- Use downward API to set deployment env var `KUBERNETES_SERVICE_HOST` to `status.hostIP`.
+- Change `initialBootstrapMode` configuration value to `bootstrapMode`.
+- Use private Helm client for installing app-operators from control-plane-test-catalog
+
+### Added
+
+- Allow to set api server pod port when enabling `initialBootstrapMode`.
+
+## [2.24.1] - 2022-06-22
+
+### Changed
+
+- Update `helmclient` to v4.10.1.
+
+## [2.24.0] - 2022-06-09
+
+### Changed
+
+- Add `chart-pull-failed` error to differentiate between issues when pulling chart tarball and other problems.
+
+### Fixed
+
+- Fix missing `PriorityClass` issue.
+
 ## [2.23.0] - 2022-06-06
 
 ### Changed
@@ -432,7 +461,10 @@ We check progress in the next reconciliation loop. ([#362](https://github.com/gi
 - Separate podsecuritypolicy.
 - Security context in deployment spec with non-root user.
 
-[Unreleased]: https://github.com/giantswarm/chart-operator/compare/v2.23.0...HEAD
+[Unreleased]: https://github.com/giantswarm/chart-operator/compare/v2.25.0...HEAD
+[2.25.0]: https://github.com/giantswarm/chart-operator/compare/v2.24.1...v2.25.0
+[2.24.1]: https://github.com/giantswarm/chart-operator/compare/v2.24.0...v2.24.1
+[2.24.0]: https://github.com/giantswarm/chart-operator/compare/v2.23.0...v2.24.0
 [2.23.0]: https://github.com/giantswarm/chart-operator/compare/v2.22.0...v2.23.0
 [2.22.0]: https://github.com/giantswarm/chart-operator/compare/v2.21.1...v2.22.0
 [2.21.1]: https://github.com/giantswarm/chart-operator/compare/v2.21.0...v2.21.1

@@ -39,11 +39,17 @@ spec:
             path: config.yaml
       priorityClassName: giantswarm-critical
       serviceAccountName: {{ tpl .Values.resource.default.name  . }}
-      {{- if .Values.initialBootstrapMode }}
+      securityContext:
+        runAsUser: {{ .Values.pod.user.id }}
+        runAsGroup: {{ .Values.pod.group.id }}
+        {{- with .Values.podSecurityContext }}
+          {{- . | toYaml | nindent 8 }}
+        {{- end }}
+      {{- if .Values.bootstrapMode.enabled }}
       nodeSelector:
         node-role.kubernetes.io/master: ""
       {{- end }}
-      {{- if or .Values.chartOperator.cni.install .Values.initialBootstrapMode }}
+      {{- if or .Values.chartOperator.cni.install .Values.bootstrapMode.enabled }}
       hostNetwork: true
       tolerations:
       - effect: NoSchedule
@@ -80,14 +86,21 @@ spec:
         securityContext:
           runAsUser: {{ .Values.pod.user.id }}
           runAsGroup: {{ .Values.pod.group.id }}
+          {{- with .Values.securityContext }}
+            {{- . | toYaml | nindent 10 }}
+          {{- end }}
       {{- end }}
       containers:
       - name: {{ .Chart.Name }}
-        {{- if or .Values.proxy.enabled .Values.initialBootstrapMode }}
+        {{- if or .Values.proxy.enabled .Values.bootstrapMode.enabled }}
         env:
-        {{- if .Values.initialBootstrapMode }}
+        {{- if .Values.bootstrapMode.enabled }}
         - name: KUBERNETES_SERVICE_HOST
-          value: 127.0.0.1
+          valueFrom:
+            fieldRef:
+              fieldPath: status.hostIP
+        - name: KUBERNETES_SERVICE_PORT
+          value: {{ .Values.bootstrapMode.apiServerPodPort | quote }}
         {{- end }}
         {{- if .Values.proxy.http }}
         - name: HTTP_PROXY
@@ -120,6 +133,9 @@ spec:
         securityContext:
           runAsUser: {{ .Values.pod.user.id }}
           runAsGroup: {{ .Values.pod.group.id }}
+          {{- with .Values.securityContext }}
+            {{- . | toYaml | nindent 10 }}
+          {{- end }}
         livenessProbe:
           httpGet:
             path: /healthz

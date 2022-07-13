@@ -34,6 +34,11 @@ const (
 	// a manifest object because it exists already.
 	alreadyExistsStatus = "already-exists"
 
+	// chartPullFailedStatus is set in the CR status when it failed to pull
+	// chart tarball for various reasons: network issues, tarball does not
+	// exists, connection timeout etc.
+	chartPullFailedStatus = "chart-pull-failed"
+
 	// invalidManifestStatus is set in the CR status when it failed to create
 	// manifest objects with helm resources.
 	invalidManifestStatus = "invalid-manifest"

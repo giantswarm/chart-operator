@@ -162,7 +162,7 @@ func Test_Get(t *testing.T) {
 			expectedClient: prvHC,
 		},
 		{
-			name: "split client, WC app operator",
+			name: "split client, WC app operator (control-plane-catalog)",
 			chart: v1alpha1.Chart{
 				ObjectMeta: metav1.ObjectMeta{
 					Annotations: map[string]string{
@@ -172,6 +172,22 @@ func Test_Get(t *testing.T) {
 				},
 				Spec: v1alpha1.ChartSpec{
 					TarballURL: appOperatorChart + "-5.9.0.tgz",
+				},
+			},
+			clientPair:     splitClient,
+			expectedClient: prvHC,
+		},
+		{
+			name: "split client, WC app operator (control-plane-test-catalog)",
+			chart: v1alpha1.Chart{
+				ObjectMeta: metav1.ObjectMeta{
+					Annotations: map[string]string{
+						annotation.AppNamespace: "demo0",
+						annotation.AppName:      "app-operator-demo0",
+					},
+				},
+				Spec: v1alpha1.ChartSpec{
+					TarballURL: appOperatorTestChart + "-5.9.0.tgz",
 				},
 			},
 			clientPair:     splitClient,
