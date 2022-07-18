@@ -25,7 +25,7 @@ require (
 	github.com/klauspost/compress v1.15.6 // indirect
 	github.com/moby/sys/mountinfo v0.6.2 // indirect
 	github.com/prometheus/client_golang v1.12.2
-	github.com/spf13/afero v1.8.2
+	github.com/spf13/afero v1.9.0
 	github.com/spf13/viper v1.12.0
 	golang.org/x/net v0.0.0-20220607020251-c690dde0001d // indirect
 	golang.org/x/sync v0.0.0-20220601150217-0de741cfad7f // indirect
