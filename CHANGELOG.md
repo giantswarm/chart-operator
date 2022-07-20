@@ -7,6 +7,10 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+### Changed
+
+- Use `127.0.0.1` as KUBERNETES_SERVICE_HOST when `bootstrapMode` is enabled.
+
 ## [2.25.0] - 2022-07-04
 
 ### Changed
