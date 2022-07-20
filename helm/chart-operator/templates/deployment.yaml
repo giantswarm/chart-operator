@@ -96,9 +96,7 @@ spec:
         env:
         {{- if .Values.bootstrapMode.enabled }}
         - name: KUBERNETES_SERVICE_HOST
-          valueFrom:
-            fieldRef:
-              fieldPath: status.hostIP
+          value: 127.0.0.1
         - name: KUBERNETES_SERVICE_PORT
           value: {{ .Values.bootstrapMode.apiServerPodPort | quote }}
         {{- end }}
