@@ -15,6 +15,9 @@ CVE-2020-28483 until=2022-07-30
 CVE-2022-24778 until=2022-07-30
 CVE-2022-23648 until=2022-07-30
 
+# pkg:golang/github.com/nats-io/jwt@v0.3.2
+CVE-2020-26892 until=2022-07-30
+
 sonatype-2020-0921 until=2022-07-30
 sonatype-2022-0204 until=2022-07-30
 sonatype-2020-1258 until=2022-07-30
