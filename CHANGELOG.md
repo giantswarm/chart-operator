@@ -7,6 +7,10 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+### Added
+
+- Ensure the `giantswarm` PriorityClass is created first on initial installation.
+
 ## [2.26.0] - 2022-07-20
 
 ### Changed
