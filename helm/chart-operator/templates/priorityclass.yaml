@@ -16,10 +16,6 @@ metadata:
   name: giantswarm-critical
   labels:
     {{- include "chart-operator.labels" . | nindent 4 }}
-  annotations:
-    helm.sh/hook: pre-install
-    helm.sh/resource-policy: keep
-    helm.sh/hook-delete-policy: hook-failed
 value: 1000000000
 globalDefault: false
 description: "This priority class is used by giantswarm kubernetes components."
