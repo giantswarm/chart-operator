@@ -7,9 +7,9 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
-### Removed
+### Changed
 
-- Remove helm annotations from `giantswarm-critical` PriorityClass since they broke prod clusters during upgrades.
+- Add `pre-upgrade` helm annotation to `giantswarm-critical` PriorityClass in order to fix upgrade issues.
 
 ## [2.27.0] - 2022-07-29
 
