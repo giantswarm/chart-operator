@@ -7,6 +7,8 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+## [2.28.0] - 2022-08-09
+
 ### Changed
 
 - Add `pre-upgrade` helm annotation to `giantswarm-critical` PriorityClass in order to fix upgrade issues.
@@ -477,7 +479,8 @@ We check progress in the next reconciliation loop. ([#362](https://github.com/gi
 - Separate podsecuritypolicy.
 - Security context in deployment spec with non-root user.
 
-[Unreleased]: https://github.com/giantswarm/chart-operator/compare/v2.27.0...HEAD
+[Unreleased]: https://github.com/giantswarm/chart-operator/compare/v2.28.0...HEAD
+[2.28.0]: https://github.com/giantswarm/chart-operator/compare/v2.27.0...v2.28.0
 [2.27.0]: https://github.com/giantswarm/chart-operator/compare/v2.26.0...v2.27.0
 [2.26.0]: https://github.com/giantswarm/chart-operator/compare/v2.25.0...v2.26.0
 [2.25.0]: https://github.com/giantswarm/chart-operator/compare/v2.24.1...v2.25.0
