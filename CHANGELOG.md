@@ -7,6 +7,8 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+- Reconfigure VPA autoscaler to react correctly to pod resource ceilings
+
 ## [2.28.0] - 2022-08-09
 
 ### Changed
