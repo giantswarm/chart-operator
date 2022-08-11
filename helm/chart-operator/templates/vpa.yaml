@@ -1,4 +1,4 @@
-{{ if and (.Capabilities.APIVersions.Has "autoscaling.k8s.io/v1") (.Values.verticalPodAutoscaler.enabled) }}
+{{ if eq (include "resource.vpa.enabled" .) "true" }}
 apiVersion: autoscaling.k8s.io/v1
 kind: VerticalPodAutoscaler
 metadata:
@@ -10,7 +10,15 @@ spec:
   resourcePolicy:
     containerPolicies:
     - containerName: {{ .Chart.Name }}
-      controlledValues: RequestsAndLimits
+      controlledResources:
+        - cpu
+        - memory
+      maxAllowed:
+        cpu: 1000m
+        memory: 1000Mi
+      minAllowed:
+        cpu: 250m
+        memory: 250Mi
       mode: Auto
   targetRef:
     apiVersion: apps/v1

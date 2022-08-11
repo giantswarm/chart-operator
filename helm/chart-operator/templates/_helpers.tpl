@@ -33,3 +33,17 @@ Selector labels
 app.kubernetes.io/name: {{ include "chart-operator.name" . | quote }}
 app.kubernetes.io/instance: {{ .Release.Name | quote }}
 {{- end -}}
+
+{{- define "resource.vpa.enabled" -}}
+{{- if and (.Capabilities.APIVersions.Has "autoscaling.k8s.io/v1") (.Values.verticalPodAutoscaler.enabled) }}true{{ else }}false{{ end }}
+{{- end -}}
+
+
+{{- define "deployment.resources" -}}
+requests:
+{{ toYaml .Values.deployment.requests | indent 2 -}}
+{{ if eq (include "resource.vpa.enabled" .) "false" }}
+limits:
+{{ toYaml .Values.deployment.limits | indent 2 -}}
+{{- end -}}
+{{- end -}}
