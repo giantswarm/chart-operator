@@ -46,8 +46,13 @@ spec:
           {{- . | toYaml | nindent 8 }}
         {{- end }}
       {{- if .Values.bootstrapMode.enabled }}
+      {{- if ge (int .Capabilities.KubeVersion.Minor) 24 }}
+      nodeSelector:
+        node-role.kubernetes.io/control-plane: ""
+      {{- else }}
       nodeSelector:
         node-role.kubernetes.io/master: ""
+      {{- end }}
       {{- end }}
       {{- if or .Values.chartOperator.cni.install .Values.bootstrapMode.enabled }}
       hostNetwork: true
@@ -56,6 +61,8 @@ spec:
         operator: Exists
       {{- else }}
       tolerations:
+      - key: node-role.kubernetes.io/control-plane
+        effect: NoSchedule
       - key: node-role.kubernetes.io/master
         effect: NoSchedule
       {{- end }}

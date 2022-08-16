@@ -7,6 +7,10 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+### Changed
+
+- Add support for new control-plane label in k8s 1.24.
+
 ## [2.29.0] - 2022-08-12
 
 - Reconfigure VPA autoscaler to react correctly to pod resource ceilings
