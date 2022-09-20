@@ -7,6 +7,10 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+### Added
+
+- Add suport for timeout in the `ChartSpecInstall` field.
+
 ### Changed
 
 - Add support for new control-plane label in k8s 1.24.
