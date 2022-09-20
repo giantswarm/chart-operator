@@ -41,6 +41,7 @@ func (r *Resource) ApplyCreateChange(ctx context.Context, obj, createChange inte
 	ns := key.Namespace(cr)
 	tarballURL := key.TarballURL(cr)
 	skipCRDs := key.SkipCRDs(cr)
+	timeout := key.InstallTimeout(cr)
 
 	tarballPath, err := hc.PullChartTarball(ctx, tarballURL)
 	if helmclient.IsPullChartFailedError(err) {
@@ -92,6 +93,11 @@ func (r *Resource) ApplyCreateChange(ctx context.Context, obj, createChange inte
 		opts := helmclient.InstallOptions{
 			ReleaseName: releaseState.Name,
 			SkipCRDs:    skipCRDs,
+		}
+
+		// If the timeout is provided use it
+		if timeout != nil {
+			opts.Timeout = (*timeout).Duration
 		}
 		// We need to pass the ValueOverrides option to make the install process
 		// use the default values and prevent errors on nested values.

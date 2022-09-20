@@ -90,6 +90,8 @@ func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange inte
 		r.logger.Debugf(ctx, "helm upgrade force is disabled for %#q", releaseState.Name)
 	}
 
+	timeout := key.InstallTimeout(cr)
+
 	ch := make(chan error)
 
 	// We update the helm release but with a wait timeout so we don't
@@ -100,6 +102,10 @@ func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange inte
 	go func() {
 		opts := helmclient.UpdateOptions{
 			Force: false,
+		}
+
+		if timeout != nil {
+			opts.Timeout = (*timeout).Duration
 		}
 
 		// We need to pass the ValueOverrides option to make the update process
@@ -240,6 +246,11 @@ func (r *Resource) newUpdateChange(ctx context.Context, obj, currentState, desir
 	}
 
 	r.logger.Debugf(ctx, "finding out if the %#q release has to be updated", desiredReleaseState.Name)
+
+	// When the `force` annotation is used, and when Helm's timeout > operator's reconciliation interval,
+	// then this effectively imposes an upper boundry on the app installation. This upper boundry be the
+	// operator's reconciliation loop, as no matter the time in such case, it will rollback the process
+	// on the next sync.
 
 	// The release is still being updated so we don't update and check again
 	// in the next reconciliation loop.

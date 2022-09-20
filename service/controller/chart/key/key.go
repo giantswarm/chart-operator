@@ -3,6 +3,8 @@ package key
 import (
 	"strconv"
 
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+
 	"github.com/giantswarm/apiextensions-application/api/v1alpha1"
 	"github.com/giantswarm/k8smetadata/pkg/annotation"
 	"github.com/giantswarm/k8smetadata/pkg/label"
@@ -57,6 +59,10 @@ func HasForceUpgradeAnnotation(customResource v1alpha1.Chart) bool {
 	}
 
 	return result
+}
+
+func InstallTimeout(customResource v1alpha1.Chart) *metav1.Duration {
+	return customResource.Spec.Install.Timeout
 }
 
 func IsCordoned(customResource v1alpha1.Chart) bool {
