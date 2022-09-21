@@ -330,7 +330,14 @@ func (r *Resource) rollback(ctx context.Context, obj interface{}, currentStatus 
 	if currentStatus == helmclient.StatusPendingInstall {
 		r.logger.Debugf(ctx, "deleting release %#q in %#q status", key.ReleaseName(cr), currentStatus)
 
-		err = hc.DeleteRelease(ctx, key.Namespace(cr), key.ReleaseName(cr))
+		opts := helmclient.DeleteOptions{}
+		timeout := key.UninstallTimeout(cr)
+
+		if timeout != nil {
+			opts.Timeout = (*timeout).Duration
+		}
+
+		err = hc.DeleteRelease(ctx, key.Namespace(cr), key.ReleaseName(cr), opts)
 		if err != nil {
 			return microerror.Mask(err)
 		}

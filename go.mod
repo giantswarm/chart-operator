@@ -7,7 +7,7 @@ require (
 	github.com/giantswarm/appcatalog v0.9.1
 	github.com/giantswarm/backoff v1.0.0
 	github.com/giantswarm/exporterkit v1.0.0
-	github.com/giantswarm/helmclient/v4 v4.10.2-0.20220921132843-bcdf7f0eba72
+	github.com/giantswarm/helmclient/v4 v4.10.2-0.20220921135411-46662b5944cf
 	github.com/giantswarm/k8sclient/v6 v6.1.0
 	github.com/giantswarm/k8smetadata v0.13.0
 	github.com/giantswarm/microendpoint v1.0.0
