@@ -97,6 +97,10 @@ func ReleaseName(customResource v1alpha1.Chart) string {
 	return customResource.Spec.Name
 }
 
+func RollbackTimeout(customResource v1alpha1.Chart) *metav1.Duration {
+	return customResource.Spec.Rollback.Timeout
+}
+
 func SecretName(customResource v1alpha1.Chart) string {
 	return customResource.Spec.Config.Secret.Name
 }
@@ -122,6 +126,14 @@ func ToCustomResource(v interface{}) (v1alpha1.Chart, error) {
 	}
 
 	return *customResourcePointer, nil
+}
+
+func UninstallTimeout(customResource v1alpha1.Chart) *metav1.Duration {
+	return customResource.Spec.Uninstall.Timeout
+}
+
+func UpgradeTimeout(customResource v1alpha1.Chart) *metav1.Duration {
+	return customResource.Spec.Upgrade.Timeout
 }
 
 // ValuesMD5ChecksumAnnotation returns the annotation value to determine if the

@@ -90,7 +90,7 @@ func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange inte
 		r.logger.Debugf(ctx, "helm upgrade force is disabled for %#q", releaseState.Name)
 	}
 
-	timeout := key.InstallTimeout(cr)
+	timeout := key.UpgradeTimeout(cr)
 
 	ch := make(chan error)
 
@@ -105,6 +105,7 @@ func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange inte
 		}
 
 		if timeout != nil {
+			r.logger.Debugf(ctx, "using custom %#q timeout to update release %#q", (*timeout).Duration, releaseState.Name)
 			opts.Timeout = (*timeout).Duration
 		}
 
@@ -338,8 +339,16 @@ func (r *Resource) rollback(ctx context.Context, obj interface{}, currentStatus 
 	} else {
 		r.logger.Debugf(ctx, "rollback release %#q in %#q status", key.ReleaseName(cr), currentStatus)
 
+		opts := helmclient.RollbackOptions{}
+		timeout := key.RollbackTimeout(cr)
+
+		if timeout != nil {
+			r.logger.Debugf(ctx, "using custom %#q timeout to rollback release %#q", (*timeout).Duration, key.ReleaseName(cr))
+			opts.Timeout = (*timeout).Duration
+		}
+
 		// Rollback to revision 0 restore a release to the previous revision.
-		err = hc.Rollback(ctx, key.Namespace(cr), key.ReleaseName(cr), 0, helmclient.RollbackOptions{})
+		err = hc.Rollback(ctx, key.Namespace(cr), key.ReleaseName(cr), 0, opts)
 		if err != nil {
 			return microerror.Mask(err)
 		}

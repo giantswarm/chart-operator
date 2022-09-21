@@ -97,6 +97,7 @@ func (r *Resource) ApplyCreateChange(ctx context.Context, obj, createChange inte
 
 		// If the timeout is provided use it
 		if timeout != nil {
+			r.logger.Debugf(ctx, "using custom %#q timeout to install release %#q", (*timeout).Duration, releaseState.Name)
 			opts.Timeout = (*timeout).Duration
 		}
 		// We need to pass the ValueOverrides option to make the install process
