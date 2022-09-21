@@ -1,6 +1,6 @@
 module github.com/giantswarm/chart-operator/v2
 
-go 1.19
+go 1.18
 
 require (
 	github.com/giantswarm/apiextensions-application v0.3.0
@@ -180,7 +180,7 @@ replace (
 	github.com/dgrijalva/jwt-go => github.com/dgrijalva/jwt-go/v4 v4.0.0-preview1
 	github.com/docker/distribution => github.com/docker/distribution v0.0.0-20191216044856-a8371794149d
 	// Use moby v20.10.0-beta1 to fix build issue on darwin.
-	github.com/docker/docker => github.com/moby/moby v20.10.18+incompatible+incompatible
+	github.com/docker/docker => github.com/moby/moby v20.10.18+incompatible
 	// Use go-logr/logr v0.1.0 due to breaking changes in v0.2.0 that can't be applied.
 	github.com/go-logr/logr v0.2.0 => github.com/go-logr/logr v0.1.0
 	github.com/gogo/protobuf v1.3.1 => github.com/gogo/protobuf v1.3.2
