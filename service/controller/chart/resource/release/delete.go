@@ -28,6 +28,8 @@ func (r *Resource) ApplyDeleteChange(ctx context.Context, obj, deleteChange inte
 	if releaseState.Name != "" {
 		r.logger.Debugf(ctx, "deleting release %#q", releaseState.Name)
 
+		// helmclient does not support setting the uninstall timeout yet,
+		// TBD
 		err = hc.DeleteRelease(ctx, key.Namespace(cr), releaseState.Name)
 		if helmclient.IsReleaseNotFound(err) {
 			r.logger.Debugf(ctx, "release %#q already deleted", releaseState.Name)
