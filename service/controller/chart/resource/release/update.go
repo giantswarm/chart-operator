@@ -191,7 +191,7 @@ func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange inte
 		} else if releaseContent.Status == helmclient.StatusPendingUpgrade {
 			// (ljakimczuk): this is a cosmetic change and is not really needed. Without it,
 			// we will get the `unknown` error in the logs indicating operation is in progress,
-			// what is technically not an issue as Helm sees it as error. We however now, that
+			// what is technically not an issue as Helm sees it as error. We however know, that
 			// operation is in progress because app may need more time to finish, so it feels
 			// justified to treat it as a known condition.
 			// With it, this error is replaced by a debug log line. My initial idea was to skip
