@@ -3,11 +3,11 @@ module github.com/giantswarm/chart-operator/v2
 go 1.18
 
 require (
-	github.com/giantswarm/apiextensions-application v0.5.2-0.20220921182257-2bcda82ec5f7
+	github.com/giantswarm/apiextensions-application v0.6.0
 	github.com/giantswarm/appcatalog v0.9.1
 	github.com/giantswarm/backoff v1.0.0
 	github.com/giantswarm/exporterkit v1.0.0
-	github.com/giantswarm/helmclient/v4 v4.10.2-0.20220921145339-1dc1ef4cf7d1
+	github.com/giantswarm/helmclient/v4 v4.11.0
 	github.com/giantswarm/k8sclient/v6 v6.1.0
 	github.com/giantswarm/k8smetadata v0.13.0
 	github.com/giantswarm/microendpoint v1.0.0
