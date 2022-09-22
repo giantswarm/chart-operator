@@ -189,6 +189,15 @@ func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange inte
 			resourcecanceledcontext.SetCanceled(ctx)
 			return nil
 		} else if releaseContent.Status == helmclient.StatusPendingUpgrade {
+			// (ljakimczuk): this is a cosmetic change and is not really needed. Without it,
+			// we will get the `unknown` error in the logs indicating operation is in progress,
+			// what is technically not an issue as Helm sees it as error. We however now, that
+			// operation is in progress because app may need more time to finish, so it feels
+			// justified to treat it as a known condition.
+			// With it, this error is replaced by a debug log line. My initial idea was to skip
+			// the upgrade try altogether, when it is already on-going, but that would require
+			// reversing the order of checking the status and upgrading, which I think is not that
+			// necessary after all.
 			addStatusToContext(cc, releaseContent.Description, helmclient.StatusPendingUpgrade)
 
 			r.logger.Debugf(ctx, "updating release %#q is already on-going", releaseContent.Name)
