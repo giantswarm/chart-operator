@@ -188,6 +188,13 @@ func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange inte
 			r.logger.Debugf(ctx, "canceling resource")
 			resourcecanceledcontext.SetCanceled(ctx)
 			return nil
+		} else if releaseContent.Status == helmclient.StatusPendingUpgrade {
+			addStatusToContext(cc, releaseContent.Description, helmclient.StatusPendingUpgrade)
+
+			r.logger.Debugf(ctx, "updating release %#q is already on-going", releaseContent.Name)
+			r.logger.Debugf(ctx, "canceling resource")
+			resourcecanceledcontext.SetCanceled(ctx)
+			return nil
 		}
 
 		addStatusToContext(cc, err.Error(), unknownError)
