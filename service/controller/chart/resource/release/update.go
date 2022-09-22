@@ -266,8 +266,8 @@ func (r *Resource) newUpdateChange(ctx context.Context, obj, currentState, desir
 
 	// When the `force` annotation is used, and when Helm's timeout > operator's reconciliation interval,
 	// then this effectively imposes an upper boundry on the app installation. This upper boundry be the
-	// operator's reconciliation loop, as no matter the time in such case, it will rollback the process
-	// on the next sync.
+	// operator's reconciliation loop, as no matter the requeted Helm's timeout in such case, it will
+	// rollback the process on the next sync.
 
 	// The release is still being updated so we don't update and check again
 	// in the next reconciliation loop.
