@@ -9,7 +9,7 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ### Added
 
-- Add suport for timeout in the `ChartSpecInstall` field.
+- Add suport for timeouts fields in the Chart CR.
 
 ### Changed
 
