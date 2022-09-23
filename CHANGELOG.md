@@ -7,6 +7,10 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+### Added
+
+- Add suport for timeouts fields in the Chart CR.
+
 ### Changed
 
 - Add support for new control-plane label in k8s 1.24.

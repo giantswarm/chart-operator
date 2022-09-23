@@ -90,6 +90,8 @@ func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange inte
 		r.logger.Debugf(ctx, "helm upgrade force is disabled for %#q", releaseState.Name)
 	}
 
+	timeout := key.UpgradeTimeout(cr)
+
 	ch := make(chan error)
 
 	// We update the helm release but with a wait timeout so we don't
@@ -100,6 +102,11 @@ func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange inte
 	go func() {
 		opts := helmclient.UpdateOptions{
 			Force: false,
+		}
+
+		if timeout != nil {
+			r.logger.Debugf(ctx, "using custom %#q timeout to update release %#q", (*timeout).Duration, releaseState.Name)
+			opts.Timeout = (*timeout).Duration
 		}
 
 		// We need to pass the ValueOverrides option to make the update process
@@ -159,8 +166,6 @@ func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange inte
 		resourcecanceledcontext.SetCanceled(ctx)
 		return nil
 	} else if err != nil {
-		r.logger.Errorf(ctx, err, "helm release %#q failed", releaseState.Name)
-
 		releaseContent, relErr := hc.GetReleaseContent(ctx, key.Namespace(cr), releaseState.Name)
 		if helmclient.IsReleaseNotFound(relErr) {
 			reason := fmt.Sprintf("release %#q not found", releaseState.Name)
@@ -181,8 +186,25 @@ func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange inte
 			r.logger.Debugf(ctx, "canceling resource")
 			resourcecanceledcontext.SetCanceled(ctx)
 			return nil
+		} else if releaseContent.Status == helmclient.StatusPendingUpgrade {
+			// (ljakimczuk): this is a cosmetic change and is not really needed. Without it,
+			// we will get the `unknown` error in the logs indicating operation is in progress,
+			// what is technically not an issue as Helm sees it as error. We however know, that
+			// operation is in progress because app may need more time to finish, so it feels
+			// justified to treat it as a known condition.
+			// With it, this error is replaced by a debug log line. My initial idea was to skip
+			// the upgrade try altogether, when it is already on-going, but that would require
+			// reversing the order of checking the status and upgrading, which I think is not that
+			// necessary after all.
+			addStatusToContext(cc, releaseContent.Description, helmclient.StatusPendingUpgrade)
+
+			r.logger.Debugf(ctx, "updating release %#q is already on-going", releaseContent.Name)
+			r.logger.Debugf(ctx, "canceling resource")
+			resourcecanceledcontext.SetCanceled(ctx)
+			return nil
 		}
 
+		r.logger.Errorf(ctx, err, "helm release %#q failed", releaseState.Name)
 		addStatusToContext(cc, err.Error(), unknownError)
 
 		r.logger.Debugf(ctx, "canceling resource")
@@ -240,6 +262,11 @@ func (r *Resource) newUpdateChange(ctx context.Context, obj, currentState, desir
 	}
 
 	r.logger.Debugf(ctx, "finding out if the %#q release has to be updated", desiredReleaseState.Name)
+
+	// When the `force` annotation is used, and when Helm's timeout > operator's reconciliation interval,
+	// then this effectively imposes an upper boundry on the app installation. This upper boundry be the
+	// operator's reconciliation loop, as no matter the requeted Helm's timeout in such case, it will
+	// rollback the process on the next sync.
 
 	// The release is still being updated so we don't update and check again
 	// in the next reconciliation loop.
@@ -318,7 +345,14 @@ func (r *Resource) rollback(ctx context.Context, obj interface{}, currentStatus 
 	if currentStatus == helmclient.StatusPendingInstall {
 		r.logger.Debugf(ctx, "deleting release %#q in %#q status", key.ReleaseName(cr), currentStatus)
 
-		err = hc.DeleteRelease(ctx, key.Namespace(cr), key.ReleaseName(cr))
+		opts := helmclient.DeleteOptions{}
+		timeout := key.UninstallTimeout(cr)
+
+		if timeout != nil {
+			opts.Timeout = (*timeout).Duration
+		}
+
+		err = hc.DeleteRelease(ctx, key.Namespace(cr), key.ReleaseName(cr), opts)
 		if err != nil {
 			return microerror.Mask(err)
 		}
@@ -327,8 +361,16 @@ func (r *Resource) rollback(ctx context.Context, obj interface{}, currentStatus 
 	} else {
 		r.logger.Debugf(ctx, "rollback release %#q in %#q status", key.ReleaseName(cr), currentStatus)
 
+		opts := helmclient.RollbackOptions{}
+		timeout := key.RollbackTimeout(cr)
+
+		if timeout != nil {
+			r.logger.Debugf(ctx, "using custom %#q timeout to rollback release %#q", (*timeout).Duration, key.ReleaseName(cr))
+			opts.Timeout = (*timeout).Duration
+		}
+
 		// Rollback to revision 0 restore a release to the previous revision.
-		err = hc.Rollback(ctx, key.Namespace(cr), key.ReleaseName(cr), 0, helmclient.RollbackOptions{})
+		err = hc.Rollback(ctx, key.Namespace(cr), key.ReleaseName(cr), 0, opts)
 		if err != nil {
 			return microerror.Mask(err)
 		}
