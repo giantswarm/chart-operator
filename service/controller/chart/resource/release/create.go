@@ -145,7 +145,6 @@ func (r *Resource) ApplyCreateChange(ctx context.Context, obj, createChange inte
 			releaseState.Name,
 			releaseState.Values,
 			uOpts)
-
 		close(ch)
 	}()
 
