@@ -108,11 +108,12 @@ func (r *Resource) ApplyCreateChange(ctx context.Context, obj, createChange inte
 		}
 		// We need to pass the ValueOverrides option to make the install process
 		// use the default values and prevent errors on nested values.
-		err = hc.InstallReleaseFromTarball(ctx, tarballPath, ns, releaseState.Values, iOpts)
+		err := hc.InstallReleaseFromTarball(ctx, tarballPath, ns, releaseState.Values, iOpts)
 
 		// We check the error here to return early if installation failed. There is no point
 		// in upgrading in such scenario.
 		if err != nil {
+			ch <- err
 			return
 		}
 
@@ -120,6 +121,7 @@ func (r *Resource) ApplyCreateChange(ctx context.Context, obj, createChange inte
 		// internal upgrade procedure.
 		chart, err := hc.LoadChart(ctx, tarballPath)
 		if err != nil {
+			r.logger.Errorf(ctx, err, "loading chart %#q failed on internal upgrade", tarballPath)
 			return
 		}
 		if _, ok := chart.Annotations[subjectToInternalUpgrade]; !ok {
@@ -145,11 +147,14 @@ func (r *Resource) ApplyCreateChange(ctx context.Context, obj, createChange inte
 			releaseState.Name,
 			releaseState.Values,
 			uOpts)
-		close(ch)
+
+		if err != nil {
+			ch <- err
+		}
 	}()
 
 	select {
-	case <-ch:
+	case err = <-ch:
 		// Fall through.
 	case <-time.After(r.k8sWaitTimeout):
 		r.logger.Debugf(ctx, "waited for %d secs. release still being created", int64(r.k8sWaitTimeout.Seconds()))
