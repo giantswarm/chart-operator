@@ -141,6 +141,7 @@ func (r *Resource) ApplyCreateChange(ctx context.Context, obj, createChange inte
 			uOpts.Timeout = (*timeout).Duration
 		}
 
+		r.logger.Debugf(ctx, "doing internal upgrade for release %#q", releaseState.Name)
 		err = hc.UpdateReleaseFromTarball(ctx,
 			tarballPath,
 			ns,
