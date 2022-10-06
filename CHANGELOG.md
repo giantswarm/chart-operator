@@ -7,6 +7,10 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+## Added
+
+- Add internal upgrade step on installation for Helm charts marked by annotation.
+
 ## [2.30.0] - 2022-09-23
 
 ### Added

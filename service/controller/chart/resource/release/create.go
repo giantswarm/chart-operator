@@ -14,7 +14,9 @@ import (
 )
 
 const (
-	subjectToInternalUpgrade = "application.giantswarm.io/internal-upgrade"
+	// subjectToTwoStepInstall marks app (Helm Chart) as needing two step
+	// installation process.
+	subjectToTwoStepInstall = "application.giantswarm.io/two-step-install"
 )
 
 func (r *Resource) ApplyCreateChange(ctx context.Context, obj, createChange interface{}) error {
@@ -106,6 +108,7 @@ func (r *Resource) ApplyCreateChange(ctx context.Context, obj, createChange inte
 			r.logger.Debugf(ctx, "using custom %#q timeout to install release %#q", (*timeout).Duration, releaseState.Name)
 			iOpts.Timeout = (*timeout).Duration
 		}
+
 		// We need to pass the ValueOverrides option to make the install process
 		// use the default values and prevent errors on nested values.
 		err := hc.InstallReleaseFromTarball(ctx, tarballPath, ns, releaseState.Values, iOpts)
@@ -124,7 +127,7 @@ func (r *Resource) ApplyCreateChange(ctx context.Context, obj, createChange inte
 			r.logger.Errorf(ctx, err, "loading chart %#q failed on internal upgrade", tarballPath)
 			return
 		}
-		if _, ok := chart.Annotations[subjectToInternalUpgrade]; !ok {
+		if _, ok := chart.Annotations[subjectToTwoStepInstall]; !ok {
 			return
 		}
 
