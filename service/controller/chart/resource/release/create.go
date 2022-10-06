@@ -123,7 +123,8 @@ func (r *Resource) ApplyCreateChange(ctx context.Context, obj, createChange inte
 		}
 
 		// Load the chart to get its annotations and verify it is a subject to
-		// internal upgrade procedure.
+		// internal upgrade procedure. If we experience error here we log it and
+		// return.
 		chart, e := hc.LoadChart(ctx, tarballPath)
 		if e != nil {
 			r.logger.Errorf(ctx, err, "loading chart %#q failed on internal upgrade", tarballPath)

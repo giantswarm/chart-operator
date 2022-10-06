@@ -118,6 +118,12 @@ func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange inte
 			releaseState.Values,
 			opts)
 		close(ch)
+
+		/*
+			The two-step installation is not supported on upgrades, yet it could be
+			useful in times when app is already installed in version A, and is being
+			upgraded to version B that introduces new CRDs, and CRs of these kinds.
+		*/
 	}()
 
 	select {
