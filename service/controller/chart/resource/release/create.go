@@ -13,6 +13,12 @@ import (
 	"github.com/giantswarm/chart-operator/v2/service/controller/chart/key"
 )
 
+const (
+	// subjectToTwoStepInstall marks app (Helm Chart) as needing two step
+	// installation process.
+	subjectToTwoStepInstall = "application.giantswarm.io/two-step-install"
+)
+
 func (r *Resource) ApplyCreateChange(ctx context.Context, obj, createChange interface{}) error {
 	cr, err := key.ToCustomResource(obj)
 	if err != nil {
@@ -87,10 +93,14 @@ func (r *Resource) ApplyCreateChange(ctx context.Context, obj, createChange inte
 	// If we do timeout the install will continue in the background.
 	// We will check the progress in the next reconciliation loop.
 	go func() {
+		var e error
+
+		defer close(ch)
+
 		if skipCRDs {
 			r.logger.Debugf(ctx, "helm release %#q has SkipCRDs set to true, not installing CRDs", releaseState.Name)
 		}
-		opts := helmclient.InstallOptions{
+		iOpts := helmclient.InstallOptions{
 			ReleaseName: releaseState.Name,
 			SkipCRDs:    skipCRDs,
 		}
@@ -98,12 +108,56 @@ func (r *Resource) ApplyCreateChange(ctx context.Context, obj, createChange inte
 		// If the timeout is provided use it
 		if timeout != nil {
 			r.logger.Debugf(ctx, "using custom %#q timeout to install release %#q", (*timeout).Duration, releaseState.Name)
-			opts.Timeout = (*timeout).Duration
+			iOpts.Timeout = (*timeout).Duration
 		}
+
 		// We need to pass the ValueOverrides option to make the install process
 		// use the default values and prevent errors on nested values.
-		err = hc.InstallReleaseFromTarball(ctx, tarballPath, ns, releaseState.Values, opts)
-		close(ch)
+		e = hc.InstallReleaseFromTarball(ctx, tarballPath, ns, releaseState.Values, iOpts)
+
+		// We check the error here to return early if installation failed. There is no point
+		// in upgrading in such scenario.
+		if e != nil {
+			err = e
+			return
+		}
+
+		// Load the chart to get its annotations and verify it is a subject to
+		// internal upgrade procedure. If we experience error here we log it and
+		// return.
+		chart, e := hc.LoadChart(ctx, tarballPath)
+		if e != nil {
+			r.logger.Errorf(ctx, err, "loading chart %#q failed on internal upgrade", tarballPath)
+			return
+		}
+		if _, ok := chart.Annotations[subjectToTwoStepInstall]; !ok {
+			return
+		}
+
+		// Hooks get disabled on internal upgrade to make it faster.
+		uOpts := helmclient.UpdateOptions{
+			DisableHooks: true,
+			Force:        false,
+		}
+
+		// Internal upgrade gets the same timeout option as installation, as logically
+		// it is part of the installation procedure.
+		if timeout != nil {
+			r.logger.Debugf(ctx, "using custom %#q timeout to internally update release %#q", (*timeout).Duration, releaseState.Name)
+			uOpts.Timeout = (*timeout).Duration
+		}
+
+		r.logger.Debugf(ctx, "doing internal upgrade for release %#q", releaseState.Name)
+		e = hc.UpdateReleaseFromTarball(ctx,
+			tarballPath,
+			ns,
+			releaseState.Name,
+			releaseState.Values,
+			uOpts)
+
+		if e != nil {
+			err = e
+		}
 	}()
 
 	select {
