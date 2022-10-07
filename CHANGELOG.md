@@ -7,6 +7,8 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+## [2.31.0] - 2022-10-07
+
 ## Added
 
 - Add internal upgrade step on installation for Helm charts marked by annotation.
@@ -497,7 +499,8 @@ We check progress in the next reconciliation loop. ([#362](https://github.com/gi
 - Separate podsecuritypolicy.
 - Security context in deployment spec with non-root user.
 
-[Unreleased]: https://github.com/giantswarm/chart-operator/compare/v2.30.0...HEAD
+[Unreleased]: https://github.com/giantswarm/chart-operator/compare/v2.31.0...HEAD
+[2.31.0]: https://github.com/giantswarm/chart-operator/compare/v2.30.0...v2.31.0
 [2.30.0]: https://github.com/giantswarm/chart-operator/compare/v2.29.0...v2.30.0
 [2.29.0]: https://github.com/giantswarm/chart-operator/compare/v2.28.0...v2.29.0
 [2.28.0]: https://github.com/giantswarm/chart-operator/compare/v2.27.0...v2.28.0
