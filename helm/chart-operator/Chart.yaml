@@ -4,6 +4,7 @@ version: [[ .Version ]]
 appVersion: [[ .AppVersion ]]
 home: https://github.com/giantswarm/chart-operator
 description: A Helm chart for the chart-operator
+icon: https://s.giantswarm.io/app-icons/giantswarm/1/dark.svg
 annotations:
   application.giantswarm.io/team: "honeybadger"
   config.giantswarm.io/version: 1.x.x
