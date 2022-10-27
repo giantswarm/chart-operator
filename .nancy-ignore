@@ -29,6 +29,9 @@ sonatype-2021-0276 until=2022-12-30
 # pkg:golang/helm.sh/helm/v3@v3.8.1
 sonatype-2022-5277 until=2022-12-30
 
+# pkg:golang/golang.org/x/text@v0.3.7
+CVE-2022-32149 until=2022-12-30
+
 # pkg:golang/github.com/nats-io/nats-server/v2@v2.5.0
 CVE-2022-42709 until=2022-12-30
 CVE-2022-42708 until=2022-12-30
