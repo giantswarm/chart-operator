@@ -13,13 +13,13 @@ jobs:
     - uses: actions/setup-python@v4
     - uses: actions/setup-go@v3
       with:
-        go-version: "1.17.7"
+        go-version: "1.18.4"
     - name: Install goimports
       run: |
         go install golang.org/x/tools/cmd/goimports@latest
     - name: Install golangci-lint
       env:
-        GOLANGCI_LINT_VERSION: "v1.42.1"
+        GOLANGCI_LINT_VERSION: "v1.47.2"
       run: |
         curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | \
             sudo sh -s -- -b $GOPATH/bin ${GOLANGCI_LINT_VERSION}
