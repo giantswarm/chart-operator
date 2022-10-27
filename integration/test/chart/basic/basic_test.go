@@ -74,7 +74,6 @@ replicas: 3
 //
 // - Delete chart CR.
 // - Ensure test app is deleted.
-//
 func TestChartLifecycle(t *testing.T) {
 	ctx := context.Background()
 
