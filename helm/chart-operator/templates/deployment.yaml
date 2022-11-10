@@ -66,7 +66,9 @@ spec:
       - key: node-role.kubernetes.io/master
         effect: NoSchedule
       {{- end }}
-      {{- if .Values.isManagementCluster }}
+      {{- if eq .Values.externalDNSIP "" }}
+      dnsPolicy: ClusterFirstWithHostNet
+      {{- else if .Values.isManagementCluster }}
       dnsPolicy: ClusterFirst
       {{- else }}
       dnsPolicy: None
