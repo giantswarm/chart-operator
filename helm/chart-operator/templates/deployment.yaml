@@ -67,7 +67,7 @@ spec:
         effect: NoSchedule
       {{- end }}
       {{- if eq .Values.externalDNSIP "" }}
-      dnsPolicy: ClusterFirstWithHostNet
+      dnsPolicy: Default
       {{- else if .Values.isManagementCluster }}
       dnsPolicy: ClusterFirst
       {{- else }}
