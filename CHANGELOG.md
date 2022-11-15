@@ -7,6 +7,10 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+### Added
+
+- Add support to run in  private cloud clusters,  which cannot provide any working `externaLDNSIP`.
+
 ## [2.32.0] - 2022-11-15
 
 ## Added
