@@ -22,6 +22,7 @@ deployment:
   limits:
     memory: 350Mi
 
+# if explicitly set to empty string, the dnsPolicy: Default is used and tis expected that the cluster is private/closed cluster
 externalDNSIP: 8.8.8.8
 
 e2e: false
