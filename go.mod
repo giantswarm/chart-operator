@@ -18,8 +18,8 @@ require (
 	github.com/giantswarm/to v0.4.0
 	github.com/google/go-cmp v0.5.9
 	github.com/imdario/mergo v0.3.13
-	github.com/prometheus/client_golang v1.13.1
-	github.com/spf13/afero v1.9.2
+	github.com/prometheus/client_golang v1.14.0
+	github.com/spf13/afero v1.9.3
 	github.com/spf13/viper v1.14.0
 	k8s.io/api v0.24.2
 	k8s.io/apimachinery v0.24.2
@@ -123,7 +123,7 @@ require (
 	github.com/peterbourgon/diskv v2.0.1+incompatible // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
-	github.com/prometheus/client_model v0.2.0 // indirect
+	github.com/prometheus/client_model v0.3.0 // indirect
 	github.com/prometheus/common v0.37.0 // indirect
 	github.com/prometheus/procfs v0.8.0 // indirect
 	github.com/rubenv/sql-migrate v1.1.1 // indirect
