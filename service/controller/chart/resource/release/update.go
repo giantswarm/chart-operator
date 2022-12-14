@@ -210,8 +210,13 @@ func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange inte
 			return nil
 		}
 
-		r.logger.Errorf(ctx, err, "helm release %#q failed", releaseState.Name)
-		addStatusToContext(cc, err.Error(), unknownError)
+		if isSchemaValidationError(err) {
+			r.logger.Errorf(ctx, err, "values schema validation for %#q failed", releaseState.Name)
+			addStatusToContext(cc, err.Error(), valuesSchemaViolation)
+		} else {
+			r.logger.Errorf(ctx, err, "helm release %#q failed", releaseState.Name)
+			addStatusToContext(cc, err.Error(), unknownError)
+		}
 
 		r.logger.Debugf(ctx, "canceling resource")
 		resourcecanceledcontext.SetCanceled(ctx)
