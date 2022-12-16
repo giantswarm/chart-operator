@@ -7,6 +7,8 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+## [2.33.2] - 2022-12-16
+
 ## [2.33.1] - 2022-12-16
 
 ### Added
@@ -523,7 +525,8 @@ We check progress in the next reconciliation loop. ([#362](https://github.com/gi
 - Separate podsecuritypolicy.
 - Security context in deployment spec with non-root user.
 
-[Unreleased]: https://github.com/giantswarm/chart-operator/compare/v2.33.1...HEAD
+[Unreleased]: https://github.com/giantswarm/chart-operator/compare/v2.33.2...HEAD
+[2.33.2]: https://github.com/giantswarm/chart-operator/compare/v2.33.1...v2.33.2
 [2.33.1]: https://github.com/giantswarm/chart-operator/compare/v2.33.0...v2.33.1
 [2.33.0]: https://github.com/giantswarm/chart-operator/compare/v2.32.0...v2.33.0
 [2.32.0]: https://github.com/giantswarm/chart-operator/compare/v2.31.0...v2.32.0
