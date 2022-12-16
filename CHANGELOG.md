@@ -13,6 +13,10 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 - New error for values schema validation.
 
+### Changed
+
+- Use transitional errors coming from running Helm in the Chart CR status.
+
 ## [2.33.0] - 2022-11-16
 
 ### Added
