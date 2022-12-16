@@ -7,6 +7,10 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+### Added
+
+- New error for values schema validation.
+
 ## [2.33.0] - 2022-11-16
 
 ### Added

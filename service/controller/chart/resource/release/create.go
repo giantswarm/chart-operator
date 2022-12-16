@@ -206,6 +206,15 @@ func (r *Resource) ApplyCreateChange(ctx context.Context, obj, createChange inte
 	} else if err != nil {
 		r.logger.Errorf(ctx, err, "helm release %#q failed", releaseState.Name)
 
+		if isSchemaValidationError(err) {
+			r.logger.Errorf(ctx, err, "values schema validation for %#q failed", releaseState.Name)
+			addStatusToContext(cc, err.Error(), valuesSchemaViolation)
+
+			r.logger.Debugf(ctx, "canceling resource")
+			resourcecanceledcontext.SetCanceled(ctx)
+			return nil
+		}
+
 		releaseContent, relErr := hc.GetReleaseContent(ctx, ns, releaseState.Name)
 		if helmclient.IsReleaseNotFound(relErr) {
 			addStatusToContext(cc, err.Error(), releaseNotInstalledStatus)

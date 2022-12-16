@@ -187,11 +187,7 @@ func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange inte
 		// Release is failed so the status resource will check the Helm release.
 		if releaseContent.Status == helmclient.StatusFailed {
 			addStatusToContext(cc, releaseContent.Description, helmclient.StatusFailed)
-
 			r.logger.Debugf(ctx, "failed to update release %#q", releaseContent.Name)
-			r.logger.Debugf(ctx, "canceling resource")
-			resourcecanceledcontext.SetCanceled(ctx)
-			return nil
 		} else if releaseContent.Status == helmclient.StatusPendingUpgrade {
 			// (ljakimczuk): this is a cosmetic change and is not really needed. Without it,
 			// we will get the `unknown` error in the logs indicating operation is in progress,
@@ -203,15 +199,14 @@ func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange inte
 			// reversing the order of checking the status and upgrading, which I think is not that
 			// necessary after all.
 			addStatusToContext(cc, releaseContent.Description, helmclient.StatusPendingUpgrade)
-
 			r.logger.Debugf(ctx, "updating release %#q is already on-going", releaseContent.Name)
-			r.logger.Debugf(ctx, "canceling resource")
-			resourcecanceledcontext.SetCanceled(ctx)
-			return nil
+		} else if isSchemaValidationError(err) {
+			r.logger.Errorf(ctx, err, "values schema validation for %#q failed", releaseState.Name)
+			addStatusToContext(cc, err.Error(), valuesSchemaViolation)
+		} else {
+			r.logger.Errorf(ctx, err, "helm release %#q failed", releaseState.Name)
+			addStatusToContext(cc, err.Error(), unknownError)
 		}
-
-		r.logger.Errorf(ctx, err, "helm release %#q failed", releaseState.Name)
-		addStatusToContext(cc, err.Error(), unknownError)
 
 		r.logger.Debugf(ctx, "canceling resource")
 		resourcecanceledcontext.SetCanceled(ctx)
