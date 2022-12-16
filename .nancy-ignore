@@ -26,6 +26,7 @@ sonatype-2020-1258 until=2022-12-30
 sonatype-2021-1485 until=2022-12-30
 sonatype-2021-0276 until=2022-12-30
 sonatype-2022-5436 until=2022-12-30
+sonatype-2022-6522 until=2022-12-30
 
 # pkg:golang/helm.sh/helm/v3@v3.8.1
 sonatype-2022-5277 until=2022-12-30
