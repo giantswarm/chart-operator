@@ -7,6 +7,10 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+### Changed
+
+- Selecting private Helm client on demand for some operations.
+
 ## [2.33.2] - 2022-12-16
 
 ## [2.33.1] - 2022-12-16

@@ -25,7 +25,7 @@ func (r *Resource) ApplyCreateChange(ctx context.Context, obj, createChange inte
 		return microerror.Mask(err)
 	}
 
-	hc := r.helmClients.Get(ctx, cr)
+	hc := r.helmClients.Get(ctx, cr, false)
 
 	cc, err := controllercontext.FromContext(ctx)
 	if err != nil {

@@ -213,7 +213,7 @@ func Test_Get(t *testing.T) {
 
 	for i, tc := range testCases {
 		t.Run(fmt.Sprintf("case %d: %s", i, tc.name), func(t *testing.T) {
-			client := tc.clientPair.Get(context.TODO(), tc.chart)
+			client := tc.clientPair.Get(context.TODO(), tc.chart, false)
 
 			if client != tc.expectedClient {
 				t.Fatalf("got wrong client")
