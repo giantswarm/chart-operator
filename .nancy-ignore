@@ -34,3 +34,5 @@ CVE-2022-21221 until=2023-06-30
 
 # pkg:golang/k8s.io/apiserver@v0.25.2
 sonatype-2022-6522 until=2023-06-30
+
+CVE-2023-25165 until=2023-06-30
