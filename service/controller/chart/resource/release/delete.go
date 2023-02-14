@@ -18,7 +18,10 @@ func (r *Resource) ApplyDeleteChange(ctx context.Context, obj, deleteChange inte
 		return microerror.Mask(err)
 	}
 
-	hc := r.helmClients.Get(ctx, cr)
+	// We use elevated Helm client when performing deletion-wise operations to
+	// avoid permissions issues when deleting App Bundles from cluster namespace,
+	// see: https://github.com/giantswarm/giantswarm/issues/25731
+	hc := r.helmClients.Get(ctx, cr, true)
 
 	releaseState, err := toReleaseState(deleteChange)
 	if err != nil {

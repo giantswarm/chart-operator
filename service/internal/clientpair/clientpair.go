@@ -74,7 +74,7 @@ func NewClientPair(config ClientPairConfig) (*ClientPair, error) {
 // Get determines which client to use based on the namespace the corresponding App CR
 // is located in. For Workload Cluster, chart operator is permitted to operate under
 // cluster-wide permissions, so there is only prvHelmClient used.
-func (cp *ClientPair) Get(ctx context.Context, cr v1alpha1.Chart) helmclient.Interface {
+func (cp *ClientPair) Get(ctx context.Context, cr v1alpha1.Chart, privateClient bool) helmclient.Interface {
 	// nil pubHelmClient means chart-operator runs in a single-client mode
 	// under cluster admin privileges.
 	if cp.pubHelmClient == nil {
@@ -102,6 +102,15 @@ func (cp *ClientPair) Get(ctx context.Context, cr v1alpha1.Chart) helmclient.Int
 	// for app operators outside the `giantswarm` namespace, use the prvHelmClient.
 	if key.AppNamespace(cr) != privateNamespace && (strings.HasPrefix(key.TarballURL(cr), appOperatorChart) || strings.HasPrefix(key.TarballURL(cr), appOperatorTestChart)) {
 		cp.logger.Debugf(ctx, "selecting private Helm client for `%s` App in `%s` namespace", key.AppName(cr), key.AppNamespace(cr))
+
+		return cp.prvHelmClient
+	}
+
+	// select private Helm client when requested. Use it with caution. It has been
+	// introduce to answer permissions issue when deleting Chart CRs,
+	// see: https://github.com/giantswarm/giantswarm/issues/25731
+	if privateClient {
+		cp.logger.Debugf(ctx, "selecting private Helm client for `%s` App in `%s` namespace on demand", key.AppName(cr), key.AppNamespace(cr))
 
 		return cp.prvHelmClient
 	}
