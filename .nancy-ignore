@@ -35,4 +35,22 @@ CVE-2022-21221 until=2023-06-30
 # pkg:golang/k8s.io/apiserver@v0.25.2
 sonatype-2022-6522 until=2023-06-30
 
+# pkg:golang/github.com/containerd/containerd@v1.6.12
+CVE-2023-25173 until=2023-06-30
+CVE-2023-25153 until=2023-06-30
+
+# pkg:golang/github.com/denisenkom/go-mssqldb@v0.9.0
+sonatype-2023-1010 until=2023-06-30
+
+# pkg:golang/github.com/opencontainers/runc@v1.1.2
+CVE-2023-28642 until=2023-06-30
+CVE-2023-27561 until=2023-06-30
+CVE-2023-25809 until=2023-06-30
+
+# pkg:golang/golang.org/x/net@v0.5.0
+CVE-2022-41723 until=2023-06-30
+
+# pkg:golang/k8s.io/apiserver@v0.25.2
+CVE-2020-8561 until=2023-06-30
+
 CVE-2023-25165 until=2023-06-30
