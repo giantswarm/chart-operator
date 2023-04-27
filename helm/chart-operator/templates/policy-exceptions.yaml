@@ -4,7 +4,7 @@ apiVersion: kyverno.io/v2alpha1
 kind: PolicyException
 metadata:
   name: {{ tpl .Values.resource.default.name  . }}-policy-exceptions
-  namespace: {{ .Values.kyvernoPolicyExceptions.namespace | default (include .Values.resource.default.namespace .) }}
+  namespace: {{ .Values.kyvernoPolicyExceptions.namespace | default .Values.resource.default.namespace }}
   labels:
     {{- include "chart-operator.labels" . | nindent 4 }}
   annotations:
