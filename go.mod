@@ -176,7 +176,6 @@ require (
 )
 
 replace (
-	github.com/Microsoft/hcsshim v0.8.7 => github.com/Microsoft/hcsshim v0.8.10
 	// Use moby v20.10.0-beta1 to fix build issue on darwin.
 	github.com/docker/docker => github.com/moby/moby v20.10.22+incompatible
 	github.com/gin-gonic/gin v1.4.0 => github.com/gin-gonic/gin v1.9.0
@@ -185,8 +184,4 @@ replace (
 	// Use mergo 0.3.11 due to bug in 0.3.9 merging Go structs.
 	github.com/imdario/mergo => github.com/imdario/mergo v0.3.13
 	github.com/nats-io/nats-server/v2 => github.com/nats-io/nats-server/v2 v2.9.11
-	github.com/opencontainers/runc v0.1.1 => github.com/opencontainers/runc v1.0.0-rc7
-	github.com/ulikunitz/xz => github.com/ulikunitz/xz v0.5.11
-	// Same as go-logr/logr, klog/v2 is using logr v0.2.0
-	k8s.io/klog/v2 v2.2.0 => k8s.io/klog/v2 v2.0.0
 )
