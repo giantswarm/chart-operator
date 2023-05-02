@@ -7,6 +7,10 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+### Added
+
+- Add Kyverno `PolicyExceptions` for necessary capabilities normally prohibited by PSS policies.
+
 ## [2.34.0] - 2023-02-14
 
 ### Changed
