@@ -1,3 +1,4 @@
+{{- if le (int .Capabilities.KubeVersion.Minor) 24 }}
 apiVersion: policy/v1beta1
 kind: PodSecurityPolicy
 metadata:
@@ -30,3 +31,4 @@ spec:
   hostNetwork: {{ or .Values.chartOperator.cni.install .Values.bootstrapMode.enabled }}
   hostIPC: false
   hostPID: false
+  {{- end }}
