@@ -31,4 +31,4 @@ spec:
   hostNetwork: {{ or .Values.chartOperator.cni.install .Values.bootstrapMode.enabled }}
   hostIPC: false
   hostPID: false
-  {{- end }}
+{{- end }}
