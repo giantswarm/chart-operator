@@ -1,4 +1,4 @@
-[![CircleCI](https://circleci.com/gh/giantswarm/chart-operator.svg?style=shield)](https://circleci.com/gh/giantswarm/chart-operator)
+[![CircleCI](https://dl.circleci.com/status-badge/img/gh/giantswarm/chart-operator/tree/master.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/gh/giantswarm/chart-operator/tree/master)
 
 # chart-operator
 
