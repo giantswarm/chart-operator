@@ -58,9 +58,13 @@ spec:
       {{- if or .Values.chartOperator.cni.install .Values.bootstrapMode.enabled }}
       hostNetwork: true
       tolerations:
-      - effect: NoSchedule
+      - key: node.kubernetes.io/not-ready
+        effect: NoSchedule
         operator: Exists
-        key: node.kubernetes.io/not-ready
+      - key: node-role.kubernetes.io/control-plane
+        effect: NoSchedule
+      - key: node-role.kubernetes.io/master
+        effect: NoSchedule
       {{- else }}
       tolerations:
       - key: node-role.kubernetes.io/control-plane
