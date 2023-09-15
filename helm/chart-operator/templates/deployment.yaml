@@ -60,6 +60,7 @@ spec:
       tolerations:
       - effect: NoSchedule
         operator: Exists
+        key: node.kubernetes.io/not-ready
       {{- else }}
       tolerations:
       - key: node-role.kubernetes.io/control-plane
