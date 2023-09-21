@@ -7,6 +7,10 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+### Changed
+
+- Changed pod taint toleration to only tolerate `NotReady` for CAPI.
+
 ## [2.35.0] - 2023-05-04
 
 ### Changed
