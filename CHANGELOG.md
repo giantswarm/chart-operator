@@ -7,6 +7,8 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+## [2.35.1] - 2023-09-21
+
 ### Changed
 
 - Changed pod taint toleration to only tolerate `NotReady` for CAPI.
@@ -547,7 +549,8 @@ We check progress in the next reconciliation loop. ([#362](https://github.com/gi
 - Separate podsecuritypolicy.
 - Security context in deployment spec with non-root user.
 
-[Unreleased]: https://github.com/giantswarm/chart-operator/compare/v2.35.0...HEAD
+[Unreleased]: https://github.com/giantswarm/chart-operator/compare/v2.35.1...HEAD
+[2.35.1]: https://github.com/giantswarm/chart-operator/compare/v2.35.0...v2.35.1
 [2.35.0]: https://github.com/giantswarm/chart-operator/compare/v2.34.1...v2.35.0
 [2.34.1]: https://github.com/giantswarm/chart-operator/compare/v2.34.0...v2.34.1
 [2.34.0]: https://github.com/giantswarm/chart-operator/compare/v2.33.2...v2.34.0
