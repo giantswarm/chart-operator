@@ -1,6 +1,6 @@
 # DO NOT EDIT. Generated with:
 #
-#    devctl@6.9.0
+#    devctl@6.11.0
 #
 name: Create Release PR
 on:
@@ -152,7 +152,7 @@ jobs:
           binary: "architect"
           version: "6.11.0"
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           ref: ${{ needs.gather_facts.outputs.branch }}
       - name: Prepare release changes
