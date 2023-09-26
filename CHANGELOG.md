@@ -7,6 +7,10 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+### Fixed
+
+- Fixed default values for `.proxy` and `.cluster.proxy` values and updated Helm values schema accordingly.
+
 ## [2.35.1] - 2023-09-21
 
 ### Changed
