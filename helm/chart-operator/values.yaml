@@ -9,9 +9,9 @@ cluster:
   # is getting overwritten by the top level proxy if set
   # These values are generated via cluster-apps-operator
   proxy:
-    noProxy:
-    http:
-    https:
+    noProxy: ""
+    http: ""
+    https: ""
 
 clusterDNSIP: 172.31.0.10
 
@@ -60,9 +60,9 @@ project:
 
 # set the HTTP_PROXY, HTTPS_PROXY and NO_PROXY variable
 proxy:
-  noProxy:
-  http:
-  https:
+  noProxy: ""
+  http: ""
+  https: ""
 
 # Resource names are truncated to 47 characters. Kubernetes allows 63 characters
 # limit for resource names. When pods for deployments are created they have
