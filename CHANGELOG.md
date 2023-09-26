@@ -7,6 +7,8 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+## [2.35.2] - 2023-09-26
+
 ### Fixed
 
 - Fixed default values for `.proxy` and `.cluster.proxy` values and updated Helm values schema accordingly.
@@ -553,7 +555,8 @@ We check progress in the next reconciliation loop. ([#362](https://github.com/gi
 - Separate podsecuritypolicy.
 - Security context in deployment spec with non-root user.
 
-[Unreleased]: https://github.com/giantswarm/chart-operator/compare/v2.35.1...HEAD
+[Unreleased]: https://github.com/giantswarm/chart-operator/compare/v2.35.2...HEAD
+[2.35.2]: https://github.com/giantswarm/chart-operator/compare/v2.35.1...v2.35.2
 [2.35.1]: https://github.com/giantswarm/chart-operator/compare/v2.35.0...v2.35.1
 [2.35.0]: https://github.com/giantswarm/chart-operator/compare/v2.34.1...v2.35.0
 [2.34.1]: https://github.com/giantswarm/chart-operator/compare/v2.34.0...v2.34.1
