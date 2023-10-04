@@ -7,6 +7,14 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+### Removed
+
+- Removed `giantswarm.io/monitoring: "true"` label from the `Service` resource. To get metrics `chart-operator` should
+  be from now on used in conjunction with `chart-operator-extensions` version `v1.1.1` or later to deploy
+  `ServiceMonitor` resource for it. It was split up as `chart-operator` is one of the first component to get into
+  a cluster that will deploy most other things, for example Prometheus that will eventually actually deploy the
+  CRD for `ServiceMonitor`.
+
 ## [2.35.2] - 2023-09-26
 
 ### Fixed
