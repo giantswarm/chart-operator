@@ -12,7 +12,7 @@ import (
 	k8sfake "k8s.io/client-go/kubernetes/fake"
 	"sigs.k8s.io/controller-runtime/pkg/client/fake" //nolint:staticcheck
 
-	"github.com/giantswarm/chart-operator/v2/service/internal/clientpair"
+	"github.com/giantswarm/chart-operator/v3/service/internal/clientpair"
 )
 
 func Test_Resource_Release_newCreate(t *testing.T) {

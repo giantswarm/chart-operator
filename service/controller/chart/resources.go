@@ -13,12 +13,12 @@ import (
 	"k8s.io/client-go/kubernetes"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
-	"github.com/giantswarm/chart-operator/v2/service/controller/chart/resource/namespace"
-	"github.com/giantswarm/chart-operator/v2/service/controller/chart/resource/release"
-	"github.com/giantswarm/chart-operator/v2/service/controller/chart/resource/releasemaxhistory"
-	"github.com/giantswarm/chart-operator/v2/service/controller/chart/resource/status"
+	"github.com/giantswarm/chart-operator/v3/service/controller/chart/resource/namespace"
+	"github.com/giantswarm/chart-operator/v3/service/controller/chart/resource/release"
+	"github.com/giantswarm/chart-operator/v3/service/controller/chart/resource/releasemaxhistory"
+	"github.com/giantswarm/chart-operator/v3/service/controller/chart/resource/status"
 
-	"github.com/giantswarm/chart-operator/v2/service/internal/clientpair"
+	"github.com/giantswarm/chart-operator/v3/service/internal/clientpair"
 )
 
 type chartResourcesConfig struct {

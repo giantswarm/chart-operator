@@ -16,10 +16,10 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
 
-	"github.com/giantswarm/chart-operator/v2/pkg/annotation"
-	"github.com/giantswarm/chart-operator/v2/pkg/project"
-	"github.com/giantswarm/chart-operator/v2/service/controller/chart/controllercontext"
-	"github.com/giantswarm/chart-operator/v2/service/controller/chart/key"
+	"github.com/giantswarm/chart-operator/v3/pkg/annotation"
+	"github.com/giantswarm/chart-operator/v3/pkg/project"
+	"github.com/giantswarm/chart-operator/v3/service/controller/chart/controllercontext"
+	"github.com/giantswarm/chart-operator/v3/service/controller/chart/key"
 )
 
 func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {

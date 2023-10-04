@@ -15,9 +15,9 @@ import (
 	"github.com/giantswarm/microerror"
 	"github.com/spf13/afero"
 
-	"github.com/giantswarm/chart-operator/v2/integration/env"
-	"github.com/giantswarm/chart-operator/v2/integration/key"
-	"github.com/giantswarm/chart-operator/v2/pkg/project"
+	"github.com/giantswarm/chart-operator/v3/integration/env"
+	"github.com/giantswarm/chart-operator/v3/integration/key"
+	"github.com/giantswarm/chart-operator/v3/pkg/project"
 )
 
 func Setup(m *testing.M, config Config) {

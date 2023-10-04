@@ -17,12 +17,12 @@ import (
 	"k8s.io/client-go/rest"
 	"sigs.k8s.io/controller-runtime/pkg/client/apiutil"
 
-	"github.com/giantswarm/chart-operator/v2/flag"
-	"github.com/giantswarm/chart-operator/v2/pkg/project"
-	"github.com/giantswarm/chart-operator/v2/service/collector"
-	"github.com/giantswarm/chart-operator/v2/service/controller/chart"
+	"github.com/giantswarm/chart-operator/v3/flag"
+	"github.com/giantswarm/chart-operator/v3/pkg/project"
+	"github.com/giantswarm/chart-operator/v3/service/collector"
+	"github.com/giantswarm/chart-operator/v3/service/controller/chart"
 
-	"github.com/giantswarm/chart-operator/v2/service/internal/clientpair"
+	"github.com/giantswarm/chart-operator/v3/service/internal/clientpair"
 )
 
 const (

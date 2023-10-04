@@ -16,11 +16,11 @@ import (
 	"k8s.io/client-go/kubernetes"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
-	"github.com/giantswarm/chart-operator/v2/pkg/annotation"
-	"github.com/giantswarm/chart-operator/v2/service/controller/chart/controllercontext"
-	"github.com/giantswarm/chart-operator/v2/service/controller/chart/key"
+	"github.com/giantswarm/chart-operator/v3/pkg/annotation"
+	"github.com/giantswarm/chart-operator/v3/service/controller/chart/controllercontext"
+	"github.com/giantswarm/chart-operator/v3/service/controller/chart/key"
 
-	"github.com/giantswarm/chart-operator/v2/service/internal/clientpair"
+	"github.com/giantswarm/chart-operator/v3/service/internal/clientpair"
 )
 
 const (

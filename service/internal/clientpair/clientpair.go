@@ -9,7 +9,7 @@ import (
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/micrologger"
 
-	"github.com/giantswarm/chart-operator/v2/service/controller/chart/key"
+	"github.com/giantswarm/chart-operator/v3/service/controller/chart/key"
 )
 
 const (

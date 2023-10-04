@@ -1,4 +1,4 @@
-module github.com/giantswarm/chart-operator/v2
+module github.com/giantswarm/chart-operator/v3
 
 go 1.19
 
