@@ -18,9 +18,9 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client/fake" //nolint:staticcheck
 	"sigs.k8s.io/yaml"
 
-	"github.com/giantswarm/chart-operator/v2/service/controller/chart/controllercontext"
+	"github.com/giantswarm/chart-operator/v3/service/controller/chart/controllercontext"
 
-	"github.com/giantswarm/chart-operator/v2/service/internal/clientpair"
+	"github.com/giantswarm/chart-operator/v3/service/internal/clientpair"
 )
 
 func Test_DesiredState(t *testing.T) {
