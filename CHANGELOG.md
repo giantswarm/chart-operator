@@ -7,6 +7,10 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+### Changed
+
+- Force-disable PSP-related resources when `global.podSecurityStandards.enforced` value is true.
+
 ## [3.0.0] - 2023-10-04
 
 ### Removed
