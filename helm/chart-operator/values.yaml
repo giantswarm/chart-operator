@@ -123,3 +123,7 @@ securityContext:
 kyvernoPolicyExceptions:
   enabled: true
   namespace: giantswarm
+
+global:
+  podSecurityStandards:
+    enforced: false
