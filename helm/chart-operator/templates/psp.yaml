@@ -1,3 +1,4 @@
+{{- if not .Values.podSecurityStandards.enforced }}
 {{- if not .Values.global.podSecurityStandards.enforced }}
 apiVersion: policy/v1beta1
 kind: PodSecurityPolicy
@@ -31,4 +32,5 @@ spec:
   hostNetwork: {{ or .Values.chartOperator.cni.install .Values.bootstrapMode.enabled }}
   hostIPC: false
   hostPID: false
+{{- end }}
 {{- end }}
