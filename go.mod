@@ -17,7 +17,7 @@ require (
 	github.com/giantswarm/micrologger v1.0.0
 	github.com/giantswarm/operatorkit/v7 v7.1.0
 	github.com/giantswarm/to v0.4.0
-	github.com/google/go-cmp v0.5.9
+	github.com/google/go-cmp v0.6.0
 	github.com/imdario/mergo v0.3.13
 	github.com/prometheus/client_golang v1.14.0
 	github.com/spf13/afero v1.10.0
