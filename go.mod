@@ -92,7 +92,7 @@ require (
 	github.com/jmoiron/sqlx v1.3.5 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
-	github.com/klauspost/compress v1.15.11 // indirect
+	github.com/klauspost/compress v1.17.2 // indirect
 	github.com/lann/builder v0.0.0-20180802200727-47ae307949d0 // indirect
 	github.com/lann/ps v0.0.0-20150810152359-62de8c46ede0 // indirect
 	github.com/lib/pq v1.10.6 // indirect
@@ -183,7 +183,7 @@ replace (
 	github.com/go-logr/logr v0.2.0 => github.com/go-logr/logr v0.1.0
 	// Use mergo 0.3.11 due to bug in 0.3.9 merging Go structs.
 	github.com/imdario/mergo => github.com/imdario/mergo v0.3.13
-	github.com/nats-io/nats-server/v2 => github.com/nats-io/nats-server/v2 v2.9.11
+	github.com/nats-io/nats-server/v2 => github.com/nats-io/nats-server/v2 v2.10.4
 	// CVE-2023-3978
 	golang.org/x/net => golang.org/x/net v0.17.0
 	// CVE-2023-32731
