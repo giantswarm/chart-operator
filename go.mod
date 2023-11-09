@@ -180,16 +180,10 @@ require (
 )
 
 replace (
-	// Use moby v20.10.0-beta1 to fix build issue on darwin.
 	github.com/docker/docker => github.com/moby/moby v20.10.22+incompatible
 	github.com/gin-gonic/gin v1.4.0 => github.com/gin-gonic/gin v1.9.0
-	// Use go-logr/logr v0.1.0 due to breaking changes in v0.2.0 that can't be applied.
-	github.com/go-logr/logr v0.2.0 => github.com/go-logr/logr v0.1.0
-	// Use mergo 0.3.11 due to bug in 0.3.9 merging Go structs.
 	github.com/imdario/mergo => github.com/imdario/mergo v0.3.13
 	github.com/nats-io/nats-server/v2 => github.com/nats-io/nats-server/v2 v2.10.4
-	// CVE-2023-3978
 	golang.org/x/net => golang.org/x/net v0.18.0
-	// CVE-2023-32731
 	google.golang.org/grpc => google.golang.org/grpc v1.59.0
 )
