@@ -152,7 +152,7 @@ require (
 	golang.org/x/sys v0.14.0 // indirect
 	golang.org/x/term v0.14.0 // indirect
 	golang.org/x/text v0.14.0 // indirect
-	golang.org/x/time v0.3.0 // indirect
+	golang.org/x/time v0.4.0 // indirect
 	gomodules.xyz/jsonpatch/v2 v2.2.0 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20230920204549-e6e6cdab5c13 // indirect
@@ -183,7 +183,7 @@ replace (
 	github.com/docker/docker => github.com/moby/moby v20.10.22+incompatible
 	github.com/gin-gonic/gin v1.4.0 => github.com/gin-gonic/gin v1.9.0
 	github.com/imdario/mergo => github.com/imdario/mergo v0.3.13
-	github.com/nats-io/nats-server/v2 => github.com/nats-io/nats-server/v2 v2.10.4
+	github.com/nats-io/nats-server/v2 => github.com/nats-io/nats-server/v2 v2.10.5
 	golang.org/x/net => golang.org/x/net v0.18.0
 	google.golang.org/grpc => google.golang.org/grpc v1.59.0
 )
