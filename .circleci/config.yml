@@ -153,20 +153,10 @@ orbs:
 workflows:
   build:
     jobs:
-      - architect/go-build:
-          context: architect
-          name: go-build
-          binary: chart-operator
-          filters:
-            tags:
-              only: /^v.*/
-
       - architect-test/push-to-registries:
           context: "architect"
           name: push-chart-operator-to-registries
           image: "giantswarm/chart-operator"
-          requires:
-            - go-build
           # Needed to trigger job also on git tag.
           filters:
             tags:
