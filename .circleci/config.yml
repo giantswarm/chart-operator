@@ -131,17 +131,17 @@ orbs:
               dockerfile: <<parameters.dockerfile>>
               tag-latest-branch: <<parameters.tag-latest-branch>>
               tag-suffix: <<parameters.tag-suffix>>
-          - push-image-to-aliyun:
-              image_sha256: $(cat .image_sha256)
-              registry: giantswarm-registry.cn-shanghai.cr.aliyuncs.com
-              image: <<parameters.image>>
-              tag: $(cat .docker_image_tag)
-              username_envar: ALIYUN_USERNAME
-              password_envar: ALIYUN_PASSWORD
-              build-context: <<parameters.build-context>>
-              dockerfile: <<parameters.dockerfile>>
-              tag-latest-branch: <<parameters.tag-latest-branch>>
-              tag-suffix: <<parameters.tag-suffix>>
+          #- image-push-to-registry:
+          #    image_sha256: $(cat .image_sha256)
+          #    registry: giantswarm-registry.cn-shanghai.cr.aliyuncs.com
+          #    image: <<parameters.image>>
+          #    tag: $(cat .docker_image_tag)
+          #    username_envar: ALIYUN_USERNAME
+          #    password_envar: ALIYUN_PASSWORD
+          #    build-context: <<parameters.build-context>>
+          #    dockerfile: <<parameters.dockerfile>>
+          #    tag-latest-branch: <<parameters.tag-latest-branch>>
+          #    tag-suffix: <<parameters.tag-suffix>>
         environment:
           DOCKER_BUILDKIT: "1"
 
