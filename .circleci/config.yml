@@ -117,7 +117,7 @@ orbs:
               at: .
           - image-prepare-tag:
               tag-suffix: <<parameters.tag-suffix>>
-          - image_build_with_docker:
+          - image-build-with-docker:
               build-context: <<parameters.build-context>>
               dockerfile: <<parameters.dockerfile>>
           - image-push-to-registry:
