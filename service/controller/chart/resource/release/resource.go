@@ -3,6 +3,7 @@ package release
 import (
 	"context"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/giantswarm/apiextensions-application/api/v1alpha1"
@@ -15,11 +16,11 @@ import (
 	"k8s.io/client-go/kubernetes"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
-	"github.com/giantswarm/chart-operator/v2/pkg/annotation"
-	"github.com/giantswarm/chart-operator/v2/service/controller/chart/controllercontext"
-	"github.com/giantswarm/chart-operator/v2/service/controller/chart/key"
+	"github.com/giantswarm/chart-operator/v3/pkg/annotation"
+	"github.com/giantswarm/chart-operator/v3/service/controller/chart/controllercontext"
+	"github.com/giantswarm/chart-operator/v3/service/controller/chart/key"
 
-	"github.com/giantswarm/chart-operator/v2/service/internal/clientpair"
+	"github.com/giantswarm/chart-operator/v3/service/internal/clientpair"
 )
 
 const (
@@ -39,6 +40,11 @@ const (
 	// exists, connection timeout etc.
 	chartPullFailedStatus = "chart-pull-failed"
 
+	// helmSchemaViolationErrorMsg defines the error message returned by Helm on
+	// schema validation failure.
+	// See: https://github.com/helm/helm/blob/main/pkg/chartutil/values.go#L160
+	helmSchemaValidationErrorMsg = "values don't meet the specifications of the schema(s) in the following chart(s)"
+
 	// invalidManifestStatus is set in the CR status when it failed to create
 	// manifest objects with helm resources.
 	invalidManifestStatus = "invalid-manifest"
@@ -53,6 +59,10 @@ const (
 	// validationFailedStatus is set in the CR status when it failed to pass
 	// OpenAPI validation on release manifest.
 	validationFailedStatus = "validation-failed"
+
+	// valuesSchemaViolation is set in the CR status when Chart has not passed
+	// values.yaml validation against schema.
+	valuesSchemaViolation = "values-schema-violation"
 )
 
 // Config represents the configuration used to create a new release resource.
@@ -271,6 +281,10 @@ func isReleaseModified(a, b ReleaseState) bool {
 	}
 
 	return result
+}
+
+func isSchemaValidationError(err error) bool {
+	return strings.Split(err.Error(), ":")[0] == helmSchemaValidationErrorMsg
 }
 
 func toReleaseState(v interface{}) (ReleaseState, error) {

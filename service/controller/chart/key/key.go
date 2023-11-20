@@ -3,12 +3,14 @@ package key
 import (
 	"strconv"
 
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+
 	"github.com/giantswarm/apiextensions-application/api/v1alpha1"
 	"github.com/giantswarm/k8smetadata/pkg/annotation"
 	"github.com/giantswarm/k8smetadata/pkg/label"
 	"github.com/giantswarm/microerror"
 
-	chartmeta "github.com/giantswarm/chart-operator/v2/pkg/annotation"
+	chartmeta "github.com/giantswarm/chart-operator/v3/pkg/annotation"
 )
 
 func AppName(customResource v1alpha1.Chart) string {
@@ -59,6 +61,10 @@ func HasForceUpgradeAnnotation(customResource v1alpha1.Chart) bool {
 	return result
 }
 
+func InstallTimeout(customResource v1alpha1.Chart) *metav1.Duration {
+	return customResource.Spec.Install.Timeout
+}
+
 func IsCordoned(customResource v1alpha1.Chart) bool {
 	_, reasonOk := customResource.Annotations[chartmeta.CordonReason]
 	_, untilOk := customResource.Annotations[chartmeta.CordonUntilDate]
@@ -91,6 +97,10 @@ func ReleaseName(customResource v1alpha1.Chart) string {
 	return customResource.Spec.Name
 }
 
+func RollbackTimeout(customResource v1alpha1.Chart) *metav1.Duration {
+	return customResource.Spec.Rollback.Timeout
+}
+
 func SecretName(customResource v1alpha1.Chart) string {
 	return customResource.Spec.Config.Secret.Name
 }
@@ -116,6 +126,14 @@ func ToCustomResource(v interface{}) (v1alpha1.Chart, error) {
 	}
 
 	return *customResourcePointer, nil
+}
+
+func UninstallTimeout(customResource v1alpha1.Chart) *metav1.Duration {
+	return customResource.Spec.Uninstall.Timeout
+}
+
+func UpgradeTimeout(customResource v1alpha1.Chart) *metav1.Duration {
+	return customResource.Spec.Upgrade.Timeout
 }
 
 // ValuesMD5ChecksumAnnotation returns the annotation value to determine if the

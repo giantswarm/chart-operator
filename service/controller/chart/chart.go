@@ -5,19 +5,19 @@ import (
 	"time"
 
 	"github.com/giantswarm/apiextensions-application/api/v1alpha1"
-	"github.com/giantswarm/k8sclient/v6/pkg/k8sclient"
+	"github.com/giantswarm/k8sclient/v7/pkg/k8sclient"
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/micrologger"
-	"github.com/giantswarm/operatorkit/v6/pkg/controller"
-	"github.com/giantswarm/operatorkit/v6/pkg/resource"
+	"github.com/giantswarm/operatorkit/v7/pkg/controller"
+	"github.com/giantswarm/operatorkit/v7/pkg/resource"
 	"github.com/spf13/afero"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
-	"github.com/giantswarm/chart-operator/v2/pkg/annotation"
-	"github.com/giantswarm/chart-operator/v2/pkg/project"
-	"github.com/giantswarm/chart-operator/v2/service/controller/chart/controllercontext"
+	"github.com/giantswarm/chart-operator/v3/pkg/annotation"
+	"github.com/giantswarm/chart-operator/v3/pkg/project"
+	"github.com/giantswarm/chart-operator/v3/service/controller/chart/controllercontext"
 
-	"github.com/giantswarm/chart-operator/v2/service/internal/clientpair"
+	"github.com/giantswarm/chart-operator/v3/service/internal/clientpair"
 )
 
 const chartControllerSuffix = "-chart"

@@ -1,0 +1,318 @@
+{
+    "$schema": "http://json-schema.org/schema#",
+    "type": "object",
+    "properties": {
+        "bootstrapMode": {
+            "type": "object",
+            "properties": {
+                "apiServerPodPort": {
+                    "type": "integer"
+                },
+                "enabled": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "chartOperator": {
+            "type": "object",
+            "properties": {
+                "cni": {
+                    "type": "object",
+                    "properties": {
+                        "install": {
+                            "type": "boolean"
+                        }
+                    }
+                }
+            }
+        },
+        "cluster": {
+            "type": "object",
+            "properties": {
+                "kubernetes": {
+                    "type": "object",
+                    "properties": {
+                        "domain": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "proxy": {
+                    "type": "object",
+                    "properties": {
+                        "http": {
+                            "type": "string"
+                        },
+                        "https": {
+                            "type": "string"
+                        },
+                        "noProxy": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "clusterDNSIP": {
+            "type": "string"
+        },
+        "deployment": {
+            "type": "object",
+            "properties": {
+                "limits": {
+                    "type": "object",
+                    "properties": {
+                        "memory": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "requests": {
+                    "type": "object",
+                    "properties": {
+                        "cpu": {
+                            "type": "string"
+                        },
+                        "memory": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "e2e": {
+            "type": "boolean"
+        },
+        "externalDNSIP": {
+            "type": "string"
+        },
+        "global": {
+            "type": "object",
+            "properties": {
+                "podSecurityStandards": {
+                    "type": "object",
+                    "properties": {
+                        "enforced": {
+                            "type": "boolean"
+                        }
+                    }
+                }
+            }
+        },
+        "helm": {
+            "type": "object",
+            "properties": {
+                "http": {
+                    "type": "object",
+                    "properties": {
+                        "clientTimeout": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "kubernetes": {
+                    "type": "object",
+                    "properties": {
+                        "waitTimeout": {
+                            "type": "string"
+                        },
+                        "watch": {
+                            "type": "object",
+                            "properties": {
+                                "namespace": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                },
+                "maxRollback": {
+                    "type": "integer"
+                },
+                "namespaceWhitelist": {
+                    "type": "array"
+                },
+                "splitClient": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "image": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "registry": {
+                    "type": "string"
+                },
+                "tag": {
+                    "type": "string"
+                }
+            }
+        },
+        "isManagementCluster": {
+            "type": "boolean"
+        },
+        "kyvernoPolicyExceptions": {
+            "type": "object",
+            "properties": {
+                "enabled": {
+                    "type": "boolean"
+                },
+                "namespace": {
+                    "type": "string"
+                }
+            }
+        },
+        "pod": {
+            "type": "object",
+            "properties": {
+                "group": {
+                    "type": "object",
+                    "properties": {
+                        "id": {
+                            "type": "integer"
+                        }
+                    }
+                },
+                "port": {
+                    "type": "integer"
+                },
+                "replicas": {
+                    "type": "integer"
+                },
+                "user": {
+                    "type": "object",
+                    "properties": {
+                        "id": {
+                            "type": "integer"
+                        }
+                    }
+                }
+            }
+        },
+        "podSecurityContext": {
+            "type": "object",
+            "properties": {
+                "runAsNonRoot": {
+                    "type": "boolean"
+                },
+                "seccompProfile": {
+                    "type": "object",
+                    "properties": {
+                        "type": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "project": {
+            "type": "object",
+            "properties": {
+                "branch": {
+                    "type": "string"
+                },
+                "commit": {
+                    "type": "string"
+                }
+            }
+        },
+        "proxy": {
+            "type": "object",
+            "properties": {
+                "http": {
+                    "type": "string"
+                },
+                "https": {
+                    "type": "string"
+                },
+                "noProxy": {
+                    "type": "string"
+                }
+            }
+        },
+        "registry": {
+            "type": "object",
+            "properties": {
+                "domain": {
+                    "type": "string"
+                }
+            }
+        },
+        "resource": {
+            "type": "object",
+            "properties": {
+                "default": {
+                    "type": "object",
+                    "properties": {
+                        "name": {
+                            "type": "string"
+                        },
+                        "namespace": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "psp": {
+                    "type": "object",
+                    "properties": {
+                        "name": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "securityContext": {
+            "type": "object",
+            "properties": {
+                "allowPrivilegeEscalation": {
+                    "type": "boolean"
+                },
+                "capabilities": {
+                    "type": "object",
+                    "properties": {
+                        "drop": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                },
+                "privileged": {
+                    "type": "boolean"
+                },
+                "runAsNonRoot": {
+                    "type": "boolean"
+                },
+                "seccompProfile": {
+                    "type": "object",
+                    "properties": {
+                        "type": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "tiller": {
+            "type": "object",
+            "properties": {
+                "namespace": {
+                    "type": "string"
+                }
+            }
+        },
+        "verticalPodAutoscaler": {
+            "type": "object",
+            "properties": {
+                "enabled": {
+                    "type": "boolean"
+                }
+            }
+        }
+    }
+}

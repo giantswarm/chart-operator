@@ -7,6 +7,90 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+## [3.1.0] - 2023-10-19
+
+### Changed
+
+- Force-disable PSP-related resources when `global.podSecurityStandards.enforced` value is true.
+
+## [3.0.0] - 2023-10-04
+
+### Removed
+
+- Removed `giantswarm.io/monitoring: "true"` label from the `Service` resource. To get metrics `chart-operator` should
+  be from now on used in conjunction with `chart-operator-extensions` version `v1.1.1` or later to deploy
+  `ServiceMonitor` resource for it. It was split up as `chart-operator` is one of the first component to get into
+  a cluster that will deploy most other things, for example Prometheus that will eventually actually deploy the
+  CRD for `ServiceMonitor`.
+
+## [2.35.2] - 2023-09-26
+
+### Fixed
+
+- Fixed default values for `.proxy` and `.cluster.proxy` values and updated Helm values schema accordingly.
+
+## [2.35.1] - 2023-09-21
+
+### Changed
+
+- Changed pod taint toleration to only tolerate `NotReady` for CAPI.
+
+## [2.35.0] - 2023-05-04
+
+### Changed
+
+- Disable PSPs for k8s 1.25 and newer.
+
+## [2.34.1] - 2023-05-02
+
+### Added
+
+- Add Kyverno `PolicyExceptions` for necessary capabilities normally prohibited by PSS policies.
+
+## [2.34.0] - 2023-02-14
+
+### Changed
+
+- Selecting private Helm client on demand for some operations.
+
+## [2.33.2] - 2022-12-16
+
+## [2.33.1] - 2022-12-16
+
+### Added
+
+- New error for values schema validation.
+
+### Changed
+
+- Use transitional errors coming from running Helm in the Chart CR status.
+
+## [2.33.0] - 2022-11-16
+
+### Added
+
+- Add support to run in private cloud clusters, which cannot provide any working `externalDNSIP`.
+
+## [2.32.0] - 2022-11-15
+
+## Added
+
+- Support for running behind a proxy.
+  - `HTTP_PROXY`,`HTTPS_PROXY` and `NO_PROXY` are set as environment variables in `deployment/chart-operator` if defined in `values.yaml`.
+- Support for using `cluster-apps-operator` generated `cluster.proxy` values.
+
+## [2.31.0] - 2022-10-07
+
+## Added
+
+- Add internal upgrade step on installation for Helm charts marked by annotation.
+
+## [2.30.0] - 2022-09-23
+
+### Added
+
+- Add suport for timeouts fields in the Chart CR.
+
 ### Changed
 
 - Add support for new control-plane label in k8s 1.24.
@@ -487,7 +571,20 @@ We check progress in the next reconciliation loop. ([#362](https://github.com/gi
 - Separate podsecuritypolicy.
 - Security context in deployment spec with non-root user.
 
-[Unreleased]: https://github.com/giantswarm/chart-operator/compare/v2.29.0...HEAD
+[Unreleased]: https://github.com/giantswarm/chart-operator/compare/v3.1.0...HEAD
+[3.1.0]: https://github.com/giantswarm/chart-operator/compare/v3.0.0...v3.1.0
+[3.0.0]: https://github.com/giantswarm/chart-operator/compare/v2.35.2...v3.0.0
+[2.35.2]: https://github.com/giantswarm/chart-operator/compare/v2.35.1...v2.35.2
+[2.35.1]: https://github.com/giantswarm/chart-operator/compare/v2.35.0...v2.35.1
+[2.35.0]: https://github.com/giantswarm/chart-operator/compare/v2.34.1...v2.35.0
+[2.34.1]: https://github.com/giantswarm/chart-operator/compare/v2.34.0...v2.34.1
+[2.34.0]: https://github.com/giantswarm/chart-operator/compare/v2.33.2...v2.34.0
+[2.33.2]: https://github.com/giantswarm/chart-operator/compare/v2.33.1...v2.33.2
+[2.33.1]: https://github.com/giantswarm/chart-operator/compare/v2.33.0...v2.33.1
+[2.33.0]: https://github.com/giantswarm/chart-operator/compare/v2.32.0...v2.33.0
+[2.32.0]: https://github.com/giantswarm/chart-operator/compare/v2.31.0...v2.32.0
+[2.31.0]: https://github.com/giantswarm/chart-operator/compare/v2.30.0...v2.31.0
+[2.30.0]: https://github.com/giantswarm/chart-operator/compare/v2.29.0...v2.30.0
 [2.29.0]: https://github.com/giantswarm/chart-operator/compare/v2.28.0...v2.29.0
 [2.28.0]: https://github.com/giantswarm/chart-operator/compare/v2.27.0...v2.28.0
 [2.27.0]: https://github.com/giantswarm/chart-operator/compare/v2.26.0...v2.27.0

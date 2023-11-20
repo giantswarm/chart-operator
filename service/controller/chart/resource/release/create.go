@@ -7,10 +7,16 @@ import (
 
 	"github.com/giantswarm/helmclient/v4/pkg/helmclient"
 	"github.com/giantswarm/microerror"
-	"github.com/giantswarm/operatorkit/v6/pkg/controller/context/resourcecanceledcontext"
+	"github.com/giantswarm/operatorkit/v7/pkg/controller/context/resourcecanceledcontext"
 
-	"github.com/giantswarm/chart-operator/v2/service/controller/chart/controllercontext"
-	"github.com/giantswarm/chart-operator/v2/service/controller/chart/key"
+	"github.com/giantswarm/chart-operator/v3/service/controller/chart/controllercontext"
+	"github.com/giantswarm/chart-operator/v3/service/controller/chart/key"
+)
+
+const (
+	// subjectToTwoStepInstall marks app (Helm Chart) as needing two step
+	// installation process.
+	subjectToTwoStepInstall = "application.giantswarm.io/two-step-install"
 )
 
 func (r *Resource) ApplyCreateChange(ctx context.Context, obj, createChange interface{}) error {
@@ -19,7 +25,7 @@ func (r *Resource) ApplyCreateChange(ctx context.Context, obj, createChange inte
 		return microerror.Mask(err)
 	}
 
-	hc := r.helmClients.Get(ctx, cr)
+	hc := r.helmClients.Get(ctx, cr, false)
 
 	cc, err := controllercontext.FromContext(ctx)
 	if err != nil {
@@ -41,6 +47,7 @@ func (r *Resource) ApplyCreateChange(ctx context.Context, obj, createChange inte
 	ns := key.Namespace(cr)
 	tarballURL := key.TarballURL(cr)
 	skipCRDs := key.SkipCRDs(cr)
+	timeout := key.InstallTimeout(cr)
 
 	tarballPath, err := hc.PullChartTarball(ctx, tarballURL)
 	if helmclient.IsPullChartFailedError(err) {
@@ -86,17 +93,71 @@ func (r *Resource) ApplyCreateChange(ctx context.Context, obj, createChange inte
 	// If we do timeout the install will continue in the background.
 	// We will check the progress in the next reconciliation loop.
 	go func() {
+		var e error
+
+		defer close(ch)
+
 		if skipCRDs {
 			r.logger.Debugf(ctx, "helm release %#q has SkipCRDs set to true, not installing CRDs", releaseState.Name)
 		}
-		opts := helmclient.InstallOptions{
+		iOpts := helmclient.InstallOptions{
 			ReleaseName: releaseState.Name,
 			SkipCRDs:    skipCRDs,
 		}
+
+		// If the timeout is provided use it
+		if timeout != nil {
+			r.logger.Debugf(ctx, "using custom %#q timeout to install release %#q", (*timeout).Duration, releaseState.Name)
+			iOpts.Timeout = (*timeout).Duration
+		}
+
 		// We need to pass the ValueOverrides option to make the install process
 		// use the default values and prevent errors on nested values.
-		err = hc.InstallReleaseFromTarball(ctx, tarballPath, ns, releaseState.Values, opts)
-		close(ch)
+		e = hc.InstallReleaseFromTarball(ctx, tarballPath, ns, releaseState.Values, iOpts)
+
+		// We check the error here to return early if installation failed. There is no point
+		// in upgrading in such scenario.
+		if e != nil {
+			err = e
+			return
+		}
+
+		// Load the chart to get its annotations and verify it is a subject to
+		// internal upgrade procedure. If we experience error here we log it and
+		// return.
+		chart, e := hc.LoadChart(ctx, tarballPath)
+		if e != nil {
+			r.logger.Errorf(ctx, err, "loading chart %#q failed on internal upgrade", tarballPath)
+			return
+		}
+		if _, ok := chart.Annotations[subjectToTwoStepInstall]; !ok {
+			return
+		}
+
+		// Hooks get disabled on internal upgrade to make it faster.
+		uOpts := helmclient.UpdateOptions{
+			DisableHooks: true,
+			Force:        false,
+		}
+
+		// Internal upgrade gets the same timeout option as installation, as logically
+		// it is part of the installation procedure.
+		if timeout != nil {
+			r.logger.Debugf(ctx, "using custom %#q timeout to internally update release %#q", (*timeout).Duration, releaseState.Name)
+			uOpts.Timeout = (*timeout).Duration
+		}
+
+		r.logger.Debugf(ctx, "doing internal upgrade for release %#q", releaseState.Name)
+		e = hc.UpdateReleaseFromTarball(ctx,
+			tarballPath,
+			ns,
+			releaseState.Name,
+			releaseState.Values,
+			uOpts)
+
+		if e != nil {
+			err = e
+		}
 	}()
 
 	select {
@@ -144,6 +205,15 @@ func (r *Resource) ApplyCreateChange(ctx context.Context, obj, createChange inte
 		return nil
 	} else if err != nil {
 		r.logger.Errorf(ctx, err, "helm release %#q failed", releaseState.Name)
+
+		if isSchemaValidationError(err) {
+			r.logger.Errorf(ctx, err, "values schema validation for %#q failed", releaseState.Name)
+			addStatusToContext(cc, err.Error(), valuesSchemaViolation)
+
+			r.logger.Debugf(ctx, "canceling resource")
+			resourcecanceledcontext.SetCanceled(ctx)
+			return nil
+		}
 
 		releaseContent, relErr := hc.GetReleaseContent(ctx, ns, releaseState.Name)
 		if helmclient.IsReleaseNotFound(relErr) {

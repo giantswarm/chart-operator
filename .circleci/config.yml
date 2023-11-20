@@ -1,6 +1,6 @@
 version: 2.1
 orbs:
-  architect: giantswarm/architect@4.24.0
+  architect: giantswarm/architect@4.34.1
 
 workflows:
   build:
@@ -42,7 +42,7 @@ workflows:
       - architect/push-to-docker:
           context: architect
           name: push-chart-operator-to-aliyun
-          image: "registry-intl.cn-shanghai.aliyuncs.com/giantswarm/chart-operator"
+          image: "giantswarm-registry.cn-shanghai.cr.aliyuncs.com/giantswarm/chart-operator"
           username_envar: "ALIYUN_USERNAME"
           password_envar: "ALIYUN_PASSWORD"
           requires:
@@ -105,19 +105,6 @@ workflows:
           name: push-chart-operator-to-azure-app-collection
           app_name: "chart-operator"
           app_collection_repo: "azure-app-collection"
-          requires:
-            - push-chart-operator-to-control-plane-app-catalog
-          filters:
-            branches:
-              ignore: /.*/
-            tags:
-              only: /^v.*/
-
-      - architect/push-to-app-collection:
-          context: architect
-          name: push-chart-operator-to-vsphere-app-collection
-          app_name: "chart-operator"
-          app_collection_repo: "vsphere-app-collection"
           requires:
             - push-chart-operator-to-control-plane-app-catalog
           filters:

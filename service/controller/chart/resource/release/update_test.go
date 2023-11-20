@@ -12,9 +12,9 @@ import (
 	k8sfake "k8s.io/client-go/kubernetes/fake"
 	"sigs.k8s.io/controller-runtime/pkg/client/fake" //nolint:staticcheck
 
-	"github.com/giantswarm/chart-operator/v2/service/controller/chart/controllercontext"
+	"github.com/giantswarm/chart-operator/v3/service/controller/chart/controllercontext"
 
-	"github.com/giantswarm/chart-operator/v2/service/internal/clientpair"
+	"github.com/giantswarm/chart-operator/v3/service/internal/clientpair"
 )
 
 func Test_Resource_Release_newUpdateChange(t *testing.T) {
@@ -183,7 +183,7 @@ func Test_Resource_Release_newUpdateChange(t *testing.T) {
 
 	for i, tc := range testCases {
 		t.Run(strconv.Itoa(i), func(t *testing.T) {
-			result, err := newResource.newUpdateChange(ctx, &tc.obj, tc.currentState, tc.desiredState)
+			result, err := newResource.newUpdateChange(ctx, &testCases[i].obj, tc.currentState, tc.desiredState)
 			if err != nil {
 				t.Fatal("expected", nil, "got", err)
 			}

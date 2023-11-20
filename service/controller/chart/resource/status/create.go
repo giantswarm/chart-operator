@@ -16,10 +16,10 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
 
-	"github.com/giantswarm/chart-operator/v2/pkg/annotation"
-	"github.com/giantswarm/chart-operator/v2/pkg/project"
-	"github.com/giantswarm/chart-operator/v2/service/controller/chart/controllercontext"
-	"github.com/giantswarm/chart-operator/v2/service/controller/chart/key"
+	"github.com/giantswarm/chart-operator/v3/pkg/annotation"
+	"github.com/giantswarm/chart-operator/v3/pkg/project"
+	"github.com/giantswarm/chart-operator/v3/service/controller/chart/controllercontext"
+	"github.com/giantswarm/chart-operator/v3/service/controller/chart/key"
 )
 
 func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
@@ -35,7 +35,10 @@ func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
 	releaseName := key.ReleaseName(cr)
 	r.logger.Debugf(ctx, "getting status for release %#q", releaseName)
 
-	releaseContent, err := r.helmClients.Get(ctx, cr).GetReleaseContent(ctx, key.Namespace(cr), releaseName)
+	releaseContent, err := r.helmClients.Get(ctx, cr, false).GetReleaseContent(ctx, key.Namespace(cr), releaseName)
+	if releaseContent != nil {
+		r.logger.Debugf(ctx, "Helm release information %#q", releaseContent.Status)
+	}
 	if helmclient.IsReleaseNotFound(err) {
 		r.logger.Debugf(ctx, "release %#q not found", releaseName)
 
@@ -85,7 +88,8 @@ func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
 			} else if cc.Status.Reason != "" {
 				// It can be that there was previous successful deployment and that is the current status of the Helm release
 				// but a follow-up deployment failed for another version, so we want to set a reason indicating the issue
-				reason = fmt.Sprintf("Deployment failed for %#q with %#q: %#q", cr.Spec.Version, cc.Status.Release.Status, cc.Status.Reason)
+				reason = cc.Status.Reason
+				status = cc.Status.Release.Status
 			}
 		}
 	}

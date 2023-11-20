@@ -5,20 +5,20 @@ import (
 
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/micrologger"
-	"github.com/giantswarm/operatorkit/v6/pkg/resource"
-	"github.com/giantswarm/operatorkit/v6/pkg/resource/crud"
-	"github.com/giantswarm/operatorkit/v6/pkg/resource/wrapper/metricsresource"
-	"github.com/giantswarm/operatorkit/v6/pkg/resource/wrapper/retryresource"
+	"github.com/giantswarm/operatorkit/v7/pkg/resource"
+	"github.com/giantswarm/operatorkit/v7/pkg/resource/crud"
+	"github.com/giantswarm/operatorkit/v7/pkg/resource/wrapper/metricsresource"
+	"github.com/giantswarm/operatorkit/v7/pkg/resource/wrapper/retryresource"
 	"github.com/spf13/afero"
 	"k8s.io/client-go/kubernetes"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
-	"github.com/giantswarm/chart-operator/v2/service/controller/chart/resource/namespace"
-	"github.com/giantswarm/chart-operator/v2/service/controller/chart/resource/release"
-	"github.com/giantswarm/chart-operator/v2/service/controller/chart/resource/releasemaxhistory"
-	"github.com/giantswarm/chart-operator/v2/service/controller/chart/resource/status"
+	"github.com/giantswarm/chart-operator/v3/service/controller/chart/resource/namespace"
+	"github.com/giantswarm/chart-operator/v3/service/controller/chart/resource/release"
+	"github.com/giantswarm/chart-operator/v3/service/controller/chart/resource/releasemaxhistory"
+	"github.com/giantswarm/chart-operator/v3/service/controller/chart/resource/status"
 
-	"github.com/giantswarm/chart-operator/v2/service/internal/clientpair"
+	"github.com/giantswarm/chart-operator/v3/service/internal/clientpair"
 )
 
 type chartResourcesConfig struct {

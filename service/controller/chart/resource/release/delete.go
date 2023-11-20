@@ -5,11 +5,11 @@ import (
 
 	"github.com/giantswarm/helmclient/v4/pkg/helmclient"
 	"github.com/giantswarm/microerror"
-	"github.com/giantswarm/operatorkit/v6/pkg/controller/context/finalizerskeptcontext"
-	"github.com/giantswarm/operatorkit/v6/pkg/controller/context/resourcecanceledcontext"
-	"github.com/giantswarm/operatorkit/v6/pkg/resource/crud"
+	"github.com/giantswarm/operatorkit/v7/pkg/controller/context/finalizerskeptcontext"
+	"github.com/giantswarm/operatorkit/v7/pkg/controller/context/resourcecanceledcontext"
+	"github.com/giantswarm/operatorkit/v7/pkg/resource/crud"
 
-	"github.com/giantswarm/chart-operator/v2/service/controller/chart/key"
+	"github.com/giantswarm/chart-operator/v3/service/controller/chart/key"
 )
 
 func (r *Resource) ApplyDeleteChange(ctx context.Context, obj, deleteChange interface{}) error {
@@ -18,7 +18,10 @@ func (r *Resource) ApplyDeleteChange(ctx context.Context, obj, deleteChange inte
 		return microerror.Mask(err)
 	}
 
-	hc := r.helmClients.Get(ctx, cr)
+	// We use elevated Helm client when performing deletion-wise operations to
+	// avoid permissions issues when deleting App Bundles from cluster namespace,
+	// see: https://github.com/giantswarm/giantswarm/issues/25731
+	hc := r.helmClients.Get(ctx, cr, true)
 
 	releaseState, err := toReleaseState(deleteChange)
 	if err != nil {
@@ -28,7 +31,14 @@ func (r *Resource) ApplyDeleteChange(ctx context.Context, obj, deleteChange inte
 	if releaseState.Name != "" {
 		r.logger.Debugf(ctx, "deleting release %#q", releaseState.Name)
 
-		err = hc.DeleteRelease(ctx, key.Namespace(cr), releaseState.Name)
+		opts := helmclient.DeleteOptions{}
+		timeout := key.UninstallTimeout(cr)
+
+		if timeout != nil {
+			opts.Timeout = (*timeout).Duration
+		}
+
+		err = hc.DeleteRelease(ctx, key.Namespace(cr), releaseState.Name, opts)
 		if helmclient.IsReleaseNotFound(err) {
 			r.logger.Debugf(ctx, "release %#q already deleted", releaseState.Name)
 			return nil

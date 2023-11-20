@@ -6,6 +6,12 @@ chartOperator:
 cluster:
   kubernetes:
     domain: cluster.local
+  # is getting overwritten by the top level proxy if set
+  # These values are generated via cluster-apps-operator
+  proxy:
+    noProxy: ""
+    http: ""
+    https: ""
 
 clusterDNSIP: 172.31.0.10
 
@@ -16,6 +22,7 @@ deployment:
   limits:
     memory: 350Mi
 
+# if explicitly set to empty string, the dnsPolicy: Default is used and tis expected that the cluster is private/closed cluster
 externalDNSIP: 8.8.8.8
 
 e2e: false
@@ -51,8 +58,11 @@ project:
   branch: "[[ .Branch ]]"
   commit: "[[ .SHA ]]"
 
+# set the HTTP_PROXY, HTTPS_PROXY and NO_PROXY variable
 proxy:
-  enabled: false
+  noProxy: ""
+  http: ""
+  https: ""
 
 # Resource names are truncated to 47 characters. Kubernetes allows 63 characters
 # limit for resource names. When pods for deployments are created they have
@@ -104,8 +114,16 @@ securityContext:
   allowPrivilegeEscalation: false
   capabilities:
     drop:
-    - ALL
+      - ALL
   privileged: false
   runAsNonRoot: true
   seccompProfile:
     type: RuntimeDefault
+
+kyvernoPolicyExceptions:
+  enabled: true
+  namespace: giantswarm
+
+global:
+  podSecurityStandards:
+    enforced: false

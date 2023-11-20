@@ -13,9 +13,9 @@ import (
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
-	"github.com/giantswarm/chart-operator/v2/pkg/project"
-	"github.com/giantswarm/chart-operator/v2/service/controller/chart/controllercontext"
-	"github.com/giantswarm/chart-operator/v2/service/controller/chart/key"
+	"github.com/giantswarm/chart-operator/v3/pkg/project"
+	"github.com/giantswarm/chart-operator/v3/service/controller/chart/controllercontext"
+	"github.com/giantswarm/chart-operator/v3/service/controller/chart/key"
 )
 
 // EnsureCreated checks if the helm release has failed the max number of
@@ -111,7 +111,7 @@ func (r *Resource) deleteFailedRelease(ctx context.Context, namespace, releaseNa
 }
 
 func (r *Resource) getReleaseHistory(ctx context.Context, cr v1alpha1.Chart) ([]helmclient.ReleaseHistory, error) {
-	history, err := r.helmClients.Get(ctx, cr).GetReleaseHistory(ctx, key.Namespace(cr), key.ReleaseName(cr))
+	history, err := r.helmClients.Get(ctx, cr, true).GetReleaseHistory(ctx, key.Namespace(cr), key.ReleaseName(cr))
 	if helmclient.IsReleaseNotFound(err) {
 		// Fall through
 		return nil, nil

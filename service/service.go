@@ -7,8 +7,8 @@ import (
 
 	applicationv1alpha1 "github.com/giantswarm/apiextensions-application/api/v1alpha1"
 	"github.com/giantswarm/helmclient/v4/pkg/helmclient"
-	"github.com/giantswarm/k8sclient/v6/pkg/k8sclient"
-	"github.com/giantswarm/k8sclient/v6/pkg/k8srestconfig"
+	"github.com/giantswarm/k8sclient/v7/pkg/k8sclient"
+	"github.com/giantswarm/k8sclient/v7/pkg/k8srestconfig"
 	"github.com/giantswarm/microendpoint/service/version"
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/micrologger"
@@ -17,12 +17,12 @@ import (
 	"k8s.io/client-go/rest"
 	"sigs.k8s.io/controller-runtime/pkg/client/apiutil"
 
-	"github.com/giantswarm/chart-operator/v2/flag"
-	"github.com/giantswarm/chart-operator/v2/pkg/project"
-	"github.com/giantswarm/chart-operator/v2/service/collector"
-	"github.com/giantswarm/chart-operator/v2/service/controller/chart"
+	"github.com/giantswarm/chart-operator/v3/flag"
+	"github.com/giantswarm/chart-operator/v3/pkg/project"
+	"github.com/giantswarm/chart-operator/v3/service/collector"
+	"github.com/giantswarm/chart-operator/v3/service/controller/chart"
 
-	"github.com/giantswarm/chart-operator/v2/service/internal/clientpair"
+	"github.com/giantswarm/chart-operator/v3/service/internal/clientpair"
 )
 
 const (

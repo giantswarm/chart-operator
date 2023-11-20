@@ -20,7 +20,7 @@ import (
 	"k8s.io/apimachinery/pkg/types"
 	"sigs.k8s.io/yaml"
 
-	"github.com/giantswarm/chart-operator/v2/integration/key"
+	"github.com/giantswarm/chart-operator/v3/integration/key"
 )
 
 const (
@@ -74,7 +74,6 @@ replicas: 3
 //
 // - Delete chart CR.
 // - Ensure test app is deleted.
-//
 func TestChartLifecycle(t *testing.T) {
 	ctx := context.Background()
 

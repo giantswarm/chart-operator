@@ -1,3 +1,4 @@
+{{- $proxy := deepCopy .Values.cluster.proxy |  mustMerge .Values.proxy -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -57,8 +58,17 @@ spec:
       {{- if or .Values.chartOperator.cni.install .Values.bootstrapMode.enabled }}
       hostNetwork: true
       tolerations:
-      - effect: NoSchedule
+      - key: node.kubernetes.io/not-ready
+        effect: NoSchedule
         operator: Exists
+      - key: node-role.kubernetes.io/control-plane
+        effect: NoSchedule
+      - key: node-role.kubernetes.io/master
+        effect: NoSchedule
+      - key: node.cloudprovider.kubernetes.io/uninitialized
+        effect: NoSchedule
+      - key: node.cluster.x-k8s.io/uninitialized
+        effect: NoSchedule
       {{- else }}
       tolerations:
       - key: node-role.kubernetes.io/control-plane
@@ -66,7 +76,9 @@ spec:
       - key: node-role.kubernetes.io/master
         effect: NoSchedule
       {{- end }}
-      {{- if .Values.isManagementCluster }}
+      {{- if eq .Values.externalDNSIP "" }}
+      dnsPolicy: Default
+      {{- else if .Values.isManagementCluster }}
       dnsPolicy: ClusterFirst
       {{- else }}
       dnsPolicy: None
@@ -99,7 +111,7 @@ spec:
       {{- end }}
       containers:
       - name: {{ .Chart.Name }}
-        {{- if or .Values.proxy.enabled .Values.bootstrapMode.enabled }}
+        {{- if or (and $proxy.http $proxy.https $proxy.noProxy ) .Values.bootstrapMode.enabled }}
         env:
         {{- if .Values.bootstrapMode.enabled }}
         - name: KUBERNETES_SERVICE_HOST
@@ -107,17 +119,19 @@ spec:
         - name: KUBERNETES_SERVICE_PORT
           value: {{ .Values.bootstrapMode.apiServerPodPort | quote }}
         {{- end }}
-        {{- if .Values.proxy.http }}
-        - name: HTTP_PROXY
-          value: {{ .Values.proxy.http }}
-        {{- end }}
-        {{- if .Values.proxy.https }}
-        - name: HTTPS_PROXY
-          value: {{ .Values.proxy.https }}
-        {{- end }}
-        {{- if .Values.proxy.noProxy }}
+        {{- if and $proxy.noProxy $proxy.http $proxy.https }}
         - name: NO_PROXY
-          value: {{ join "," .Values.proxy.noProxy }}
+          value: {{ $proxy.noProxy }}
+        - name: no_proxy
+          value: {{ $proxy.noProxy }}
+        - name: HTTP_PROXY
+          value: {{ $proxy.http }}
+        - name: http_proxy
+          value: {{ $proxy.http }}
+        - name: HTTPS_PROXY
+          value: {{ $proxy.https }}
+        - name: https_proxy
+          value: {{ $proxy.https }}
         {{- end }}
         {{- end }}
         {{- if .Values.isManagementCluster }}
