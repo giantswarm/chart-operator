@@ -7,6 +7,6 @@ RUN apk add --no-cache ca-certificates bind-tools
 
 USER giantswarm
 
-ADD ./chart-operator /chart-operator
+# ADD ./chart-operator /chart-operator
 
 ENTRYPOINT ["/chart-operator"]

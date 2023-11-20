@@ -59,7 +59,7 @@ orbs:
           - run:
               name: Authenticate to the container registry
               command: |
-                echo -n "${<<parameters.password_envar>>}" | docker login --username "${<<parameters.username_envar>>}" --password-stdin "${<<parameters.registry>>}"
+                echo -n "${<<parameters.password_envar>>}" | docker login --username "${<<parameters.username_envar>>}" --password-stdin "<<parameters.registry>>"
           - run:
               name: Tag the image
               command: |
