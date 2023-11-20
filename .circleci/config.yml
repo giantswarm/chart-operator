@@ -144,6 +144,11 @@ orbs:
           #    tag-suffix: <<parameters.tag-suffix>>
         environment:
           DOCKER_BUILDKIT: "1"
+    executors:
+      architect:
+        docker:
+          - entrypoint: /bin/bash
+            image: quay.io/giantswarm/architect:6.12.1
 
 workflows:
   build:
