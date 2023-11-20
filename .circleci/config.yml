@@ -70,7 +70,7 @@ orbs:
                 docker push "<<parameters.registry>>/<<parameters.image>>:<<parameters.tag>>" || docker push "<<parameters.registry>>/<<parameters.image>>:<<parameters.tag>>" || docker push "<<parameters.registry>>/<<parameters.image>>:<<parameters.tag>>"
           - when:
               condition:
-                equal: [<< parameters.on_tag >>, "${CIRCLE_BRANCH}"]
+                equal: [<<parameters.tag-latest-branch>>, "${CIRCLE_BRANCH}"]
               steps:
                 - run:
                     name: "When parameter 'tag-latest-branch' matches this branch: Retag the image as 'latest'"
