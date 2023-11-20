@@ -136,6 +136,17 @@ orbs:
               tag-suffix: <<parameters.tag-suffix>>
           - image-push-to-registry:
               image_sha256: $(cat .image_sha256)
+              registry: gsoci.azurecr.io
+              image: <<parameters.image>>
+              tag: $(cat .docker_image_tag)
+              username_envar: ACR_GSOCI_USERNAME
+              password_envar: ACR_GSOCI_PASSWORD
+              build-context: <<parameters.build-context>>
+              dockerfile: <<parameters.dockerfile>>
+              tag-latest-branch: <<parameters.tag-latest-branch>>
+              tag-suffix: <<parameters.tag-suffix>>
+          - image-push-to-registry:
+              image_sha256: $(cat .image_sha256)
               registry: giantswarm-registry.cn-shanghai.cr.aliyuncs.com
               image: <<parameters.image>>
               tag: $(cat .docker_image_tag)
