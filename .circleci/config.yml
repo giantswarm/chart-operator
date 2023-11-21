@@ -68,7 +68,7 @@ orbs:
               name: Print image push info
               command: echo "Pushing image with SHA256 <<parameters.image_sha256>> as <<parameters.registry>>/<<parameters.image>>:<<parameters.tag>>"
           - run:
-              name: Push the container image using 'docker push'
+              name: Push the container image to <<parameters.registry>> using 'docker push'
               command: |
                 docker push "<<parameters.registry>>/<<parameters.image>>:<<parameters.tag>>" || docker push "<<parameters.registry>>/<<parameters.image>>:<<parameters.tag>>" || docker push "<<parameters.registry>>/<<parameters.image>>:<<parameters.tag>>"
           - when:
@@ -210,6 +210,7 @@ workflows:
           context: "architect"
           name: push-chart-operator-to-registries
           image: "giantswarm/chart-operator"
+          push-to-docker: true
           # Needed to trigger job also on git tag.
           filters:
             tags:
