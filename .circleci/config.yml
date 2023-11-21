@@ -110,6 +110,18 @@ orbs:
           tag-suffix:
             type: "string"
             default: ""
+          push-to-aliyun:
+            type: "boolean"
+            default: true
+          push-to-acr-gsoci:
+            type: "boolean"
+            default: true
+          push-to-quay:
+            type: "boolean"
+            default: true
+          push-to-docker:
+            type: "boolean"
+            default: false
         executor: "architect"
         resource_class: "<< parameters.resource_class >>"
         steps:
@@ -123,39 +135,66 @@ orbs:
           - image-build-with-docker:
               build-context: <<parameters.build-context>>
               dockerfile: <<parameters.dockerfile>>
-          - image-push-to-registry:
-              image_sha256: $(cat .image_sha256)
-              registry: quay.io
-              image: <<parameters.image>>
-              tag: $(cat .docker_image_tag)
-              username_envar: QUAY_USERNAME
-              password_envar: QUAY_PASSWORD
-              build-context: <<parameters.build-context>>
-              dockerfile: <<parameters.dockerfile>>
-              tag-latest-branch: <<parameters.tag-latest-branch>>
-              tag-suffix: <<parameters.tag-suffix>>
-          - image-push-to-registry:
-              image_sha256: $(cat .image_sha256)
-              registry: gsoci.azurecr.io
-              image: <<parameters.image>>
-              tag: $(cat .docker_image_tag)
-              username_envar: ACR_GSOCI_USERNAME
-              password_envar: ACR_GSOCI_PASSWORD
-              build-context: <<parameters.build-context>>
-              dockerfile: <<parameters.dockerfile>>
-              tag-latest-branch: <<parameters.tag-latest-branch>>
-              tag-suffix: <<parameters.tag-suffix>>
-          - image-push-to-registry:
-              image_sha256: $(cat .image_sha256)
-              registry: giantswarm-registry.cn-shanghai.cr.aliyuncs.com
-              image: <<parameters.image>>
-              tag: $(cat .docker_image_tag)
-              username_envar: ALIYUN_USERNAME
-              password_envar: ALIYUN_PASSWORD
-              build-context: <<parameters.build-context>>
-              dockerfile: <<parameters.dockerfile>>
-              tag-latest-branch: <<parameters.tag-latest-branch>>
-              tag-suffix: <<parameters.tag-suffix>>
+          - when:
+              condition:
+                equal: [true, <<parameters.push-to-quay>>]
+              steps:
+                - image-push-to-registry:
+                    image_sha256: $(cat .image_sha256)
+                    registry: quay.io
+                    image: <<parameters.image>>
+                    tag: $(cat .docker_image_tag)
+                    username_envar: QUAY_USERNAME
+                    password_envar: QUAY_PASSWORD
+                    build-context: <<parameters.build-context>>
+                    dockerfile: <<parameters.dockerfile>>
+                    tag-latest-branch: <<parameters.tag-latest-branch>>
+                    tag-suffix: <<parameters.tag-suffix>>
+          - when:
+              condition:
+                equal: [true, <<parameters.push-to-acr-gsoci>>]
+              steps:
+                - image-push-to-registry:
+                    image_sha256: $(cat .image_sha256)
+                    registry: gsoci.azurecr.io
+                    image: <<parameters.image>>
+                    tag: $(cat .docker_image_tag)
+                    username_envar: ACR_GSOCI_USERNAME
+                    password_envar: ACR_GSOCI_PASSWORD
+                    build-context: <<parameters.build-context>>
+                    dockerfile: <<parameters.dockerfile>>
+                    tag-latest-branch: <<parameters.tag-latest-branch>>
+                    tag-suffix: <<parameters.tag-suffix>>
+          - when:
+              condition:
+                equal: [true, <<parameters.push-to-aliyun>>]
+              steps:
+                - image-push-to-registry:
+                    image_sha256: $(cat .image_sha256)
+                    registry: giantswarm-registry.cn-shanghai.cr.aliyuncs.com
+                    image: <<parameters.image>>
+                    tag: $(cat .docker_image_tag)
+                    username_envar: ALIYUN_USERNAME
+                    password_envar: ALIYUN_PASSWORD
+                    build-context: <<parameters.build-context>>
+                    dockerfile: <<parameters.dockerfile>>
+                    tag-latest-branch: <<parameters.tag-latest-branch>>
+                    tag-suffix: <<parameters.tag-suffix>>
+          - when:
+              condition:
+                equal: [true, <<parameters.push-to-docker>>]
+              steps:
+                - image-push-to-registry:
+                    image_sha256: $(cat .image_sha256)
+                    registry: docker.io
+                    image: <<parameters.image>>
+                    tag: $(cat .docker_image_tag)
+                    username_envar: DOCKER_USERNAME
+                    password_envar: DOCKER_PASSWORD
+                    build-context: <<parameters.build-context>>
+                    dockerfile: <<parameters.dockerfile>>
+                    tag-latest-branch: <<parameters.tag-latest-branch>>
+                    tag-suffix: <<parameters.tag-suffix>>
         environment:
           DOCKER_BUILDKIT: "1"
     executors:
