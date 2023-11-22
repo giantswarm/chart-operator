@@ -26,19 +26,19 @@ workflows:
 
       - architect/push-to-app-catalog:
           context: architect
-          name: push-chart-operator-to-control-plane-app-catalog
+          name: push-to-control-plane-app-catalog
           app_catalog: "control-plane-catalog"
           app_catalog_test: "control-plane-test-catalog"
           chart: "chart-operator"
           requires:
-            - push-chart-operator-to-quay
+            - push-to-registries
           filters:
             tags:
               only: /^v.*/
 
       - architect/push-to-app-catalog:
           context: architect
-          name: push-chart-operator-to-default-app-catalog
+          name: push-to-default-app-catalog
           app_catalog: "default-catalog"
           app_catalog_test: "default-test-catalog"
           chart: "chart-operator"
@@ -59,12 +59,12 @@ workflows:
 
       - architect/push-to-app-collection:
           context: architect
-          name: push-chart-operator-to-aws-app-collection
+          name: push-to-aws-app-collection
           app_name: "chart-operator"
           app_collection_repo: "aws-app-collection"
           requires:
-            - push-chart-operator-to-aliyun
-            - push-chart-operator-to-control-plane-app-catalog
+            - push-to-registries
+            - push-to-control-plane-app-catalog
           filters:
             branches:
               ignore: /.*/
@@ -73,11 +73,11 @@ workflows:
 
       - architect/push-to-app-collection:
           context: architect
-          name: push-chart-operator-to-azure-app-collection
+          name: push-to-azure-app-collection
           app_name: "chart-operator"
           app_collection_repo: "azure-app-collection"
           requires:
-            - push-chart-operator-to-control-plane-app-catalog
+            - push-to-control-plane-app-catalog
           filters:
             branches:
               ignore: /.*/
