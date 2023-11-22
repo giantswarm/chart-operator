@@ -7,6 +7,10 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+### Changed
+
+- Use new Azure CR instead of Docker Hub for container images
+
 ## [3.1.0] - 2023-10-19
 
 ### Changed

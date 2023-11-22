@@ -39,12 +39,12 @@ helm:
   maxRollback: 3
 
 image:
-  registry: "docker.io"
-  name: "giantswarm/chart-operator"
+  registry: gsoci.azurecr.io
+  name: giantswarm/chart-operator
   tag: "[[ .Version ]]"
 
 registry:
-  domain: docker.io
+  domain: gsoci.azurecr.io
 
 pod:
   user:
