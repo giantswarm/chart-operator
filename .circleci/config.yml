@@ -55,7 +55,7 @@ workflows:
           test-dir: "integration/test/chart/basic"
           requires:
           - go-build
-          - push-chart-operator-to-default-app-catalog
+          - push-to-default-app-catalog
 
       - architect/push-to-app-collection:
           context: architect
