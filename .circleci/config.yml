@@ -1,6 +1,6 @@
 version: 2.1
 orbs:
-  architect: giantswarm/architect@4.35.1
+  architect: giantswarm/architect@4.35.3
 
 workflows:
   build:
@@ -13,42 +13,12 @@ workflows:
             tags:
               only: /^v.*/
 
-      - architect/push-to-docker:
-          context: "architect"
-          name: push-chart-operator-to-docker
-          image: "docker.io/giantswarm/chart-operator"
-          username_envar: "DOCKER_USERNAME"
-          password_envar: "DOCKER_PASSWORD"
-          requires:
-            - go-build
-          # Needed to trigger job also on git tag.
-          filters:
-            tags:
-              only: /^v.*/
-
-      - architect/push-to-docker:
+      - architect/push-to-registries:
           context: architect
-          name: push-chart-operator-to-quay
-          image: "quay.io/giantswarm/chart-operator"
-          username_envar: "QUAY_USERNAME"
-          password_envar: "QUAY_PASSWORD"
+          name: push-to-registries
           requires:
             - go-build
           filters:
-            # Trigger the job also on git tag.
-            tags:
-              only: /^v.*/
-
-      - architect/push-to-docker:
-          context: architect
-          name: push-chart-operator-to-aliyun
-          image: "giantswarm-registry.cn-shanghai.cr.aliyuncs.com/giantswarm/chart-operator"
-          username_envar: "ALIYUN_USERNAME"
-          password_envar: "ALIYUN_PASSWORD"
-          requires:
-            - go-build
-          filters:
-            # Trigger the job also on git tag.
             tags:
               only: /^v.*/
 
@@ -59,7 +29,7 @@ workflows:
           app_catalog_test: "control-plane-test-catalog"
           chart: "chart-operator"
           requires:
-            - push-chart-operator-to-quay
+            - push-to-registries
           filters:
             tags:
               only: /^v.*/
@@ -71,8 +41,7 @@ workflows:
           app_catalog_test: "default-test-catalog"
           chart: "chart-operator"
           requires:
-            - push-chart-operator-to-docker
-            - push-chart-operator-to-quay
+            - push-to-registries
           filters:
             tags:
               only: /^v.*/
@@ -83,8 +52,8 @@ workflows:
           setup-script: integration/setup/setup.sh
           test-dir: "integration/test/chart/basic"
           requires:
-          - go-build
-          - push-chart-operator-to-default-app-catalog
+            - go-build
+            - push-chart-operator-to-default-app-catalog
 
       - architect/push-to-app-collection:
           context: architect
@@ -92,8 +61,8 @@ workflows:
           app_name: "chart-operator"
           app_collection_repo: "aws-app-collection"
           requires:
-            - push-chart-operator-to-aliyun
             - push-chart-operator-to-control-plane-app-catalog
+            - push-to-registries
           filters:
             branches:
               ignore: /.*/
