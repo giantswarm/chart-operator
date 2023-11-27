@@ -10,6 +10,7 @@ workflows:
           name: push-chart-operator-to-registries
           image: "giantswarm/chart-operator"
           push-to-docker: true
+          push-to-dev-docker: true
           # Needed to trigger job also on git tag.
           filters:
             tags:
