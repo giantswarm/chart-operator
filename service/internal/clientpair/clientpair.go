@@ -55,7 +55,7 @@ func NewClientPair(config ClientPairConfig) (*ClientPair, error) {
 	if config.Logger == nil {
 		return nil, microerror.Maskf(invalidConfigError, "%T.Logger must not be empty", config)
 	}
-	if config.PrvHelmClient == nil {
+	if config.PrvHelmClient == helmclient.Interface(nil) {
 		return nil, microerror.Maskf(invalidConfigError, "%T.PrvHelmClient must not be empty", config)
 	}
 
@@ -77,7 +77,7 @@ func NewClientPair(config ClientPairConfig) (*ClientPair, error) {
 func (cp *ClientPair) Get(ctx context.Context, cr v1alpha1.Chart, privateClient bool) helmclient.Interface {
 	// nil pubHelmClient means chart-operator runs in a single-client mode
 	// under cluster admin privileges.
-	if cp.pubHelmClient == nil {
+	if cp.pubHelmClient == helmclient.Interface(nil) {
 		return cp.prvHelmClient
 	}
 
