@@ -7,6 +7,10 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+### Changed
+
+- Configure gsoci.azurecr.io as the registry to use by default
+
 ## [3.1.0] - 2023-10-19
 
 ### Changed
