@@ -1,6 +1,6 @@
 version: 2.1
 orbs:
-  architect: giantswarm/architect@4.35.1
+  architect: giantswarm/architect@4.35.5
 
 workflows:
   build:
@@ -13,66 +13,35 @@ workflows:
             tags:
               only: /^v.*/
 
-      - architect/push-to-docker:
-          context: "architect"
-          name: push-chart-operator-to-docker
-          image: "docker.io/giantswarm/chart-operator"
-          username_envar: "DOCKER_USERNAME"
-          password_envar: "DOCKER_PASSWORD"
+      - architect/push-to-registries:
+          context: architect
+          name: push-to-registries
           requires:
             - go-build
-          # Needed to trigger job also on git tag.
-          filters:
-            tags:
-              only: /^v.*/
-
-      - architect/push-to-docker:
-          context: architect
-          name: push-chart-operator-to-quay
-          image: "quay.io/giantswarm/chart-operator"
-          username_envar: "QUAY_USERNAME"
-          password_envar: "QUAY_PASSWORD"
-          requires:
-            - go-build
-          filters:
-            # Trigger the job also on git tag.
-            tags:
-              only: /^v.*/
-
-      - architect/push-to-docker:
-          context: architect
-          name: push-chart-operator-to-aliyun
-          image: "giantswarm-registry.cn-shanghai.cr.aliyuncs.com/giantswarm/chart-operator"
-          username_envar: "ALIYUN_USERNAME"
-          password_envar: "ALIYUN_PASSWORD"
-          requires:
-            - go-build
-          filters:
-            # Trigger the job also on git tag.
-            tags:
-              only: /^v.*/
-
-      - architect/push-to-app-catalog:
-          context: architect
-          name: push-chart-operator-to-control-plane-app-catalog
-          app_catalog: "control-plane-catalog"
-          app_catalog_test: "control-plane-test-catalog"
-          chart: "chart-operator"
-          requires:
-            - push-chart-operator-to-quay
           filters:
             tags:
               only: /^v.*/
 
       - architect/push-to-app-catalog:
           context: architect
-          name: push-chart-operator-to-default-app-catalog
-          app_catalog: "default-catalog"
-          app_catalog_test: "default-test-catalog"
-          chart: "chart-operator"
+          name: push-to-cp-app-catalog
+          app_catalog: control-plane-catalog
+          app_catalog_test: control-plane-test-catalog
+          chart: chart-operator
           requires:
-            - push-chart-operator-to-docker
-            - push-chart-operator-to-quay
+            - push-to-registries
+          filters:
+            tags:
+              only: /^v.*/
+
+      - architect/push-to-app-catalog:
+          context: architect
+          name: push-to-default-app-catalog
+          app_catalog: default-catalog
+          app_catalog_test: default-test-catalog
+          chart: chart-operator
+          requires:
+            - push-to-registries
           filters:
             tags:
               only: /^v.*/
@@ -81,19 +50,19 @@ workflows:
           context: architect
           name: basic-integration-test
           setup-script: integration/setup/setup.sh
-          test-dir: "integration/test/chart/basic"
+          test-dir: integration/test/chart/basic
           requires:
-          - go-build
-          - push-chart-operator-to-default-app-catalog
+            - go-build
+            - push-to-default-app-catalog
 
       - architect/push-to-app-collection:
           context: architect
           name: push-chart-operator-to-aws-app-collection
-          app_name: "chart-operator"
-          app_collection_repo: "aws-app-collection"
+          app_name: chart-operator
+          app_collection_repo: aws-app-collection
           requires:
-            - push-chart-operator-to-aliyun
-            - push-chart-operator-to-control-plane-app-catalog
+            - push-to-cp-app-catalog
+            - push-to-registries
           filters:
             branches:
               ignore: /.*/
@@ -103,10 +72,10 @@ workflows:
       - architect/push-to-app-collection:
           context: architect
           name: push-chart-operator-to-azure-app-collection
-          app_name: "chart-operator"
-          app_collection_repo: "azure-app-collection"
+          app_name: chart-operator
+          app_collection_repo: azure-app-collection
           requires:
-            - push-chart-operator-to-control-plane-app-catalog
+            - push-to-cp-app-catalog
           filters:
             branches:
               ignore: /.*/
