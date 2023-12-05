@@ -7,6 +7,8 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+## [3.1.1] - 2023-12-05
+
 ### Changed
 
 - Configure gsoci.azurecr.io as the registry to use by default
@@ -575,7 +577,8 @@ We check progress in the next reconciliation loop. ([#362](https://github.com/gi
 - Separate podsecuritypolicy.
 - Security context in deployment spec with non-root user.
 
-[Unreleased]: https://github.com/giantswarm/chart-operator/compare/v3.1.0...HEAD
+[Unreleased]: https://github.com/giantswarm/chart-operator/compare/v3.1.1...HEAD
+[3.1.1]: https://github.com/giantswarm/chart-operator/compare/v3.1.0...v3.1.1
 [3.1.0]: https://github.com/giantswarm/chart-operator/compare/v3.0.0...v3.1.0
 [3.0.0]: https://github.com/giantswarm/chart-operator/compare/v2.35.2...v3.0.0
 [2.35.2]: https://github.com/giantswarm/chart-operator/compare/v2.35.1...v2.35.2
