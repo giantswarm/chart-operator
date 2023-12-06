@@ -1,6 +1,6 @@
 version: 2.1
 orbs:
-  architect: giantswarm/architect@dev:update-new-push-to-registries-job
+  architect: giantswarm/architect@dev:push-to-reg-retries
 
 workflows:
   build:
