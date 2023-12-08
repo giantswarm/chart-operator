@@ -21,7 +21,7 @@ require (
 	github.com/imdario/mergo v0.3.13
 	github.com/prometheus/client_golang v1.17.0
 	github.com/spf13/afero v1.11.0
-	github.com/spf13/viper v1.18.0
+	github.com/spf13/viper v1.18.1
 	k8s.io/api v0.25.2
 	k8s.io/apimachinery v0.25.2
 	k8s.io/client-go v0.25.2
