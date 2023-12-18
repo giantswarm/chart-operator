@@ -9,6 +9,8 @@ workflows:
           context: "architect"
           name: push-chart-operator-to-registries
           image: "giantswarm/chart-operator"
+          registries-data: |-
+            public gsoci.azurecr.io ACR_GSOCI_USERNAME ACR_GSOCI_PASSWORD true
           push-to-docker: true
           # Needed to trigger job also on git tag.
           filters:
