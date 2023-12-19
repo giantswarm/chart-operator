@@ -185,5 +185,5 @@ replace (
 	github.com/imdario/mergo => github.com/imdario/mergo v0.3.13
 	github.com/nats-io/nats-server/v2 => github.com/nats-io/nats-server/v2 v2.10.7
 	golang.org/x/net => golang.org/x/net v0.19.0
-	google.golang.org/grpc => google.golang.org/grpc v1.60.0
+	google.golang.org/grpc => google.golang.org/grpc v1.60.1
 )
