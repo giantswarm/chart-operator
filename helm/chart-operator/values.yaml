@@ -44,7 +44,7 @@ image:
   tag: "[[ .Version ]]"
 
 registry:
-  domain: docker.io
+  domain: gsoci.azurecr.io
 
 pod:
   user:
