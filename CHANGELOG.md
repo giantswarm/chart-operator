@@ -7,6 +7,10 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+### Changed
+
+- Configure `gsoci.azurecr.io` as the default container image registry.
+
 ## [3.1.1] - 2023-12-05
 
 ### Changed
@@ -652,5 +656,4 @@ We check progress in the next reconciliation loop. ([#362](https://github.com/gi
 [v0.12.1]: https://github.com/giantswarm/chart-operator/compare/v0.12.0...v0.12.1
 [v0.12.0]: https://github.com/giantswarm/chart-operator/compare/v0.8.0...v0.12.0
 [v0.8.0]: https://github.com/giantswarm/chart-operator/compare/v0.7.0...v0.8.0
-
 [v0.7.0]: https://github.com/giantswarm/chart-operator/releases/tag/v0.7.0
