@@ -7,6 +7,10 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+### Changed
+
+- Configure `gsoci.azurecr.io` as the default container image registry.
+
 ## [3.1.1] - 2023-12-05
 
 ### Changed
@@ -81,15 +85,15 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## Added
 
-- Support for running behind a proxy.
-  - `HTTP_PROXY`,`HTTPS_PROXY` and `NO_PROXY` are set as environment variables in `deployment/chart-operator` if defined in `values.yaml`.
-- Support for using `cluster-apps-operator` generated `cluster.proxy` values.
+- Add releasemaxhistory resource which ensures we retry at a reduced rate when
+there are repeated failed upgrades.
+
+### Changed
+
+- Upgrade Helm release when failed even if version or values have not changed
+to handle situations like failed webhooks where we should retry.
 
 ## [2.31.0] - 2022-10-07
-
-## Added
-
-- Add internal upgrade step on installation for Helm charts marked by annotation.
 
 ## [2.30.0] - 2022-09-23
 
@@ -217,16 +221,6 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 - Increase memory limit for deploying large charts in workload clusters.
 
 ## [2.18.0] - 2021-06-21
-
-## Added
-
-- Add releasemaxhistory resource which ensures we retry at a reduced rate when
-there are repeated failed upgrades.
-
-### Changed
-
-- Upgrade Helm release when failed even if version or values have not changed
-to handle situations like failed webhooks where we should retry.
 
 ## [2.17.0] - 2021-06-09
 
@@ -443,15 +437,11 @@ reduce how often pods are rolled.
 
 ## Changed
 
-- Updated Helm to v3.3.0.
-
-## [2.0.0] - 2020-08-12
-
-## Changed
-
 - Updated backward incompatible Kubernetes dependencies to v1.18.5.
 - Updated Helm to v3.2.4.
 - Fix the rollback in a loop problem.
+
+## [2.0.0] - 2020-08-12
 
 ## [1.0.7] - 2020-08-05
 
