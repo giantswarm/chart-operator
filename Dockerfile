@@ -1,4 +1,4 @@
-FROM gsoci.azurecr.io/giantswarm/alpine:3.17.1-giantswarm
+FROM gsoci.azurecr.io/giantswarm/alpine:3.19.0-giantswarm
 
 USER root
 
