@@ -7,7 +7,7 @@ using [operatorkit].
 
 ## Branches
 
-- `master`
+- `main`
     - Latest version using Helm 3.
 - `helm2`
     - Legacy support for Helm 2.
