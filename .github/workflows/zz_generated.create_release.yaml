@@ -1,6 +1,6 @@
 # DO NOT EDIT. Generated with:
 #
-#    devctl@6.18.0
+#    devctl@6.18.2
 #
 name: Create Release
 on:
@@ -32,11 +32,10 @@ jobs:
     steps:
       - name: Get version
         id: get_version
+        env:
+          COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
         run: |
-          title="$(cat <<- 'COMMIT_MESSAGE_END' | head -n 1 -
-          ${{ github.event.head_commit.message }}
-          COMMIT_MESSAGE_END
-          )"
+          title=$(echo -n "${COMMIT_MESSAGE}" | head -1)
           # Matches strings like:
           #
           #   - "Release v1.2.3"
@@ -66,11 +65,10 @@ jobs:
           echo "path=${path}" >> $GITHUB_OUTPUT
       - name: Check if reference version
         id: ref_version
+        env:
+          COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
         run: |
-          title="$(cat <<- 'COMMIT_MESSAGE_END' | head -n 1 -
-          ${{ github.event.head_commit.message }}
-          COMMIT_MESSAGE_END
-          )"
+          title=$(echo -n "${COMMIT_MESSAGE}" | head -1)
           if echo "${title}" | grep -qE '^release v[0-9]+\.[0-9]+\.[0-9]+([.-][^ .-][^ ]*)?( \(#[0-9]+\))?$' ; then
             version=$(echo "${title}" | cut -d ' ' -f 2)
           fi
@@ -93,7 +91,7 @@ jobs:
         uses: giantswarm/install-binary-action@v1.1.0
         with:
           binary: "architect"
-          version: "6.13.0"
+          version: "6.14.1"
       - name: Install semver
         uses: giantswarm/install-binary-action@v1.1.0
         with:
