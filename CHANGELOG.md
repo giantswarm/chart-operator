@@ -7,6 +7,10 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+### Fixed
+
+- Move pss values under the global property
+
 ### Changed
 
 - Use base images from `gsoci.azurecr.io`
