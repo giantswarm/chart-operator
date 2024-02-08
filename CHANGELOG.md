@@ -7,6 +7,10 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+### Changed
+
+- Let chart controller log with level error (instead of debug) when `helm release` fails.
+
 ## [3.1.3] - 2024-01-29
 
 ### Fixed

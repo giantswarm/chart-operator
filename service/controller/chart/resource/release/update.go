@@ -147,7 +147,7 @@ func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange inte
 	if helmclient.IsResourceAlreadyExists(err) {
 		reason := err.Error()
 		reason = fmt.Sprintf("resource already exists: (%s)", reason)
-		r.logger.Debugf(ctx, "helm release %#q failed, %s", releaseState.Name, reason)
+		r.logger.Errorf(ctx, "helm release %#q failed, %s", releaseState.Name, reason)
 		addStatusToContext(cc, reason, alreadyExistsStatus)
 
 		r.logger.Debugf(ctx, "canceling resource")
@@ -156,7 +156,7 @@ func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange inte
 	} else if helmclient.IsValidationFailedError(err) {
 		reason := err.Error()
 		reason = fmt.Sprintf("helm validation error: (%s)", reason)
-		r.logger.Debugf(ctx, "helm release %#q failed, %s", releaseState.Name, reason)
+		r.logger.Errorf(ctx, "helm release %#q failed, %s", releaseState.Name, reason)
 		addStatusToContext(cc, reason, validationFailedStatus)
 
 		r.logger.Debugf(ctx, "canceling resource")
@@ -165,7 +165,7 @@ func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange inte
 	} else if helmclient.IsInvalidManifest(err) {
 		reason := err.Error()
 		reason = fmt.Sprintf("invalid manifest error: (%s)", reason)
-		r.logger.Debugf(ctx, "helm release %#q failed, %s", releaseState.Name, reason)
+		r.logger.Errorf(ctx, "helm release %#q failed, %s", releaseState.Name, reason)
 		addStatusToContext(cc, reason, invalidManifestStatus)
 
 		r.logger.Debugf(ctx, "canceling resource")
