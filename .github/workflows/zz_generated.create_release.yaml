@@ -1,6 +1,6 @@
 # DO NOT EDIT. Generated with:
 #
-#    devctl@6.18.2
+#    devctl@6.20.0
 #
 name: Create Release
 on:
@@ -142,6 +142,15 @@ jobs:
           title: "Bump version to ${{ steps.update_project_go.outputs.new_version }}"
         run: |
           gh pr create --title "${{ env.title }}" --body "" --base ${{ env.base }} --head ${{ env.branch }} --reviewer ${{ github.actor }}
+      - name: Enable auto-merge for PR
+        env:
+          GITHUB_TOKEN: "${{ secrets.TAYLORBOT_GITHUB_ACTION }}"
+          base: "${{ github.ref }}"
+          branch: "${{ github.ref }}-version-bump"
+          version: "${{ needs.gather_facts.outputs.version }}"
+          title: "Bump version to ${{ steps.update_project_go.outputs.new_version }}"
+        run: |
+          gh pr merge --auto --squash "${{ env.branch }}" || echo "::warning::Auto-merge not allowed. Please adjust the repository settings."
   create_release:
     name: Create release
     runs-on: ubuntu-22.04
