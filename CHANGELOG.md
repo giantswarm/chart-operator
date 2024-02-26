@@ -9,7 +9,7 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ### Added
 
-- Added `--service.controller.resyncperiod` daemon flag that can be controller via `controller.resyncperiod` Helm value.
+- Added `--service.controller.resyncperiod` daemon flag that can be controller via `.controller.resyncPeriod` Helm value.
   Controls the duration after which a complete sync with all known runtime objects the controller watches is performed.
   Defaults to `5m`.
 
