@@ -1,6 +1,7 @@
 package service
 
 import (
+	"github.com/giantswarm/chart-operator/v3/flag/service/controller"
 	"github.com/giantswarm/operatorkit/v7/pkg/flag/service/kubernetes"
 
 	"github.com/giantswarm/chart-operator/v3/flag/service/helm"
@@ -12,4 +13,5 @@ type Service struct {
 	Helm       helm.Helm
 	Image      image.Image
 	Kubernetes kubernetes.Kubernetes
+	Controller controller.Controller
 }
