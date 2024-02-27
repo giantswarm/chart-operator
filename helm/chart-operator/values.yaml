@@ -43,6 +43,9 @@ image:
   name: "giantswarm/chart-operator"
   tag: "[[ .Version ]]"
 
+controller:
+  resyncPeriod: "5m"
+
 registry:
   domain: gsoci.azurecr.io
 
