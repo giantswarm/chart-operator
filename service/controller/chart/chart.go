@@ -28,6 +28,8 @@ type Config struct {
 	K8sClient   k8sclient.Interface
 	Logger      micrologger.Logger
 
+	ResyncPeriod time.Duration
+
 	HTTPClientTimeout time.Duration
 	K8sWaitTimeout    time.Duration
 	K8sWatchNamespace string
@@ -107,6 +109,8 @@ func NewChart(config Config) (*Chart, error) {
 
 			Name:      project.Name() + chartControllerSuffix,
 			Namespace: config.K8sWatchNamespace,
+
+			ResyncPeriod: config.ResyncPeriod,
 		}
 
 		chartController, err = controller.New(c)

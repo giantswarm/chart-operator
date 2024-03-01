@@ -160,6 +160,8 @@ func New(config Config) (*Service, error) {
 			Logger:      config.Logger,
 			K8sClient:   k8sPrvClient,
 
+			ResyncPeriod: config.Viper.GetDuration(config.Flag.Service.Controller.ResyncPeriod),
+
 			HTTPClientTimeout: config.Viper.GetDuration(config.Flag.Service.Helm.HTTP.ClientTimeout),
 			K8sWaitTimeout:    config.Viper.GetDuration(config.Flag.Service.Helm.Kubernetes.WaitTimeout),
 			K8sWatchNamespace: config.Viper.GetString(config.Flag.Service.Kubernetes.Watch.Namespace),

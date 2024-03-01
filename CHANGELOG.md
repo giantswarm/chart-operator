@@ -7,6 +7,24 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+## [3.2.0] - 2024-02-27
+
+### Added
+
+- Added `--service.controller.resyncperiod` daemon flag that can be controller via `.controller.resyncPeriod` Helm value.
+  Controls the duration after which a complete sync with all known runtime objects the controller watches is performed.
+  Defaults to `5m`.
+
+## [3.1.3] - 2024-01-29
+
+### Fixed
+
+- Move pss values under the global property
+
+### Changed
+
+- Use base images from `gsoci.azurecr.io`
+
 ## [3.1.2] - 2023-12-20
 
 ### Changed
@@ -583,7 +601,9 @@ We check progress in the next reconciliation loop. ([#362](https://github.com/gi
 - Separate podsecuritypolicy.
 - Security context in deployment spec with non-root user.
 
-[Unreleased]: https://github.com/giantswarm/chart-operator/compare/v3.1.2...HEAD
+[Unreleased]: https://github.com/giantswarm/chart-operator/compare/v3.2.0...HEAD
+[3.2.0]: https://github.com/giantswarm/chart-operator/compare/v3.1.3...v3.2.0
+[3.1.3]: https://github.com/giantswarm/chart-operator/compare/v3.1.2...v3.1.3
 [3.1.2]: https://github.com/giantswarm/chart-operator/compare/v3.1.1...v3.1.2
 [3.1.1]: https://github.com/giantswarm/chart-operator/compare/v3.1.0...v3.1.1
 [3.1.0]: https://github.com/giantswarm/chart-operator/compare/v3.0.0...v3.1.0
