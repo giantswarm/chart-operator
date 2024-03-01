@@ -7,6 +7,10 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+### Fixed
+
+- Use separate rest configs for different Kubernetes clients.
+
 ## [3.2.0] - 2024-02-27
 
 ### Added
