@@ -19,8 +19,8 @@ Common labels
 {{- define "chart-operator.labels" -}}
 {{ include "chart-operator.selectorLabels" . }}
 app: {{ include "chart-operator.name" . | quote }}
-app.giantswarm.io/branch: {{ .Values.project.branch | replace "#" "-" | replace "/" "-" | replace "." "-" | trunc 63 | trimSuffix "-" | quote }}
-app.giantswarm.io/commit: {{ .Values.project.commit | quote }}
+application.giantswarm.io/branch: {{ .Values.project.branch | replace "#" "-" | replace "/" "-" | replace "." "-" | trunc 63 | trimSuffix "-" | quote }}
+application.giantswarm.io/commit: {{ .Values.project.commit | quote }}
 app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 helm.sh/chart: {{ include "chart-operator.chart" . | quote }}
