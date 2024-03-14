@@ -7,6 +7,10 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+### Changed
+
+- Let chart controller log with level error (instead of debug) when `helm release` fails.
+
 ## [3.2.1] - 2024-03-05
 
 ### Fixed
@@ -19,7 +23,7 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 - Added `--service.controller.resyncperiod` daemon flag that can be controller via `.controller.resyncPeriod` Helm value.
   Controls the duration after which a complete sync with all known runtime objects the controller watches is performed.
-  Defaults to `5m`.
+
 
 ## [3.1.3] - 2024-01-29
 
