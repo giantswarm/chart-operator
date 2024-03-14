@@ -14,6 +14,8 @@ data:
       listen:
         address: 'http://0.0.0.0:{{ .Values.pod.port }}'
     service:
+      controller:
+        resyncPeriod: '{{ .Values.controller.resyncPeriod }}'
       helm:
         splitClient: '{{ .Values.helm.splitClient }}'
         {{- if empty .Values.helm.namespaceWhitelist }}

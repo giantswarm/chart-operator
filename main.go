@@ -106,10 +106,11 @@ func mainWithError() error {
 
 	daemonCommand := newCommand.DaemonCommand().CobraCommand()
 
+	daemonCommand.PersistentFlags().String(f.Service.Controller.ResyncPeriod, "5m", "Duration after which a complete sync with all known runtime objects the controller watches is performed.")
 	daemonCommand.PersistentFlags().String(f.Service.Helm.HTTP.ClientTimeout, "5s", "HTTP timeout for pulling chart tarballs.")
 	daemonCommand.PersistentFlags().String(f.Service.Helm.Kubernetes.WaitTimeout, "10s", "Wait timeout when calling the Kubernetes API.")
 	daemonCommand.PersistentFlags().Int(f.Service.Helm.MaxRollback, 3, "the maximum number of rollback attempts for pending apps.")
-	daemonCommand.PersistentFlags().StringSlice(f.Service.Helm.NamespaceWhitelist, []string{}, "Namespaces to use the provileged Helm Client for.")
+	daemonCommand.PersistentFlags().StringSlice(f.Service.Helm.NamespaceWhitelist, []string{}, "Namespaces to use the privileged Helm Client for.")
 	daemonCommand.PersistentFlags().Bool(f.Service.Helm.SplitClient, false, "Use separate Helm Client for apps outside Giantswarm-protected namespace.")
 	daemonCommand.PersistentFlags().String(f.Service.Helm.TillerNamespace, "giantswarm", "Namespace for the Tiller pod.")
 	daemonCommand.PersistentFlags().String(f.Service.Image.Registry, "quay.io", "Container image registry.")

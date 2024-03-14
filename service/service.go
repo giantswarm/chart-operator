@@ -66,7 +66,7 @@ func New(config Config) (*Service, error) {
 	}
 
 	var err error
-	var restConfig *rest.Config
+	var restConfigPrv *rest.Config
 	{
 		c := k8srestconfig.Config{
 			Logger: config.Logger,
@@ -81,11 +81,13 @@ func New(config Config) (*Service, error) {
 			},
 		}
 
-		restConfig, err = k8srestconfig.New(c)
+		restConfigPrv, err = k8srestconfig.New(c)
 		if err != nil {
 			return nil, microerror.Mask(err)
 		}
 	}
+
+	restConfigPub := rest.CopyConfig(restConfigPrv)
 
 	fs := afero.NewOsFs()
 
@@ -95,7 +97,7 @@ func New(config Config) (*Service, error) {
 	var k8sPrvClient k8sclient.Interface
 	var prvHelmClient helmclient.Interface
 	{
-		k8sPrvClient, err = newK8sClient(config, restConfig)
+		k8sPrvClient, err = newK8sClient(config, restConfigPrv)
 		if err != nil {
 			return nil, microerror.Mask(err)
 		}
@@ -119,7 +121,7 @@ func New(config Config) (*Service, error) {
 		//     User "system:serviceaccount:default:automation" cannot create resource
 		//     "rolebindings" in API group "rbac.authorization.k8s.io" in the namespace
 		//     "giantswarm".
-		restConfig.Impersonate = rest.ImpersonationConfig{
+		restConfigPub.Impersonate = rest.ImpersonationConfig{
 			UserName: fmt.Sprintf(
 				"system:serviceaccount:%s:%s",
 				publicClientSANamespace,
@@ -127,7 +129,7 @@ func New(config Config) (*Service, error) {
 			),
 		}
 
-		k8sPubClient, err = newK8sClient(config, restConfig)
+		k8sPubClient, err = newK8sClient(config, restConfigPub)
 		if err != nil {
 			return nil, microerror.Mask(err)
 		}
@@ -159,6 +161,8 @@ func New(config Config) (*Service, error) {
 			HelmClients: helmClients,
 			Logger:      config.Logger,
 			K8sClient:   k8sPrvClient,
+
+			ResyncPeriod: config.Viper.GetDuration(config.Flag.Service.Controller.ResyncPeriod),
 
 			HTTPClientTimeout: config.Viper.GetDuration(config.Flag.Service.Helm.HTTP.ClientTimeout),
 			K8sWaitTimeout:    config.Viper.GetDuration(config.Flag.Service.Helm.Kubernetes.WaitTimeout),

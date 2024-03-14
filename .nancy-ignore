@@ -1,3 +1,6 @@
+# pkg:golang/google.golang.org/protobuf@v1.32.0
+CVE-2024-24786 until=2024-03-31
+
 # pkg:golang/github.com/containerd/containerd@v1.6.12
 CVE-2023-25173 until=2024-03-31
 CVE-2023-25153 until=2024-03-31
@@ -6,4 +9,7 @@ CVE-2023-25153 until=2024-03-31
 CVE-2020-8561 until=2024-03-31
 
 # pkg:golang/helm.sh/helm/v3@v3.10.3
+CVE-2019-25210 until=2024-03-31
 CVE-2023-25165 until=2024-03-31
+CVE-2024-25620 until=2024-03-31
+CVE-2024-26147 until=2024-03-31
