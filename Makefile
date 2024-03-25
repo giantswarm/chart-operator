@@ -1,6 +1,6 @@
 # DO NOT EDIT. Generated with:
 #
-#    devctl@6.23.0
+#    devctl@6.23.2
 #
 
 include Makefile.*.mk
