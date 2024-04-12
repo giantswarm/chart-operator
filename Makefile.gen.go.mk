@@ -1,6 +1,8 @@
 # DO NOT EDIT. Generated with:
 #
-#    devctl@6.23.3
+#    devctl
+#
+#    https://github.com/giantswarm/devctl/blob/bde2dbd935e72c2705fd77638fe6914cd3d25699/pkg/gen/input/makefile/internal/file/Makefile.gen.go.mk.template
 #
 
 APPLICATION    := $(shell go list -m | cut -d '/' -f 3)
