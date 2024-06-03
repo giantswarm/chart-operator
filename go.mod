@@ -4,7 +4,7 @@ go 1.19
 
 require (
 	github.com/giantswarm/apiextensions-application v0.6.0
-	github.com/giantswarm/appcatalog v0.9.1
+	github.com/giantswarm/appcatalog v0.10.1
 	github.com/giantswarm/backoff v1.0.0
 	github.com/giantswarm/exporterkit v1.0.0
 	github.com/giantswarm/helmclient/v4 v4.11.2
