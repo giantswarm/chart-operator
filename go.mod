@@ -10,7 +10,7 @@ require (
 	github.com/giantswarm/helmclient/v4 v4.11.2
 	github.com/giantswarm/k8sclient/v6 v6.1.0
 	github.com/giantswarm/k8sclient/v7 v7.0.1
-	github.com/giantswarm/k8smetadata v0.24.0
+	github.com/giantswarm/k8smetadata v0.25.0
 	github.com/giantswarm/microendpoint v1.1.0
 	github.com/giantswarm/microerror v0.4.1
 	github.com/giantswarm/microkit v1.0.1
