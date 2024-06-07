@@ -7,6 +7,10 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+### Changed
+
+- Update PolicyExceptions to v2 and fallback to v2beta1.
+
 ## [3.2.1] - 2024-03-05
 
 ### Fixed
