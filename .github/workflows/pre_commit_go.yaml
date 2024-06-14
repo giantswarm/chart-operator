@@ -9,18 +9,18 @@ jobs:
   pre-commit:
     runs-on: ubuntu-22.04
     steps:
-    - uses: actions/checkout@v3
-    - uses: actions/setup-python@v4
-    - uses: actions/setup-go@v3
+    - uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29 # v4.1.6
+    - uses: actions/setup-python@82c7e631bb3cdc910f68e0081d67478d79c6982d # v5.1.0
+    - uses: actions/setup-go@cdcb36043654635271a94b9a6d1392de5bb323a7 # v5.0.1
       with:
-        go-version: "1.21"
+        go-version: "1.22"
     - name: Install goimports
       run: |
         go install golang.org/x/tools/cmd/goimports@latest
     - name: Install golangci-lint
       env:
-        GOLANGCI_LINT_VERSION: "v1.54.2"
+        GOLANGCI_LINT_VERSION: "v1.59.0"
       run: |
         curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | \
             sudo sh -s -- -b $GOPATH/bin ${GOLANGCI_LINT_VERSION}
-    - uses: pre-commit/action@v3.0.0
+    - uses: pre-commit/action@2c7b3805fd2a0fd8c1884dcaebf91fc102a13ecd # v3.0.1
