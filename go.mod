@@ -1,6 +1,8 @@
 module github.com/giantswarm/chart-operator/v3
 
-go 1.19
+go 1.21
+
+toolchain go1.22.4
 
 require (
 	github.com/giantswarm/apiextensions-application v0.6.0
@@ -92,7 +94,7 @@ require (
 	github.com/jmoiron/sqlx v1.3.5 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
-	github.com/klauspost/compress v1.17.8 // indirect
+	github.com/klauspost/compress v1.17.9 // indirect
 	github.com/lann/builder v0.0.0-20180802200727-47ae307949d0 // indirect
 	github.com/lann/ps v0.0.0-20150810152359-62de8c46ede0 // indirect
 	github.com/lib/pq v1.10.6 // indirect
@@ -181,7 +183,7 @@ replace (
 	github.com/docker/docker => github.com/moby/moby v20.10.27+incompatible
 	github.com/gin-gonic/gin v1.4.0 => github.com/gin-gonic/gin v1.9.0
 	github.com/imdario/mergo => github.com/imdario/mergo v0.3.13
-	github.com/nats-io/nats-server/v2 => github.com/nats-io/nats-server/v2 v2.10.16
+	github.com/nats-io/nats-server/v2 => github.com/nats-io/nats-server/v2 v2.10.17
 	golang.org/x/net => golang.org/x/net v0.26.0
 	google.golang.org/grpc => google.golang.org/grpc v1.64.0
 )
