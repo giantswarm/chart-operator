@@ -178,6 +178,6 @@ spec:
           timeoutSeconds: 1
         resources:
           requests:
-            {{- .Values.deployment.requests | nindent 12 }}
+            {{- .Values.deployment.requests | toYaml | nindent 12 }}
           limits:
-            {{- .Values.deployment.limits | nindent 12 }}
+            {{- .Values.deployment.limits | toYaml | nindent 12 }}
