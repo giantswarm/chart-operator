@@ -35,7 +35,7 @@ spec:
       {{- if .Values.volumes.tmp.enabled }}
       - name: tmp
         emptyDir:
-          sizeLimit: {{ .Values.volumes.tmp.sizeLimit }}}
+          sizeLimit: "{{ .Values.volumes.tmp.sizeLimit }}"
       {{- end }}
       - name:  {{ tpl .Values.resource.default.name  . }}-configmap
         configMap:
