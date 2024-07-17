@@ -17,16 +17,16 @@ clusterDNSIP: 172.31.0.10
 
 deployment:
   requests:
-    cpu: 50m
+    cpu: 400m
     memory: 256Mi
   limits:
-    cpu: 100m
+    cpu: 600m
     memory: 512Mi
 
 verticalPodAutoscaler:
   enabled: true
   maxAllowed:
-    cpu: 150m
+    cpu: 1000m
     memory: 1024Mi
 
 volumes:
