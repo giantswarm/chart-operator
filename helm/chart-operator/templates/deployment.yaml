@@ -32,6 +32,11 @@ spec:
                 values:
                 - master
       volumes:
+      {{- if .Values.volumes.tmp.enabled }}
+      - name: tmp
+        emptyDir:
+          sizeLimit: "{{ .Values.volumes.tmp.sizeLimit }}"
+      {{- end }}
       - name:  {{ tpl .Values.resource.default.name  . }}-configmap
         configMap:
           name: {{ tpl .Values.resource.default.name  . }}
@@ -140,6 +145,10 @@ spec:
         image: "{{ .Values.image.registry }}/{{ .Values.image.name }}:{{ .Values.image.tag }}"
         {{- end }}
         volumeMounts:
+        {{- if .Values.volumes.tmp.enabled }}
+        - name: tmp
+          mountPath: "/tmp"
+        {{- end }}
         - name: {{ tpl .Values.resource.default.name  . }}-configmap
           mountPath: /var/run/{{ .Chart.Name }}/configmap/
         ports:
@@ -168,4 +177,7 @@ spec:
           initialDelaySeconds: 15
           timeoutSeconds: 1
         resources:
-{{ include "deployment.resources" . | indent 10 }}
+          requests:
+            {{- .Values.deployment.requests | toYaml | nindent 12 }}
+          limits:
+            {{- .Values.deployment.limits | toYaml | nindent 12 }}

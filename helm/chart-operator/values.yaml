@@ -17,10 +17,23 @@ clusterDNSIP: 172.31.0.10
 
 deployment:
   requests:
-    cpu: 50m
-    memory: 100Mi
+    cpu: 400m
+    memory: 256Mi
   limits:
-    memory: 350Mi
+    cpu: 600m
+    memory: 512Mi
+
+verticalPodAutoscaler:
+  enabled: true
+  maxAllowed:
+    cpu: 1000m
+    memory: 1024Mi
+
+volumes:
+  tmp:
+    enabled: true
+    # created as emptyDir, so it contributes to the memory limits
+    sizeLimit: 128Mi
 
 # if explicitly set to empty string, the dnsPolicy: Default is used and tis expected that the cluster is private/closed cluster
 externalDNSIP: 8.8.8.8
@@ -88,9 +101,6 @@ resource:
 tiller:
   namespace: "kube-system"
 
-verticalPodAutoscaler:
-  enabled: true
-
 isManagementCluster: false
 
 # When this flag is true, chart operator runs in special mode in order to be able to run in partially deployed clusters.
@@ -119,6 +129,9 @@ securityContext:
     drop:
       - ALL
   privileged: false
+  # Should only be enabled when /tmp has a mounted volume in place,
+  # otherwise artifact pulls will fail to be written to the file system.
+  readOnlyRootFilesystem: true
   runAsNonRoot: true
   seccompProfile:
     type: RuntimeDefault

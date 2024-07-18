@@ -56,12 +56,23 @@
         "clusterDNSIP": {
             "type": "string"
         },
+        "controller": {
+            "type": "object",
+            "properties": {
+                "resyncPeriod": {
+                    "type": "string"
+                }
+            }
+        },
         "deployment": {
             "type": "object",
             "properties": {
                 "limits": {
                     "type": "object",
                     "properties": {
+                        "cpu": {
+                            "type": "string"
+                        },
                         "memory": {
                             "type": "string"
                         }
@@ -285,6 +296,9 @@
                 "privileged": {
                     "type": "boolean"
                 },
+                "readOnlyRootFilesystem": {
+                    "type": "boolean"
+                },
                 "runAsNonRoot": {
                     "type": "boolean"
                 },
@@ -311,6 +325,33 @@
             "properties": {
                 "enabled": {
                     "type": "boolean"
+                },
+                "maxAllowed": {
+                    "type": "object",
+                    "properties": {
+                        "cpu": {
+                            "type": "string"
+                        },
+                        "memory": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "volumes": {
+            "type": "object",
+            "properties": {
+                "tmp": {
+                    "type": "object",
+                    "properties": {
+                        "enabled": {
+                            "type": "boolean"
+                        },
+                        "sizeLimit": {
+                            "type": "string"
+                        }
+                    }
                 }
             }
         }

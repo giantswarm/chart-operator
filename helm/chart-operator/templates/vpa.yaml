@@ -13,12 +13,12 @@ spec:
       controlledResources:
         - cpu
         - memory
-      maxAllowed:
-        cpu: 1000m
-        memory: 1000Mi
       minAllowed:
-        cpu: 250m
-        memory: 250Mi
+        cpu: {{ .Values.deployment.requests.cpu }}
+        memory: {{ .Values.deployment.requests.memory }}
+      maxAllowed:
+        cpu: {{ .Values.verticalPodAutoscaler.maxAllowed.cpu }}
+        memory: {{ .Values.verticalPodAutoscaler.maxAllowed.memory }}
       mode: Auto
   targetRef:
     apiVersion: apps/v1

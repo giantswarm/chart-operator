@@ -7,8 +7,17 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+### Added
+
+- Added and enabled by default an `emptyDir` volume under `tmp` of the deployment for artifact pulls
+  so that we can make the rest of the root file system read only under the security context.
+- Added control over the VPA max allowed resources.
+
 ### Changed
 
+- Requests and limits are always set on the deployment.
+- Increased default requests and limits because of the introduction of the `emptyDir` volume under `/tmp`.
+- Enabled read only root file system by default on the security context.
 - Update PolicyExceptions to v2 and fallback to v2beta1.
 
 ## [3.2.1] - 2024-03-05
