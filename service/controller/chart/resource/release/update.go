@@ -136,7 +136,7 @@ func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange inte
 		case <-intChan:
 			close(outChan)
 		case <-sigChan:
-			r.logger.Debugf(ctx, "Received termination signal, failing release %#q", releaseState.Name)
+			r.logger.Debugf(ctx, "Received termination signal, setting release %#q status to `unknown`", releaseState.Name)
 
 			s := driver.NewSecrets(r.k8sClient.CoreV1().Secrets(key.Namespace(cr)))
 			store := storage.Init(s)
@@ -147,7 +147,7 @@ func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange inte
 				return
 			}
 
-			rl.SetStatus(release.StatusFailed, "Chart Operator has been restarted when performing Helm operation")
+			rl.SetStatus(release.StatusUnknown, "Chart Operator has been restarted when performing Helm operation")
 			err = store.Update(rl)
 			if err != nil {
 				r.logger.Debugf(ctx, "Encountered error on updating status for release %#q", releaseState.Name)
