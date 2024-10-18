@@ -3,7 +3,10 @@ package release
 import (
 	"context"
 	"fmt"
+	"os"
+	"os/signal"
 	"strconv"
+	"syscall"
 	"time"
 
 	"github.com/giantswarm/helmclient/v4/pkg/helmclient"
@@ -11,6 +14,9 @@ import (
 	"github.com/giantswarm/operatorkit/v7/pkg/controller/context/resourcecanceledcontext"
 	"github.com/giantswarm/operatorkit/v7/pkg/resource/crud"
 	"github.com/google/go-cmp/cmp"
+	"helm.sh/helm/v3/pkg/release"
+	"helm.sh/helm/v3/pkg/storage"
+	"helm.sh/helm/v3/pkg/storage/driver"
 
 	"github.com/giantswarm/chart-operator/v3/pkg/annotation"
 	"github.com/giantswarm/chart-operator/v3/pkg/project"
@@ -92,7 +98,9 @@ func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange inte
 
 	timeout := key.UpgradeTimeout(cr)
 
-	ch := make(chan error)
+	outChan := make(chan error)
+	sigChan := make(chan os.Signal, 1)
+	signal.Notify(sigChan, syscall.SIGTERM, syscall.SIGINT)
 
 	// We update the helm release but with a wait timeout so we don't
 	// block reconciling other CRs.
@@ -111,13 +119,42 @@ func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange inte
 
 		// We need to pass the ValueOverrides option to make the update process
 		// use the default values and prevent errors on nested values.
-		err = hc.UpdateReleaseFromTarball(ctx,
-			tarballPath,
-			key.Namespace(cr),
-			releaseState.Name,
-			releaseState.Values,
-			opts)
-		close(ch)
+		intChan := make(chan error)
+
+		go func() {
+			err = hc.UpdateReleaseFromTarball(ctx,
+				tarballPath,
+				key.Namespace(cr),
+				releaseState.Name,
+				releaseState.Values,
+				opts)
+
+			close(intChan)
+		}()
+
+		select {
+		case <-intChan:
+			close(outChan)
+		case <-sigChan:
+			r.logger.Debugf(ctx, "Received termination signal, failing release %#q", releaseState.Name)
+
+			s := driver.NewSecrets(r.k8sClient.CoreV1().Secrets(key.Namespace(cr)))
+			store := storage.Init(s)
+
+			rl, err := store.Last(releaseState.Name)
+			if err != nil {
+				r.logger.Debugf(ctx, "Encountered error on getting last revision for release %#q", releaseState.Name)
+				return
+			}
+
+			rl.SetStatus(release.StatusFailed, "Chart Operator has been restarted when performing Helm operation")
+			err = store.Update(rl)
+			if err != nil {
+				r.logger.Debugf(ctx, "Encountered error on updating status for release %#q", releaseState.Name)
+				return
+			}
+
+		}
 
 		/*
 			The two-step installation is not supported on upgrades, yet it could be
@@ -127,7 +164,7 @@ func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange inte
 	}()
 
 	select {
-	case <-ch:
+	case <-outChan:
 		// Fall through.
 	case <-time.After(r.k8sWaitTimeout):
 		r.logger.Debugf(ctx, "waited for %d secs. release still being updated", int64(r.k8sWaitTimeout.Seconds()))
