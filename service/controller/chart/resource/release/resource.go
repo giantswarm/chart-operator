@@ -265,7 +265,7 @@ func (r *Resource) saveInterruptionInformation(ctx context.Context, name, namesp
 	err = store.Update(rl)
 	if err != nil {
 		r.logger.Debugf(ctx, "Encountered error on updating status for release %#q", name)
-		microerror.Mask(err)
+		return microerror.Mask(err)
 	}
 
 	r.logger.Debugf(ctx, "Updated release %#q with interrupt information", name)
