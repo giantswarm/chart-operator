@@ -118,11 +118,11 @@ func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange inte
 			opts.Timeout = (*timeout).Duration
 		}
 
-		// We need to pass the ValueOverrides option to make the update process
-		// use the default values and prevent errors on nested values.
 		intChan := make(chan error)
 
 		go func() {
+			// We need to pass the ValueOverrides option to make the update process
+			// use the default values and prevent errors on nested values.
 			err = hc.UpdateReleaseFromTarball(ctx,
 				tarballPath,
 				key.Namespace(cr),
@@ -137,41 +137,11 @@ func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange inte
 		case <-intChan:
 			close(outChan)
 		case <-sigChan:
-			r.logger.Debugf(ctx, "Received termination signal, updating release %#q with termination information", releaseState.Name)
-
-			s := driver.NewSecrets(r.k8sClient.CoreV1().Secrets(key.Namespace(cr)))
-			store := storage.Init(s)
-
-			rl, err := store.Last(releaseState.Name)
+			err = r.saveInterruptionInformation(ctx, releaseState.Name, key.Namespace(cr), timeout)
 			if err != nil {
-				r.logger.Debugf(ctx, "Encountered error on getting last revision for release %#q", releaseState.Name)
-				return
+				r.logger.Debugf(ctx, "Failed to safe interrupt information for release %#q", releaseState.Name)
 			}
-
-			// if map is nil, what is the case for Go Helm v3.10.3, create it
-			if rl.Labels == nil {
-				rl.Labels = make(map[string]string)
-			}
-
-			// add metadata about interruption and timeout
-			rl.Labels[releaseInterrupted] = "true"
-			rl.Labels[releaseTimeout] = time.Duration(5 * time.Minute).String()
-
-			if timeout != nil {
-				rl.Labels[releaseTimeout] = (*timeout).Duration.String()
-			}
-
-			// update release information in store
-			err = store.Update(rl)
-			if err != nil {
-				r.logger.Debugf(ctx, "Encountered error on updating status for release %#q", releaseState.Name)
-				return
-			}
-
-			r.logger.Debugf(ctx, "Updated release %#q with interrupt information", releaseState.Name)
-
 		}
-
 		/*
 			The two-step installation is not supported on upgrades, yet it could be
 			useful in times when app is already installed in version A, and is being
@@ -491,5 +461,5 @@ func (r *Resource) tryRecoverFromPending(ctx context.Context, cr v1alpha1.Chart,
 		return
 	}
 
-	rs.Status = "unknown"
+	rs.Status = string(release.StatusUnknown)
 }
