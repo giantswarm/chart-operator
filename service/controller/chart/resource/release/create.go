@@ -111,6 +111,8 @@ func (r *Resource) ApplyCreateChange(ctx context.Context, obj, createChange inte
 			iOpts.Timeout = (*timeout).Duration
 		}
 
+		// We need to pass the ValueOverrides option to make the install process
+		// use the default values and prevent errors on nested values.
 		e = hc.InstallReleaseFromTarball(ctx, tarballPath, ns, releaseState.Values, iOpts)
 
 		// We check the error here to return early if installation failed. There is no point

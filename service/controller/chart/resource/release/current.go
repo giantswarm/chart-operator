@@ -70,7 +70,6 @@ func (r *Resource) GetCurrentState(ctx context.Context, obj interface{}) (interf
 	}
 
 	releaseState := &ReleaseState{
-		LastDeployed:      releaseContent.LastDeployed,
 		Name:              releaseName,
 		Status:            releaseContent.Status,
 		ValuesMD5Checksum: key.ValuesMD5ChecksumAnnotation(cr),

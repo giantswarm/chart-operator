@@ -403,7 +403,7 @@ func (r *Resource) tryRecoverFromPending(ctx context.Context, cr v1alpha1.Chart,
 		timeout = cr.Spec.Install.Timeout
 	}
 
-	if time.Since(rs.LastDeployed) < (*timeout).Duration {
+	if time.Since(rel.Info.LastDeployed.UTC().Time) < (*timeout).Duration {
 		r.logger.Debugf(ctx, "Timeout has not elapsed yet for release %#q, skipping recevery", rs.Name)
 		return
 	}

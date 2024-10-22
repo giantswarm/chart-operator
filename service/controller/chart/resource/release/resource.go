@@ -11,8 +11,6 @@ import (
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/micrologger"
 	"github.com/spf13/afero"
-	"helm.sh/helm/v3/pkg/storage"
-	"helm.sh/helm/v3/pkg/storage/driver"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/client-go/kubernetes"
@@ -54,14 +52,6 @@ const (
 	// releaseNotInstalledStatus is set in the CR status when there is no Helm
 	// Release to check.
 	releaseNotInstalledStatus = "not-installed"
-
-	// releaseInterrupted is the label set on the Kubernetes Secret containing Helm release,
-	// to inform Chart Operator that the operation has been interrupted.
-	releaseInterrupted = "release-interrupted"
-
-	// releaseTimeout is the label set on the Kubernetes Secret containing Helm release,
-	// to inform Chart Operator about the original timeout setting of release.
-	releaseTimeout = "release-timeout"
 
 	// unknownError when a release fails for unknown reasons.
 	unknownError = "unknown-error"
@@ -232,43 +222,6 @@ func (r *Resource) addHashAnnotation(ctx context.Context, cr v1alpha1.Chart, rel
 	} else {
 		r.logger.Debugf(ctx, "no need to patch annotations for chart CR %#q in namespace %#q", cr.Name, cr.Namespace)
 	}
-
-	return nil
-}
-
-func (r *Resource) saveInterruptionInformation(ctx context.Context, name, namespace string, timeout *metav1.Duration) error {
-	r.logger.Debugf(ctx, "Received termination signal, updating release %#q with termination information", name)
-
-	s := driver.NewSecrets(r.k8sClient.CoreV1().Secrets(namespace))
-	store := storage.Init(s)
-
-	rl, err := store.Last(name)
-	if err != nil {
-		r.logger.Debugf(ctx, "Encountered error on getting last revision for release %#q", name)
-		return microerror.Mask(err)
-	}
-
-	// if map is nil, what is the case for Go Helm v3.10.3, create it
-	if rl.Labels == nil {
-		rl.Labels = make(map[string]string)
-	}
-
-	// add metadata about interruption and timeout
-	rl.Labels[releaseInterrupted] = "true"
-	rl.Labels[releaseTimeout] = time.Duration(5 * time.Minute).String()
-
-	if timeout != nil {
-		rl.Labels[releaseTimeout] = (*timeout).Duration.String()
-	}
-
-	// update release information in store
-	err = store.Update(rl)
-	if err != nil {
-		r.logger.Debugf(ctx, "Encountered error on updating status for release %#q", name)
-		return microerror.Mask(err)
-	}
-
-	r.logger.Debugf(ctx, "Updated release %#q with interrupt information", name)
 
 	return nil
 }

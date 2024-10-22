@@ -1,9 +1,5 @@
 package release
 
-import (
-	"time"
-)
-
 type Patch struct {
 	Op    string      `json:"op"`
 	Path  string      `json:"path"`
@@ -12,8 +8,6 @@ type Patch struct {
 
 // ReleaseState holds the state of the Helm release to be reconciled.
 type ReleaseState struct {
-	// LastDeployed is the time the Helm Chart was last deployed.
-	LastDeployed time.Time
 	// Name is the name of the Helm release when the chart is deployed.
 	// e.g. chart-operator
 	Name string
