@@ -148,7 +148,12 @@ func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange inte
 				return
 			}
 
-			// add metadata to a release informing of the interruption
+			// if map is nil, what is the case for Go Helm v3.10.3, create it
+			if rl.Labels == nil {
+				rl.Labels = make(map[string]string)
+			}
+
+			// add metadata about interruption and timeout
 			rl.Labels[releaseInterrupted] = "true"
 			rl.Labels[releaseTimeout] = time.Duration(5 * time.Minute).String()
 
@@ -157,6 +162,7 @@ func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange inte
 				rl.Labels[releaseTimeout] = (*timeout).Duration.String()
 			}
 
+			// update release information in store
 			err = store.Update(rl)
 			if err != nil {
 				r.logger.Debugf(ctx, "Encountered error on updating status for release %#q", releaseState.Name)
