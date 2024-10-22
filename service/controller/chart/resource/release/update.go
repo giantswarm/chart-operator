@@ -151,6 +151,8 @@ func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange inte
 			// add metadata to a release informing of the interruption
 			rl.Labels[releaseInterrupted] = "true"
 			rl.Labels[releaseTimeout] = time.Duration(5 * time.Minute).String()
+
+			r.logger.Debugf(ctx, "Encountered error on getting last revision for release %#q", rl.Labels)
 			if timeout != nil {
 				rl.Labels[releaseTimeout] = (*timeout).Duration.String()
 			}
