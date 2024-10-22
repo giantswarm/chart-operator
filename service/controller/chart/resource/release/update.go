@@ -137,7 +137,7 @@ func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange inte
 		case <-intChan:
 			close(outChan)
 		case <-sigChan:
-			r.logger.Debugf(ctx, "Received termination signal, setting release %#q status to `unknown`", releaseState.Name)
+			r.logger.Debugf(ctx, "Received termination signal, updating release %#q with termination information", releaseState.Name)
 
 			s := driver.NewSecrets(r.k8sClient.CoreV1().Secrets(key.Namespace(cr)))
 			store := storage.Init(s)
@@ -157,7 +157,6 @@ func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange inte
 			rl.Labels[releaseInterrupted] = "true"
 			rl.Labels[releaseTimeout] = time.Duration(5 * time.Minute).String()
 
-			r.logger.Debugf(ctx, "Labels of the release %#q", rl.Labels)
 			if timeout != nil {
 				rl.Labels[releaseTimeout] = (*timeout).Duration.String()
 			}
@@ -169,7 +168,7 @@ func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange inte
 				return
 			}
 
-			r.logger.Debugf(ctx, "Updated release %#q", releaseState.Name)
+			r.logger.Debugf(ctx, "Updated release %#q with interrupt information", releaseState.Name)
 
 		}
 
@@ -373,58 +372,6 @@ func (r *Resource) newUpdateChange(ctx context.Context, obj, currentState, desir
 	return nil, nil
 }
 
-func (r *Resource) tryRecoverFromPending(ctx context.Context, cr v1alpha1.Chart, rs *ReleaseState) {
-	s := driver.NewSecrets(r.k8sClient.CoreV1().Secrets(key.Namespace(cr)))
-	store := storage.Init(s)
-
-	rl, err := store.Last(rs.Name)
-	if err != nil {
-		r.logger.Debugf(ctx, "Encountered error on getting last revision for release %#q", rs.Name)
-		return
-	}
-
-	_, ok := rl.Labels[releaseInterrupted]
-	if !ok {
-		r.logger.Debugf(ctx, "No interruption evidence for release %#q, skipping recevery", rs.Name)
-		return
-	}
-
-	t, ok := rl.Labels[releaseInterrupted]
-	if !ok {
-		r.logger.Debugf(ctx, "No timeout information found for release %#q, skipping recevery", rs.Name)
-		return
-	}
-
-	d, err := time.ParseDuration(t)
-	if err != nil {
-		r.logger.Debugf(ctx, "Encountered error on parsing timeout for release %#q, skipping recevery", rs.Name)
-		return
-	}
-
-	if time.Since(rs.LastDeployed) < d {
-		r.logger.Debugf(ctx, "Timeout has not elapsed yet for release %#q, skipping recevery", rs.Name)
-		return
-	}
-
-	rl.Labels[releaseInterrupted] = "true"
-	rl.Labels[releaseTimeout] = time.Duration(5 * time.Minute).String()
-	if timeout := key.UpgradeTimeout(cr); timeout != nil {
-		rl.Labels[releaseTimeout] = (*timeout).Duration.String()
-	}
-
-	delete(rl.Labels, releaseInterrupted)
-	delete(rl.Labels, releaseTimeout)
-	rl.SetStatus(release.StatusUnknown, "Chart Operator has been restarted when performing Helm operation")
-
-	err = store.Update(rl)
-	if err != nil {
-		r.logger.Debugf(ctx, "Encountered error on updating status for release %#q", rs.Name)
-		return
-	}
-
-	rs.Status = "unknown"
-}
-
 func (r *Resource) rollback(ctx context.Context, obj interface{}, currentStatus string) error {
 	cr, err := key.ToCustomResource(obj)
 	if err != nil {
@@ -493,4 +440,56 @@ func (r *Resource) rollback(ctx context.Context, obj interface{}, currentStatus 
 	}
 
 	return nil
+}
+
+func (r *Resource) tryRecoverFromPending(ctx context.Context, cr v1alpha1.Chart, rs *ReleaseState) {
+	s := driver.NewSecrets(r.k8sClient.CoreV1().Secrets(key.Namespace(cr)))
+	store := storage.Init(s)
+
+	rl, err := store.Last(rs.Name)
+	if err != nil {
+		r.logger.Debugf(ctx, "Encountered error on getting last revision for release %#q", rs.Name)
+		return
+	}
+
+	_, ok := rl.Labels[releaseInterrupted]
+	if !ok {
+		r.logger.Debugf(ctx, "No interruption evidence for release %#q, skipping recevery", rs.Name)
+		return
+	}
+
+	t, ok := rl.Labels[releaseInterrupted]
+	if !ok {
+		r.logger.Debugf(ctx, "No timeout information found for release %#q, skipping recevery", rs.Name)
+		return
+	}
+
+	d, err := time.ParseDuration(t)
+	if err != nil {
+		r.logger.Debugf(ctx, "Encountered error on parsing timeout for release %#q, skipping recevery", rs.Name)
+		return
+	}
+
+	if time.Since(rs.LastDeployed) < d {
+		r.logger.Debugf(ctx, "Timeout has not elapsed yet for release %#q, skipping recevery", rs.Name)
+		return
+	}
+
+	rl.Labels[releaseInterrupted] = "true"
+	rl.Labels[releaseTimeout] = time.Duration(5 * time.Minute).String()
+	if timeout := key.UpgradeTimeout(cr); timeout != nil {
+		rl.Labels[releaseTimeout] = (*timeout).Duration.String()
+	}
+
+	delete(rl.Labels, releaseInterrupted)
+	delete(rl.Labels, releaseTimeout)
+	rl.SetStatus(release.StatusUnknown, "Chart Operator has been restarted when performing Helm operation")
+
+	err = store.Update(rl)
+	if err != nil {
+		r.logger.Debugf(ctx, "Encountered error on updating status for release %#q", rs.Name)
+		return
+	}
+
+	rs.Status = "unknown"
 }
