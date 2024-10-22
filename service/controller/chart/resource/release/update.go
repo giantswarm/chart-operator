@@ -152,7 +152,7 @@ func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange inte
 			rl.Labels[releaseInterrupted] = "true"
 			rl.Labels[releaseTimeout] = time.Duration(5 * time.Minute).String()
 
-			r.logger.Debugf(ctx, "Encountered error on getting last revision for release %#q", rl.Labels)
+			r.logger.Debugf(ctx, "Labels of the release %#q", rl.Labels)
 			if timeout != nil {
 				rl.Labels[releaseTimeout] = (*timeout).Duration.String()
 			}
@@ -162,6 +162,8 @@ func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange inte
 				r.logger.Debugf(ctx, "Encountered error on updating status for release %#q", releaseState.Name)
 				return
 			}
+
+			r.logger.Debugf(ctx, "Updated release %#q", releaseState.Name)
 
 		}
 
