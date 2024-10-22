@@ -236,7 +236,12 @@ func (s *Service) Boot(ctx context.Context) {
 }
 
 func newHelmClient(config Config, k8sClient k8sclient.Interface, fs afero.Fs) (*helmclient.Client, error) {
-	restMapper, err := apiutil.NewDynamicRESTMapper(rest.CopyConfig(k8sClient.RESTConfig()))
+	httpClient, err := rest.HTTPClientFor(rest.CopyConfig(k8sClient.RESTConfig()))
+	if err != nil {
+		return nil, microerror.Mask(err)
+	}
+
+	restMapper, err := apiutil.NewDynamicRESTMapper(rest.CopyConfig(k8sClient.RESTConfig()), httpClient)
 	if err != nil {
 		return nil, microerror.Mask(err)
 	}

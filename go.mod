@@ -9,7 +9,7 @@ require (
 	github.com/giantswarm/appcatalog v1.0.0
 	github.com/giantswarm/backoff v1.0.1
 	github.com/giantswarm/exporterkit v1.2.0
-	github.com/giantswarm/helmclient/v4 v4.11.3
+	github.com/giantswarm/helmclient/v4 v4.12.0
 	github.com/giantswarm/k8sclient/v6 v6.1.0
 	github.com/giantswarm/k8sclient/v7 v7.2.0
 	github.com/giantswarm/k8smetadata v0.25.0
@@ -172,7 +172,7 @@ require (
 	gopkg.in/resty.v1 v1.12.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
-	helm.sh/helm/v3 v3.14.3 // indirect
+	helm.sh/helm/v3 v3.14.4 // indirect
 	k8s.io/apiextensions-apiserver v0.29.2 // indirect
 	k8s.io/apiserver v0.29.2 // indirect
 	k8s.io/cli-runtime v0.29.0 // indirect
