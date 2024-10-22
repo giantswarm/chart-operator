@@ -15,6 +15,7 @@ import (
 	"helm.sh/helm/v3/pkg/release"
 	"helm.sh/helm/v3/pkg/storage"
 	"helm.sh/helm/v3/pkg/storage/driver"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
 	"github.com/giantswarm/chart-operator/v3/pkg/annotation"
 	"github.com/giantswarm/chart-operator/v3/pkg/project"
@@ -113,6 +114,8 @@ func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange inte
 			opts.Timeout = (*timeout).Duration
 		}
 
+		// We need to pass the ValueOverrides option to make the update process
+		// use the default values and prevent errors on nested values.
 		err = hc.UpdateReleaseFromTarball(ctx,
 			tarballPath,
 			key.Namespace(cr),
@@ -401,10 +404,7 @@ func (r *Resource) tryRecoverFromPending(ctx context.Context, cr v1alpha1.Chart,
 		return
 	}
 
-	timeout := cr.Spec.Upgrade.Timeout
-	if rel.Version == 1 {
-		timeout = cr.Spec.Install.Timeout
-	}
+	timeout := getTimeout(cr, rel.Version)
 
 	if time.Since(rel.Info.LastDeployed.Time) < (*timeout).Duration {
 		r.logger.Debugf(ctx, "Timeout has not elapsed yet for release %#q, skipping recevery", rs.Name)
@@ -419,4 +419,22 @@ func (r *Resource) tryRecoverFromPending(ctx context.Context, cr v1alpha1.Chart,
 	}
 
 	rs.Status = string(release.StatusUnknown)
+}
+
+func getTimeout(cr v1alpha1.Chart, rev int) *metav1.Duration {
+	timeout := &metav1.Duration{Duration: 5 * time.Minute}
+
+	if rev == 1 {
+		installTimeout := key.InstallTimeout(cr)
+		if installTimeout != nil {
+			timeout = installTimeout
+		}
+	} else {
+		upgradeTimeout := key.UpgradeTimeout(cr)
+		if upgradeTimeout != nil {
+			timeout = upgradeTimeout
+		}
+	}
+
+	return timeout
 }
