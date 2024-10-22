@@ -53,6 +53,14 @@ const (
 	// Release to check.
 	releaseNotInstalledStatus = "not-installed"
 
+	// releaseInterrupted is the label set on the Kubernetes Secret containing Helm release,
+	// to inform Chart Operator that the operation has been interrupted.
+	releaseInterrupted = "release-interrupted"
+
+	// releaseTimeout is the label set on the Kubernetes Secret containing Helm release,
+	// to inform Chart Operator about the original timeout setting of release.
+	releaseTimeout = "release-timeout"
+
 	// unknownError when a release fails for unknown reasons.
 	unknownError = "unknown-error"
 
