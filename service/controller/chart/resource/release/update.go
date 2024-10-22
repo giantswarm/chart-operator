@@ -97,6 +97,7 @@ func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange inte
 	timeout := key.UpgradeTimeout(cr)
 
 	ch := make(chan error)
+
 	// We update the helm release but with a wait timeout so we don't
 	// block reconciling other CRs.
 	//
@@ -118,6 +119,8 @@ func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange inte
 			releaseState.Name,
 			releaseState.Values,
 			opts)
+
+		close(ch)
 		/*
 			The two-step installation is not supported on upgrades, yet it could be
 			useful in times when app is already installed in version A, and is being
@@ -403,7 +406,7 @@ func (r *Resource) tryRecoverFromPending(ctx context.Context, cr v1alpha1.Chart,
 		timeout = cr.Spec.Install.Timeout
 	}
 
-	if time.Since(rel.Info.LastDeployed.UTC().Time) < (*timeout).Duration {
+	if time.Since(rel.Info.LastDeployed.Time) < (*timeout).Duration {
 		r.logger.Debugf(ctx, "Timeout has not elapsed yet for release %#q, skipping recevery", rs.Name)
 		return
 	}
