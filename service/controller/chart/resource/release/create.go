@@ -3,9 +3,6 @@ package release
 import (
 	"context"
 	"fmt"
-	"os"
-	"os/signal"
-	"syscall"
 	"time"
 
 	"github.com/giantswarm/helmclient/v4/pkg/helmclient"
@@ -88,9 +85,7 @@ func (r *Resource) ApplyCreateChange(ctx context.Context, obj, createChange inte
 		}
 	}()
 
-	outChan := make(chan error)
-	sigChan := make(chan os.Signal, 1)
-	signal.Notify(sigChan, syscall.SIGTERM, syscall.SIGINT)
+	ch := make(chan error)
 
 	// We create the helm release but with a wait timeout so we don't
 	// block reconciling other CRs.
@@ -100,7 +95,7 @@ func (r *Resource) ApplyCreateChange(ctx context.Context, obj, createChange inte
 	go func() {
 		var e error
 
-		defer close(outChan)
+		defer close(ch)
 
 		if skipCRDs {
 			r.logger.Debugf(ctx, "helm release %#q has SkipCRDs set to true, not installing CRDs", releaseState.Name)
@@ -116,25 +111,7 @@ func (r *Resource) ApplyCreateChange(ctx context.Context, obj, createChange inte
 			iOpts.Timeout = (*timeout).Duration
 		}
 
-		intChan := make(chan error)
-
-		go func() {
-			// We need to pass the ValueOverrides option to make the install process
-			// use the default values and prevent errors on nested values.
-			e = hc.InstallReleaseFromTarball(ctx, tarballPath, ns, releaseState.Values, iOpts)
-
-			close(intChan)
-		}()
-
-		select {
-		case <-intChan:
-			// fall through
-		case <-sigChan:
-			termErr := r.saveInterruptionInformation(ctx, releaseState.Name, key.Namespace(cr), timeout)
-			if termErr != nil {
-				r.logger.Debugf(ctx, "Failed to safe interrupt information for release %#q", releaseState.Name)
-			}
-		}
+		e = hc.InstallReleaseFromTarball(ctx, tarballPath, ns, releaseState.Values, iOpts)
 
 		// We check the error here to return early if installation failed. There is no point
 		// in upgrading in such scenario.
@@ -170,31 +147,16 @@ func (r *Resource) ApplyCreateChange(ctx context.Context, obj, createChange inte
 
 		r.logger.Debugf(ctx, "doing internal upgrade for release %#q", releaseState.Name)
 
-		intChan = make(chan error)
-		go func() {
-			err = hc.UpdateReleaseFromTarball(ctx,
-				tarballPath,
-				ns,
-				releaseState.Name,
-				releaseState.Values,
-				uOpts)
-
-			close(intChan)
-		}()
-
-		select {
-		case <-intChan:
-			// fall through
-		case <-sigChan:
-			err = r.saveInterruptionInformation(ctx, releaseState.Name, key.Namespace(cr), timeout)
-			if err != nil {
-				r.logger.Debugf(ctx, "Failed to safe interrupt information for release %#q", releaseState.Name)
-			}
-		}
+		err = hc.UpdateReleaseFromTarball(ctx,
+			tarballPath,
+			ns,
+			releaseState.Name,
+			releaseState.Values,
+			uOpts)
 	}()
 
 	select {
-	case <-outChan:
+	case <-ch:
 		// Fall through.
 	case <-time.After(r.k8sWaitTimeout):
 		r.logger.Debugf(ctx, "waited for %d secs. release still being created", int64(r.k8sWaitTimeout.Seconds()))

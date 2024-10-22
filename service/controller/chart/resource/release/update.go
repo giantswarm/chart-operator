@@ -3,10 +3,7 @@ package release
 import (
 	"context"
 	"fmt"
-	"os"
-	"os/signal"
 	"strconv"
-	"syscall"
 	"time"
 
 	"github.com/giantswarm/apiextensions-application/api/v1alpha1"
@@ -99,10 +96,7 @@ func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange inte
 
 	timeout := key.UpgradeTimeout(cr)
 
-	outChan := make(chan error)
-	sigChan := make(chan os.Signal, 1)
-	signal.Notify(sigChan, syscall.SIGTERM, syscall.SIGINT)
-
+	ch := make(chan error)
 	// We update the helm release but with a wait timeout so we don't
 	// block reconciling other CRs.
 	//
@@ -118,30 +112,12 @@ func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange inte
 			opts.Timeout = (*timeout).Duration
 		}
 
-		intChan := make(chan error)
-
-		go func() {
-			// We need to pass the ValueOverrides option to make the update process
-			// use the default values and prevent errors on nested values.
-			err = hc.UpdateReleaseFromTarball(ctx,
-				tarballPath,
-				key.Namespace(cr),
-				releaseState.Name,
-				releaseState.Values,
-				opts)
-
-			close(intChan)
-		}()
-
-		select {
-		case <-intChan:
-			close(outChan)
-		case <-sigChan:
-			err = r.saveInterruptionInformation(ctx, releaseState.Name, key.Namespace(cr), timeout)
-			if err != nil {
-				r.logger.Debugf(ctx, "Failed to safe interrupt information for release %#q", releaseState.Name)
-			}
-		}
+		err = hc.UpdateReleaseFromTarball(ctx,
+			tarballPath,
+			key.Namespace(cr),
+			releaseState.Name,
+			releaseState.Values,
+			opts)
 		/*
 			The two-step installation is not supported on upgrades, yet it could be
 			useful in times when app is already installed in version A, and is being
@@ -150,7 +126,7 @@ func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange inte
 	}()
 
 	select {
-	case <-outChan:
+	case <-ch:
 		// Fall through.
 	case <-time.After(r.k8sWaitTimeout):
 		r.logger.Debugf(ctx, "waited for %d secs. release still being updated", int64(r.k8sWaitTimeout.Seconds()))
@@ -416,46 +392,24 @@ func (r *Resource) tryRecoverFromPending(ctx context.Context, cr v1alpha1.Chart,
 	s := driver.NewSecrets(r.k8sClient.CoreV1().Secrets(key.Namespace(cr)))
 	store := storage.Init(s)
 
-	rl, err := store.Last(rs.Name)
+	rel, err := store.Last(rs.Name)
 	if err != nil {
 		r.logger.Debugf(ctx, "Encountered error on getting last revision for release %#q", rs.Name)
 		return
 	}
 
-	_, ok := rl.Labels[releaseInterrupted]
-	if !ok {
-		r.logger.Debugf(ctx, "No interruption evidence for release %#q, skipping recevery", rs.Name)
-		return
+	timeout := cr.Spec.Upgrade.Timeout
+	if rel.Version == 1 {
+		timeout = cr.Spec.Install.Timeout
 	}
 
-	t, ok := rl.Labels[releaseInterrupted]
-	if !ok {
-		r.logger.Debugf(ctx, "No timeout information found for release %#q, skipping recevery", rs.Name)
-		return
-	}
-
-	d, err := time.ParseDuration(t)
-	if err != nil {
-		r.logger.Debugf(ctx, "Encountered error on parsing timeout for release %#q, skipping recevery", rs.Name)
-		return
-	}
-
-	if time.Since(rs.LastDeployed) < d {
+	if time.Since(rs.LastDeployed) < (*timeout).Duration {
 		r.logger.Debugf(ctx, "Timeout has not elapsed yet for release %#q, skipping recevery", rs.Name)
 		return
 	}
 
-	rl.Labels[releaseInterrupted] = "true"
-	rl.Labels[releaseTimeout] = time.Duration(5 * time.Minute).String()
-	if timeout := key.UpgradeTimeout(cr); timeout != nil {
-		rl.Labels[releaseTimeout] = (*timeout).Duration.String()
-	}
-
-	delete(rl.Labels, releaseInterrupted)
-	delete(rl.Labels, releaseTimeout)
-	rl.SetStatus(release.StatusUnknown, "Chart Operator has been restarted when performing Helm operation")
-
-	err = store.Update(rl)
+	rel.SetStatus(release.StatusUnknown, "Chart Operator has been restarted when performing Helm operation")
+	err = store.Update(rel)
 	if err != nil {
 		r.logger.Debugf(ctx, "Encountered error on updating status for release %#q", rs.Name)
 		return
