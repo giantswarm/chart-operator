@@ -386,6 +386,11 @@ func (r *Resource) tryRecoverFromPending(ctx context.Context, cr v1alpha1.Chart,
 	}
 
 	d, err := time.ParseDuration(t)
+	if err != nil {
+		r.logger.Debugf(ctx, "Encountered error on parsing timeout for release %#q, skipping recevery", rs.Name)
+		return
+	}
+
 	if time.Since(rs.LastDeployed) < d {
 		r.logger.Debugf(ctx, "Timeout has not elapsed yet for release %#q, skipping recevery", rs.Name)
 		return
@@ -408,8 +413,6 @@ func (r *Resource) tryRecoverFromPending(ctx context.Context, cr v1alpha1.Chart,
 	}
 
 	rs.Status = "unknown"
-
-	return
 }
 
 func (r *Resource) rollback(ctx context.Context, obj interface{}, currentStatus string) error {
