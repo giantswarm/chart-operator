@@ -400,25 +400,31 @@ func (r *Resource) tryRecoverFromPending(ctx context.Context, cr v1alpha1.Chart,
 
 	rel, err := store.Last(rs.Name)
 	if err != nil {
-		r.logger.Debugf(ctx, "Encountered error on getting last revision for release %#q", rs.Name)
+		r.logger.Debugf(ctx, "encountered error on getting last revision for release %#q", rs.Name)
 		return
 	}
 
 	timeout := getTimeout(cr, rel.Version)
 
 	if time.Since(rel.Info.LastDeployed.Time) < (*timeout).Duration {
-		r.logger.Debugf(ctx, "Timeout has not elapsed yet for release %#q, skipping recevery", rs.Name)
+		r.logger.Debugf(ctx, "timeout has not elapsed yet for release %#q, skipping recevery", rs.Name)
 		return
 	}
 
-	rel.SetStatus(release.StatusUnknown, "Chart Operator has been restarted when performing Helm operation")
+	status := release.StatusUnknown
+	if rel.Version == 1 {
+		status = release.StatusFailed
+	}
+	rel.SetStatus(status, "chart Operator has been restarted when performing Helm operation")
 	err = store.Update(rel)
 	if err != nil {
-		r.logger.Debugf(ctx, "Encountered error on updating status for release %#q", rs.Name)
+		r.logger.Debugf(ctx, "encountered error on updating status for release %#q", rs.Name)
 		return
 	}
 
 	rs.Status = string(release.StatusUnknown)
+
+	r.logger.Debugf(ctx, "recovered from `pending` status for release %#q", rs.Name)
 }
 
 func getTimeout(cr v1alpha1.Chart, rev int) *metav1.Duration {
