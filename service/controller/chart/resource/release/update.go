@@ -415,7 +415,7 @@ func (r *Resource) tryRecoverFromPending(ctx context.Context, cr v1alpha1.Chart,
 	if rel.Version == 1 {
 		status = release.StatusFailed
 	}
-	rel.SetStatus(status, "chart Operator has been restarted when performing Helm operation")
+	rel.SetStatus(status, "Chart Operator has been restarted when performing Helm operation")
 	err = store.Update(rel)
 	if err != nil {
 		r.logger.Debugf(ctx, "encountered error on updating status for release %#q", rs.Name)
