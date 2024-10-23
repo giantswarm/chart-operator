@@ -148,16 +148,13 @@ func (r *Resource) ApplyCreateChange(ctx context.Context, obj, createChange inte
 		}
 
 		r.logger.Debugf(ctx, "doing internal upgrade for release %#q", releaseState.Name)
-		e = hc.UpdateReleaseFromTarball(ctx,
+
+		err = hc.UpdateReleaseFromTarball(ctx,
 			tarballPath,
 			ns,
 			releaseState.Name,
 			releaseState.Values,
 			uOpts)
-
-		if e != nil {
-			err = e
-		}
 	}()
 
 	select {

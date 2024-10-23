@@ -6,11 +6,16 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/giantswarm/apiextensions-application/api/v1alpha1"
 	"github.com/giantswarm/helmclient/v4/pkg/helmclient"
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/operatorkit/v7/pkg/controller/context/resourcecanceledcontext"
 	"github.com/giantswarm/operatorkit/v7/pkg/resource/crud"
 	"github.com/google/go-cmp/cmp"
+	"helm.sh/helm/v3/pkg/release"
+	"helm.sh/helm/v3/pkg/storage"
+	"helm.sh/helm/v3/pkg/storage/driver"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
 	"github.com/giantswarm/chart-operator/v3/pkg/annotation"
 	"github.com/giantswarm/chart-operator/v3/pkg/project"
@@ -117,8 +122,8 @@ func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange inte
 			releaseState.Name,
 			releaseState.Values,
 			opts)
-		close(ch)
 
+		close(ch)
 		/*
 			The two-step installation is not supported on upgrades, yet it could be
 			useful in times when app is already installed in version A, and is being
@@ -283,6 +288,8 @@ func (r *Resource) newUpdateChange(ctx context.Context, obj, currentState, desir
 			// no-op after rollback
 			return nil, nil
 		}
+
+		r.tryRecoverFromPending(ctx, cr, &currentReleaseState)
 	}
 
 	// We check the controller context and if the release has failed more
@@ -385,4 +392,55 @@ func (r *Resource) rollback(ctx context.Context, obj interface{}, currentStatus 
 	}
 
 	return nil
+}
+
+func (r *Resource) tryRecoverFromPending(ctx context.Context, cr v1alpha1.Chart, rs *ReleaseState) {
+	s := driver.NewSecrets(r.k8sClient.CoreV1().Secrets(key.Namespace(cr)))
+	store := storage.Init(s)
+
+	rel, err := store.Last(rs.Name)
+	if err != nil {
+		r.logger.Debugf(ctx, "encountered error on getting last revision for release %#q", rs.Name)
+		return
+	}
+
+	timeout := getTimeout(cr, rel.Version)
+
+	if time.Since(rel.Info.LastDeployed.Time) < (*timeout).Duration {
+		r.logger.Debugf(ctx, "timeout has not elapsed yet for release %#q, skipping recevery", rs.Name)
+		return
+	}
+
+	status := release.StatusUnknown
+	if rel.Version == 1 {
+		status = release.StatusFailed
+	}
+	rel.SetStatus(status, "Chart Operator has been restarted when performing Helm operation")
+	err = store.Update(rel)
+	if err != nil {
+		r.logger.Debugf(ctx, "encountered error on updating status for release %#q", rs.Name)
+		return
+	}
+
+	rs.Status = string(release.StatusUnknown)
+
+	r.logger.Debugf(ctx, "recovered from `pending` status for release %#q", rs.Name)
+}
+
+func getTimeout(cr v1alpha1.Chart, rev int) *metav1.Duration {
+	timeout := &metav1.Duration{Duration: 5 * time.Minute}
+
+	if rev == 1 {
+		installTimeout := key.InstallTimeout(cr)
+		if installTimeout != nil {
+			timeout = installTimeout
+		}
+	} else {
+		upgradeTimeout := key.UpgradeTimeout(cr)
+		if upgradeTimeout != nil {
+			timeout = upgradeTimeout
+		}
+	}
+
+	return timeout
 }
