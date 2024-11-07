@@ -102,11 +102,18 @@ spec:
           value: "5"
       initContainers:
       - name: wait-for-quay
-        image: "{{ .Values.image.registry }}/{{ .Values.image.name }}:{{ .Values.image.tag }}"
+        image: "{{ .Values.image.registry }}/{{ .Values.image.name }}:{{ include "image.tag" . }}"
         command:
         - sh
         - -c
         - until dig {{ .Values.image.registry }}. {{ range (splitList "," .Values.externalDNSIP) }}@{{ . }} {{ end }}; do echo waiting for {{ .Values.image.registry }}; sleep 2; done;
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: 200m
+            memory: 256Mi
         securityContext:
           runAsUser: {{ .Values.pod.user.id }}
           runAsGroup: {{ .Values.pod.group.id }}
@@ -140,9 +147,9 @@ spec:
         {{- end }}
         {{- end }}
         {{- if .Values.isManagementCluster }}
-        image: "{{ .Values.registry.domain }}/{{ .Values.image.name }}:{{ .Values.image.tag }}"
+        image: "{{ .Values.registry.domain }}/{{ .Values.image.name }}:{{ include "image.tag" . }}"
         {{- else }}
-        image: "{{ .Values.image.registry }}/{{ .Values.image.name }}:{{ .Values.image.tag }}"
+        image: "{{ .Values.image.registry }}/{{ .Values.image.name }}:{{ include "image.tag" . }}"
         {{- end }}
         volumeMounts:
         {{- if .Values.volumes.tmp.enabled }}
