@@ -23,6 +23,7 @@ application.giantswarm.io/branch: {{ .Chart.AppVersion | replace "#" "-" | repla
 application.giantswarm.io/commit: {{ .Chart.AppVersion | quote }}
 app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+application.giantswarm.io/team: {{ index .Chart.Annotations "application.giantswarm.io/team" | quote }}
 helm.sh/chart: {{ include "chart-operator.chart" . | quote }}
 {{- end -}}
 
