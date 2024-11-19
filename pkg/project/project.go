@@ -5,7 +5,7 @@ var (
 	gitSHA      = "n/a"
 	name        = "chart-operator"
 	source      = "https://github.com/giantswarm/chart-operator"
-	version     = "4.0.0"
+	version     = "4.0.1-dev"
 )
 
 const (
