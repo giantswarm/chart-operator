@@ -1,6 +1,6 @@
 version: 2.1
 orbs:
-  architect: giantswarm/architect@5.9.0
+  architect: giantswarm/architect@5.11.1
 
 workflows:
   build:
@@ -28,6 +28,7 @@ workflows:
             - master
     - architect/push-to-app-catalog:
         context: architect
+        executor: app-build-suite
         name: push-to-cp-app-catalog
         app_catalog: control-plane-catalog
         app_catalog_test: control-plane-test-catalog
@@ -44,6 +45,7 @@ workflows:
             - master
     - architect/push-to-app-catalog:
         context: architect
+        executor: app-build-suite
         name: push-to-default-app-catalog
         app_catalog: default-catalog
         app_catalog_test: default-test-catalog

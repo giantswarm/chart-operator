@@ -19,10 +19,11 @@ Common labels
 {{- define "chart-operator.labels" -}}
 {{ include "chart-operator.selectorLabels" . }}
 app: {{ include "chart-operator.name" . | quote }}
-application.giantswarm.io/branch: {{ .Values.project.branch | replace "#" "-" | replace "/" "-" | replace "." "-" | trunc 63 | trimSuffix "-" | quote }}
-application.giantswarm.io/commit: {{ .Values.project.commit | quote }}
+application.giantswarm.io/branch: {{ .Chart.AppVersion | replace "#" "-" | replace "/" "-" | replace "." "-" | trunc 63 | trimSuffix "-" | quote }}
+application.giantswarm.io/commit: {{ .Chart.AppVersion | quote }}
 app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+application.giantswarm.io/team: {{ index .Chart.Annotations "application.giantswarm.io/team" | quote }}
 helm.sh/chart: {{ include "chart-operator.chart" . | quote }}
 {{- end -}}
 
@@ -37,3 +38,14 @@ app.kubernetes.io/instance: {{ .Release.Name | quote }}
 {{- define "resource.vpa.enabled" -}}
 {{- if and (.Capabilities.APIVersions.Has "autoscaling.k8s.io/v1") (.Values.verticalPodAutoscaler.enabled) }}true{{ else }}false{{ end }}
 {{- end -}}
+
+{{/*
+Define image tag.
+*/}}
+{{- define "image.tag" -}}
+{{- if .Values.image.tag }}
+{{- .Values.image.tag }}
+{{- else }}
+{{- .Chart.AppVersion }}
+{{- end }}
+{{- end }}

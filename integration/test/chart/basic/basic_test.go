@@ -146,8 +146,8 @@ func TestChartLifecycle(t *testing.T) {
 						Namespace: key.Namespace(),
 					},
 				},
-				TarballURL: "https://giantswarm.github.io/default-catalog/test-app-0.1.0.tgz",
-				Version:    "0.1.0",
+				TarballURL: "https://giantswarm.github.io/default-catalog/test-app-1.0.0.tgz",
+				Version:    "1.0.0",
 			},
 		}
 		err = config.K8sClients.CtrlClient().Create(ctx, cr)
@@ -208,8 +208,8 @@ func TestChartLifecycle(t *testing.T) {
 			t.Fatalf("expected %#v got %#v", nil, err)
 		}
 
-		cr.Spec.TarballURL = "https://giantswarm.github.io/default-catalog/test-app-0.1.1.tgz"
-		cr.Spec.Version = "0.1.1"
+		cr.Spec.TarballURL = "https://giantswarm.github.io/default-catalog/test-app-1.0.0.tgz"
+		cr.Spec.Version = "1.0.0"
 
 		err = config.K8sClients.CtrlClient().Update(ctx, &cr)
 		if err != nil {
@@ -220,7 +220,7 @@ func TestChartLifecycle(t *testing.T) {
 
 		config.Logger.Debugf(ctx, "checking release %#q is updated", key.TestAppReleaseName())
 
-		err = config.Release.WaitForChartVersion(ctx, key.Namespace(), key.TestAppReleaseName(), "0.1.1")
+		err = config.Release.WaitForChartVersion(ctx, key.Namespace(), key.TestAppReleaseName(), "1.0.0")
 		if err != nil {
 			t.Fatalf("expected %#v got %#v", nil, err)
 		}
