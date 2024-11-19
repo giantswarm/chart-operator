@@ -5,7 +5,7 @@ import (
 	"github.com/giantswarm/micrologger"
 	"k8s.io/client-go/kubernetes"
 
-	"github.com/giantswarm/chart-operator/v3/service/internal/clientpair"
+	"github.com/giantswarm/chart-operator/v4/service/internal/clientpair"
 )
 
 const (

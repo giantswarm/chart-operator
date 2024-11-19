@@ -10,7 +10,7 @@ import (
 	"github.com/giantswarm/k8smetadata/pkg/label"
 	"github.com/giantswarm/microerror"
 
-	chartmeta "github.com/giantswarm/chart-operator/v3/pkg/annotation"
+	chartmeta "github.com/giantswarm/chart-operator/v4/pkg/annotation"
 )
 
 func AppName(customResource v1alpha1.Chart) string {

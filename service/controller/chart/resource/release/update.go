@@ -17,10 +17,10 @@ import (
 	"helm.sh/helm/v3/pkg/storage/driver"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
-	"github.com/giantswarm/chart-operator/v3/pkg/annotation"
-	"github.com/giantswarm/chart-operator/v3/pkg/project"
-	"github.com/giantswarm/chart-operator/v3/service/controller/chart/controllercontext"
-	"github.com/giantswarm/chart-operator/v3/service/controller/chart/key"
+	"github.com/giantswarm/chart-operator/v4/pkg/annotation"
+	"github.com/giantswarm/chart-operator/v4/pkg/project"
+	"github.com/giantswarm/chart-operator/v4/service/controller/chart/controllercontext"
+	"github.com/giantswarm/chart-operator/v4/service/controller/chart/key"
 )
 
 func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange interface{}) error {

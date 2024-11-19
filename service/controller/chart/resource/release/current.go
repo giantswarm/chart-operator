@@ -8,9 +8,9 @@ import (
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/operatorkit/v7/pkg/controller/context/resourcecanceledcontext"
 
-	"github.com/giantswarm/chart-operator/v3/pkg/project"
-	"github.com/giantswarm/chart-operator/v3/service/controller/chart/controllercontext"
-	"github.com/giantswarm/chart-operator/v3/service/controller/chart/key"
+	"github.com/giantswarm/chart-operator/v4/pkg/project"
+	"github.com/giantswarm/chart-operator/v4/service/controller/chart/controllercontext"
+	"github.com/giantswarm/chart-operator/v4/service/controller/chart/key"
 )
 
 func (r *Resource) GetCurrentState(ctx context.Context, obj interface{}) (interface{}, error) {

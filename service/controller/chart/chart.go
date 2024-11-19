@@ -13,11 +13,11 @@ import (
 	"github.com/spf13/afero"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
-	"github.com/giantswarm/chart-operator/v3/pkg/annotation"
-	"github.com/giantswarm/chart-operator/v3/pkg/project"
-	"github.com/giantswarm/chart-operator/v3/service/controller/chart/controllercontext"
+	"github.com/giantswarm/chart-operator/v4/pkg/annotation"
+	"github.com/giantswarm/chart-operator/v4/pkg/project"
+	"github.com/giantswarm/chart-operator/v4/service/controller/chart/controllercontext"
 
-	"github.com/giantswarm/chart-operator/v3/service/internal/clientpair"
+	"github.com/giantswarm/chart-operator/v4/service/internal/clientpair"
 )
 
 const chartControllerSuffix = "-chart"

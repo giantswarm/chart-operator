@@ -1,8 +1,8 @@
 package helm
 
 import (
-	"github.com/giantswarm/chart-operator/v3/flag/service/helm/http"
-	"github.com/giantswarm/chart-operator/v3/flag/service/helm/kubernetes"
+	"github.com/giantswarm/chart-operator/v4/flag/service/helm/http"
+	"github.com/giantswarm/chart-operator/v4/flag/service/helm/kubernetes"
 )
 
 type Helm struct {
