@@ -1024,8 +1024,8 @@ github.com/giantswarm/micrologger v1.1.1 h1:gpu9uq1Vixey20Zo5pra5m/5EsmLrNlTwIgj
 github.com/giantswarm/micrologger v1.1.1/go.mod h1:l84q1WCLdXtPimHoJlgYEAJ3lmLyWbPbHW1ZpV+wPaA=
 github.com/giantswarm/operatorkit/v7 v7.1.0 h1:yRUwj9ZUqBd+UV0C5n784+Qe6y/olILtg444XD6hjLA=
 github.com/giantswarm/operatorkit/v7 v7.1.0/go.mod h1:5enwhyIjd4xKrYXV9+enqttcmB9BE2Ocl1V12IwJIuw=
-github.com/giantswarm/to v0.4.0 h1:x0GjbI94/nxcHztJiRtJzihCjgmUlEOto8RD98VA7WI=
-github.com/giantswarm/to v0.4.0/go.mod h1:RTRtw+Dyk6YqoiNBOGLO981BqhibtVwogdaFIMO1y/A=
+github.com/giantswarm/to v0.4.2 h1:s2jS708yNKiyVFqzS5yyJeoVyhvMX19fTZD8OymJY9U=
+github.com/giantswarm/to v0.4.2/go.mod h1:RTRtw+Dyk6YqoiNBOGLO981BqhibtVwogdaFIMO1y/A=
 github.com/giantswarm/versionbundle v1.1.0 h1:Fk0UWTMnA56voTh5P/LmLLPbAkEkFE5jKKpVzcMOL1A=
 github.com/giantswarm/versionbundle v1.1.0/go.mod h1:+sEGkxho1b7UYid1F9+xIAoRWiZ4Wyrh6P5a6hxgtWc=
 github.com/gin-contrib/sse v0.1.0/go.mod h1:RHrZQHXnP2xjPF+u1gW/2HnVO7nvIa9PG3Gm+fLHvGI=
