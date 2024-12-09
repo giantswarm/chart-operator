@@ -183,7 +183,7 @@ replace (
 	github.com/imdario/mergo => github.com/imdario/mergo v0.3.13
 	github.com/nats-io/nats-server/v2 => github.com/nats-io/nats-server/v2 v2.10.22
 	golang.org/x/net => golang.org/x/net v0.31.0
-	google.golang.org/grpc => google.golang.org/grpc v1.68.0
+	google.golang.org/grpc => google.golang.org/grpc v1.68.1
 )
 
 replace google.golang.org/protobuf v1.32.0 => google.golang.org/protobuf v1.33.0
