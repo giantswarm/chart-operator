@@ -19,9 +19,10 @@ jobs:
         go install golang.org/x/tools/cmd/goimports@latest
     - name: Install golangci-lint
       env:
-        GOGC: "20"
         GOLANGCI_LINT_VERSION: "v1.60.3"
       run: |
         curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | \
             sudo sh -s -- -b $GOPATH/bin ${GOLANGCI_LINT_VERSION}
     - uses: pre-commit/action@2c7b3805fd2a0fd8c1884dcaebf91fc102a13ecd # v3.0.1
+      env:
+        GOGC: "20" # keep golangci-lint memory usage in check
