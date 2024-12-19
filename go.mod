@@ -8,7 +8,7 @@ require (
 	github.com/giantswarm/apiextensions-application v0.6.0
 	github.com/giantswarm/appcatalog v1.0.0
 	github.com/giantswarm/backoff v1.0.1
-	github.com/giantswarm/chart-operator/v3 v3.3.0
+	github.com/giantswarm/chart-operator/v4 v4.0.0
 	github.com/giantswarm/exporterkit v1.2.0
 	github.com/giantswarm/helmclient/v4 v4.11.2
 	github.com/giantswarm/k8sclient/v6 v6.1.0
