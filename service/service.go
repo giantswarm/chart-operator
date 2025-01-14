@@ -15,8 +15,8 @@ import (
 	"github.com/spf13/afero"
 	"github.com/spf13/viper"
 	"k8s.io/client-go/rest"
-	"sigs.k8s.io/controller-runtime/pkg/client/apiutil"
 	cr "sigs.k8s.io/controller-runtime"
+	"sigs.k8s.io/controller-runtime/pkg/client/apiutil"
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
 
 	"github.com/giantswarm/chart-operator/v4/flag"
@@ -72,7 +72,6 @@ func New(config Config) (*Service, error) {
 		Development: true,
 	}
 	cr.SetLogger(zap.New(zap.UseFlagOptions(&opts)))
-	
 	var err error
 	var restConfigPrv *rest.Config
 	{
