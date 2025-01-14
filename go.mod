@@ -186,7 +186,7 @@ require (
 )
 
 replace (
-	github.com/docker/docker => github.com/moby/moby v27.4.1+incompatible
+	github.com/docker/docker => github.com/moby/moby v27.5.0+incompatible
 	github.com/gin-gonic/gin v1.4.0 => github.com/gin-gonic/gin v1.9.0
 	github.com/imdario/mergo => github.com/imdario/mergo v0.3.13
 	github.com/nats-io/nats-server/v2 => github.com/nats-io/nats-server/v2 v2.10.22
