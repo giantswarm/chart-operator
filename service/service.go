@@ -16,6 +16,8 @@ import (
 	"github.com/spf13/viper"
 	"k8s.io/client-go/rest"
 	"sigs.k8s.io/controller-runtime/pkg/client/apiutil"
+	cr "sigs.k8s.io/controller-runtime"
+	"sigs.k8s.io/controller-runtime/pkg/log/zap"
 
 	"github.com/giantswarm/chart-operator/v4/flag"
 	"github.com/giantswarm/chart-operator/v4/pkg/project"
@@ -65,6 +67,12 @@ func New(config Config) (*Service, error) {
 		return nil, microerror.Maskf(invalidConfigError, "%T.Viper must not be empty", config)
 	}
 
+	// Configure controller-runtime logger
+	opts := zap.Options{
+		Development: true,
+	}
+	cr.SetLogger(zap.New(zap.UseFlagOptions(&opts)))
+	
 	var err error
 	var restConfigPrv *rest.Config
 	{
