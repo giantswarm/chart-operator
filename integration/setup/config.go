@@ -11,8 +11,8 @@ import (
 	"github.com/giantswarm/micrologger"
 	"github.com/spf13/afero"
 
-	"github.com/giantswarm/chart-operator/v3/integration/env"
-	"github.com/giantswarm/chart-operator/v3/integration/release"
+	"github.com/giantswarm/chart-operator/v4/integration/env"
+	"github.com/giantswarm/chart-operator/v4/integration/release"
 )
 
 type Config struct {
