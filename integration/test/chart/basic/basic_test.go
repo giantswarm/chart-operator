@@ -20,7 +20,7 @@ import (
 	"k8s.io/apimachinery/pkg/types"
 	"sigs.k8s.io/yaml"
 
-	"github.com/giantswarm/chart-operator/v3/integration/key"
+	"github.com/giantswarm/chart-operator/v4/integration/key"
 )
 
 const (

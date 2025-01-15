@@ -15,7 +15,9 @@ import (
 	"github.com/spf13/afero"
 	"github.com/spf13/viper"
 	"k8s.io/client-go/rest"
+	cr "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client/apiutil"
+	"sigs.k8s.io/controller-runtime/pkg/log/zap"
 
 	"github.com/giantswarm/chart-operator/v4/flag"
 	"github.com/giantswarm/chart-operator/v4/pkg/project"
@@ -65,6 +67,11 @@ func New(config Config) (*Service, error) {
 		return nil, microerror.Maskf(invalidConfigError, "%T.Viper must not be empty", config)
 	}
 
+	// Configure controller-runtime logger
+	opts := zap.Options{
+		Development: true,
+	}
+	cr.SetLogger(zap.New(zap.UseFlagOptions(&opts)))
 	var err error
 	var restConfigPrv *rest.Config
 	{
@@ -236,7 +243,12 @@ func (s *Service) Boot(ctx context.Context) {
 }
 
 func newHelmClient(config Config, k8sClient k8sclient.Interface, fs afero.Fs) (*helmclient.Client, error) {
-	restMapper, err := apiutil.NewDynamicRESTMapper(rest.CopyConfig(k8sClient.RESTConfig()))
+	httpClient, err := rest.HTTPClientFor(rest.CopyConfig(k8sClient.RESTConfig()))
+	if err != nil {
+		return nil, microerror.Mask(err)
+	}
+
+	restMapper, err := apiutil.NewDynamicRESTMapper(rest.CopyConfig(k8sClient.RESTConfig()), httpClient)
 	if err != nil {
 		return nil, microerror.Mask(err)
 	}
