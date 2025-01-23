@@ -188,7 +188,7 @@ require (
 )
 
 replace (
-	github.com/docker/docker => github.com/moby/moby v27.5.0+incompatible
+	github.com/docker/docker => github.com/moby/moby v27.5.1+incompatible
 	github.com/gin-gonic/gin v1.4.0 => github.com/gin-gonic/gin v1.9.0
 	github.com/imdario/mergo => github.com/imdario/mergo v0.3.13
 	golang.org/x/net => golang.org/x/net v0.34.0
