@@ -148,9 +148,9 @@ require (
 	github.com/xeipuuv/gojsonschema v1.2.0 // indirect
 	github.com/xlab/treeprint v1.2.0 // indirect
 	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.54.0 // indirect
-	go.opentelemetry.io/otel v1.31.0 // indirect
-	go.opentelemetry.io/otel/metric v1.31.0 // indirect
-	go.opentelemetry.io/otel/trace v1.31.0 // indirect
+	go.opentelemetry.io/otel v1.32.0 // indirect
+	go.opentelemetry.io/otel/metric v1.32.0 // indirect
+	go.opentelemetry.io/otel/trace v1.32.0 // indirect
 	go.starlark.net v0.0.0-20230525235612-a134d8f9ddca // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	go.uber.org/zap v1.25.0 // indirect
@@ -192,7 +192,7 @@ replace (
 	github.com/gin-gonic/gin v1.4.0 => github.com/gin-gonic/gin v1.9.0
 	github.com/imdario/mergo => github.com/imdario/mergo v0.3.13
 	golang.org/x/net => golang.org/x/net v0.34.0
-	google.golang.org/grpc => google.golang.org/grpc v1.69.4
+	google.golang.org/grpc => google.golang.org/grpc v1.70.0
 )
 
 replace google.golang.org/protobuf v1.32.0 => google.golang.org/protobuf v1.33.0
