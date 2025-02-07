@@ -1,10 +1,5 @@
 {{- if .Values.kyvernoPolicyExceptions.enabled }}
-  {{- if .Capabilities.APIVersions.Has "kyverno.io/v2beta1/PolicyException" -}}
-    {{- if .Capabilities.APIVersions.Has "kyverno.io/v2/PolicyException" -}}
 apiVersion: kyverno.io/v2
-    {{- else }}
-apiVersion: kyverno.io/v2beta1
-  {{- end }}
 kind: PolicyException
 metadata:
   name: {{ tpl .Values.resource.default.name  . }}-policy-exceptions
