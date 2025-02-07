@@ -7,6 +7,10 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+### Changed
+
+- Drop Kyverno PolicyException v2beta1; use only v2.
+
 ## [4.0.0] - 2024-11-19
 
 ### Removed
