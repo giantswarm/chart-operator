@@ -2,7 +2,7 @@
 #
 #    devctl
 #
-#    https://github.com/giantswarm/devctl/blob/aef43cd77e698cd632d4b3e50b09d2caa1fa16d9/pkg/gen/input/workflows/internal/file/run_ossf_scorecard.yaml.template
+#    https://github.com/giantswarm/devctl/blob/9179200786cfaf55babd0b35a7685f98dfcb049a/pkg/gen/input/workflows/internal/file/run_ossf_scorecard.yaml.template
 #
 
 # This workflow uses actions that are not certified by GitHub. They are provided
@@ -75,6 +75,6 @@ jobs:
 
       # Upload the results to GitHub's code scanning dashboard.
       - name: "Upload to code-scanning"
-        uses: github/codeql-action/upload-sarif@dd746615b3b9d728a6a37ca2045b68ca76d4841a # v3.28.8
+        uses: github/codeql-action/upload-sarif@9e8d0789d4a0fa9ceb6b1738f7e269594bdd67f0 # v3.28.9
         with:
           sarif_file: results.sarif
