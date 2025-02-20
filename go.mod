@@ -20,7 +20,7 @@ require (
 	github.com/giantswarm/to v0.4.2
 	github.com/google/go-cmp v0.6.0
 	github.com/imdario/mergo v0.3.16
-	github.com/prometheus/client_golang v1.20.5
+	github.com/prometheus/client_golang v1.21.0
 	github.com/spf13/afero v1.12.0
 	github.com/spf13/viper v1.19.0
 	helm.sh/helm/v3 v3.14.4
@@ -130,7 +130,7 @@ require (
 	github.com/peterbourgon/diskv v2.0.1+incompatible // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/prometheus/client_model v0.6.1 // indirect
-	github.com/prometheus/common v0.55.0 // indirect
+	github.com/prometheus/common v0.62.0 // indirect
 	github.com/prometheus/procfs v0.15.1 // indirect
 	github.com/rubenv/sql-migrate v1.5.2 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
