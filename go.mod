@@ -20,7 +20,7 @@ require (
 	github.com/giantswarm/to v0.4.2
 	github.com/google/go-cmp v0.7.0
 	github.com/imdario/mergo v0.3.16
-	github.com/prometheus/client_golang v1.21.0
+	github.com/prometheus/client_golang v1.21.1
 	github.com/spf13/afero v1.12.0
 	github.com/spf13/viper v1.19.0
 	helm.sh/helm/v3 v3.14.4
