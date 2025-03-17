@@ -21,7 +21,7 @@ require (
 	github.com/google/go-cmp v0.7.0
 	github.com/imdario/mergo v0.3.16
 	github.com/prometheus/client_golang v1.21.1
-	github.com/spf13/afero v1.12.0
+	github.com/spf13/afero v1.14.0
 	github.com/spf13/viper v1.20.0
 	helm.sh/helm/v3 v3.14.4
 	k8s.io/api v0.29.0
