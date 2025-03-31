@@ -139,7 +139,7 @@ func UpgradeTimeout(customResource v1alpha1.Chart) *metav1.Duration {
 // ValuesMD5ChecksumAnnotation returns the annotation value to determine if the
 // Helm release values have changed.
 func ValuesMD5ChecksumAnnotation(customResource v1alpha1.Chart) string {
-	if val, ok := customResource.ObjectMeta.Annotations[chartmeta.ValuesMD5Checksum]; ok {
+	if val, ok := customResource.Annotations[chartmeta.ValuesMD5Checksum]; ok {
 		return val
 	} else {
 		return ""
@@ -153,7 +153,7 @@ func Version(customResource v1alpha1.Chart) string {
 // VersionLabel returns the label value to determine if the custom resource is
 // supported by this version of the operatorkit resource.
 func VersionLabel(customResource v1alpha1.Chart) string {
-	if val, ok := customResource.ObjectMeta.Labels[label.ChartOperatorVersion]; ok {
+	if val, ok := customResource.Labels[label.ChartOperatorVersion]; ok {
 		return val
 	} else {
 		return ""

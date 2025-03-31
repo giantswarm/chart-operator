@@ -204,7 +204,7 @@ func updateAppStatus(webhookURL, authToken string, status v1alpha1.ChartStatus, 
 		return microerror.Mask(err)
 	}
 
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	if resp.StatusCode != http.StatusOK {
 		return microerror.Maskf(wrongStatusError, "expected http status '%d', got '%d'", http.StatusOK, resp.StatusCode)
