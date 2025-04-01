@@ -47,7 +47,7 @@ func (r *Resource) GetDesiredState(ctx context.Context, obj interface{}) (interf
 		// MD5 is only used for comparison but we need to turn off gosec or
 		// linting errors will occur.
 		h := md5.New() // #nosec
-		_, err := h.Write([]byte(fmt.Sprintf("%v", configMapData)))
+		_, err := fmt.Fprintf(h, "%v", configMapData)
 		if err != nil {
 			return nil, microerror.Mask(err)
 		}
