@@ -190,7 +190,7 @@ replace (
 	github.com/gin-gonic/gin v1.4.0 => github.com/gin-gonic/gin v1.9.0
 	github.com/imdario/mergo => github.com/imdario/mergo v0.3.13
 	golang.org/x/net => golang.org/x/net v0.40.0
-	google.golang.org/grpc => google.golang.org/grpc v1.72.0
+	google.golang.org/grpc => google.golang.org/grpc v1.72.1
 )
 
 replace google.golang.org/protobuf v1.32.0 => google.golang.org/protobuf v1.33.0
