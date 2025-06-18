@@ -5,7 +5,7 @@ go 1.23.0
 toolchain go1.24.4
 
 require (
-	github.com/giantswarm/apiextensions-application v0.6.0
+	github.com/giantswarm/apiextensions-application v0.6.2
 	github.com/giantswarm/appcatalog v1.0.0
 	github.com/giantswarm/backoff v1.0.1
 	github.com/giantswarm/exporterkit v1.2.0
