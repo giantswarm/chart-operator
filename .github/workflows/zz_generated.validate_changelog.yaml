@@ -2,11 +2,16 @@
 #
 #    devctl
 #
-#    https://github.com/giantswarm/devctl/blob/366c1c3aad2b9b02850a54854aba8108db3ce052/pkg/gen/input/workflows/internal/file/create_release_pr.yaml.template
+#    https://github.com/giantswarm/devctl/blob/46747256fc79665410eaa1c44834b507bcbabbb3/pkg/gen/input/workflows/internal/file/validate_changelog.yaml.template
 #
-name: Create Release PR
+name: Validate changelog
+
 on:
-  push:
+  workflow_call:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    paths:
+      - 'CHANGELOG.md'
     branches:
       - 'legacy#release#v*.*.*'
       - 'main#release#v*.*.*'
@@ -24,16 +29,11 @@ on:
       - 'release-v*.*.x#release#v*.*.*'
       # "!" negates previous positive patterns so it has to be at the end.
       - '!release-v*.x.x#release#v*.*.*'
-  workflow_call:
-    inputs:
-      branch:
-        required: true
-        type: string
+
+permissions:
+  contents: read
+  pull-requests: write
 
 jobs:
-  publish:
-    uses: giantswarm/github-workflows/.github/workflows/create-release-pr.yaml@897ce7c11f81fcd01f7cf38e839a42848a63c7e7
-    with:
-      branch: ${{ inputs.branch }}
-    secrets:
-      TAYLORBOT_GITHUB_ACTION: ${{ secrets.TAYLORBOT_GITHUB_ACTION }}
+  validate-changelog:
+    uses: giantswarm/github-workflows/.github/workflows/validate-changelog.yaml@3681e34c08ca044821ef7c1c037cf8b859194777
