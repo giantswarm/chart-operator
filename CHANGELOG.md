@@ -9,6 +9,10 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [4.0.2] - 2025-08-14
 
+### Changed
+
+- Bumped helm and helmclient dependencies
+
 ## [4.0.1] - 2025-08-13
 
 ## [4.0.0] - 2024-11-19
