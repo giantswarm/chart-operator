@@ -2,33 +2,15 @@
 #
 #    devctl
 #
-#    https://github.com/giantswarm/devctl/blob/46747256fc79665410eaa1c44834b507bcbabbb3/pkg/gen/input/workflows/internal/file/validate_changelog.yaml.template
+#    https://github.com/giantswarm/devctl/blob/ad0a25fbf301b2513e169ec964a8785d28f75be4/pkg/gen/input/workflows/internal/file/validate_changelog.yaml.template
 #
 name: Validate changelog
 
 on:
-  workflow_call:
   pull_request:
     types: [opened, synchronize, reopened]
     paths:
       - 'CHANGELOG.md'
-    branches:
-      - 'legacy#release#v*.*.*'
-      - 'main#release#v*.*.*'
-      - 'main#release#major'
-      - 'main#release#minor'
-      - 'main#release#patch'
-      - 'master#release#v*.*.*'
-      - 'master#release#major'
-      - 'master#release#minor'
-      - 'master#release#patch'
-      - 'release#v*.*.*'
-      - 'release#major'
-      - 'release#minor'
-      - 'release#patch'
-      - 'release-v*.*.x#release#v*.*.*'
-      # "!" negates previous positive patterns so it has to be at the end.
-      - '!release-v*.x.x#release#v*.*.*'
 
 permissions:
   contents: read
@@ -36,4 +18,4 @@ permissions:
 
 jobs:
   validate-changelog:
-    uses: giantswarm/github-workflows/.github/workflows/validate-changelog.yaml@3681e34c08ca044821ef7c1c037cf8b859194777
+    uses: giantswarm/github-workflows/.github/workflows/validate-changelog.yaml@main
