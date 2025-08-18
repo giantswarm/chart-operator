@@ -113,7 +113,7 @@ func mainWithError() error {
 	daemonCommand.PersistentFlags().StringSlice(f.Service.Helm.NamespaceWhitelist, []string{}, "Namespaces to use the privileged Helm Client for.")
 	daemonCommand.PersistentFlags().Bool(f.Service.Helm.SplitClient, false, "Use separate Helm Client for apps outside Giantswarm-protected namespace.")
 	daemonCommand.PersistentFlags().String(f.Service.Helm.TillerNamespace, "giantswarm", "Namespace for the Tiller pod.")
-	daemonCommand.PersistentFlags().String(f.Service.Image.Registry, "quay.io", "Container image registry.")
+	daemonCommand.PersistentFlags().String(f.Service.Image.Registry, "gsoci.azurecr.io", "Container image registry.")
 	daemonCommand.PersistentFlags().String(f.Service.Kubernetes.Address, "", "Address used to connect to Kubernetes. When empty in-cluster config is created.")
 	daemonCommand.PersistentFlags().Bool(f.Service.Kubernetes.InCluster, false, "Whether to use the in-cluster config to authenticate with Kubernetes.")
 	daemonCommand.PersistentFlags().String(f.Service.Kubernetes.KubeConfig, "", "KubeConfig used to connect to Kubernetes. When empty other settings are used.")
