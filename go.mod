@@ -23,7 +23,7 @@ require (
 	github.com/prometheus/client_golang v1.23.0
 	github.com/spf13/afero v1.14.0
 	github.com/spf13/viper v1.20.1
-	helm.sh/helm/v3 v3.18.5
+	helm.sh/helm/v3 v3.18.6
 	k8s.io/api v0.33.4
 	k8s.io/apimachinery v0.33.4
 	k8s.io/client-go v0.33.4
