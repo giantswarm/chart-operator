@@ -2,4 +2,4 @@ CVE-2019-25210 until=2025-12-31 # golang/helm.sh/helm/v3@v3.14.4
 CVE-2025-32386 until=2025-12-31 # golang/helm.sh/helm/v3@v3.14.4
 CVE-2025-32387 until=2025-12-31 # golang/helm.sh/helm/v3@v3.14.4
 CVE-2020-8561 until=2025-12-31 # k8s.io/apiserver@v0.29.2
-CVE-2025-4673 until=2025-07-13 # golang.org/x/net@v0.41.0
+CVE-2025-47291 until=2025-12-31 # golang/github.com/containerd/containerd@v1.7.28
