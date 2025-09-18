@@ -120,8 +120,8 @@ github.com/giantswarm/appcatalog v1.0.0 h1:h2vNqd53ciYenoB04nrit4zruG4TeWiNT28t9
 github.com/giantswarm/appcatalog v1.0.0/go.mod h1:KmzfEU2sLoXldJ2OaAY6Pn/78h2wmfZqMwjRYQkudSo=
 github.com/giantswarm/backoff v1.0.1 h1:paqQhjUsibkf+wWFCHsk7VXAkcM1L3ssAe7V7i8twpM=
 github.com/giantswarm/backoff v1.0.1/go.mod h1:RGj8b06J3irMNFRoSiMnngS50K+QbpSvu77sW03bxqQ=
-github.com/giantswarm/exporterkit v1.2.0 h1:nUd/mjwKv+4x4suqvtRFhqy4fegP1tfF/anvZdjcppM=
-github.com/giantswarm/exporterkit v1.2.0/go.mod h1:VdqjEfCLt80DDqC1dI5J6Zf8cjBWiRZgYfqOovKfwQ0=
+github.com/giantswarm/exporterkit v1.3.0 h1:AVIJD5R277/m8eDl4agxLXg35KvW2jJWb1W6+jKNAUg=
+github.com/giantswarm/exporterkit v1.3.0/go.mod h1:kf12lufEax8PoU4l2F5HJnlU7dDtarqSTfkIyuQ4QvY=
 github.com/giantswarm/helmclient/v4 v4.12.5 h1:M3PuDlO9s71TXRyfbbhz9FKMSDfZKZN1Z0EjDXDyj4s=
 github.com/giantswarm/helmclient/v4 v4.12.5/go.mod h1:gYUwLggb+u62XtlAQ1n7LPaq2fvwicT2G+wByhBKX78=
 github.com/giantswarm/k8sclient/v7 v7.2.0 h1:twh4egNcuTJEH7R/hYVhs8nwEXPlr0u/o9CB1Kv9H9A=
