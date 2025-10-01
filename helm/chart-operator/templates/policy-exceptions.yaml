@@ -1,11 +1,11 @@
 {{- if .Values.kyvernoPolicyExceptions.enabled }}
-  {{- if .Capabilities.APIVersions.Has "kyverno.io/v2beta1/PolicyException" -}}
-    {{- if .Capabilities.APIVersions.Has "kyverno.io/v2/PolicyException" -}}
+{{- if .Capabilities.APIVersions.Has "kyverno.io/v2/PolicyException" -}}
 apiVersion: kyverno.io/v2
-    {{- else }}
+{{- else -}}
 apiVersion: kyverno.io/v2beta1
-  {{- end }}
+{{- end }}
 kind: PolicyException
+
 metadata:
   name: {{ tpl .Values.resource.default.name  . }}-policy-exceptions
   namespace: {{ .Values.kyvernoPolicyExceptions.namespace | default "giantswarm" }}
@@ -35,5 +35,4 @@ spec:
         - {{ tpl .Values.resource.default.namespace . }}
         names:
         - {{ tpl .Values.resource.default.name  . }}*
-  {{- end -}}
 {{- end -}}
