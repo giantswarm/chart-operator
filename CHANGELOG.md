@@ -10,6 +10,7 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 ### Changed
 
 - Change default container registry flag value to `gsoci.azurecr.io`
+- Use Kyverno `PolicyException` version `v2` if available by default and fall back to `v2beta1` otherwise.
 
 ## [4.0.2] - 2025-08-14
 
