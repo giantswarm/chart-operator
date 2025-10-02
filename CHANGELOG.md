@@ -7,6 +7,10 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+### Fixed
+
+- Guard the whole Kyverno PolicyException behind capability checks to avoid issues at cluster creation times.
+
 ## [4.1.0] - 2025-10-02
 
 ### Changed
