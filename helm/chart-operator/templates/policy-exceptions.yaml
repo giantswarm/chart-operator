@@ -1,4 +1,5 @@
 {{- if .Values.kyvernoPolicyExceptions.enabled }}
+{{- if or (.Capabilities.APIVersions.Has "kyverno.io/v2/PolicyException") (.Capabilities.APIVersions.Has "kyverno.io/v2beta1/PolicyException") }}
 {{- if .Capabilities.APIVersions.Has "kyverno.io/v2/PolicyException" -}}
 apiVersion: kyverno.io/v2
 {{- else -}}
@@ -35,4 +36,5 @@ spec:
         - {{ tpl .Values.resource.default.namespace . }}
         names:
         - {{ tpl .Values.resource.default.name  . }}*
+{{- end -}}
 {{- end -}}
