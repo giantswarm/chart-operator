@@ -2,7 +2,7 @@
 #
 #    devctl
 #
-#    https://github.com/giantswarm/devctl/blob/f81dabb94ad79400b60650ce0b6a00d82bb31d0e/pkg/gen/input/workflows/internal/file/create_release.yaml.template
+#    https://github.com/giantswarm/devctl/blob/985d05379d82765e9b0a80f2bd3366b23edb961e/pkg/gen/input/workflows/internal/file/create_release.yaml.template
 #
 name: Create Release
 on:
