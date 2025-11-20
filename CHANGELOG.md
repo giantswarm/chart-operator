@@ -7,6 +7,10 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+### Changed
+
+- Update chart-operator deployment nodeAffinity rules to support the new `control-plane` role label.
+
 ## [4.1.2] - 2025-11-07
 
 ### Changed
