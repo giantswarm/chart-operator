@@ -30,7 +30,11 @@ spec:
               - key: role
                 operator: In
                 values:
+                {{- if ge (int .Capabilities.KubeVersion.Minor) 24 }}
+                - control-plane
+                {{- else }}
                 - master
+                {{- end }}
       volumes:
       {{- if .Values.volumes.tmp.enabled }}
       - name: tmp
