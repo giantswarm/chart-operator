@@ -678,9 +678,6 @@ We check progress in the next reconciliation loop. ([#362](https://github.com/gi
 
 [Unreleased]: https://github.com/giantswarm/chart-operator/compare/v4.2.0...HEAD
 
-### Changed
-
-- Migrate Chart.yaml annotations to new format as per https://docs.giantswarm.io/reference/platform-api/chart-metadata/
 [4.2.0]: https://github.com/giantswarm/chart-operator/compare/v4.1.2...v4.2.0
 [4.1.2]: https://github.com/giantswarm/chart-operator/compare/v4.1.1...v4.1.2
 [4.1.1]: https://github.com/giantswarm/chart-operator/compare/v4.1.0...v4.1.1
