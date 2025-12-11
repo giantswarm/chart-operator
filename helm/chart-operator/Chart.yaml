@@ -1,4 +1,4 @@
-apiVersion: v1
+apiVersion: v2
 name: chart-operator
 version: 4.2.0
 appVersion: 3.3.1-dev
@@ -6,10 +6,8 @@ home: https://github.com/giantswarm/chart-operator
 description: A Helm chart for the chart-operator
 icon: https://s.giantswarm.io/app-icons/giantswarm/1/dark.svg
 annotations:
-  application.giantswarm.io/team: "honeybadger"
-  config.giantswarm.io/version: 1.x.x
-restrictions:
-  clusterSingleton: true
-  namespaceSingleton: true
-  fixedNamespace: giantswarm
-  gpuInstances: false
+  io.giantswarm.application.restrictions.cluster-singleton: 'true'
+  io.giantswarm.application.restrictions.fixed-namespace: giantswarm
+  io.giantswarm.application.restrictions.gpu-instances: 'false'
+  io.giantswarm.application.restrictions.namespace-singleton: 'true'
+  io.giantswarm.application.team: honeybadger
