@@ -7,6 +7,8 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+## [4.3.0] - 2025-12-16
+
 ### Changed
 
 - Migrate Chart.yaml annotations to new format as per https://docs.giantswarm.io/reference/platform-api/chart-metadata/
@@ -675,7 +677,8 @@ We check progress in the next reconciliation loop. ([#362](https://github.com/gi
 - Separate podsecuritypolicy.
 - Security context in deployment spec with non-root user.
 
-[Unreleased]: https://github.com/giantswarm/chart-operator/compare/v4.2.0...HEAD
+[Unreleased]: https://github.com/giantswarm/chart-operator/compare/v4.3.0...HEAD
+[4.3.0]: https://github.com/giantswarm/chart-operator/compare/v4.2.0...v4.3.0
 [4.2.0]: https://github.com/giantswarm/chart-operator/compare/v4.1.2...v4.2.0
 [4.1.2]: https://github.com/giantswarm/chart-operator/compare/v4.1.1...v4.1.2
 [4.1.1]: https://github.com/giantswarm/chart-operator/compare/v4.1.0...v4.1.1

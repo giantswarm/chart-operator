@@ -1,7 +1,7 @@
 apiVersion: v2
 name: chart-operator
-version: 4.2.0
-appVersion: 3.3.1-dev
+version: 4.3.0
+appVersion: 4.3.0
 home: https://github.com/giantswarm/chart-operator
 description: A Helm chart for the chart-operator
 icon: https://s.giantswarm.io/app-icons/giantswarm/1/dark.svg
