@@ -163,7 +163,7 @@ func Test_Resource_Release_newUpdateChange(t *testing.T) {
 			Fs:          afero.NewMemMapFs(),
 			CtrlClient:  fake.NewFakeClient(), //nolint:staticcheck
 			HelmClients: helmClients,
-			K8sClient:   k8sfake.NewSimpleClientset(),
+			K8sClient:   k8sfake.NewClientset(),
 			Logger:      microloggertest.New(),
 
 			TillerNamespace: "giantswarm",
