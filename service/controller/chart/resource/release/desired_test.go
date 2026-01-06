@@ -340,7 +340,7 @@ func Test_DesiredState(t *testing.T) {
 				Fs:          afero.NewMemMapFs(),
 				CtrlClient:  fake.NewFakeClient(), //nolint:staticcheck
 				HelmClients: helmClients,
-				K8sClient:   k8sfake.NewSimpleClientset(objs...),
+				K8sClient:   k8sfake.NewClientset(objs...),
 				Logger:      microloggertest.New(),
 
 				TillerNamespace: "giantswarm",
