@@ -2,7 +2,7 @@
 #
 #    devctl
 #
-#    https://github.com/giantswarm/devctl/blob/1acd23e6a78c21ca61ccbe8a7e5a8a3139feeab5/pkg/gen/input/workflows/internal/file/create_release.yaml.template
+#    https://github.com/giantswarm/devctl/blob/72df19d0bff1cc8a679b00fdb4ac4e2504f8962a/pkg/gen/input/workflows/internal/file/create_release.yaml.template
 #
 name: Create Release
 on:
@@ -111,6 +111,8 @@ jobs:
           smoke_test: "${binary} --version"
       - name: Checkout code
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
       - name: Update project.go
         id: update_project_go
         env:
@@ -175,6 +177,7 @@ jobs:
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           ref: ${{ github.sha }}
+          persist-credentials: false
       - name: Ensure correct version in project.go
         if: ${{ needs.gather_facts.outputs.project_go_path != '' && needs.gather_facts.outputs.ref_version != 'true' }}
         run: |
@@ -203,11 +206,10 @@ jobs:
       - name: Create release
         id: create_gh_release
         uses: ncipollo/release-action@b7eabc95ff50cbeeedec83973935c8f306dfcd0b  # v1.20.0
-        env:
-          GITHUB_TOKEN: "${{ secrets.TAYLORBOT_GITHUB_ACTION }}"
         with:
           body: ${{ steps.changelog_reader.outputs.changes }}
           tag: "v${{ needs.gather_facts.outputs.version }}"
+          token: ${{ secrets.TAYLORBOT_GITHUB_ACTION }}
           skipIfReleaseExists: true
 
   create-release-branch:
