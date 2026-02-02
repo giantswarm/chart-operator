@@ -2,7 +2,7 @@
 #
 #    devctl
 #
-#    https://github.com/giantswarm/devctl/blob/87f30fd3b955a0daf6017834a776c222d93a207c/pkg/gen/input/workflows/internal/file/run_ossf_scorecard.yaml.template
+#    https://github.com/giantswarm/devctl/blob/4897b6ea0f98cfba54f8d3003f5bdcefb968a7b5/pkg/gen/input/workflows/internal/file/run_ossf_scorecard.yaml.template
 #
 
 # This workflow uses actions that are not certified by GitHub. They are provided
@@ -31,6 +31,10 @@ jobs:
     uses: giantswarm/github-workflows/.github/workflows/ossf-scorecard.yaml@main
     permissions:
       contents: read
+      actions: read
+      issues: read
+      pull-requests: read
+      checks: read
       security-events: write
       id-token: write
     secrets:
