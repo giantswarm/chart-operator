@@ -9,7 +9,7 @@ require (
 	github.com/giantswarm/appcatalog v1.0.1
 	github.com/giantswarm/backoff v1.0.1
 	github.com/giantswarm/exporterkit v1.3.0
-	github.com/giantswarm/helmclient/v4 v4.12.7
+	github.com/giantswarm/helmclient/v4 v4.12.8
 	github.com/giantswarm/k8sclient/v7 v7.2.0
 	github.com/giantswarm/k8smetadata v0.25.0
 	github.com/giantswarm/microendpoint v1.1.2
@@ -70,7 +70,7 @@ require (
 	github.com/fsnotify/fsnotify v1.9.0 // indirect
 	github.com/fxamacker/cbor/v2 v2.9.0 // indirect
 	github.com/getsentry/sentry-go v0.31.1 // indirect
-	github.com/giantswarm/kubeconfig/v4 v4.1.3 // indirect
+	github.com/giantswarm/kubeconfig/v4 v4.1.4 // indirect
 	github.com/giantswarm/versionbundle v1.1.0 // indirect
 	github.com/go-errors/errors v1.4.2 // indirect
 	github.com/go-gorp/gorp/v3 v3.1.0 // indirect
