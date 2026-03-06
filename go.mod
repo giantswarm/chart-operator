@@ -2,7 +2,7 @@ module github.com/giantswarm/chart-operator/v4
 
 go 1.25.0
 
-toolchain go1.26.0
+toolchain go1.26.1
 
 require (
 	github.com/giantswarm/apiextensions-application v0.6.2
