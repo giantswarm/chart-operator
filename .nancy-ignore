@@ -1,2 +1,2 @@
-CVE-2025-47290 until=2026-03-31 # golang/github.com/containerd/containerd
-CVE-2025-47291 until=2026-03-31 # golang/github.com/containerd/containerd
+CVE-2025-47290 until=2026-04-30 # github.com/containerd/containerd@v1.7.30
+CVE-2025-47291 until=2026-04-30 # github.com/containerd/containerd@v1.7.30
