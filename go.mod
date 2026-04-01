@@ -161,9 +161,9 @@ require (
 	golang.org/x/text v0.35.0 // indirect
 	golang.org/x/time v0.12.0 // indirect
 	gomodules.xyz/jsonpatch/v2 v2.4.0 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20251202230838-ff82c1b0f217 // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20260120221211-b8f7ae30c516 // indirect
 	google.golang.org/grpc v1.79.3 // indirect
-	google.golang.org/protobuf v1.36.10 // indirect
+	google.golang.org/protobuf v1.36.11 // indirect
 	gopkg.in/evanphx/json-patch.v4 v4.13.0 // indirect
 	gopkg.in/inf.v0 v0.9.1 // indirect
 	gopkg.in/resty.v1 v1.12.0 // indirect
@@ -190,7 +190,7 @@ replace (
 	github.com/gin-gonic/gin v1.4.0 => github.com/gin-gonic/gin v1.9.0
 	github.com/imdario/mergo => github.com/imdario/mergo v0.3.13
 	golang.org/x/net => golang.org/x/net v0.52.0
-	google.golang.org/grpc => google.golang.org/grpc v1.79.3
+	google.golang.org/grpc => google.golang.org/grpc v1.80.0
 )
 
 replace google.golang.org/protobuf v1.32.0 => google.golang.org/protobuf v1.33.0
