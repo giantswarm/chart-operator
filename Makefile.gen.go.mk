@@ -2,22 +2,25 @@
 #
 #    devctl
 #
-#    https://github.com/giantswarm/devctl/blob/bf7f386ac6a4e807dde959892df1369fee6d789f/pkg/gen/input/makefile/internal/file/Makefile.gen.go.mk.template
+#    https://github.com/giantswarm/devctl/blob/0ec3e49745962245bdd6d5c282d4272c40faec37/pkg/gen/input/makefile/internal/file/Makefile.gen.go.mk.template
 #
 
 APPLICATION    := $(shell go list -m | cut -d '/' -f 3)
 BUILDTIMESTAMP := $(shell date -u '+%FT%TZ')
 GITSHA1        := $(shell git rev-parse --verify HEAD)
 MODULE         := $(shell go list -m)
+# main() is usually in `main.go`, but sometimes in `cmd/main.go` (for example in newer kubebuilder projects)
+MAIN_SOURCE    := $(shell if test -e cmd/main.go; then echo cmd/main.go; else echo main.go; fi)
 OS             := $(shell go env GOOS)
 SOURCES        := $(shell find . -name '*.go')
-VERSION        := $(shell architect project version)
+VERSION        := $(shell gitsemver get)
 ifeq ($(OS), linux)
 EXTLDFLAGS := -static
 endif
 LDFLAGS        ?= -w -linkmode 'auto' -extldflags '$(EXTLDFLAGS)' \
-  -X '$(shell go list -m)/pkg/project.buildTimestamp=${BUILDTIMESTAMP}' \
-  -X '$(shell go list -m)/pkg/project.gitSHA=${GITSHA1}'
+  -X '$(MODULE)/pkg/project.version=$(VERSION)' \
+  -X '$(MODULE)/pkg/project.buildTimestamp=$(BUILDTIMESTAMP)' \
+  -X '$(MODULE)/pkg/project.gitSHA=$(GITSHA1)'
 
 .DEFAULT_GOAL := build
 
@@ -63,25 +66,25 @@ $(APPLICATION)-windows-amd64.exe: $(APPLICATION)-v$(VERSION)-windows-amd64.exe
 
 $(APPLICATION)-v$(VERSION)-%-amd64: $(SOURCES)
 	@echo "====> $@"
-	CGO_ENABLED=0 GOOS=$* GOARCH=amd64 go build -trimpath -ldflags "$(LDFLAGS)" -o $@ .
+	CGO_ENABLED=0 GOOS=$* GOARCH=amd64 go build -trimpath -ldflags "$(LDFLAGS)" -o $@ "$(MAIN_SOURCE)"
 
 $(APPLICATION)-v$(VERSION)-%-arm64: $(SOURCES)
 	@echo "====> $@"
-	CGO_ENABLED=0 GOOS=$* GOARCH=arm64 go build -trimpath -ldflags "$(LDFLAGS)" -o $@ .
+	CGO_ENABLED=0 GOOS=$* GOARCH=arm64 go build -trimpath -ldflags "$(LDFLAGS)" -o $@ "$(MAIN_SOURCE)"
 
 $(APPLICATION)-v$(VERSION)-windows-amd64.exe: $(SOURCES)
 	@echo "====> $@"
-	CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -trimpath -ldflags "$(LDFLAGS)" -o $@ .
+	CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -trimpath -ldflags "$(LDFLAGS)" -o $@ "$(MAIN_SOURCE)"
 
 .PHONY: install
 install: ## Install the application.
 	@echo "====> $@"
-	go install -ldflags "$(LDFLAGS)" .
+	go build -ldflags "$(LDFLAGS)" -o "$(shell go env GOPATH)/bin/$(APPLICATION)" "$(MAIN_SOURCE)"
 
 .PHONY: run
 run: ## Runs go run main.go.
 	@echo "====> $@"
-	go run -ldflags "$(LDFLAGS)" -race .
+	go run -ldflags "$(LDFLAGS)" -race "$(MAIN_SOURCE)"
 
 .PHONY: clean
 clean: ## Cleans the binary.
@@ -110,12 +113,17 @@ vet: ## Run go vet against code.
 .PHONY: nancy
 nancy: ## Runs nancy (requires v1.0.37 or newer).
 	@echo "====> $@"
-	CGO_ENABLED=0 go list -json -deps ./... | nancy sleuth --skip-update-check --quiet --exclude-vulnerability-file ./.nancy-ignore --additional-exclude-vulnerability-files ./.nancy-ignore.generated
+	CGO_ENABLED=0 go list -json -m all | nancy sleuth --skip-update-check --quiet --exclude-vulnerability-file ./.nancy-ignore --additional-exclude-vulnerability-files ./.nancy-ignore.generated
+
+# Race detector needs a C toolchain. The architect CI image has none and runs
+# with CGO_ENABLED=0, so degrade to cgo-free there; everywhere a compiler exists
+# (laptops, coding agents, GitHub Actions, any cgo-capable runner) keeps -race.
+RACE := $(shell { [ "$${CGO_ENABLED:-1}" != "0" ] && { command -v gcc || command -v clang; } >/dev/null 2>&1; } && echo -race)
 
 .PHONY: test
-test: ## Runs go test with default values.
+test: ## Runs go test with default values (race detector when a C toolchain is available).
 	@echo "====> $@"
-	go test -ldflags "$(LDFLAGS)" -race ./...
+	go test -ldflags "$(LDFLAGS)" $(RACE) ./...
 
 .PHONY: build-docker
 build-docker: build-linux ## Builds docker image to registry.
