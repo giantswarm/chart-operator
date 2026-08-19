@@ -9,6 +9,11 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ### Changed
 
+- Bump the `architect` CircleCI orb from 6.15.0 to 9.6.0. The 6.x `push-to-app-catalog` job still
+  authenticates to `giantswarmpublic.azurecr.io`, which no longer resolves (NXDOMAIN), so the chart
+  push fails on every build. That step was deprecated in orb 6.8.0 when chart pushes moved to
+  `gsoci`, and is absent from 9.x. 9.6.0 is the version already running in `coredns-app`,
+  `external-dns-app` and `kyverno-policies-dx`.
 - Migrate Chart.yaml annotations to new format as per https://docs.giantswarm.io/reference/platform-api/chart-metadata/
 ## [4.2.0] - 2025-11-26
 
