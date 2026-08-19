@@ -10,6 +10,18 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 ### Changed
 
 - Migrate Chart.yaml annotations to new format as per https://docs.giantswarm.io/reference/platform-api/chart-metadata/
+
+### Fixed
+
+- Bump `appcatalog` to v1.0.2, fixing `basic-integration-test`. `integration/setup/setup.go` calls
+  `appcatalog.GetLatestChart(..., env.CircleSHA())`, and appcatalog matched the index entry with
+  `strings.HasSuffix(entry.Version, appVersion)`. That worked while architect published charts as
+  `<version>-<full 40 character SHA>`, but since the architect orb bump to 9.x the published format is
+  the gitsemver development version, e.g. `4.2.1-dev.<branch>.2026-08-19.13-58-39.ha781825`, whose
+  trailing SHA is abbreviated to seven characters. A full SHA can never match that by suffix, so the
+  lookup failed with `no app ... in index.yaml with given appVersion` even though the chart was
+  published correctly. appcatalog v1.0.2 accepts both formats.
+
 ## [4.2.0] - 2025-11-26
 
 ### Changed
