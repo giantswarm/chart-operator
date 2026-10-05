@@ -228,3 +228,11 @@ replace github.com/rabbitmq/amqp091-go => github.com/rabbitmq/amqp091-go v1.15.0
 replace github.com/ulikunitz/xz => github.com/ulikunitz/xz v0.5.17
 
 replace github.com/yuin/goldmark => github.com/yuin/goldmark v1.8.6
+
+replace filippo.io/edwards25519 => filippo.io/edwards25519 v1.2.0
+
+replace github.com/cilium/ebpf => github.com/cilium/ebpf v0.22.0
+
+replace github.com/distribution/distribution/v3 => github.com/distribution/distribution/v3 v3.1.2
+
+replace github.com/golang-jwt/jwt/v4 => github.com/golang-jwt/jwt/v4 v4.5.2
