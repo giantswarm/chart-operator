@@ -7,6 +7,11 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+### Security
+
+- Bump `golang.org/x/{crypto,net,text}`, `google.golang.org/grpc`, the OpenTelemetry modules and
+  `oras.land/oras-go/v2` (2.6.2) to resolve the nancy findings.
+
 ### Fixed
 
 - The `helm.sh/chart` label is valid for long chart versions: the 63-character cut trims the whole trailing run of `-`, `.` and `_`.
