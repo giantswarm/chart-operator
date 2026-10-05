@@ -172,7 +172,7 @@ require (
 	go.yaml.in/yaml/v3 v3.0.5 // indirect
 	golang.org/x/crypto v0.57.0 // indirect
 	golang.org/x/net v0.59.0 // indirect
-	golang.org/x/oauth2 v0.34.0 // indirect
+	golang.org/x/oauth2 v0.36.0 // indirect
 	golang.org/x/sync v0.23.0 // indirect
 	golang.org/x/sys v0.48.0 // indirect
 	golang.org/x/term v0.46.0 // indirect
@@ -207,8 +207,22 @@ replace (
 	github.com/docker/docker => github.com/moby/moby v28.5.2+incompatible
 	github.com/gin-gonic/gin v1.4.0 => github.com/gin-gonic/gin v1.9.0
 	github.com/imdario/mergo => github.com/imdario/mergo v0.3.13
-	golang.org/x/net => golang.org/x/net v0.56.0
-	google.golang.org/grpc => google.golang.org/grpc v1.80.0
+	golang.org/x/net => golang.org/x/net v0.59.0
+	google.golang.org/grpc => google.golang.org/grpc v1.84.0
 )
 
 replace google.golang.org/protobuf v1.32.0 => google.golang.org/protobuf v1.33.0
+
+replace github.com/klauspost/compress => github.com/klauspost/compress v1.18.7
+
+replace github.com/moby/spdystream => github.com/moby/spdystream v0.5.1
+
+replace github.com/moby/sys/user => github.com/moby/sys/user v0.4.1
+
+replace github.com/nats-io/nats-server/v2 => github.com/nats-io/nats-server/v2 v2.15.0
+
+replace github.com/rabbitmq/amqp091-go => github.com/rabbitmq/amqp091-go v1.15.0
+
+replace github.com/ulikunitz/xz => github.com/ulikunitz/xz v0.5.17
+
+replace github.com/yuin/goldmark => github.com/yuin/goldmark v1.8.6

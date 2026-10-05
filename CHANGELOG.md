@@ -10,7 +10,8 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 ### Security
 
 - Bump `golang.org/x/{crypto,net,text}`, `google.golang.org/grpc`, the OpenTelemetry modules and
-  `oras.land/oras-go/v2` (2.6.2) to resolve the nancy findings.
+  `oras.land/oras-go/v2` (2.6.2) to resolve the nancy findings; pin the patched releases of the
+  modules only present in the module graph.
 
 ### Fixed
 
