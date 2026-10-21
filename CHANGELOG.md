@@ -7,6 +7,10 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+### Changed
+
+- Make pre-commit pass with `golangci-lint` 2.15.0: exclude `goconst` from test files, and type the close-only timeout channels as `chan struct{}` (`errcheck`).
+
 ## [4.2.1] - 2026-10-05
 
 ### Security

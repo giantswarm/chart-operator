@@ -37,7 +37,7 @@ func (r *Resource) EnsureCreated(ctx context.Context, obj interface{}) error {
 
 	r.logger.Debugf(ctx, "creating namespace %#q", ns.Name)
 
-	ch := make(chan error)
+	ch := make(chan struct{})
 
 	go func() {
 		_, err = r.k8sClient.CoreV1().Namespaces().Create(ctx, ns, metav1.CreateOptions{})
