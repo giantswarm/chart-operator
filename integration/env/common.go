@@ -6,15 +6,14 @@ package env
 import (
 	"fmt"
 	"os"
+	"path/filepath"
+	"strings"
 )
 
 const (
 	// EnvVarCircleCI is the process environment variable representing the
 	// CIRCLECI env var.
 	EnvVarCircleCI = "CIRCLECI"
-	// EnvVarCircleSHA is the process environment variable representing the
-	// CIRCLE_SHA1 env var.
-	EnvVarCircleSHA = "CIRCLE_SHA1"
 	// EnvVarE2EKubeconfig is the process environment variable representing the
 	// E2E_KUBECONFIG env var.
 	EnvVarE2EKubeconfig = "E2E_KUBECONFIG"
@@ -24,8 +23,8 @@ const (
 )
 
 var (
+	buildVersion  string
 	circleCI      string
-	circleSHA     string
 	keepResources string
 	kubeconfig    string
 )
@@ -34,9 +33,15 @@ func init() {
 	circleCI = os.Getenv(EnvVarCircleCI)
 	keepResources = os.Getenv(EnvVarKeepResources)
 
-	circleSHA = os.Getenv(EnvVarCircleSHA)
-	if circleSHA == "" {
-		panic(fmt.Sprintf("env var '%s' must not be empty", EnvVarCircleSHA))
+	filePath := filepath.Join(os.Getenv("CIRCLE_WORKING_DIRECTORY"), ".build_version")
+	buf, err := os.ReadFile(filePath) // #nosec G304 G703 -- the CI working directory, not user input
+	if err != nil {
+		panic(fmt.Sprintf("error reading .build_version: %v", err))
+	}
+
+	buildVersion = strings.TrimSpace(string(buf))
+	if buildVersion == "" {
+		panic(".build_version must not be empty")
 	}
 
 	kubeconfig = os.Getenv(EnvVarE2EKubeconfig)
@@ -45,12 +50,14 @@ func init() {
 	}
 }
 
-func CircleCI() string {
-	return circleCI
+// BuildVersion is the version push-to-registries computed for this build. The
+// chart is pushed to the test catalog with it as both version and appVersion.
+func BuildVersion() string {
+	return buildVersion
 }
 
-func CircleSHA() string {
-	return circleSHA
+func CircleCI() string {
+	return circleCI
 }
 
 func KeepResources() string {

@@ -54,7 +54,7 @@ func installResources(ctx context.Context, config Config) error {
 		config.Logger.Debugf(ctx, "getting %#q tarball URL", project.Name())
 
 		o := func() error {
-			operatorTarballURL, err = appcatalog.GetLatestChart(ctx, key.DefaultTestCatalogStorageURL(), project.Name(), env.CircleSHA())
+			operatorTarballURL, err = appcatalog.GetLatestChart(ctx, key.DefaultTestCatalogStorageURL(), project.Name(), env.BuildVersion())
 			if err != nil {
 				return microerror.Mask(err)
 			}
