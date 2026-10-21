@@ -85,7 +85,7 @@ func (r *Resource) ApplyCreateChange(ctx context.Context, obj, createChange inte
 		}
 	}()
 
-	ch := make(chan error)
+	ch := make(chan struct{})
 
 	// We create the helm release but with a wait timeout so we don't
 	// block reconciling other CRs.

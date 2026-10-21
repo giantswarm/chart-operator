@@ -97,7 +97,7 @@ func (r *Resource) ApplyUpdateChange(ctx context.Context, obj, updateChange inte
 
 	timeout := key.UpgradeTimeout(cr)
 
-	ch := make(chan error)
+	ch := make(chan struct{})
 
 	// We update the helm release but with a wait timeout so we don't
 	// block reconciling other CRs.

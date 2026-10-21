@@ -7,6 +7,14 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+### Changed
+
+- Make pre-commit pass with `golangci-lint` 2.15.0: exclude `goconst` from test files, and type the close-only timeout channels as `chan struct{}` (`errcheck`).
+
+### Fixed
+
+- Find the chart under test in the test catalog by the build version from `.build_version`. Since the switch to App Build Suite versions the chart is no longer published with the commit SHA as `appVersion`, so `basic-integration-test` never found it.
+
 ## [4.2.1] - 2026-10-05
 
 ### Security

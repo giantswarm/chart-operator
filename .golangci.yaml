@@ -1,0 +1,8 @@
+version: "2"
+linters:
+  exclusions:
+    rules:
+      # golangci-lint 2.15.0 goconst flags repeated literals in table-driven tests.
+      - path: _test\.go
+        linters:
+          - goconst
