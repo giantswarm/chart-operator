@@ -7,6 +7,10 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+### Security
+
+- Build with Go 1.27.3 (CVE-2026-111943: distrust the compromised eMudhra intermediate) and move the image to `alpine:3.24.2` for a current CA bundle. The image runs as UID/GID 1000, as the pod already does.
+
 ### Changed
 
 - Make pre-commit pass with `golangci-lint` 2.15.0: exclude `goconst` from test files, and type the close-only timeout channels as `chan struct{}` (`errcheck`).
