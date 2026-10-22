@@ -7,6 +7,8 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+## [4.3.0] - 2026-10-22
+
 ### Fixed
 
 - Skip `basic-integration-test` on `main` and `master`, where the push jobs that write `.build_version` do not run. It failed on every push to `main` and left the release commit with a red status.
@@ -717,7 +719,8 @@ We check progress in the next reconciliation loop. ([#362](https://github.com/gi
 - Separate podsecuritypolicy.
 - Security context in deployment spec with non-root user.
 
-[Unreleased]: https://github.com/giantswarm/chart-operator/compare/v4.2.2...HEAD
+[Unreleased]: https://github.com/giantswarm/chart-operator/compare/v4.3.0...HEAD
+[4.3.0]: https://github.com/giantswarm/chart-operator/compare/v4.2.2...v4.3.0
 [4.2.2]: https://github.com/giantswarm/chart-operator/compare/v4.2.1...v4.2.2
 [4.2.1]: https://github.com/giantswarm/chart-operator/compare/v4.2.0...v4.2.1
 [4.2.0]: https://github.com/giantswarm/chart-operator/compare/v4.1.2...v4.2.0
