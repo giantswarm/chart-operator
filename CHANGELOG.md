@@ -7,6 +7,10 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+### Fixed
+
+- Skip `basic-integration-test` on `main` and `master`, where the push jobs that write `.build_version` do not run. It failed on every push to `main` and left the release commit with a red status.
+
 ## [4.2.2] - 2026-10-21
 
 ### Security

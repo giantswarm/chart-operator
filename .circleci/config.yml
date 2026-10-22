@@ -65,6 +65,12 @@ workflows:
         name: basic-integration-test
         setup-script: integration/setup/setup.sh
         test-dir: integration/test/chart/basic
+        # Runs only where push-to-registries writes .build_version.
+        filters:
+          branches:
+            ignore:
+            - main
+            - master
         requires:
         - go-build
         - push-to-default-app-catalog
