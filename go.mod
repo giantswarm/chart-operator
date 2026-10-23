@@ -235,4 +235,4 @@ replace github.com/cilium/ebpf => github.com/cilium/ebpf v0.22.0
 
 replace github.com/distribution/distribution/v3 => github.com/distribution/distribution/v3 v3.1.2
 
-replace github.com/golang-jwt/jwt/v4 => github.com/golang-jwt/jwt/v4 v4.5.2
+replace github.com/golang-jwt/jwt/v5 => github.com/golang-jwt/jwt/v4 v5.3.1
