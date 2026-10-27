@@ -1,4 +1,4 @@
-FROM gsoci.azurecr.io/giantswarm/alpine:3.24.2
+FROM gsoci.azurecr.io/giantswarm/alpine:3.24.3
 
 # bind-tools is required by the init container to use dig.
 RUN apk add --no-cache ca-certificates bind-tools
