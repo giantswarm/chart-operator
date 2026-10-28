@@ -1,4 +1,4 @@
-CVE-2025-47291 until=2026-11-08 # github.com/containerd/containerd@v1.7.36
+CVE-2025-47291 until=2026-11-27 # github.com/containerd/containerd@v1.7.36 since=2026-10-28
 CVE-2026-63308 until=2026-11-05 # helm.sh/helm/v3@v3.20.2
 CVE-2026-48978 until=2026-11-05 # oras.land/oras-go@v1.2.7
 CVE-2026-85732 until=2026-11-05 # oras.land/oras-go@v1.2.7
@@ -9,3 +9,7 @@ CVE-2026-78663 until=2026-11-11 # golang.org/x/net@v0.59.0
 CVE-2026-78669 until=2026-11-11 # golang.org/x/net@v0.59.0
 CVE-2026-97032 until=2026-11-11 # golang.org/x/net@v0.59.0
 CVE-2026-78659 until=2026-11-11 # golang.org/x/net@v0.59.0
+CVE-2025-47290 until=2026-11-27 # github.com/containerd/containerd@v1.7.36 since=2026-10-28
+CVE-2026-115804 until=2026-11-27 # github.com/hashicorp/consul/api@v1.14.0 since=2026-10-28
+CVE-2026-116586 until=2026-11-27 # github.com/go-jose/go-jose/v4@v4.1.4 since=2026-10-28
+CVE-2026-116585 until=2026-11-27 # github.com/go-jose/go-jose/v4@v4.1.4 since=2026-10-28
