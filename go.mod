@@ -227,7 +227,7 @@ replace github.com/rabbitmq/amqp091-go => github.com/rabbitmq/amqp091-go v1.15.0
 
 replace github.com/ulikunitz/xz => github.com/ulikunitz/xz v0.5.17
 
-replace github.com/yuin/goldmark => github.com/yuin/goldmark v1.8.6
+replace github.com/yuin/goldmark/v2 => github.com/yuin/goldmark/v2 v2.1.13
 
 replace filippo.io/edwards25519 => filippo.io/edwards25519 v1.2.0
 
