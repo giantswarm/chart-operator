@@ -13,3 +13,5 @@ CVE-2025-47290 until=2026-11-27 # github.com/containerd/containerd@v1.7.36 since
 CVE-2026-115804 until=2026-11-27 # github.com/hashicorp/consul/api@v1.14.0 since=2026-10-28
 CVE-2026-116586 until=2026-11-27 # github.com/go-jose/go-jose/v4@v4.1.4 since=2026-10-28
 CVE-2026-116585 until=2026-11-27 # github.com/go-jose/go-jose/v4@v4.1.4 since=2026-10-28
+CVE-2026-78661 until=2026-12-04 # golang.org/x/net@v0.61.0 since=2026-11-04
+CVE-2026-97045 until=2026-12-04 # golang.org/x/net@v0.61.0 since=2026-11-04
