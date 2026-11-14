@@ -223,7 +223,7 @@ replace github.com/moby/sys/user => github.com/moby/sys/user v0.4.1
 
 replace github.com/nats-io/nats-server/v2 => github.com/nats-io/nats-server/v2 v2.15.3
 
-replace github.com/rabbitmq/amqp091-go => github.com/rabbitmq/amqp091-go v1.15.0
+replace github.com/rabbitmq/amqp091-go => github.com/rabbitmq/amqp091-go v1.16.0
 
 replace github.com/ulikunitz/xz => github.com/ulikunitz/xz v0.5.17
 
