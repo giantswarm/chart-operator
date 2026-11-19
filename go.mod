@@ -219,7 +219,7 @@ replace github.com/klauspost/compress => github.com/klauspost/compress v1.20.4
 
 replace github.com/moby/spdystream => github.com/moby/spdystream v0.5.1
 
-replace github.com/moby/sys/user => github.com/moby/sys/user v0.4.1
+replace github.com/moby/sys/user => github.com/moby/sys/user v0.5.0
 
 replace github.com/nats-io/nats-server/v2 => github.com/nats-io/nats-server/v2 v2.15.3
 
