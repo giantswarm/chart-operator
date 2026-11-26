@@ -7,6 +7,10 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+### Changed
+
+- Push the image to Aliyun from the in-China runner (`split-china-push` and `sync-china-registry`), so a hanging Aliyun push can no longer block the chart publish (as happened to app-operator v7.7.0).
+
 ### Fixed
 
 - Use the elevated Helm client for an app operator chart outside the `giantswarm` namespace only when app-operator resolved it from `control-plane-catalog` (or `control-plane-test-catalog` for the test URL) in the `default` or `giantswarm` namespace, read from the `app-operator.giantswarm.io/catalog` and `app-operator.giantswarm.io/catalog-namespace` annotations. The tarball URL alone let a tenant-owned Catalog that points at the control-plane app-operator tarball get cluster-admin installs. Requires an app-operator release that sets these annotations on the management cluster first; Charts without them get the restricted client.
