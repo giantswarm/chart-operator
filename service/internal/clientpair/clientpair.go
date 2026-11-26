@@ -31,7 +31,23 @@ const (
 	// used when we are testing changes for workload cluster app-operators that are
 	// generally not located in the giantswarm namespace.
 	appOperatorTestChart = "https://giantswarm.github.io/control-plane-test-catalog/app-operator"
+
+	// The tarball URL alone does not prove an app operator chart comes from
+	// Giant Swarm: a tenant-owned Catalog can list a chart under any name with
+	// its URL pointing at the control-plane tarball. The elevated client is
+	// only used when app-operator resolved the chart from the matching Giant
+	// Swarm catalog, which tenants cannot create or change. See
+	// https://github.com/giantswarm/giantswarm/issues/39470.
+	appOperatorCatalog     = "control-plane-catalog"
+	appOperatorTestCatalog = "control-plane-test-catalog"
 )
+
+// giantswarmCatalogNamespaces are the namespaces the Giant Swarm catalogs live
+// in. app-operator resolves an App without catalogNamespace from these.
+var giantswarmCatalogNamespaces = map[string]bool{
+	"default":    true,
+	"giantswarm": true,
+}
 
 type ClientPairConfig struct {
 	Logger micrologger.Logger
@@ -100,7 +116,7 @@ func (cp *ClientPair) Get(ctx context.Context, cr v1alpha1.Chart, privateClient 
 	}
 
 	// for app operators outside the `giantswarm` namespace, use the prvHelmClient.
-	if key.AppNamespace(cr) != privateNamespace && (strings.HasPrefix(key.TarballURL(cr), appOperatorChart) || strings.HasPrefix(key.TarballURL(cr), appOperatorTestChart)) {
+	if key.AppNamespace(cr) != privateNamespace && isGiantSwarmAppOperator(cr) {
 		cp.logger.Debugf(ctx, "selecting private Helm client for `%s` App in `%s` namespace", key.AppName(cr), key.AppNamespace(cr))
 
 		return cp.prvHelmClient
@@ -121,4 +137,23 @@ func (cp *ClientPair) Get(ctx context.Context, cr v1alpha1.Chart, privateClient 
 	cp.logger.Debugf(ctx, "selecting public Helm client for `%s` App in `%s` namespace", key.AppName(cr), key.AppNamespace(cr))
 
 	return cp.pubHelmClient
+}
+
+// isGiantSwarmAppOperator reports whether the chart is the app operator chart
+// from a Giant Swarm catalog: its tarball URL is in the control-plane (test)
+// catalog and app-operator resolved it from that catalog in a Giant Swarm
+// namespace.
+func isGiantSwarmAppOperator(cr v1alpha1.Chart) bool {
+	if !giantswarmCatalogNamespaces[key.CatalogNamespace(cr)] {
+		return false
+	}
+
+	switch key.CatalogName(cr) {
+	case appOperatorCatalog:
+		return strings.HasPrefix(key.TarballURL(cr), appOperatorChart)
+	case appOperatorTestCatalog:
+		return strings.HasPrefix(key.TarballURL(cr), appOperatorTestChart)
+	default:
+		return false
+	}
 }

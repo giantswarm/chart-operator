@@ -166,8 +166,10 @@ func Test_Get(t *testing.T) {
 			chart: v1alpha1.Chart{
 				ObjectMeta: metav1.ObjectMeta{
 					Annotations: map[string]string{
-						annotation.AppNamespace: "demo0",
-						annotation.AppName:      "app-operator-demo0",
+						annotation.AppNamespace:                        "demo0",
+						annotation.AppName:                             "app-operator-demo0",
+						"app-operator.giantswarm.io/catalog":           "control-plane-catalog",
+						"app-operator.giantswarm.io/catalog-namespace": "giantswarm",
 					},
 				},
 				Spec: v1alpha1.ChartSpec{
@@ -182,8 +184,10 @@ func Test_Get(t *testing.T) {
 			chart: v1alpha1.Chart{
 				ObjectMeta: metav1.ObjectMeta{
 					Annotations: map[string]string{
-						annotation.AppNamespace: "demo0",
-						annotation.AppName:      "app-operator-demo0",
+						annotation.AppNamespace:                        "demo0",
+						annotation.AppName:                             "app-operator-demo0",
+						"app-operator.giantswarm.io/catalog":           "control-plane-test-catalog",
+						"app-operator.giantswarm.io/catalog-namespace": "giantswarm",
 					},
 				},
 				Spec: v1alpha1.ChartSpec{
@@ -204,6 +208,94 @@ func Test_Get(t *testing.T) {
 				},
 				Spec: v1alpha1.ChartSpec{
 					TarballURL: "https://demo.github.io/demo-catalog/app-operator-5.9.0.tgz",
+				},
+			},
+			clientPair:     splitClient,
+			expectedClient: pubHC,
+		},
+		{
+			name: "split client, WC app operator from the default namespace catalog",
+			chart: v1alpha1.Chart{
+				ObjectMeta: metav1.ObjectMeta{
+					Annotations: map[string]string{
+						annotation.AppNamespace:                        "demo0",
+						annotation.AppName:                             "app-operator-demo0",
+						"app-operator.giantswarm.io/catalog":           "control-plane-catalog",
+						"app-operator.giantswarm.io/catalog-namespace": "default",
+					},
+				},
+				Spec: v1alpha1.ChartSpec{
+					TarballURL: appOperatorChart + "-5.9.0.tgz",
+				},
+			},
+			clientPair:     splitClient,
+			expectedClient: prvHC,
+		},
+		{
+			name: "split client, control-plane URL from a tenant catalog",
+			chart: v1alpha1.Chart{
+				ObjectMeta: metav1.ObjectMeta{
+					Annotations: map[string]string{
+						annotation.AppNamespace:                        "demo0",
+						annotation.AppName:                             "app-operator-demo0",
+						"app-operator.giantswarm.io/catalog":           "evil-catalog",
+						"app-operator.giantswarm.io/catalog-namespace": "org-acme",
+					},
+				},
+				Spec: v1alpha1.ChartSpec{
+					TarballURL: appOperatorChart + "-5.9.0.tgz",
+				},
+			},
+			clientPair:     splitClient,
+			expectedClient: pubHC,
+		},
+		{
+			name: "split client, control-plane-catalog name in a tenant namespace",
+			chart: v1alpha1.Chart{
+				ObjectMeta: metav1.ObjectMeta{
+					Annotations: map[string]string{
+						annotation.AppNamespace:                        "demo0",
+						annotation.AppName:                             "app-operator-demo0",
+						"app-operator.giantswarm.io/catalog":           "control-plane-catalog",
+						"app-operator.giantswarm.io/catalog-namespace": "org-acme",
+					},
+				},
+				Spec: v1alpha1.ChartSpec{
+					TarballURL: appOperatorChart + "-5.9.0.tgz",
+				},
+			},
+			clientPair:     splitClient,
+			expectedClient: pubHC,
+		},
+		{
+			name: "split client, control-plane-catalog with the test catalog URL",
+			chart: v1alpha1.Chart{
+				ObjectMeta: metav1.ObjectMeta{
+					Annotations: map[string]string{
+						annotation.AppNamespace:                        "demo0",
+						annotation.AppName:                             "app-operator-demo0",
+						"app-operator.giantswarm.io/catalog":           "control-plane-catalog",
+						"app-operator.giantswarm.io/catalog-namespace": "giantswarm",
+					},
+				},
+				Spec: v1alpha1.ChartSpec{
+					TarballURL: appOperatorTestChart + "-5.9.0.tgz",
+				},
+			},
+			clientPair:     splitClient,
+			expectedClient: pubHC,
+		},
+		{
+			name: "split client, control-plane URL without catalog annotations",
+			chart: v1alpha1.Chart{
+				ObjectMeta: metav1.ObjectMeta{
+					Annotations: map[string]string{
+						annotation.AppNamespace: "demo0",
+						annotation.AppName:      "app-operator-demo0",
+					},
+				},
+				Spec: v1alpha1.ChartSpec{
+					TarballURL: appOperatorChart + "-5.9.0.tgz",
 				},
 			},
 			clientPair:     splitClient,

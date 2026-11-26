@@ -9,6 +9,7 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ### Fixed
 
+- Use the elevated Helm client for an app operator chart outside the `giantswarm` namespace only when app-operator resolved it from `control-plane-catalog` (or `control-plane-test-catalog` for the test URL) in the `default` or `giantswarm` namespace, read from the `app-operator.giantswarm.io/catalog` and `app-operator.giantswarm.io/catalog-namespace` annotations. The tarball URL alone let a tenant-owned Catalog that points at the control-plane app-operator tarball get cluster-admin installs. Requires an app-operator release that sets these annotations on the management cluster first; Charts without them get the restricted client.
 - Fix ARM64 images.
 - Skip `basic-integration-test` on `main` and `master`, where the push jobs that write `.build_version` do not run. It failed on every push to `main` and left the release commit with a red status.
 

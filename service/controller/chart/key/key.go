@@ -13,12 +13,29 @@ import (
 	chartmeta "github.com/giantswarm/chart-operator/v4/pkg/annotation"
 )
 
+const (
+	annotationCatalog          = "app-operator.giantswarm.io/catalog"
+	annotationCatalogNamespace = "app-operator.giantswarm.io/catalog-namespace"
+)
+
 func AppName(customResource v1alpha1.Chart) string {
 	return customResource.GetAnnotations()[annotation.AppName]
 }
 
 func AppNamespace(customResource v1alpha1.Chart) string {
 	return customResource.GetAnnotations()[annotation.AppNamespace]
+}
+
+// CatalogName returns the name of the Catalog CR app-operator resolved the
+// chart from. app-operator sets it; it is never copied from the App CR.
+func CatalogName(customResource v1alpha1.Chart) string {
+	return customResource.GetAnnotations()[annotationCatalog]
+}
+
+// CatalogNamespace returns the namespace of the Catalog CR app-operator
+// resolved the chart from.
+func CatalogNamespace(customResource v1alpha1.Chart) string {
+	return customResource.GetAnnotations()[annotationCatalogNamespace]
 }
 
 func ChartStatus(customResource v1alpha1.Chart) v1alpha1.ChartStatus {
