@@ -16,6 +16,9 @@ workflows:
     - architect/push-to-registries:
         context: architect
         name: push-to-registries
+        # Aliyun is left to sync-china-registry, so a hanging Aliyun push
+        # no longer blocks the chart publish.
+        split-china-push: true
         requires:
         - go-build
         filters:
@@ -26,6 +29,18 @@ workflows:
             ignore:
             - main
             - master
+
+    - architect/sync-china-registry:
+        context: architect
+        name: sync-china-registry
+        requires:
+        - push-to-registries
+        filters:
+          tags:
+            only: /^v.*/
+          branches:
+            ignore: /.*/
+
     - architect/push-to-app-catalog:
         context: architect
         executor: app-build-suite
