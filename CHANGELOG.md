@@ -7,6 +7,8 @@ and this project's packages adheres to [Semantic Versioning](http://semver.org/s
 
 ## [Unreleased]
 
+## [4.2.3] - 2026-11-27
+
 ### Changed
 
 - Push the image to Aliyun from the in-China runner (`split-china-push` and `sync-china-registry`), so a hanging Aliyun push can no longer block the chart publish (as happened to app-operator v7.7.0).
@@ -723,7 +725,8 @@ We check progress in the next reconciliation loop. ([#362](https://github.com/gi
 - Separate podsecuritypolicy.
 - Security context in deployment spec with non-root user.
 
-[Unreleased]: https://github.com/giantswarm/chart-operator/compare/v4.2.2...HEAD
+[Unreleased]: https://github.com/giantswarm/chart-operator/compare/v4.2.3...HEAD
+[4.2.3]: https://github.com/giantswarm/chart-operator/compare/v4.2.2...v4.2.3
 [4.2.2]: https://github.com/giantswarm/chart-operator/compare/v4.2.1...v4.2.2
 [4.2.1]: https://github.com/giantswarm/chart-operator/compare/v4.2.0...v4.2.1
 [4.2.0]: https://github.com/giantswarm/chart-operator/compare/v4.1.2...v4.2.0
