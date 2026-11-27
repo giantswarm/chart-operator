@@ -16,7 +16,7 @@ require (
 	github.com/giantswarm/microerror v0.4.1
 	github.com/giantswarm/microkit v1.0.4
 	github.com/giantswarm/micrologger v1.1.2
-	github.com/giantswarm/operatorkit/v7 v7.3.0
+	github.com/giantswarm/operatorkit/v7 v7.4.0
 	github.com/giantswarm/to v0.4.2
 	github.com/google/go-cmp v0.7.0
 	github.com/imdario/mergo v0.3.16
@@ -69,7 +69,8 @@ require (
 	github.com/felixge/httpsnoop v1.1.0 // indirect
 	github.com/fsnotify/fsnotify v1.9.0 // indirect
 	github.com/fxamacker/cbor/v2 v2.9.0 // indirect
-	github.com/getsentry/sentry-go v0.31.1 // indirect
+	github.com/getsentry/sentry-go v0.42.0 // indirect
+	github.com/giantswarm/k8sclient/v8 v8.1.0 // indirect
 	github.com/giantswarm/kubeconfig/v4 v4.1.4 // indirect
 	github.com/giantswarm/versionbundle v1.1.0 // indirect
 	github.com/go-errors/errors v1.4.2 // indirect
@@ -195,7 +196,7 @@ require (
 	k8s.io/klog/v2 v2.130.1 // indirect
 	k8s.io/kube-openapi v0.0.0-20250910181357-589584f1c912 // indirect
 	k8s.io/kubectl v0.35.1 // indirect
-	k8s.io/utils v0.0.0-20251002143259-bc988d571ff4 // indirect
+	k8s.io/utils v0.0.0-20260108192941-914a6e750570 // indirect
 	oras.land/oras-go v1.2.7 // indirect
 	oras.land/oras-go/v2 v2.6.2 // indirect
 	sigs.k8s.io/json v0.0.0-20250730193827-2d320260d730 // indirect
